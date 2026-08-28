@@ -69,9 +69,11 @@ export const BlogListPage: React.FC<BlogListPageProps> = () => {
   const listPosts = filtered.length > 3 ? filtered.slice(3) : [];
 
   const stripHtml = (html: string) => {
-    const tmp = document.createElement('div');
-    tmp.innerHTML = html;
-    return tmp.textContent || tmp.innerText || '';
+    // Security Fix: Prevent XSS by using DOMParser instead of innerHTML
+    // Using innerHTML on an unattached DOM element can still execute resource loads (like <img src=x onerror=...>)
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+    return doc.body.textContent || doc.body.innerText || '';
   };
 
   const handleNavigate = (slug: string) => {
