@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ALL_COURSES, ALL_PACKAGES } from '../data/academyData';
+import { ALL_COURSES } from '../data/academyData';
 import { createLeadInFirebase } from '../lib/firestoreService';
 import {
   X,
