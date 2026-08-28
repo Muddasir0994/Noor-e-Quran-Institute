@@ -374,118 +374,128 @@ export function subscribeToProgressReports(callback: (reports: ClassProgressRepo
 // ==========================================
 // 6. SEED BASELINE DATA TO FIREBASE (COURSES, TUTORS)
 // ==========================================
+
+async function seedDemoStudentsIfEmpty(): Promise<void> {
+  const studentsSnap = await getDocs(collection(db, STUDENTS_COL));
+  if (!studentsSnap.empty) {
+    return;
+  }
+
+  const demoStudents: Student[] = [
+    {
+      id: 'stu-301',
+      studentName: 'Ayaan Mahmood',
+      parentName: 'Dr. Tariq Mahmood',
+      email: 'tariq.mahmood@nhs.net',
+      phone: '+44 7700 900077',
+      country: 'United Kingdom',
+      courseId: 'c-2',
+      courseName: 'Quran Reading / Nazra with Tajweed',
+      packageId: 'pkg-3days',
+      packageName: 'Standard Learning (3 Days/Week)',
+      tutorId: 'tut-1',
+      tutorName: 'Ustadha Maryam Siddiqa',
+      preferredTime: 'Evening',
+      preferredDays: ['Monday', 'Wednesday', 'Friday'],
+      learningPace: 'Normal',
+      status: 'Active',
+      currentSurahOrLesson: 'Surah Al-Baqarah (Ayah 142)',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      notes: []
+    },
+    {
+      id: 'stu-302',
+      studentName: 'Hamza Farhan',
+      parentName: 'Farhan Akhtar',
+      email: 'farhan.akhtar@gmail.com',
+      phone: '+1 647 123 4567',
+      country: 'Canada',
+      courseId: 'c-4',
+      courseName: 'Quran Memorization / Hifz Track',
+      packageId: 'pkg-5days',
+      packageName: 'Intensive Hifz (5 Days/Week)',
+      tutorId: 'tut-2',
+      tutorName: 'Qari Hafiz Muhammad Bilal',
+      preferredTime: 'Morning',
+      preferredDays: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+      learningPace: 'Fast',
+      status: 'Active',
+      currentSurahOrLesson: 'Juz 6 (Surah An-Nisa Ayah 45)',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      notes: []
+    }
+  ];
+
+  for (const st of demoStudents) {
+    await setDoc(doc(db, STUDENTS_COL, st.id), st);
+  }
+  console.log('✓ Seeded demo students into Firestore.');
+}
+
+async function seedInitialUsersIfEmpty(): Promise<void> {
+  const usersSnap = await getDocs(collection(db, USERS_COL));
+  if (!usersSnap.empty) {
+    return;
+  }
+
+  const initialUsers: UserAccount[] = [
+    {
+      uid: 'teacher-maryam',
+      email: 'maryam.siddiqa@alnoorquraan.com',
+      displayName: 'Ustadha Maryam Siddiqa',
+      role: 'teacher',
+      gender: 'Female',
+      qualification: 'Wifaq-ul-Madaris Al-Arabia (Aalimah Degree), Qariyah Certificate',
+      specialization: 'Noorani Qaida, Tajweed Mastery for Sisters & Kids',
+      phone: '+92 301 9876543',
+      bio: '10+ years teaching experience with sisters and young kids across UK, USA, and Canada.',
+      status: 'Active',
+      assignedStudentIds: ['stu-301'],
+
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    },
+    {
+      uid: 'teacher-bilal',
+      email: 'bilal.qari@alnoorquraan.com',
+      displayName: 'Qari Hafiz Muhammad Bilal',
+      role: 'teacher',
+      gender: 'Male',
+      qualification: 'Hafiz-e-Quran, Qiraat Sab’ah Specialist (Jamia Ashrafia)',
+      specialization: 'Hifz Track, Tajweed Rules & Makharij Precision',
+      phone: '+92 321 4567890',
+      bio: 'Specialist in 1-on-1 Quran Memorization and voice modulation with students in North America and Europe.',
+      status: 'Active',
+      assignedStudentIds: ['stu-302'],
+
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    },
+    {
+      uid: 'admin-main',
+      email: 'admin@alnoorquraan.com',
+      displayName: 'Academy Principal & Admin',
+      role: 'admin',
+      gender: 'Male',
+      phone: '+92 327 4496163',
+      status: 'Active',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    }
+  ];
+
+  for (const u of initialUsers) {
+    await setDoc(doc(db, USERS_COL, u.uid), u);
+  }
+  console.log('✓ Seeded initial teachers and admin accounts into Firestore.');
+}
+
 export async function seedInitialDataIfEmpty(): Promise<void> {
   try {
-    // Seed initial demo students if not present
-    const studentsSnap = await getDocs(collection(db, STUDENTS_COL));
-    if (studentsSnap.empty) {
-      const demoStudents: Student[] = [
-        {
-          id: 'stu-301',
-          studentName: 'Ayaan Mahmood',
-          parentName: 'Dr. Tariq Mahmood',
-          email: 'tariq.mahmood@nhs.net',
-          phone: '+44 7700 900077',
-          country: 'United Kingdom',
-          courseId: 'c-2',
-          courseName: 'Quran Reading / Nazra with Tajweed',
-          packageId: 'pkg-3days',
-          packageName: 'Standard Learning (3 Days/Week)',
-          tutorId: 'tut-1',
-          tutorName: 'Ustadha Maryam Siddiqa',
-          preferredTime: 'Evening',
-          preferredDays: ['Monday', 'Wednesday', 'Friday'],
-          learningPace: 'Normal',
-          status: 'Active',
-          currentSurahOrLesson: 'Surah Al-Baqarah (Ayah 142)',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          notes: []
-        },
-        {
-          id: 'stu-302',
-          studentName: 'Hamza Farhan',
-          parentName: 'Farhan Akhtar',
-          email: 'farhan.akhtar@gmail.com',
-          phone: '+1 647 123 4567',
-          country: 'Canada',
-          courseId: 'c-4',
-          courseName: 'Quran Memorization / Hifz Track',
-          packageId: 'pkg-5days',
-          packageName: 'Intensive Hifz (5 Days/Week)',
-          tutorId: 'tut-2',
-          tutorName: 'Qari Hafiz Muhammad Bilal',
-          preferredTime: 'Morning',
-          preferredDays: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-          learningPace: 'Fast',
-          status: 'Active',
-          currentSurahOrLesson: 'Juz 6 (Surah An-Nisa Ayah 45)',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          notes: []
-        }
-      ];
-
-      for (const st of demoStudents) {
-        await setDoc(doc(db, STUDENTS_COL, st.id), st);
-      }
-      console.log('✓ Seeded demo students into Firestore.');
-    }
-
-    // Seed initial teacher users into users collection if empty
-    const usersSnap = await getDocs(collection(db, USERS_COL));
-    if (usersSnap.empty) {
-      const initialUsers: UserAccount[] = [
-        {
-          uid: 'teacher-maryam',
-          email: 'maryam.siddiqa@alnoorquraan.com',
-          displayName: 'Ustadha Maryam Siddiqa',
-          role: 'teacher',
-          gender: 'Female',
-          qualification: 'Wifaq-ul-Madaris Al-Arabia (Aalimah Degree), Qariyah Certificate',
-          specialization: 'Noorani Qaida, Tajweed Mastery for Sisters & Kids',
-          phone: '+92 301 9876543',
-          bio: '10+ years teaching experience with sisters and young kids across UK, USA, and Canada.',
-          status: 'Active',
-          assignedStudentIds: ['stu-301'],
-
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
-        },
-        {
-          uid: 'teacher-bilal',
-          email: 'bilal.qari@alnoorquraan.com',
-          displayName: 'Qari Hafiz Muhammad Bilal',
-          role: 'teacher',
-          gender: 'Male',
-          qualification: 'Hafiz-e-Quran, Qiraat Sab’ah Specialist (Jamia Ashrafia)',
-          specialization: 'Hifz Track, Tajweed Rules & Makharij Precision',
-          phone: '+92 321 4567890',
-          bio: 'Specialist in 1-on-1 Quran Memorization and voice modulation with students in North America and Europe.',
-          status: 'Active',
-          assignedStudentIds: ['stu-302'],
-
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
-        },
-        {
-          uid: 'admin-main',
-          email: 'admin@alnoorquraan.com',
-          displayName: 'Academy Principal & Admin',
-          role: 'admin',
-          gender: 'Male',
-          phone: '+92 327 4496163',
-          status: 'Active',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
-        }
-      ];
-
-      for (const u of initialUsers) {
-        await setDoc(doc(db, USERS_COL, u.uid), u);
-      }
-      console.log('✓ Seeded initial teachers and admin accounts into Firestore.');
-    }
+    await seedDemoStudentsIfEmpty();
+    await seedInitialUsersIfEmpty();
   } catch (err) {
     console.warn('Seeding check note:', err);
   }
