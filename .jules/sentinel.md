@@ -1,0 +1,4 @@
+## 2024-08-28 - [Reflected XSS in Google Search Console Verification Endpoint]
+**Vulnerability:** Reflected Cross-Site Scripting (XSS) in the `/google:code.html` endpoint. The `code` parameter was directly reflected into the response body with `Content-Type: text/html` without any validation or sanitization.
+**Learning:** Even utility or verification endpoints (like Google Search Console verification) that seem harmless can introduce XSS if they reflect URL parameters into HTML responses. The framework (Express) does not sanitize URL parameters automatically.
+**Prevention:** Always validate and sanitize user input, even in route parameters, before reflecting it in the response, especially when the response content type is HTML. Use strict allowlist validation (e.g., regex matching expected format) for such parameters.
