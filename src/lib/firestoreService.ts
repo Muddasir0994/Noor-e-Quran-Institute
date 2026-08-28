@@ -176,7 +176,6 @@ export async function updateTeacherAccountByAdmin(uid: string, updates: Partial<
 export async function deleteTeacherAccountByAdmin(uid: string): Promise<void> {
   try {
     await deleteDoc(doc(db, USERS_COL, uid));
-    console.log('✓ Teacher account removed from Firestore:', uid);
   } catch (err) {
     console.error('Error deleting teacher account:', err);
     throw err;
