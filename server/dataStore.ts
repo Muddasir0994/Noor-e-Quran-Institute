@@ -54,7 +54,11 @@ class DataStore {
 
   constructor() {
     this.ensureDataDirectory();
-    this.data = this.loadDatabase();
+    this.data = this.getDefaultData();
+  }
+
+  public async init(): Promise<void> {
+    this.data = await this.loadDatabase();
   }
 
   private ensureDataDirectory() {
@@ -63,10 +67,10 @@ class DataStore {
     }
   }
 
-  private loadDatabase(): DatabaseSchema {
+  private async loadDatabase(): Promise<DatabaseSchema> {
     if (fs.existsSync(DB_FILE)) {
       try {
-        const raw = fs.readFileSync(DB_FILE, 'utf-8');
+        const raw = await fs.promises.readFile(DB_FILE, 'utf-8');
         const parsed = JSON.parse(raw);
         return {
           courses: parsed.courses?.length ? parsed.courses : ALL_COURSES,
@@ -99,7 +103,13 @@ class DataStore {
       }
     }
 
-    const initialData: DatabaseSchema = {
+    const initialData = this.getDefaultData();
+    this.saveDatabase(initialData);
+    return initialData;
+  }
+
+  private getDefaultData(): DatabaseSchema {
+    return {
       courses: ALL_COURSES,
       packages: ALL_PACKAGES,
       leads: [
@@ -292,9 +302,6 @@ class DataStore {
       notifications: [],
       adminTokens: []
     };
-
-    this.saveDatabase(initialData);
-    return initialData;
   }
 
   private saveDatabase(dataToSave?: DatabaseSchema) {

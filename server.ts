@@ -1162,6 +1162,8 @@ async function startServer() {
     });
   }
 
+  await dataStore.init();
+
   app.listen(PORT, '0.0.0.0', () => {
     console.log(`Noor-e-Quran Institute Server running on http://0.0.0.0:${PORT}`);
 
