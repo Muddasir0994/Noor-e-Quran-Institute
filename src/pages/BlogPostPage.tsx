@@ -1,3 +1,4 @@
+import DOMPurify from "dompurify";
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
@@ -246,9 +247,10 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({ onOpenTrial }) => {
 
         {/* Article Body Content */}
         <div className="prose prose-lg max-w-none text-gray-700 font-sans leading-relaxed space-y-6">
-          <div className="whitespace-pre-line text-sm sm:text-base leading-relaxed">
-            {post.content}
-          </div>
+          <div
+            className="whitespace-pre-line text-sm sm:text-base leading-relaxed"
+            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.content) }}
+          />
         </div>
 
         {/* In-Article Conversion Callout Banner */}
