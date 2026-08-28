@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ALL_COURSES, ALL_PACKAGES } from '../data/academyData';
 import { PackagePlan } from '../types';
 import { createEnrollmentInFirebase } from '../lib/firestoreService';
-import { X, CheckCircle, Calendar, Clock, ShieldCheck, User, Phone, Envelope, Globe, ArrowRight } from '@phosphor-icons/react';
+import { X, CheckCircle, Clock, ShieldCheck, User, Phone, Envelope, Globe, ArrowRight } from '@phosphor-icons/react';
 
 interface EnrollmentModalProps {
   isOpen: boolean;
