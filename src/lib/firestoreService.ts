@@ -166,7 +166,6 @@ export async function updateTeacherAccountByAdmin(uid: string, updates: Partial<
       ...updates,
       updatedAt: new Date().toISOString()
     });
-    console.log('✓ Teacher configured by Admin in Firestore:', uid);
   } catch (err) {
     console.error('Error updating teacher account:', err);
     throw err;
