@@ -1135,7 +1135,7 @@ async function startServer() {
     // Cache template HTML in memory to eliminate redundant disk I/O and reduce document response latency
     let cachedBaseHtml: string | null = null;
 
-    app.get('*', (req, res) => {
+    app.get('*', async (req, res) => {
       const { meta, is404 } = resolveRouteMetadata(req.path);
 
       if (is404) {
@@ -1145,10 +1145,11 @@ async function startServer() {
 
       const indexPath = path.join(distPath, 'index.html');
       if (!cachedBaseHtml) {
-        if (!fs.existsSync(indexPath)) {
+        try {
+          cachedBaseHtml = await fs.promises.readFile(indexPath, 'utf-8');
+        } catch (error) {
           return res.status(500).send('Application build not found. Please run npm run build.');
         }
-        cachedBaseHtml = fs.readFileSync(indexPath, 'utf-8');
       }
 
       let html = cachedBaseHtml;
