@@ -12,7 +12,8 @@ import {
   where,
   orderBy,
   limit,
-  onSnapshot
+  onSnapshot,
+  writeBatch
 } from './firebase';
 import {
   Lead,
@@ -426,9 +427,11 @@ export async function seedInitialDataIfEmpty(): Promise<void> {
         }
       ];
 
+      const studentBatch = writeBatch(db);
       for (const st of demoStudents) {
-        await setDoc(doc(db, STUDENTS_COL, st.id), st);
+        studentBatch.set(doc(db, STUDENTS_COL, st.id), st);
       }
+      await studentBatch.commit();
       console.log('✓ Seeded demo students into Firestore.');
     }
 
@@ -481,9 +484,11 @@ export async function seedInitialDataIfEmpty(): Promise<void> {
         }
       ];
 
+      const userBatch = writeBatch(db);
       for (const u of initialUsers) {
-        await setDoc(doc(db, USERS_COL, u.uid), u);
+        userBatch.set(doc(db, USERS_COL, u.uid), u);
       }
+      await userBatch.commit();
       console.log('✓ Seeded initial teachers and admin accounts into Firestore.');
     }
   } catch (err) {
