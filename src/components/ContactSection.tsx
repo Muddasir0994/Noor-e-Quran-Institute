@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Phone, Envelope, Globe, WhatsappLogo, PaperPlaneTilt, CheckCircle, MapPin, Clock, YoutubeLogo, InstagramLogo, FacebookLogo, LinkedinLogo } from '@phosphor-icons/react';
+import { Phone, Envelope, Globe, WhatsappLogo, PaperPlaneTilt, CheckCircle, Clock, YoutubeLogo, InstagramLogo, FacebookLogo, LinkedinLogo } from '@phosphor-icons/react';
 
 export const ContactSection: React.FC = () => {
   const [name, setName] = useState('');
