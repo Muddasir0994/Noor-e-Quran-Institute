@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { WhatsappLogo, X, PaperPlaneTilt, Phone, ShieldCheck } from '@phosphor-icons/react';
+import { WhatsappLogo, X, PaperPlaneTilt } from '@phosphor-icons/react';
 
 interface WhatsAppWidgetProps {
   onOpenTrial: () => void;
