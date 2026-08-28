@@ -14,7 +14,8 @@ import {
   orderBy,
   limit,
   onSnapshot,
-  serverTimestamp
+  serverTimestamp,
+  writeBatch
 } from 'firebase/firestore';
 import {
   getAuth,
@@ -79,7 +80,8 @@ export {
   orderBy,
   limit,
   onSnapshot,
-  serverTimestamp
+  serverTimestamp,
+  writeBatch
 };
 export type { FirebaseUser };
 
