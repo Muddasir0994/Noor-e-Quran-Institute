@@ -10,7 +10,8 @@
     "start": "node dist/server.cjs",
     "preview": "vite preview",
     "clean": "rm -rf dist server.js",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "test": "vitest run"
   },
   "dependencies": {
     "@phosphor-icons/react": "^2.1.10",
@@ -39,6 +40,7 @@
     "sharp": "^0.35.3",
     "tailwindcss": "^4.1.14",
     "tsx": "^4.21.0",
-    "typescript": "~5.8.2"
+    "typescript": "~5.8.2",
+    "vitest": "^4.1.11"
   }
 }
