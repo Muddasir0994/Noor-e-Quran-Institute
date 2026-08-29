@@ -1074,7 +1074,8 @@ async function startServer() {
 
     // Smart categorized image resolver (maps legacy flat /images/:file to /images/banners, /images/courses, /images/faculty)
     app.get('/images/:file', (req, res, next) => {
-      const filename = req.params.file;
+      // Security: Prevent Path Traversal by extracting only the base file name
+      const filename = path.basename(req.params.file);
       const subdirs = ['banners', 'courses', 'faculty', 'uploads'];
       for (const sub of subdirs) {
         const candidate = path.join(publicPath, 'images', sub, filename);
