@@ -1,4 +1,5 @@
 import React, { Component, useState, useEffect, useRef } from 'react';
+import DOMPurify from 'dompurify';
 import { BlogPost } from '../types';
 import { getAllBlogPosts, saveBlogPost, deleteBlogPost } from '../lib/firestoreService';
 import { ImageCropModal } from '../components/ImageCropModal';
@@ -683,7 +684,7 @@ export const BlogEditor: React.FC<BlogEditorProps> = ({ onViewPost }) => {
                 <div className="p-6 bg-[#FCFBF8] border border-[#E8E0D1] rounded-sm min-h-[360px] space-y-4">
                   <h2 className="font-editorial text-2xl text-[#0B332D] font-bold">{title || 'Untitled Article'}</h2>
                   <div
-                    dangerouslySetInnerHTML={{ __html: content || '<p className="text-gray-400 italic">No content yet...</p>' }}
+                    dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(content) || '<p className="text-gray-400 italic">No content yet...</p>' }}
                     className="prose max-w-none text-xs sm:text-sm font-sans leading-relaxed"
                   />
                 </div>
