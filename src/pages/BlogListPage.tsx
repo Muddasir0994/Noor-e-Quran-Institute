@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BlogPost } from '../types';
 import { INITIAL_ARTICLES } from '../data/academyData';
@@ -58,11 +58,15 @@ export const BlogListPage: React.FC<BlogListPageProps> = () => {
     })();
   }, []);
 
-  const filtered = posts.filter(p => {
-    const matchCat = activeCategory === 'All' || p.category === activeCategory;
-    const matchSearch = !searchQuery || p.title.toLowerCase().includes(searchQuery.toLowerCase()) || p.metaDescription.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchCat && matchSearch;
-  });
+  // ⚡ Bolt Performance Optimization
+  // Memoize filtered posts to prevent O(N) string operations on every render
+  const filtered = useMemo(() => {
+    return posts.filter(p => {
+      const matchCat = activeCategory === 'All' || p.category === activeCategory;
+      const matchSearch = !searchQuery || p.title.toLowerCase().includes(searchQuery.toLowerCase()) || p.metaDescription.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchCat && matchSearch;
+    });
+  }, [posts, activeCategory, searchQuery]);
 
   const featuredPost = filtered.length > 0 ? filtered[0] : null;
   const secondaryPosts = filtered.length > 1 ? filtered.slice(1, 3) : [];
