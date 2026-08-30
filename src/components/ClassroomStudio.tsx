@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import {
   QURAN_SURAHS,
@@ -467,9 +467,14 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
   // 4. MASNOON DUAS STATE
   // ------------------------------------------
   const [duaCategory, setDuaCategory] = useState<string>('All');
-  const filteredDuas = duaCategory === 'All'
-    ? MASNOON_DUAS
-    : MASNOON_DUAS.filter(d => d.category === duaCategory);
+
+  // ⚡ Bolt Performance Optimization
+  // Memoize filtered duas to prevent recalculating on every render of this large component
+  const filteredDuas = useMemo(() => {
+    return duaCategory === 'All'
+      ? MASNOON_DUAS
+      : MASNOON_DUAS.filter(d => d.category === duaCategory);
+  }, [duaCategory]);
 
   // ------------------------------------------
   // 5. SALAH GUIDE STATE
