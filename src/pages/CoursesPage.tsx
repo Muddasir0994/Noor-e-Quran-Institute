@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Course } from '../types';
 import {
   BookOpen,
@@ -37,7 +37,7 @@ export const CoursesPage: React.FC<CoursesPageProps> = ({
     { id: 'islamic', label: 'Islamic Studies' }
   ];
 
-  const filteredCourses = courses.filter(course => {
+  const filteredCourses = useMemo(() => courses.filter(course => {
     const matchesSearch =
       course.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       course.shortDescription.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -59,7 +59,7 @@ export const CoursesPage: React.FC<CoursesPageProps> = ({
       return course.slug.includes('islamic') || course.slug.includes('arabic') || course.name.toLowerCase().includes('islamic');
     }
     return true;
-  });
+  }), [courses, searchQuery, selectedCategory]);
 
   return (
     <div className="bg-[#FCFBF8] min-h-screen">
