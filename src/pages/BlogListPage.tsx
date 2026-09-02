@@ -69,9 +69,9 @@ export const BlogListPage: React.FC<BlogListPageProps> = () => {
   const listPosts = filtered.length > 3 ? filtered.slice(3) : [];
 
   const stripHtml = (html: string) => {
-    const tmp = document.createElement('div');
-    tmp.innerHTML = html;
-    return tmp.textContent || tmp.innerText || '';
+    // 🛡️ Sentinel: Fix DOM-based XSS by using DOMParser instead of assigning to tmp.innerHTML
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    return doc.body.textContent || doc.body.innerText || '';
   };
 
   const handleNavigate = (slug: string) => {
