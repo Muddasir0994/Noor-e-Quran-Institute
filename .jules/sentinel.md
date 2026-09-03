@@ -1,0 +1,4 @@
+## 2024-05-18 - Reflected XSS in Route Parameter
+**Vulnerability:** A Reflected XSS vulnerability existed in the `/google:code.html` endpoint in `server.ts`. The `req.params.code` was directly reflected back into the response within a string sent via `res.send()` with the Content-Type set to `text/html`.
+**Learning:** Developers often forget that framework-provided response methods like `res.send()` in Express will evaluate HTML and inline scripts if the content type is HTML, even for endpoints meant for plain text verification files.
+**Prevention:** Always validate and sanitize route parameters before using them in dynamic responses. For specific formats like Google verification codes, enforce strict alphanumeric regex validation (`/^[a-zA-Z0-9_-]+$/`) to reject arbitrary payloads entirely rather than just escaping HTML.
