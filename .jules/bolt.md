@@ -1,0 +1,3 @@
+## 2024-05-24 - Async File Write Optimization with Queueing
+**Learning:** Replacing `fs.writeFileSync` with `fs.promises.writeFile` in a singleton managing high-frequency state updates (like `DataStore`) improves performance by freeing the Node.js event loop. However, naive async writes without a locking or queueing mechanism can lead to race conditions where older data overwrites newer data if an older write finishes later. Overlapping writes may also corrupt the JSON file.
+**Action:** When converting synchronous JSON database dumps to async, always implement an `isWriting`/`pendingWrite` locking pattern to guarantee sequential, non-overlapping writes without blocking the main thread.
