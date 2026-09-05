@@ -51,6 +51,9 @@ const DB_FILE = path.join(DATA_DIR, 'academy_db.json');
 
 class DataStore {
   private data: DatabaseSchema;
+  private isWriting = false;
+  private pendingWrite = false;
+  private pendingData: DatabaseSchema | null = null;
 
   constructor() {
     this.ensureDataDirectory();
@@ -297,12 +300,29 @@ class DataStore {
     return initialData;
   }
 
-  private saveDatabase(dataToSave?: DatabaseSchema) {
-    try {
-      const payload = dataToSave || this.data;
-      fs.writeFileSync(DB_FILE, JSON.stringify(payload, null, 2), 'utf-8');
-    } catch (err) {
-      console.error('Failed to write academy_db.json:', err);
+  private async saveDatabase(dataToSave?: DatabaseSchema) {
+    // ⚡ Bolt Performance Optimization:
+    // Replaced synchronous fs.writeFileSync with asynchronous fs.promises.writeFile
+    // to prevent blocking the Node.js event loop during high throughput operations.
+    // Includes a debounce/queue lock (isWriting + pendingWrite) so rapid mutations
+    // coalesce into trailing writes rather than overlapping and causing file corruption.
+    this.pendingData = dataToSave || this.data;
+    this.pendingWrite = true;
+
+    if (this.isWriting) return;
+
+    while (this.pendingWrite) {
+      this.pendingWrite = false;
+      this.isWriting = true;
+
+      try {
+        const payload = this.pendingData;
+        await fs.promises.writeFile(DB_FILE, JSON.stringify(payload, null, 2), 'utf-8');
+      } catch (err) {
+        console.error('Failed to write academy_db.json:', err);
+      } finally {
+        this.isWriting = false;
+      }
     }
   }
 
