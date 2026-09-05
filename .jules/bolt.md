@@ -1,0 +1,1 @@
+## 2026-09-05 - DataStore File I/O Queue\n**Learning:** The synchronous `fs.writeFileSync` in `DataStore` was blocking the event loop on every write, severely limiting backend throughput under load.\n**Action:** Replaced synchronous writes with asynchronous `fs.promises.writeFile` and implemented an in-class debounce/queue lock mechanism to ensure file writes are fast and safe.
