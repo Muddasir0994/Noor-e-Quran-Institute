@@ -1,0 +1,4 @@
+## 2024-05-24 - Reflected XSS via Unvalidated Route Parameters
+**Vulnerability:** A route parameter (`req.params.code`) in the Google Search Console verification route (`/google:code.html`) was directly reflected in an HTML response without any validation or sanitization.
+**Learning:** Even utility or verification endpoints that seem harmless can be vectors for Reflected XSS if they reflect user input (URL parameters) directly into an HTML response context. Express route parameters must always be validated before use, especially when using `res.send()` with HTML content types.
+**Prevention:** Always validate route parameters against expected patterns (e.g., using strict regex for alphanumeric IDs) before reflecting them in responses. Avoid raw `res.send()` with user input; prefer structured responses (JSON) or use a templating engine with automatic contextual escaping.
