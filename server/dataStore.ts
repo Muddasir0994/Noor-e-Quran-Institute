@@ -51,6 +51,9 @@ const DB_FILE = path.join(DATA_DIR, 'academy_db.json');
 
 class DataStore {
   private data: DatabaseSchema;
+  private isWriting = false;
+  private pendingWrite = false;
+  private pendingData: DatabaseSchema | null = null;
 
   constructor() {
     this.ensureDataDirectory();
@@ -293,16 +296,42 @@ class DataStore {
       adminTokens: []
     };
 
-    this.saveDatabase(initialData);
+    // Initial save does not need await as it is called in constructor
+    this.saveDatabase(initialData).catch(console.error);
     return initialData;
   }
 
-  private saveDatabase(dataToSave?: DatabaseSchema) {
+  private async saveDatabase(dataToSave?: DatabaseSchema) {
+    const payload = dataToSave || this.data;
+
+    // ⚡ Bolt: Implement concurrency lock for async file writes to prevent corruption
+    if (this.isWriting) {
+      this.pendingWrite = true;
+      this.pendingData = payload;
+      return;
+    }
+
+    this.isWriting = true;
     try {
-      const payload = dataToSave || this.data;
-      fs.writeFileSync(DB_FILE, JSON.stringify(payload, null, 2), 'utf-8');
+      // ⚡ Bolt: Optimize synchronous file writes to async to unblock Node.js event loop
+      await fs.promises.writeFile(DB_FILE, JSON.stringify(payload, null, 2), 'utf-8');
     } catch (err) {
       console.error('Failed to write academy_db.json:', err);
+    } finally {
+      this.isWriting = false;
+      if (this.pendingWrite) {
+        this.pendingWrite = false;
+        const nextData = this.pendingData;
+        this.pendingData = null;
+        this.saveDatabase(nextData || undefined).catch(console.error);
+      }
+    }
+  }
+
+  public async flush(): Promise<void> {
+    // ⚡ Bolt: Helper to await pending disk writes before exit
+    while (this.isWriting || this.pendingWrite) {
+      await new Promise(resolve => setTimeout(resolve, 10));
     }
   }
 
@@ -347,7 +376,7 @@ class DataStore {
       id: `c-${Date.now()}`
     };
     this.data.courses.push(newCourse);
-    this.saveDatabase();
+    this.saveDatabase().catch(console.error);
     return newCourse;
   }
 
@@ -355,7 +384,7 @@ class DataStore {
     const idx = this.data.courses.findIndex(c => c.id === id);
     if (idx === -1) return null;
     this.data.courses[idx] = { ...this.data.courses[idx], ...updates };
-    this.saveDatabase();
+    this.saveDatabase().catch(console.error);
     return this.data.courses[idx];
   }
 
@@ -363,7 +392,7 @@ class DataStore {
     const initialLen = this.data.courses.length;
     this.data.courses = this.data.courses.filter(c => c.id !== id);
     if (this.data.courses.length !== initialLen) {
-      this.saveDatabase();
+      this.saveDatabase().catch(console.error);
       return true;
     }
     return false;
@@ -380,7 +409,7 @@ class DataStore {
       id: `pkg-${Date.now()}`
     };
     this.data.packages.push(newPkg);
-    this.saveDatabase();
+    this.saveDatabase().catch(console.error);
     return newPkg;
   }
 
@@ -388,7 +417,7 @@ class DataStore {
     const idx = this.data.packages.findIndex(p => p.id === id);
     if (idx === -1) return null;
     this.data.packages[idx] = { ...this.data.packages[idx], ...updates };
-    this.saveDatabase();
+    this.saveDatabase().catch(console.error);
     return this.data.packages[idx];
   }
 
@@ -422,7 +451,7 @@ class DataStore {
     };
 
     this.data.leads.unshift(newLead);
-    this.saveDatabase();
+    this.saveDatabase().catch(console.error);
     return newLead;
   }
 
@@ -430,7 +459,7 @@ class DataStore {
     const idx = this.data.leads.findIndex(l => l.id === id);
     if (idx === -1) return null;
     this.data.leads[idx] = { ...this.data.leads[idx], ...updates, updatedAt: new Date().toISOString() };
-    this.saveDatabase();
+    this.saveDatabase().catch(console.error);
     return this.data.leads[idx];
   }
 
@@ -444,7 +473,7 @@ class DataStore {
       createdAt: new Date().toISOString()
     });
     lead.updatedAt = new Date().toISOString();
-    this.saveDatabase();
+    this.saveDatabase().catch(console.error);
     return lead;
   }
 
@@ -467,7 +496,7 @@ class DataStore {
     };
 
     this.data.enrollments.unshift(newEnrollment);
-    this.saveDatabase();
+    this.saveDatabase().catch(console.error);
     return newEnrollment;
   }
 
@@ -475,7 +504,7 @@ class DataStore {
     const idx = this.data.enrollments.findIndex(e => e.id === id);
     if (idx === -1) return null;
     this.data.enrollments[idx] = { ...this.data.enrollments[idx], ...updates, updatedAt: new Date().toISOString() };
-    this.saveDatabase();
+    this.saveDatabase().catch(console.error);
     return this.data.enrollments[idx];
   }
 
@@ -494,7 +523,7 @@ class DataStore {
       updatedAt: now
     };
     this.data.students.unshift(newStudent);
-    this.saveDatabase();
+    this.saveDatabase().catch(console.error);
     return newStudent;
   }
 
@@ -502,7 +531,7 @@ class DataStore {
     const idx = this.data.students.findIndex(s => s.id === id);
     if (idx === -1) return null;
     this.data.students[idx] = { ...this.data.students[idx], ...updates, updatedAt: new Date().toISOString() };
-    this.saveDatabase();
+    this.saveDatabase().catch(console.error);
     return this.data.students[idx];
   }
 
@@ -519,7 +548,7 @@ class DataStore {
       createdAt: new Date().toISOString()
     };
     this.data.tutors.push(newTutor);
-    this.saveDatabase();
+    this.saveDatabase().catch(console.error);
     return newTutor;
   }
 
@@ -527,7 +556,7 @@ class DataStore {
     const idx = this.data.tutors.findIndex(t => t.id === id);
     if (idx === -1) return null;
     this.data.tutors[idx] = { ...this.data.tutors[idx], ...updates };
-    this.saveDatabase();
+    this.saveDatabase().catch(console.error);
     return this.data.tutors[idx];
   }
 
@@ -542,7 +571,7 @@ class DataStore {
       id: `cls-${Date.now()}`
     };
     this.data.classes.unshift(newClass);
-    this.saveDatabase();
+    this.saveDatabase().catch(console.error);
     return newClass;
   }
 
@@ -550,7 +579,7 @@ class DataStore {
     const idx = this.data.classes.findIndex(c => c.id === id);
     if (idx === -1) return null;
     this.data.classes[idx] = { ...this.data.classes[idx], ...updates };
-    this.saveDatabase();
+    this.saveDatabase().catch(console.error);
     return this.data.classes[idx];
   }
 
@@ -566,7 +595,7 @@ class DataStore {
       createdAt: new Date().toISOString()
     };
     this.data.progressReports.unshift(newReport);
-    this.saveDatabase();
+    this.saveDatabase().catch(console.error);
     return newReport;
   }
 
@@ -582,7 +611,7 @@ class DataStore {
       assessedAt: new Date().toISOString()
     };
     this.data.assessments.unshift(newAssessment);
-    this.saveDatabase();
+    this.saveDatabase().catch(console.error);
     return newAssessment;
   }
 
@@ -598,7 +627,7 @@ class DataStore {
       date: new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
     };
     this.data.testimonials.unshift(newTestimonial);
-    this.saveDatabase();
+    this.saveDatabase().catch(console.error);
     return newTestimonial;
   }
 
@@ -606,7 +635,7 @@ class DataStore {
     const idx = this.data.testimonials.findIndex(t => t.id === id);
     if (idx === -1) return null;
     this.data.testimonials[idx] = { ...this.data.testimonials[idx], ...updates };
-    this.saveDatabase();
+    this.saveDatabase().catch(console.error);
     return this.data.testimonials[idx];
   }
 
@@ -614,7 +643,7 @@ class DataStore {
     const initialLen = this.data.testimonials.length;
     this.data.testimonials = this.data.testimonials.filter(t => t.id !== id);
     if (this.data.testimonials.length !== initialLen) {
-      this.saveDatabase();
+      this.saveDatabase().catch(console.error);
       return true;
     }
     return false;
@@ -636,7 +665,7 @@ class DataStore {
       publishedAt: new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
     };
     this.data.articles.unshift(newArticle);
-    this.saveDatabase();
+    this.saveDatabase().catch(console.error);
     return newArticle;
   }
 
@@ -644,7 +673,7 @@ class DataStore {
     const idx = this.data.articles.findIndex(a => a.id === id);
     if (idx === -1) return null;
     this.data.articles[idx] = { ...this.data.articles[idx], ...updates };
-    this.saveDatabase();
+    this.saveDatabase().catch(console.error);
     return this.data.articles[idx];
   }
 
@@ -652,7 +681,7 @@ class DataStore {
     const initialLen = this.data.articles.length;
     this.data.articles = this.data.articles.filter(a => a.id !== id);
     if (this.data.articles.length !== initialLen) {
-      this.saveDatabase();
+      this.saveDatabase().catch(console.error);
       return true;
     }
     return false;
@@ -669,7 +698,7 @@ class DataStore {
       id: `res-${Date.now()}`
     };
     this.data.resources.unshift(newResource);
-    this.saveDatabase();
+    this.saveDatabase().catch(console.error);
     return newResource;
   }
 
@@ -677,7 +706,7 @@ class DataStore {
     const initialLen = this.data.resources.length;
     this.data.resources = this.data.resources.filter(r => r.id !== id);
     if (this.data.resources.length !== initialLen) {
-      this.saveDatabase();
+      this.saveDatabase().catch(console.error);
       return true;
     }
     return false;
@@ -701,7 +730,7 @@ class DataStore {
       createdAt: new Date().toISOString()
     };
     this.data.contacts.unshift(newContact);
-    this.saveDatabase();
+    this.saveDatabase().catch(console.error);
     return newContact;
   }
 
@@ -709,7 +738,7 @@ class DataStore {
   public createAdminSession(): string {
     const token = crypto.randomBytes(32).toString('hex');
     this.data.adminTokens.push(token);
-    this.saveDatabase();
+    this.saveDatabase().catch(console.error);
     return token;
   }
 
@@ -720,7 +749,7 @@ class DataStore {
 
   public revokeToken(token: string) {
     this.data.adminTokens = this.data.adminTokens.filter(t => t !== token);
-    this.saveDatabase();
+    this.saveDatabase().catch(console.error);
   }
 }
 

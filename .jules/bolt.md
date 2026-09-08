@@ -1,0 +1,3 @@
+## 2025-05-18 - Synchronous JSON file persistence blocks Node.js event loop
+**Learning:** This codebase uses a custom `DataStore` singleton that persists state to a flat JSON file (`academy_db.json`). Calling `fs.writeFileSync` on every mutation blocks the main thread, severely bottlenecking concurrent API requests.
+**Action:** When migrating from `fs.writeFileSync` to asynchronous `fs.promises.writeFile` in file-based JSON data stores, always implement a concurrency lock or queue (e.g., `isWriting` boolean and `pendingData` cache) to prevent parallel writes from corrupting the file or losing state.
