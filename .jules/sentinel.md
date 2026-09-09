@@ -1,0 +1,4 @@
+## 2024-05-24 - DOM-based XSS via innerHTML in React utils
+**Vulnerability:** A `stripHtml` utility function in a React component (`BlogListPage.tsx`) used `document.createElement("div").innerHTML = html` to extract text. This is vulnerable to DOM-based XSS because payloads like `<img src=x onerror=alert(1)>` execute immediately upon assignment, even before appending to the document.
+**Learning:** React developers often assume that because React itself protects against XSS, manual DOM manipulations within utility functions are safe. `innerHTML` should never be used on untrusted input, even for temporary text extraction.
+**Prevention:** Use `new DOMParser().parseFromString(html, "text/html").body.textContent` to safely parse HTML into a DOM tree without executing scripts, or rely on a dedicated HTML sanitization library.
