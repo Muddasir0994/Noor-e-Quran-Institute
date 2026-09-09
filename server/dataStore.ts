@@ -51,6 +51,9 @@ const DB_FILE = path.join(DATA_DIR, 'academy_db.json');
 
 class DataStore {
   private data: DatabaseSchema;
+  private isWriting: boolean = false;
+  private pendingWrite: boolean = false;
+  private pendingData: DatabaseSchema | null = null;
 
   constructor() {
     this.ensureDataDirectory();
@@ -298,11 +301,41 @@ class DataStore {
   }
 
   private saveDatabase(dataToSave?: DatabaseSchema) {
-    try {
-      const payload = dataToSave || this.data;
-      fs.writeFileSync(DB_FILE, JSON.stringify(payload, null, 2), 'utf-8');
-    } catch (err) {
-      console.error('Failed to write academy_db.json:', err);
+    const payload = dataToSave || this.data;
+
+    if (this.isWriting) {
+      this.pendingWrite = true;
+      this.pendingData = payload;
+      return;
+    }
+
+    this.isWriting = true;
+
+    fs.promises.writeFile(DB_FILE, JSON.stringify(payload, null, 2), 'utf-8')
+      .then(() => {
+        this.isWriting = false;
+        if (this.pendingWrite) {
+          this.pendingWrite = false;
+          const dataToFlush = this.pendingData;
+          this.pendingData = null;
+          this.saveDatabase(dataToFlush || undefined);
+        }
+      })
+      .catch((err) => {
+        console.error('Failed to write academy_db.json:', err);
+        this.isWriting = false;
+        if (this.pendingWrite) {
+          this.pendingWrite = false;
+          const dataToFlush = this.pendingData;
+          this.pendingData = null;
+          this.saveDatabase(dataToFlush || undefined);
+        }
+      });
+  }
+
+  public async flush(): Promise<void> {
+    while (this.isWriting || this.pendingWrite) {
+      await new Promise(resolve => setTimeout(resolve, 50));
     }
   }
 

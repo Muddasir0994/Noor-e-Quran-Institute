@@ -1,0 +1,3 @@
+## 2024-09-09 - Async IO for Database Singleton Writes
+**Learning:** The Express backend relies on a custom singleton `DataStore` that manages in-memory state and syncs to a JSON file. Using `fs.writeFileSync` blocks the Node main thread, causing severe performance bottlenecks on every database mutation.
+**Action:** When working with singletons that need to persist data, use asynchronous file operations (`fs.promises.writeFile`) coupled with a concurrency lock (e.g. `isWriting`, `pendingWrite` flags) to prevent file corruption during parallel requests. Furthermore, include a `flush()` mechanism during server shutdown to guarantee no data is dropped.
