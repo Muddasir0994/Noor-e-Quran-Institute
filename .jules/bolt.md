@@ -1,0 +1,3 @@
+## 2024-05-24 - Async writes for DataStore
+**Learning:** The `DataStore` used synchronous file writes (`fs.writeFileSync`) on every mutation (lead capture, updates, etc). In a Node.js server, synchronous I/O blocks the main event loop, severely degrading throughput and increasing request latency under load.
+**Action:** Replaced `fs.writeFileSync` with asynchronous `fs.promises.writeFile`. Because mutations can happen concurrently, implemented a queue/lock flag (`isWriting`, `pendingWrite`) to ensure files are written sequentially and data is not lost or corrupted. Coupled this with graceful shutdown logic (`SIGTERM`, `SIGINT`) in `server.ts`, awaiting `server.close()` and flushing the queue (`dataStore.flush()`) before exiting to ensure no pending writes are dropped.
