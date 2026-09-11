@@ -1,0 +1,3 @@
+## 2023-10-27 - Synchronous File I/O Anti-pattern in DataStore
+**Learning:** The custom `DataStore` singleton (`server/dataStore.ts`) was using `fs.writeFileSync` to persist every mutation. Under load, this completely blocked the Node.js event loop, halting all Express request processing during the disk write.
+**Action:** Replace synchronous writes with asynchronous `fs.promises.writeFile` combined with a stateful write queue/lock (`isWriting`, `pendingWrite`) to batch rapid mutations. Critically, ensure graceful shutdown hooks (`SIGINT`/`SIGTERM`) invoke a `flush()` method to safely persist pending data before the process exits, otherwise data loss will occur.
