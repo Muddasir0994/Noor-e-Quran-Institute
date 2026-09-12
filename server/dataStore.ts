@@ -50,6 +50,8 @@ const DATA_DIR = path.join(process.cwd(), 'data');
 const DB_FILE = path.join(DATA_DIR, 'academy_db.json');
 
 class DataStore {
+  private writePromise: Promise<void> | null = null;
+  private pendingData: DatabaseSchema | null = null;
   private data: DatabaseSchema;
 
   constructor() {
@@ -298,11 +300,59 @@ class DataStore {
   }
 
   private saveDatabase(dataToSave?: DatabaseSchema) {
+    const payload = dataToSave || this.data;
+    this.pendingData = payload; // Update pending data for subsequent writes
+
+    // If a write is already in progress, just update the pendingData and let the existing promise handle it,
+    // or wait for it to finish and then write the latest pendingData
+    if (this.writePromise) {
+      return;
+    }
+
+    this.processWriteQueue();
+  }
+
+  private processWriteQueue() {
+    if (!this.pendingData) return;
+    const dataToWrite = this.pendingData;
+    this.pendingData = null; // Clear pending
+
+    let stringifiedData: string;
     try {
-      const payload = dataToSave || this.data;
-      fs.writeFileSync(DB_FILE, JSON.stringify(payload, null, 2), 'utf-8');
+      stringifiedData = JSON.stringify(dataToWrite, null, 2);
     } catch (err) {
-      console.error('Failed to write academy_db.json:', err);
+      console.error('Failed to stringify academy_db.json payload:', err);
+      // Still need to process queue if new data came in
+      if (this.pendingData) {
+        this.processWriteQueue();
+      } else {
+        this.writePromise = null;
+      }
+      return;
+    }
+
+    this.writePromise = fs.promises.writeFile(DB_FILE, stringifiedData, 'utf-8')
+      .then(() => {
+        // If new data arrived while writing, process it next
+        if (this.pendingData) {
+          return this.processWriteQueue();
+        } else {
+          this.writePromise = null;
+        }
+      })
+      .catch((err) => {
+        console.error('Failed to write academy_db.json:', err);
+        if (this.pendingData) {
+          return this.processWriteQueue();
+        } else {
+          this.writePromise = null;
+        }
+      });
+  }
+
+  public async flush(): Promise<void> {
+    while (this.writePromise) {
+      await this.writePromise;
     }
   }
 
