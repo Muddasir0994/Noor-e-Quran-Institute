@@ -51,6 +51,10 @@ const DB_FILE = path.join(DATA_DIR, 'academy_db.json');
 
 class DataStore {
   private data: DatabaseSchema;
+  private isWriting: boolean = false;
+  private pendingWrite: boolean = false;
+  private writePromise: Promise<void> | null = null;
+  private pendingData: DatabaseSchema | null = null;
 
   constructor() {
     this.ensureDataDirectory();
@@ -298,11 +302,52 @@ class DataStore {
   }
 
   private saveDatabase(dataToSave?: DatabaseSchema) {
+    const payload = dataToSave || this.data;
+    this.pendingData = payload; // Temporarily cache explicitly passed data or current state
+
+    if (this.isWriting) {
+      this.pendingWrite = true;
+      return;
+    }
+
+    this.isWriting = true;
+    this.pendingWrite = false;
+
+    const dataToWrite = this.pendingData;
+
+    let serializedData: string;
     try {
-      const payload = dataToSave || this.data;
-      fs.writeFileSync(DB_FILE, JSON.stringify(payload, null, 2), 'utf-8');
+      serializedData = JSON.stringify(dataToWrite, null, 2);
     } catch (err) {
-      console.error('Failed to write academy_db.json:', err);
+      console.error('Failed to serialize academy_db.json payload:', err);
+      this.isWriting = false;
+      this.writePromise = null;
+      return;
+    }
+
+    this.writePromise = fs.promises.writeFile(DB_FILE, serializedData, 'utf-8')
+      .then(() => {
+        this.isWriting = false;
+        if (this.pendingWrite) {
+          this.saveDatabase(this.pendingData || undefined);
+        } else {
+          this.writePromise = null;
+          this.pendingData = null; // Clear cached data when done
+        }
+      })
+      .catch((err) => {
+        console.error('Failed to write academy_db.json:', err);
+        this.isWriting = false;
+        this.writePromise = null;
+        if (this.pendingWrite) {
+          this.saveDatabase(this.pendingData || undefined);
+        }
+      });
+  }
+
+  public async flush(): Promise<void> {
+    while (this.writePromise) {
+      await this.writePromise;
     }
   }
 
