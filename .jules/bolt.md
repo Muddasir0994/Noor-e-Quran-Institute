@@ -1,0 +1,3 @@
+## 2024-10-24 - DataStore Synchronous File Writes Bottleneck
+**Learning:** Using `fs.writeFileSync` in a singleton like `DataStore` blocks the Node.js main event loop during high concurrency, severely impacting API response times and throughput. Directly switching to `fs.promises.writeFile` without concurrency controls can lead to race conditions, corrupted JSON files, or dropped writes.
+**Action:** When migrating synchronous writes to asynchronous ones in a singleton, always implement a concurrency lock/queue mechanism (using state flags like `isWriting`, `pendingWrite`) to serialize file operations. Also, implement a `flush()` method and integrate it with the server's graceful shutdown flow to ensure pending background writes complete before the process exits.
