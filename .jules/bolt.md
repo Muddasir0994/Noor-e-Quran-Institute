@@ -1,0 +1,3 @@
+## 2023-10-27 - [Non-Blocking Database Writes for Concurrency]
+**Learning:** Using `fs.writeFileSync` in a singleton data store (like `DataStore`) blocks the Node.js event loop on every write. Under concurrent load, this severely degrades server response times. Simply switching to `fs.promises.writeFile` is not enough; a custom write lock/queue is necessary to prevent data corruption and race conditions from overlapping writes.
+**Action:** Always implement a locking mechanism (`isWriting`/`pendingWrite` flags) and expose a `flush()` method when migrating synchronous singleton DB writes to asynchronous ones, ensuring graceful shutdown logic awaits the flush.
