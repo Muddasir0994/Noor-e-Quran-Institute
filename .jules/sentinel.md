@@ -1,0 +1,4 @@
+## 2024-05-18 - Reflected XSS in Google Site Verification Route
+**Vulnerability:** The `/google:code.html` Express route in `server.ts` blindly reflected the `req.params.code` parameter into the HTTP response (`res.send()`) without any validation or sanitization, causing a Reflected Cross-Site Scripting (XSS) vulnerability.
+**Learning:** Even utility routes meant for simple tasks like search engine verification can introduce critical vulnerabilities if user input (path parameters, query strings) is reflected directly into the HTML response.
+**Prevention:** To prevent Reflected XSS in the Express backend, explicitly validate and sanitize route parameters against strict regex patterns (like alphanumeric) before reflecting them in `res.send()` or HTML responses. Never trust user input, even in simple routes.
