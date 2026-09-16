@@ -5,6 +5,7 @@ import { BlogPost } from '../types';
 import { INITIAL_ARTICLES } from '../data/academyData';
 import { getBlogPostBySlug, getPublishedBlogPosts } from '../lib/firestoreService';
 import { Clock, User, ArrowLeft, BookOpen } from '@phosphor-icons/react';
+import DOMPurify from 'dompurify';
 
 interface BlogPostPageProps {
   onOpenTrial?: () => void;
@@ -246,9 +247,10 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({ onOpenTrial }) => {
 
         {/* Article Body Content */}
         <div className="prose prose-lg max-w-none text-gray-700 font-sans leading-relaxed space-y-6">
-          <div className="whitespace-pre-line text-sm sm:text-base leading-relaxed">
-            {post.content}
-          </div>
+          <div
+            className="whitespace-pre-line text-sm sm:text-base leading-relaxed"
+            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.content) }}
+          />
         </div>
 
         {/* In-Article Conversion Callout Banner */}
