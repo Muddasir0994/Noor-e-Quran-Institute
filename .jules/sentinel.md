@@ -1,0 +1,4 @@
+## 2024-05-18 - Fix XSS in Blog Editor and Rendering
+**Vulnerability:** User-generated blog content was passed directly into `dangerouslySetInnerHTML` in the admin editor and implicitly trusted for rendering. Additionally, the frontend was rendering raw HTML tags to users rather than formatted text.
+**Learning:** `DOMPurify` (v3.x+) provides its own type definitions and does not require `@types/dompurify`, which is deprecated. When fixing XSS and rendering raw HTML strings in React, fallback default string fragments containing classes must use the standard HTML `class` attribute rather than Reacts `className` prop because `DOMPurify` parses standard HTML and strips invalid standard HTML attributes like `className`.
+**Prevention:** Always sanitize any dynamic HTML content with `DOMPurify` before injecting it into the DOM via `dangerouslySetInnerHTML`, and verify type dependency requirements (e.g., whether a library already includes typings).
