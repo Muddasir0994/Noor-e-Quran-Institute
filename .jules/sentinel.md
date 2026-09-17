@@ -1,0 +1,4 @@
+## 2024-05-18 - Reflected XSS in Google Site Verification Endpoint
+**Vulnerability:** The `/google:code.html` endpoint took `req.params.code` directly and reflected it back in the HTML response without validation (`res.send(\`google-site-verification: google${code}.html\`)`), which opened up a Reflected XSS vulnerability since an attacker could pass a payload in the URL (e.g. `google<script>alert(1)</script>.html`).
+**Learning:** This vulnerability existed because the developer trusted route parameters from the URL directly without enforcing the expected strict format (alphanumeric). Although it's an expected static route pattern, Express route parameters allow any characters by default.
+**Prevention:** Always validate and sanitize route parameters using regex or schema validation before reflecting them in `res.send()` or HTML responses. Specifically for verification codes, enforce strict regex patterns (like `/^[a-zA-Z0-9_-]+$/`).
