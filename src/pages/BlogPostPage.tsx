@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+import DOMPurify from 'dompurify';
 import { BlogPost } from '../types';
 import { INITIAL_ARTICLES } from '../data/academyData';
 import { getBlogPostBySlug, getPublishedBlogPosts } from '../lib/firestoreService';
@@ -246,9 +247,11 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({ onOpenTrial }) => {
 
         {/* Article Body Content */}
         <div className="prose prose-lg max-w-none text-gray-700 font-sans leading-relaxed space-y-6">
-          <div className="whitespace-pre-line text-sm sm:text-base leading-relaxed">
-            {post.content}
-          </div>
+          {/* SECURE: Use DOMPurify to sanitize HTML from the database before rendering it safely */}
+          <div
+            className="whitespace-pre-line text-sm sm:text-base leading-relaxed"
+            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.content) }}
+          />
         </div>
 
         {/* In-Article Conversion Callout Banner */}
