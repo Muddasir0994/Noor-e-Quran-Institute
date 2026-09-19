@@ -52,6 +52,10 @@ const DB_FILE = path.join(DATA_DIR, 'academy_db.json');
 class DataStore {
   private data: DatabaseSchema;
 
+  // Async write queue state
+  private pendingData: DatabaseSchema | null = null;
+  private writePromise: Promise<void> | null = null;
+
   constructor() {
     this.ensureDataDirectory();
     this.data = this.loadDatabase();
@@ -297,12 +301,38 @@ class DataStore {
     return initialData;
   }
 
-  private saveDatabase(dataToSave?: DatabaseSchema) {
+  // Optimized asynchronous write with concurrency lock
+  private async processWriteQueue() {
     try {
-      const payload = dataToSave || this.data;
-      fs.writeFileSync(DB_FILE, JSON.stringify(payload, null, 2), 'utf-8');
+      while (this.pendingData) {
+        const payload = this.pendingData;
+        // Clear pending data immediately so new requests cache new data
+        this.pendingData = null;
+
+        const json = JSON.stringify(payload, null, 2);
+        await fs.promises.writeFile(DB_FILE, json, 'utf-8');
+      }
     } catch (err) {
-      console.error('Failed to write academy_db.json:', err);
+      console.error('Failed to write academy_db.json asynchronously:', err);
+    } finally {
+      this.writePromise = null;
+    }
+  }
+
+  private saveDatabase(dataToSave?: DatabaseSchema) {
+    // Unconditionally set pendingData so the latest state is picked up
+    // by the queued write, avoiding data loss if rapid saves occur.
+    this.pendingData = dataToSave || this.data;
+
+    if (!this.writePromise) {
+      this.writePromise = this.processWriteQueue();
+    }
+  }
+
+  // Awaits any pending disk writes, crucial for graceful shutdown
+  public async flush(): Promise<void> {
+    while (this.writePromise) {
+      await this.writePromise;
     }
   }
 
