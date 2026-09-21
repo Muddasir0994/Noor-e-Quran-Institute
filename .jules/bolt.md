@@ -1,0 +1,3 @@
+## 2024-09-21 - Optimizing DataStore file writes and server shutdown
+**Learning:** Using `fs.writeFileSync` in singletons like `DataStore` can cause data loss or overlapping writes if many updates happen concurrently. Converting to async `fs.promises.writeFile` requires a concurrency lock (e.g. `while (this.pendingData)`) to prevent multiple concurrent disk writes from clobbering each other. Additionally, the async queue necessitates a `flush()` mechanism to wait for writes to finish during graceful shutdown.
+**Action:** When migrating synchronous disk-based storage mechanisms to asynchronous ones, use a lock queue combined with a server shutdown handler (`process.on('SIGTERM')`) that awaits the queue clearing to prevent hanging or data loss.
