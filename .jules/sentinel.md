@@ -1,0 +1,4 @@
+## 2024-03-24 - High: Reflected XSS in Route Parameters
+**Vulnerability:** The route `/google:code.html` read `req.params.code` and reflected it directly into the HTML response (`res.send()`) without any validation or sanitization. This allowed attackers to craft malicious URLs that would execute arbitrary JavaScript in a victim's browser if clicked.
+**Learning:** Even simple, auto-generated verification routes can be vectors for Reflected XSS if user input (like path parameters) is directly embedded in the HTML response. Express does not automatically sanitize route parameters.
+**Prevention:** Always validate and sanitize route parameters using strict regex patterns (e.g., alphanumeric only) before reflecting them in `res.send()` or HTML responses. Reject requests with invalid formats early (400 Bad Request).
