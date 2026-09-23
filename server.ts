@@ -1075,6 +1075,12 @@ async function startServer() {
     // Smart categorized image resolver (maps legacy flat /images/:file to /images/banners, /images/courses, /images/faculty)
     app.get('/images/:file', (req, res, next) => {
       const filename = req.params.file;
+
+      // Sentinel Security Fix: Prevent path traversal by rejecting malicious characters
+      if (filename.includes('..') || filename.includes('/') || filename.includes('\\')) {
+        return res.status(400).send('Invalid filename');
+      }
+
       const subdirs = ['banners', 'courses', 'faculty', 'uploads'];
       for (const sub of subdirs) {
         const candidate = path.join(publicPath, 'images', sub, filename);
