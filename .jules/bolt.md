@@ -1,0 +1,3 @@
+## 2025-03-09 - Transition to queued async JSON persistence in DataStore
+**Learning:** In backend singleton components managing in-memory state backed by JSON, using synchronous `fs.writeFileSync` on every update blocks the Node.js event loop, crippling API performance under load. However, blindly replacing it with `fs.promises.writeFile` without a concurrency queue causes data loss due to overlapping asynchronous writes.
+**Action:** Always implement a lock/queue when optimizing synchronous file writes to asynchronous. Use a `while(this.pendingData)` loop to guarantee rapid, concurrent state mutations are sequentially flushed to disk without race conditions, and tie this queue to the app's graceful shutdown lifecycle to prevent data corruption.
