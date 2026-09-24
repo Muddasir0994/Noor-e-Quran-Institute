@@ -1040,6 +1040,13 @@ app.post('/api/upload-image', requireAdmin, async (req: Request, res: Response) 
 // -------------------------------------------------------------
 app.get('/google:code.html', (req, res) => {
   const code = req.params.code;
+
+  // 🛡️ Sentinel: Validate code parameter to prevent Reflected XSS
+  if (!code || !/^[a-zA-Z0-9]+$/.test(code)) {
+    res.status(400).send('Invalid verification code');
+    return;
+  }
+
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.send(`google-site-verification: google${code}.html`);
 });
