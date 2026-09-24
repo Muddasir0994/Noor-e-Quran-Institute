@@ -1,0 +1,4 @@
+## 2024-10-24 - Reflected XSS in Express Route Parameters
+**Vulnerability:** A Reflected XSS vulnerability in `server.ts` where the `req.params.code` was directly interpolated into the HTML response without any validation or sanitization in the `/google:code.html` route. Express URL-decodes path parameters before they are provided in `req.params`, so characters can bypass routing constraints if encoded.
+**Learning:** Even specific utility endpoints designed for verification (like Google Site Verification) can introduce critical XSS vulnerabilities if they reflect user input dynamically based on the URL parameter without validating it against the expected format (e.g., alphanumeric).
+**Prevention:** Always validate, sanitize, and restrict route parameters using strict regular expressions or schema validation before reflecting them back in any response, even if the route appears to be a specialized endpoint.
