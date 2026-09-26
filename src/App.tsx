@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Suspense, lazy } from 'react';
+import React, { useState, useEffect, useCallback, Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { IconContext } from '@phosphor-icons/react';
@@ -117,28 +117,28 @@ function AppContent() {
     };
   }, []);
 
-  const handleOpenTrial = (courseName?: string, genderPref?: 'Male' | 'Female' | 'No Preference') => {
+  const handleOpenTrial = useCallback((courseName?: string, genderPref?: 'Male' | 'Female' | 'No Preference') => {
     setSelectedCourseForTrial(courseName);
     if (genderPref) setSelectedGenderForTrial(genderPref);
     setShowTrialModal(true);
-  };
+  }, []);
 
-  const handleOpenEnroll = (courseName?: string) => {
+  const handleOpenEnroll = useCallback((courseName?: string) => {
     if (courseName) {
       const foundPkg = packages.find(p => p.name.toLowerCase().includes(courseName.toLowerCase()));
       setSelectedPackageForEnroll(foundPkg || packages[0]);
     }
     setShowEnrollModal(true);
-  };
+  }, [packages]);
 
-  const handleSelectPackage = (pkg: PackagePlan) => {
+  const handleSelectPackage = useCallback((pkg: PackagePlan) => {
     setSelectedPackageForEnroll(pkg);
     setShowEnrollModal(true);
-  };
+  }, []);
 
-  const handleInspectCourse = (course: Course) => {
+  const handleInspectCourse = useCallback((course: Course) => {
     setInspectCourse(course);
-  };
+  }, []);
 
   const handleOpenAuth = (role: 'student' | 'teacher' = 'student', mode: 'login' | 'signup' = 'login') => {
     setAuthRole(role);
