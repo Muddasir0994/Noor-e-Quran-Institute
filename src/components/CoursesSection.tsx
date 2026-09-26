@@ -15,19 +15,21 @@ interface CoursesSectionProps {
   onInspectCourse: (course: Course) => void;
 }
 
-export const CoursesSection: React.FC<CoursesSectionProps> = ({
+// ⚡ Bolt Performance Optimization:
+// Moved helper outside render to prevent recreation on every render
+const getCourseIcon = (slug: string, category: string) => {
+  if (slug.includes('tajweed') || category === 'tajweed') return Certificate;
+  if (slug.includes('hifz') || category === 'hifz') return GraduationCap;
+  if (slug.includes('islamic') || category === 'islamic_studies') return BookmarkSimple;
+  return BookOpen;
+};
+
+export const CoursesSection: React.FC<CoursesSectionProps> = React.memo(({
   courses,
   onOpenTrial,
   onInspectCourse
 }) => {
   const displayCourses = courses && courses.length > 0 ? courses.slice(0, 5) : [];
-
-  const getCourseIcon = (slug: string, category: string) => {
-    if (slug.includes('tajweed') || category === 'tajweed') return Certificate;
-    if (slug.includes('hifz') || category === 'hifz') return GraduationCap;
-    if (slug.includes('islamic') || category === 'islamic_studies') return BookmarkSimple;
-    return BookOpen;
-  };
 
   return (
     <section id="courses" className="py-24 lg:py-32 bg-[#FCFBF8] border-b border-[#E8E0D1]/70">
@@ -118,4 +120,4 @@ export const CoursesSection: React.FC<CoursesSectionProps> = ({
       </div>
     </section>
   );
-};
+});
