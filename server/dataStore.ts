@@ -51,6 +51,8 @@ const DB_FILE = path.join(DATA_DIR, 'academy_db.json');
 
 class DataStore {
   private data: DatabaseSchema;
+  private writePromise: Promise<void> | null = null;
+  private pendingData: DatabaseSchema | null = null;
 
   constructor() {
     this.ensureDataDirectory();
@@ -298,11 +300,32 @@ class DataStore {
   }
 
   private saveDatabase(dataToSave?: DatabaseSchema) {
-    try {
-      const payload = dataToSave || this.data;
-      fs.writeFileSync(DB_FILE, JSON.stringify(payload, null, 2), 'utf-8');
-    } catch (err) {
-      console.error('Failed to write academy_db.json:', err);
+    this.pendingData = dataToSave || this.data;
+
+    if (this.writePromise) return; // Already writing, the loop will pick up this.pendingData
+
+    this.writePromise = (async () => {
+      while (this.pendingData) {
+        const payload = this.pendingData;
+        this.pendingData = null; // Clear lock BEFORE async write to catch subsequent rapid calls
+
+        try {
+          const jsonString = JSON.stringify(payload, null, 2);
+          await fs.promises.writeFile(DB_FILE, jsonString, 'utf-8');
+        } catch (err) {
+          console.error('Failed to write academy_db.json asynchronously:', err);
+        }
+      }
+      this.writePromise = null;
+    })();
+  }
+
+  /**
+   * Gracefully awaits any pending database file writes before shutdown.
+   */
+  public async flush(): Promise<void> {
+    while (this.writePromise) {
+      await this.writePromise;
     }
   }
 
