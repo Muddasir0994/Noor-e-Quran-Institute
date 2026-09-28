@@ -1,0 +1,3 @@
+## 2023-09-28 - Non-blocking asynchronous database writes
+**Learning:** The custom `DataStore` was using `fs.writeFileSync` on the main event loop to save database updates. This blocks the main thread during the save, which can cause severe performance degradation for subsequent incoming requests in high concurrency scenarios.
+**Action:** Replaced `fs.writeFileSync` with asynchronous `fs.promises.writeFile`. When moving singletons like `DataStore` to asynchronous writes, we must use a concurrency queue loop with pending states so rapid concurrent saves correctly await one another and avoid lost writes during overlapping save attempts. Also added a `flush()` method combined with graceful shutdown in Express to guarantee all asynchronous tasks are completed before exit.
