@@ -1,0 +1,4 @@
+## 2024-05-18 - Express Routing Reflected XSS & Path Traversal
+**Vulnerability:** Found Path Traversal risk in `/images/:file` by passing characters like `..`, `/` or `\` in URL parameters (bypassing route separation if URL-encoded or Express doesn't decode). Also found Reflected XSS in `/google:code.html` where `req.params.code` was echoed without validation.
+**Learning:** Express route parameters like `:file` or `:code` capture arbitrary strings. They need explicit allowlist or regex validation (e.g., `^[a-zA-Z0-9]+$`) when reflected in HTML or used in file system APIs (`path.join()`), as URL-encoded values might bypass implicit framework constraints.
+**Prevention:** Always validate route parameters explicitly. For filesystem operations, explicitly reject `..`, `/`, and `\`. For HTML reflection, validate against a strict regex pattern or sanitize output.
