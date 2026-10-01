@@ -1,0 +1,4 @@
+## 2024-05-01 - Prevent Path Traversal and Reflected XSS in Express Route Parameters
+**Vulnerability:** Express route parameters (`req.params`) implicitly decode URL-encoded values. Thus, payloads like `%2E%2E%2F` bypass simple router constraints and arrive as `../` in the application logic. This led to a path traversal vulnerability when `req.params.file` was used directly in `path.join()`. A similar issue was found in `/google:code.html` where an unvalidated parameter caused Reflected XSS.
+**Learning:** Express URL decodes route parameters prior to passing them down to handlers. Any route parameter subsequently utilized in file system operations or reflected in HTML outputs must undergo explicit validation (e.g. rejecting `..`, `/` and `\`, or adhering to strict regexes).
+**Prevention:** Implement strict input validation checks against route parameters used dynamically in paths or reflected content rather than relying on router-level constraints.
