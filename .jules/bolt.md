@@ -1,0 +1,3 @@
+## 2025-03-03 - Optimizing DataStore synchronous writes
+**Learning:** `DataStore` uses a synchronous `fs.writeFileSync` in `saveDatabase()`. Given this is a Node/Express backend that handles concurrent API requests, synchronous file writes on a single thread block the entire event loop, causing all requests to wait. This bottleneck degrades throughput significantly when data modifications (e.g. tracking leads, creating objects) happen concurrently.
+**Action:** Replace `fs.writeFileSync` with asynchronous `fs.promises.writeFile` combined with a simple write queue/lock mechanism (as per instructions for singleton `DataStore`) to handle concurrent saves without overlapping writes or blocking the event loop.
