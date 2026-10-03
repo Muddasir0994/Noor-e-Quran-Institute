@@ -1,0 +1,4 @@
+## 2026-10-03 - Express Route Parameters Reflected XSS and Path Traversal
+**Vulnerability:** The `/google:code.html` Express route blindly reflects `req.params.code` directly into the HTML response leading to Reflected XSS. The `/images/:file` route passes `req.params.file` directly to `path.join()` without validation, bypassing constraints for URL-encoded traversal payloads (e.g., `%2F`, `%2E%2E`) because Express auto URL-decodes path parameters.
+**Learning:** URL-encoded strings in URL path segments bypass routing constraints in Express, and the auto URL-decoded version (`req.params`) needs to be explicitly validated against both XSS payloads and directory traversal characters before use in filesystem APIs or HTML responses.
+**Prevention:** Always validate route parameters against strict regular expressions (e.g., `/^[a-zA-Z0-9]+$/` for simple IDs, `/^[a-zA-Z0-9_.-]+$/` for filenames) when used in filesystem operations or reflected back into HTTP responses.
