@@ -1,0 +1,3 @@
+## 2025-03-09 - Asynchronous DataStore Writes & Graceful Shutdown
+**Learning:** In heavily concurrent Express.js endpoints (like leads, API logs, and fast user updates), using synchronous `fs.writeFileSync` in a singleton data store blocks the main event loop, severely degrading the performance and response times of all other concurrent requests.
+**Action:** Always implement an asynchronous concurrency lock/queue pattern (e.g. `while (this.pendingData) await fs.promises.writeFile`) for disk writes to offload I/O from the main thread. Additionally, pair this with a graceful shutdown hook that uses `.closeAllConnections()` and awaits `.flush()` (with a timeout) so pending async disk operations complete safely on SIGTERM/SIGINT before the process exits.
