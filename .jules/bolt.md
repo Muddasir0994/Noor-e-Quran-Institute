@@ -1,0 +1,3 @@
+## 2023-10-27 - Synchronous File Writes in DataStore Blocking the Main Thread
+**Learning:** `DataStore` uses `fs.writeFileSync` in its `saveDatabase` method. Since `DataStore` is a singleton acting as the primary backend database, any modifications (leads, enrollments, contacts, etc.) block the main Node.js event loop during I/O.
+**Action:** Replace `fs.writeFileSync` with `fs.promises.writeFile` and implement an asynchronous lock queue (`while (this.pendingData)`) to prevent data loss during rapid concurrent updates while non-blocking the event loop. Add `flush()` and hook it into server's graceful shutdown.
