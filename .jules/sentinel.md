@@ -1,0 +1,4 @@
+## 2025-03-08 - Express Route Parameters and Path Traversal / Reflected XSS
+**Vulnerability:** Found a Path Traversal vulnerability in the `/images/:file` endpoint and a Reflected XSS in the `/google:code.html` endpoint in `server.ts`. An attacker could bypass path restrictions by URL-encoding characters (`%2E%2E%2F` for `../`) to read arbitrary backend files, and execute arbitrary scripts through the XSS vector.
+**Learning:** Express automatically URL-decodes path parameters before populating `req.params`. Because of this, standard segment constraints applied by routing can be bypassed if the URL contains URL-encoded payloads like `%2F` or `%2E%2E`.
+**Prevention:** Always validate route parameters explicitly against strict alphanumeric regex patterns (e.g., `^[a-zA-Z0-9_-]+$`) to prevent Reflected XSS and check for traversal characters (`/`, `\`, `..`) explicitly on parameters used directly in filesystem operations.
