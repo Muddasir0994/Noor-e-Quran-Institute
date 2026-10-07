@@ -1,0 +1,4 @@
+## 2023-10-27 - [HIGH] Fix Reflected XSS in Google verification endpoint
+**Vulnerability:** The `/google:code.html` endpoint reflected the `code` path parameter directly into the HTML response (`google-site-verification: google${code}.html`) without any validation or sanitization, leading to a Reflected Cross-Site Scripting (XSS) vulnerability.
+**Learning:** Even utility endpoints like Google Search Console verification that seem harmless can be exploited if they reflect unsanitized input into the response. Express URL-decodes path parameters, so payloads could include traversal or HTML elements if not strictly validated.
+**Prevention:** Always validate route parameters against strict regex patterns (e.g., `^[a-zA-Z0-9_-]+$`) before reflecting them in responses to ensure they only contain expected characters.
