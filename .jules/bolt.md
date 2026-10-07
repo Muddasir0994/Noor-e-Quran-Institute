@@ -1,0 +1,3 @@
+## 2023-10-27 - Synchronous File Writes in DataStore Singleton
+**Learning:** `DataStore` singleton uses synchronous file writes (`fs.writeFileSync`) in `saveDatabase`, which blocks the main event loop. If multiple requests trigger saves (like analytics or concurrent modifications), this can severely degrade concurrent throughput and latency in Express. Replacing it directly with async operations could cause data corruption from overlapping writes, so we must queue the writes while retaining concurrent speed.
+**Action:** Replace `fs.writeFileSync` with `fs.promises.writeFile` managed by a concurrency lock (using a while loop on `pendingData`) so that rapid concurrent saves do not overlap but the event loop is never blocked.
