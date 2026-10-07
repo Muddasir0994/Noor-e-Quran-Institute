@@ -51,6 +51,8 @@ const DB_FILE = path.join(DATA_DIR, 'academy_db.json');
 
 class DataStore {
   private data: DatabaseSchema;
+  private pendingData: DatabaseSchema | null = null;
+  private writePromise: Promise<void> | null = null;
 
   constructor() {
     this.ensureDataDirectory();
@@ -298,11 +300,30 @@ class DataStore {
   }
 
   private saveDatabase(dataToSave?: DatabaseSchema) {
-    try {
-      const payload = dataToSave || this.data;
-      fs.writeFileSync(DB_FILE, JSON.stringify(payload, null, 2), 'utf-8');
-    } catch (err) {
-      console.error('Failed to write academy_db.json:', err);
+    // ⚡ Bolt Optimization: Use async file writes to prevent blocking the Node.js event loop
+    // A concurrency lock queue ensures rapid saves don't overlap, while always writing the latest snapshot.
+    this.pendingData = dataToSave || this.data;
+
+    if (!this.writePromise) {
+      this.writePromise = (async () => {
+        while (this.pendingData) {
+          const snapshot = this.pendingData;
+          this.pendingData = null; // Clear pending before await to catch new saves during write
+
+          try {
+            await fs.promises.writeFile(DB_FILE, JSON.stringify(snapshot, null, 2), 'utf-8');
+          } catch (err) {
+            console.error('Failed to write academy_db.json:', err);
+          }
+        }
+        this.writePromise = null;
+      })();
+    }
+  }
+
+  public async flush(): Promise<void> {
+    while (this.writePromise) {
+      await this.writePromise;
     }
   }
 
