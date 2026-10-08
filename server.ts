@@ -1163,7 +1163,7 @@ async function startServer() {
     });
   }
 
-  app.listen(PORT, '0.0.0.0', () => {
+  const server = app.listen(PORT, '0.0.0.0', () => {
     console.log(`Noor-e-Quran Institute Server running on http://0.0.0.0:${PORT}`);
 
     // Background Keep-Alive Worker (Every 4.5 minutes)
@@ -1188,6 +1188,38 @@ async function startServer() {
       }
     }, PING_INTERVAL_MS);
   });
+
+  const gracefulShutdown = async () => {
+    console.log('SIGTERM/SIGINT received, shutting down gracefully...');
+
+    // Stop accepting new connections
+    if (typeof server.closeAllConnections === 'function') {
+      server.closeAllConnections();
+    }
+
+    server.close(async () => {
+      console.log('HTTP server closed, awaiting pending dataStore writes...');
+      // Fallback timeout to force exit if flush hangs
+      const timeout = setTimeout(() => {
+        console.error('Graceful shutdown timeout exceeded, forcing exit.');
+        process.exit(1);
+      }, 10000);
+
+      try {
+        await dataStore.flush();
+        console.log('DataStore flushed successfully. Exiting now.');
+        clearTimeout(timeout);
+        process.exit(0);
+      } catch (err) {
+        console.error('Error during dataStore flush:', err);
+        clearTimeout(timeout);
+        process.exit(1);
+      }
+    });
+  };
+
+  process.on('SIGTERM', gracefulShutdown);
+  process.on('SIGINT', gracefulShutdown);
 }
 
 startServer();
