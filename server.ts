@@ -1135,6 +1135,11 @@ async function startServer() {
     // Cache template HTML in memory to eliminate redundant disk I/O and reduce document response latency
     let cachedBaseHtml: string | null = null;
 
+    // ⚡ Bolt: Added an LRU-style cache for fully SEO-injected HTML responses to skip expensive string replacements
+    // on every request. This cache has a maximum size (100) to prevent memory leaks and stores the final HTML.
+    const MAX_CACHE_ENTRIES = 100;
+    const pageCache = new Map();
+
     app.get('*', async (req, res) => {
       const { meta, is404 } = resolveRouteMetadata(req.path);
 
@@ -1152,19 +1157,59 @@ async function startServer() {
         }
       }
 
-      let html = cachedBaseHtml;
-      if (meta) {
-        html = injectSeoTagsIntoHtml(html, meta, req.path, (req.headers['user-agent'] as string) || '');
+      const userAgent = (req.headers['user-agent'] || '');
+      const isCrawler = userAgent.toLowerCase().match(/bot|crawler|spider|crawling|googlebot|bingbot|slurp|duckduckbot|baiduspider|yandexbot|sogou|exabot|facebot|ia_archiver|whatsapp|twitterbot|facebookexternalhit/i);
+
+      // We partition cache by path AND crawler status, because crawlers get a different prerendered body
+      const cacheKey = `${req.path}_${Boolean(isCrawler)}`;
+      let cachedItem = pageCache.get(cacheKey);
+      let htmlToServe: string;
+
+      if (!cachedItem) {
+        htmlToServe = cachedBaseHtml as string;
+        if (meta) {
+          htmlToServe = injectSeoTagsIntoHtml(htmlToServe, meta, req.path, userAgent);
+        }
+
+        // Cache the fully injected HTML
+        if (pageCache.size >= MAX_CACHE_ENTRIES) {
+          // simple FIFO eviction: remove the first entry
+          const firstKey = pageCache.keys().next().value;
+          pageCache.delete(firstKey);
+        }
+        pageCache.set(cacheKey, {
+          html: htmlToServe,
+          timestamp: Date.now()
+        });
+      } else {
+        // Implement TTL check (e.g. 5 minutes) to ensure dynamic meta-tags updates propagate
+        const TTL_MS = 5 * 60 * 1000;
+        if (Date.now() - cachedItem.timestamp > TTL_MS) {
+           pageCache.delete(cacheKey);
+           // Fallback to recalculate next time, but for now just use the old one or recalculate
+           htmlToServe = cachedBaseHtml as string;
+           if (meta) {
+             htmlToServe = injectSeoTagsIntoHtml(htmlToServe, meta, req.path, userAgent);
+           }
+           pageCache.set(cacheKey, { html: htmlToServe, timestamp: Date.now() });
+        } else {
+           htmlToServe = cachedItem.html;
+           // Move to end of Map to implement true LRU
+           pageCache.delete(cacheKey);
+           pageCache.set(cacheKey, cachedItem);
+        }
       }
 
       res.status(200).setHeader('Content-Type', 'text/html; charset=utf-8');
       res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
-      res.send(html);
+      res.send(htmlToServe);
     });
   }
 
-  app.listen(PORT, '0.0.0.0', () => {
+  const server = app.listen(PORT, '0.0.0.0', () => {
     console.log(`Noor-e-Quran Institute Server running on http://0.0.0.0:${PORT}`);
+
+
 
     // Background Keep-Alive Worker (Every 4.5 minutes)
     // Pings live custom domain to keep Render instance awake and ensure 24/7 warm routing
