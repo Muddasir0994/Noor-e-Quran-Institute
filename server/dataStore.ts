@@ -51,6 +51,8 @@ const DB_FILE = path.join(DATA_DIR, 'academy_db.json');
 
 class DataStore {
   private data: DatabaseSchema;
+  private pendingData: DatabaseSchema | null = null;
+  private writePromise: Promise<void> | null = null;
 
   constructor() {
     this.ensureDataDirectory();
@@ -298,11 +300,29 @@ class DataStore {
   }
 
   private saveDatabase(dataToSave?: DatabaseSchema) {
-    try {
-      const payload = dataToSave || this.data;
-      fs.writeFileSync(DB_FILE, JSON.stringify(payload, null, 2), 'utf-8');
-    } catch (err) {
-      console.error('Failed to write academy_db.json:', err);
+    // Queue the data to save
+    this.pendingData = dataToSave || this.data;
+
+    // If a write is currently happening, just queue it up and return.
+    if (this.writePromise) return;
+
+    this.writePromise = (async () => {
+      while (this.pendingData) {
+        const payload = this.pendingData;
+        this.pendingData = null; // Clear queue before saving to catch rapid new saves
+        try {
+          await fs.promises.writeFile(DB_FILE, JSON.stringify(payload, null, 2), 'utf-8');
+        } catch (err) {
+          console.error('Failed to write academy_db.json:', err);
+        }
+      }
+      this.writePromise = null;
+    })();
+  }
+
+  public async flush(): Promise<void> {
+    while (this.writePromise) {
+      await this.writePromise;
     }
   }
 
