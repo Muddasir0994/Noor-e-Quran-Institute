@@ -1,0 +1,3 @@
+## 2024-05-24 - Synchronous File Writes Bottleneck in Node Singletons
+**Learning:** Using `fs.writeFileSync` inside a frequently accessed singleton (like `DataStore`) blocks the main Node.js event loop thread, causing significant latency spikes for all concurrent API requests during peak loads. When transitioning to `fs.promises.writeFile`, simple async/await without a lock mechanism results in data loss if multiple writes overlap.
+**Action:** Always implement a concurrency lock and queue pattern (using `while (this.pendingData)`) for file-backed singletons to ensure non-blocking, data-safe asynchronous writes.
