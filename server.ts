@@ -1040,6 +1040,10 @@ app.post('/api/upload-image', requireAdmin, async (req: Request, res: Response) 
 // -------------------------------------------------------------
 app.get('/google:code.html', (req, res) => {
   const code = req.params.code;
+  // SECURITY: Validate parameter to prevent Reflected XSS
+  if (!/^[a-zA-Z0-9_-]+$/.test(code)) {
+    return res.status(400).json({ error: 'Invalid verification code format' });
+  }
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.send(`google-site-verification: google${code}.html`);
 });
