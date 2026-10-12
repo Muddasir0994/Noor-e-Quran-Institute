@@ -1040,6 +1040,10 @@ app.post('/api/upload-image', requireAdmin, async (req: Request, res: Response) 
 // -------------------------------------------------------------
 app.get('/google:code.html', (req, res) => {
   const code = req.params.code;
+  // Security fix: Prevent Reflected XSS by validating the parameter
+  if (!/^[a-zA-Z0-9_-]+$/.test(code)) {
+    return res.status(400).send('Invalid verification code');
+  }
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.send(`google-site-verification: google${code}.html`);
 });
@@ -1075,6 +1079,12 @@ async function startServer() {
     // Smart categorized image resolver (maps legacy flat /images/:file to /images/banners, /images/courses, /images/faculty)
     app.get('/images/:file', (req, res, next) => {
       const filename = req.params.file;
+
+      // Security fix: Prevent path traversal by explicitly validating filename
+      if (!filename || typeof filename !== 'string' || !/^[a-zA-Z0-9_.-]+$/.test(filename) || filename.includes('..') || filename.includes('/')) {
+        return next();
+      }
+
       const subdirs = ['banners', 'courses', 'faculty', 'uploads'];
       for (const sub of subdirs) {
         const candidate = path.join(publicPath, 'images', sub, filename);
