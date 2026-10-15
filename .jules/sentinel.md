@@ -1,0 +1,4 @@
+## 2024-05-24 - Cross-Site Scripting (XSS) via dangerouslySetInnerHTML
+**Vulnerability:** The application was using `dangerouslySetInnerHTML` directly with unsanitized user-generated rich HTML content from the `BlogEditor` component on the admin and blog pages.
+**Learning:** React's `dangerouslySetInnerHTML` is explicitly named to highlight the risk of XSS. Providing unsanitized HTML directly exposes the application to executing malicious scripts embedded within the content. Also, the legacy code used `className` in the fallback raw HTML string which fails standard HTML parsing when `dompurify` strips invalid attributes like `className`.
+**Prevention:** Always sanitize any dynamic or user-generated HTML content before passing it to `dangerouslySetInnerHTML` using libraries like `DOMPurify`. Further, ensure fallback HTML elements use standard HTML attributes (e.g. `class` over `className`).
