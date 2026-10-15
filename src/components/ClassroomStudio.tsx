@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import {
   QURAN_SURAHS,
@@ -467,9 +467,14 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
   // 4. MASNOON DUAS STATE
   // ------------------------------------------
   const [duaCategory, setDuaCategory] = useState<string>('All');
-  const filteredDuas = duaCategory === 'All'
-    ? MASNOON_DUAS
-    : MASNOON_DUAS.filter(d => d.category === duaCategory);
+  // ⚡ Bolt Optimization: Memoize the filtered duas array.
+  // Why: Prevents creating a new array reference of filtered MASNOON_DUAS on every render, which cascades down to child list components.
+  // Impact: Reduces React virtual DOM reconciliation overhead for the large dua list when switching categories or handling unrelated UI state updates.
+  const filteredDuas = useMemo(() => {
+    return duaCategory === 'All'
+      ? MASNOON_DUAS
+      : MASNOON_DUAS.filter(d => d.category === duaCategory);
+  }, [duaCategory]);
 
   // ------------------------------------------
   // 5. SALAH GUIDE STATE
