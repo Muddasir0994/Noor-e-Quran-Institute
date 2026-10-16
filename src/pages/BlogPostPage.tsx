@@ -11,6 +11,23 @@ interface BlogPostPageProps {
   onOpenTrial?: () => void;
 }
 
+/** Extract FAQ Q&A pairs from the article HTML (the "Frequently Asked Questions" section). */
+function extractFaqs(html: string): Array<{ question: string; answer: string }> {
+  const faqs: Array<{ question: string; answer: string }> = [];
+  if (!html) return faqs;
+  const section = html.match(/<h2[^>]*>\s*Frequently Asked Questions\s*<\/h2>([\s\S]*?)(?=<h2|$)/i);
+  if (!section) return faqs;
+  const stripTags = (s: string) => s.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+  const pairRe = /<h3[^>]*>([\s\S]*?)<\/h3>\s*<p[^>]*>([\s\S]*?)<\/p>/gi;
+  let m: RegExpExecArray | null;
+  while ((m = pairRe.exec(section[1])) !== null) {
+    const question = stripTags(m[1]);
+    const answer = stripTags(m[2]);
+    if (question && answer) faqs.push({ question, answer });
+  }
+  return faqs;
+}
+
 export const BlogPostPage: React.FC<BlogPostPageProps> = ({ onOpenTrial }) => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
@@ -146,6 +163,19 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({ onOpenTrial }) => {
   }
 
   const canonicalUrl = `https://noorequraninstitute.me/blog/${post.slug}`;
+  const faqs = post ? extractFaqs(post.content) : [];
+  const faqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map(f => ({
+      '@type': 'Question',
+      name: f.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: f.answer
+      }
+    }))
+  };
   const articleSchema = {
     '@context': 'https://schema.org',
     '@type': 'Article',
@@ -195,6 +225,11 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({ onOpenTrial }) => {
         <script type="application/ld+json">
           {JSON.stringify(articleSchema)}
         </script>
+        {faqs.length > 0 && (
+          <script type="application/ld+json">
+            {JSON.stringify(faqSchema)}
+          </script>
+        )}
       </Helmet>
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
