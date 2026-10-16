@@ -29,6 +29,7 @@ import {
   User as FirebaseUser
 } from 'firebase/auth';
 import firebaseConfig from '../../firebase-applet-config.json';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 // Initialize Firebase App
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
@@ -48,6 +49,9 @@ try {
 
 // Initialize Auth & Google Provider
 const auth = getAuth(app);
+
+// Initialize Cloud Storage (for blog featured images etc.)
+const storage = getStorage(app);
 const googleProvider = new GoogleAuthProvider();
 googleProvider.setCustomParameters({
   prompt: 'select_account'
@@ -57,6 +61,10 @@ export {
   app,
   db,
   auth,
+  storage,
+  ref as storageRef,
+  uploadBytes,
+  getDownloadURL,
   googleProvider,
   GoogleAuthProvider,
   signInWithPopup,
