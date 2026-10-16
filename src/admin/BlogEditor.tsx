@@ -74,6 +74,7 @@ export const BlogEditor: React.FC<BlogEditorProps> = ({ onViewPost }) => {
 
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const contentEditableRef = useRef<HTMLDivElement | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const fetchPosts = async () => {
     setLoading(true);
@@ -480,16 +481,23 @@ export const BlogEditor: React.FC<BlogEditorProps> = ({ onViewPost }) => {
                   />
                   
                   <div className="flex items-center gap-2">
-                    <label className="flex items-center gap-1.5 px-3 py-2 bg-[#F8F5EE] hover:bg-[#E8E0D1]/60 text-[#0B332D] border border-[#E8E0D1] rounded-sm text-xs font-sans font-bold cursor-pointer transition-colors">
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="flex items-center gap-1.5 px-3 py-2 bg-[#F8F5EE] hover:bg-[#E8E0D1]/60 text-[#0B332D] border border-[#E8E0D1] rounded-sm text-xs font-sans font-bold cursor-pointer transition-colors"
+                    >
                       <UploadSimple className="w-4 h-4 text-[#B79A62]" />
                       <span>Upload &amp; Frame</span>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleImageFileSelect}
-                        className="hidden"
-                      />
-                    </label>
+                    </button>
+                    <input
+                      ref={fileInputRef}
+                      id="featured-image-upload"
+                      type="file"
+                      accept="image/*"
+                      aria-label="Upload featured banner image"
+                      onChange={handleImageFileSelect}
+                      className="sr-only"
+                    />
 
                     {featuredImage && (
                       <button
