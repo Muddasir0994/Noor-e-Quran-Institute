@@ -1,6 +1,7 @@
 import React, { Component, useState, useEffect, useRef } from 'react';
 import { BlogPost } from '../types';
 import { getAllBlogPosts, saveBlogPost, deleteBlogPost } from '../lib/firestoreService';
+import { storage, storageRef, uploadBytes, getDownloadURL } from '../lib/firebase';
 import { ImageCropModal } from '../components/ImageCropModal';
 import DOMPurify from 'dompurify';
 import {
@@ -169,9 +170,26 @@ export const BlogEditor: React.FC<BlogEditorProps> = ({ onViewPost }) => {
     e.target.value = '';
   };
 
-  const handleCropFinished = (croppedBase64: string) => {
-    setFeaturedImage(croppedBase64);
-    setStatusMessage({ type: 'success', text: 'Banner image framed and ready!' });
+  const handleCropFinished = async (croppedBase64: string) => {
+    // Upload to Firebase Storage for a proper image URL (better for SEO/og:image
+    // and keeps Firestore documents small). Falls back to the embedded data URI
+    // if Storage is unreachable, so uploads never break.
+    setStatusMessage({ type: 'success', text: 'Uploading banner image...' });
+    try {
+      const mime = croppedBase64.split(';')[0].split(':')[1] || 'image/jpeg';
+      const ext = mime.includes('png') ? 'png' : 'jpg';
+      const blob = await (await fetch(croppedBase64)).blob();
+      const safeSlug = (slug || 'untitled').replace(/[^a-z0-9-]/g, '') || 'untitled';
+      const path = `blog-images/${safeSlug}-${Date.now()}.${ext}`;
+      await uploadBytes(storageRef(storage, path), blob, { contentType: mime });
+      const url = await getDownloadURL(storageRef(storage, path));
+      setFeaturedImage(url);
+      setStatusMessage({ type: 'success', text: 'Banner image uploaded!' });
+    } catch (err) {
+      console.error('Storage upload failed, keeping embedded image:', err);
+      setFeaturedImage(croppedBase64);
+      setStatusMessage({ type: 'success', text: 'Banner image framed and ready!' });
+    }
   };
 
   // Execute rich formatting commands
