@@ -273,7 +273,7 @@ export const BlogEditor: React.FC<BlogEditorProps> = ({ onViewPost }) => {
     const postPayload: BlogPost = {
       id: currentId,
       title: title.trim(),
-      slug: slug.trim().toLowerCase(),
+      slug: generateSlug(slug),
       category,
       metaDescription: metaDescription.trim(),
       featuredImage: featuredImage.trim(),
@@ -377,7 +377,7 @@ export const BlogEditor: React.FC<BlogEditorProps> = ({ onViewPost }) => {
                   required
                   placeholder="5-simple-tajweed-rules"
                   value={slug}
-                  onChange={e => setSlug(generateSlug(e.target.value))}
+                  onChange={e => setSlug(e.target.value.toLowerCase().replace(/[^\w\s-]/g, '').replace(/[\s_]+/g, '-'))}
                   className="w-full px-3 py-2 border border-[#E8E0D1] rounded-sm text-xs sm:text-sm font-mono text-gray-600 focus:outline-none focus:border-[#0B332D] bg-[#F8F5EE]"
                 />
               </div>
