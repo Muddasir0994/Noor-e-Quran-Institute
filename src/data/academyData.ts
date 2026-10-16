@@ -942,40 +942,40 @@ export const INITIAL_SEO_CONFIGS: PageSeoConfig[] = [
   {
     pagePath: '/',
     pageName: 'Homepage',
-    metaTitle: 'Noor E Quran Institute | 1-on-1 Online Quran Classes with Certified Tutors',
-    metaDescription: 'Learn Quran online with certified male & female tutors at Noor E Quran Institute. 1-on-1 Tajweed, Qaida & Hifz classes for kids & adults worldwide.',
+    metaTitle: 'Learn Quran Online | 1-on-1 Online Quran Classes for Kids & Adults',
+    metaDescription: 'Learn Quran online with certified male & female tutors. 1-on-1 Tajweed, Hifz & Qaida classes for kids and adults. Book a free 3-day trial today!',
     keywords: ['online quran classes', 'learn quran online', 'female quran tutor', 'noor e quran institute', 'tajweed classes'],
     canonicalUrl: 'https://noorequraninstitute.me/'
   },
   {
     pagePath: '/courses',
     pageName: 'Courses & Curricula',
-    metaTitle: 'Online Quran Courses & Syllabi | Noor E Quran Institute',
-    metaDescription: 'Explore our accredited online Quran courses: Noorani Qaida, Nazra with Tajweed, Hifz Memorization, Islamic Studies, and Arabic for Kids & Adults.',
+    metaTitle: 'Online Quran Courses: Qaida, Nazra, Tajweed & Hifz Programs',
+    metaDescription: 'Explore online Quran courses: Noorani Qaida, Nazra, Tajweed & Hifz memorization with certified male & female tutors. 1-on-1 classes for kids & adults.',
     keywords: ['quran courses', 'noorani qaida course', 'hifz program online', 'tajweed course online'],
     canonicalUrl: 'https://noorequraninstitute.me/courses'
   },
   {
     pagePath: '/packages',
     pageName: 'Pricing & Packages',
-    metaTitle: 'Affordable Online Quran Fee Packages | Noor E Quran Institute',
-    metaDescription: 'Transparent monthly Quran tuition packages in PKR, USD, GBP, EUR, AED, CAD, AUD. 2-day, 3-day, 5-day, and weekend plans with 3-day free trial.',
+    metaTitle: 'Online Quran Classes Pricing | Affordable Monthly Packages',
+    metaDescription: 'Affordable monthly Quran class packages with family discounts, multi-currency support and flexible timings. Book a free 3-day trial today!',
     keywords: ['quran class fees', 'online quran packages', 'quran academy pricing', 'cheap quran tutor'],
     canonicalUrl: 'https://noorequraninstitute.me/packages'
   },
   {
     pagePath: '/teachers',
     pageName: 'Faculty & Tutors',
-    metaTitle: 'Certified Male & Female Quran Teachers | Noor E Quran Institute',
-    metaDescription: 'Meet our authorized scholars, Al-Azhar graduates, and certified Huffaz. Dedicated female tutors for sisters and kids with 100% patient teaching.',
+    metaTitle: 'Certified Online Quran Teachers | Male & Female Tutors',
+    metaDescription: 'Meet certified male & female Quran teachers — qualified Huffaz and Ijazah holders with years of online teaching experience. Book a free trial class!',
     keywords: ['female quran teachers', 'certified quran tutor', 'online quran faculty', 'hafiz tutor'],
     canonicalUrl: 'https://noorequraninstitute.me/teachers'
   },
   {
     pagePath: '/blog',
     pageName: 'Blog & Islamic Guides',
-    metaTitle: 'Islamic Knowledge Hub & Quran Articles | Noor E Quran Institute',
-    metaDescription: 'Read expert pedagogical guides on teaching Quran to kids at home, mastering Tajweed rules, rapid Hifz techniques, and daily Islamic Duas.',
+    metaTitle: 'Quran Learning Blog | Tajweed, Hifz & Parenting Guides',
+    metaDescription: 'Practical guides on Tajweed, Hifz memorization, teaching kids Quran and Islamic parenting — tips from certified Quran tutors for Muslim families.',
     keywords: ['quran blog', 'tajweed guide', 'how to teach quran to kids', 'quran memorization tips'],
     canonicalUrl: 'https://noorequraninstitute.me/blog'
   }

@@ -40,6 +40,13 @@ service cloud.firestore {
       allow write: if isAuthenticated();
     }
 
+    // Site SEO configs (admin "SEO & Meta Tags" panel). Public read so the
+    // live site can apply them; writes require an authenticated admin.
+    match /siteSeo/{pageId} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+
     // Inbound Leads & Applications from parents (Create publicly, manage requires auth)
     match /leads/{leadId} {
       allow create: if true;

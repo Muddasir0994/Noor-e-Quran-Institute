@@ -93,6 +93,7 @@ import {
 } from '@phosphor-icons/react';
 import { BlogEditor } from './BlogEditor';
 import { ImageCropModal } from '../components/ImageCropModal';
+import { saveSiteSeoConfig, getSiteSeoConfigs } from '../lib/firestoreService';
 
 interface AdminPortalProps {
   isOpen?: boolean;
@@ -286,11 +287,27 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
   });
   const [templateSaveToast, setTemplateSaveToast] = useState(false);
 
-  // SEO & Schema CMS state
+  // SEO & Schema CMS state (synced with Firestore `siteSeo` collection; localStorage as cache)
   const [seoConfigs, setSeoConfigs] = useState<PageSeoConfig[]>(() => {
     const saved = localStorage.getItem('alnoor_cms_seo');
     return saved ? JSON.parse(saved) : INITIAL_SEO_CONFIGS;
   });
+  useEffect(() => {
+    getSiteSeoConfigs().then(remote => {
+      if (remote.length > 0) {
+        setSeoConfigs(prev => {
+          const merged = [...prev];
+          remote.forEach(r => {
+            const i = merged.findIndex(m => m.pagePath === r.pagePath);
+            if (i >= 0) merged[i] = { ...merged[i], ...r };
+            else merged.push(r);
+          });
+          localStorage.setItem('alnoor_cms_seo', JSON.stringify(merged));
+          return merged;
+        });
+      }
+    }).catch(() => { /* offline or rules not deployed yet: keep local cache */ });
+  }, []);
   const [selectedSeoPage, setSelectedSeoPage] = useState<PageSeoConfig | null>(() => INITIAL_SEO_CONFIGS[0] || null);
   const [seoForm, setSeoForm] = useState<Partial<PageSeoConfig>>({
     pagePath: '/',
@@ -887,15 +904,22 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
     setTimeout(() => setTemplateSaveToast(false), 3000);
   };
 
-  // --- SEO & Schema CMS Handlers ---
-  const handleSaveSeo = (e: React.FormEvent) => {
+  // --- SEO & Schema CMS Handlers (writes through to Firestore `siteSeo` so the live site applies them) ---
+  const handleSaveSeo = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedSeoPage) return;
-    const updated = seoConfigs.map(s => s.pagePath === selectedSeoPage.pagePath ? { ...selectedSeoPage, ...seoForm } as PageSeoConfig : s);
+    const next = { ...selectedSeoPage, ...seoForm } as PageSeoConfig;
+    const updated = seoConfigs.map(s => s.pagePath === selectedSeoPage.pagePath ? next : s);
     setSeoConfigs(updated);
     localStorage.setItem('alnoor_cms_seo', JSON.stringify(updated));
-    setSeoSaveToast(true);
-    setTimeout(() => setSeoSaveToast(false), 3000);
+    try {
+      await saveSiteSeoConfig(next);
+      setSeoSaveToast(true);
+      setTimeout(() => setSeoSaveToast(false), 3000);
+    } catch {
+      setIndexNowStatusMsg('Saved locally, but could not reach the live site database. Check connection/Firestore rules.');
+      setTimeout(() => setIndexNowStatusMsg(null), 5000);
+    }
   };
 
   // --- Data Backup & CSV Export Handlers ---
