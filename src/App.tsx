@@ -2,8 +2,9 @@ import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { IconContext } from '@phosphor-icons/react';
-import { Course, PackagePlan, Tutor, Testimonial, Article } from './types';
+import { Course, PackagePlan, Tutor, Testimonial, Article, PageSeoConfig } from './types';
 import { ALL_COURSES, ALL_PACKAGES, INITIAL_TUTORS, INITIAL_TESTIMONIALS, INITIAL_ARTICLES } from './data/academyData';
+import { getSiteSeoConfigs } from './lib/firestoreService';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { SEOHead } from './components/SEOHead';
 import { SEO_PAGE_MAP } from './lib/seoConfig';
@@ -179,6 +180,30 @@ function AppContent() {
   };
   const seoData = SEO_PAGE_MAP[SEO_PATH_KEY_MAP[currentPath]] || defaultSeo;
 
+  // Admin "SEO & Meta Tags" overrides from Firestore (`siteSeo` collection).
+  // Falls back to the coded values above when unreachable.
+  const [seoOverrides, setSeoOverrides] = useState<Record<string, PageSeoConfig>>({});
+  useEffect(() => {
+    getSiteSeoConfigs().then(list => {
+      const map: Record<string, PageSeoConfig> = {};
+      list.forEach(c => { if (c.pagePath) map[c.pagePath] = c; });
+      setSeoOverrides(map);
+    }).catch(() => {});
+  }, []);
+  const ADMIN_PATH_ALIASES: Record<string, string> = {
+    '/online-quran-classes': '/courses',
+    '/pricing': '/packages',
+    '/faculty': '/teachers',
+    '/tutors': '/teachers',
+  };
+  const seoOverride = seoOverrides[currentPath] || (ADMIN_PATH_ALIASES[currentPath] ? seoOverrides[ADMIN_PATH_ALIASES[currentPath]] : undefined);
+  const liveSeoData = seoOverride ? {
+    title: seoOverride.metaTitle || seoData.title,
+    description: seoOverride.metaDescription || seoData.description,
+    canonicalUrl: seoOverride.canonicalUrl || (seoData as any).canonical || (seoData as any).canonicalUrl || defaultSeo.canonicalUrl,
+    structuredDataType: (seoData as any).structuredDataType || 'EducationalOrganization',
+  } : seoData;
+
   // Redirect renamed article slugs to their new URLs
   if (currentPath === '/blog/the6kalimas') {
     return <Navigate to="/blog/6-kalimas" replace />;
@@ -192,10 +217,10 @@ function AppContent() {
   return (
     <div className="min-h-screen flex flex-col bg-[#F8F5EE] text-[#12201D] font-sans antialiased selection:bg-[#B79A62]/30 selection:text-[#0B332D]">
       <SEOHead
-        title={seoData.title}
-        description={seoData.description}
-        canonicalUrl={(seoData as any).canonical || (seoData as any).canonicalUrl || `https://noorequraninstitute.me${currentPath === '/' ? '' : currentPath}`}
-        structuredDataType={((seoData as any).schemaType || (seoData as any).structuredDataType || 'EducationalOrganization') as any}
+        title={liveSeoData.title}
+        description={liveSeoData.description}
+        canonicalUrl={(liveSeoData as any).canonical || (liveSeoData as any).canonicalUrl || `https://noorequraninstitute.me${currentPath === '/' ? '' : currentPath}`}
+        structuredDataType={((liveSeoData as any).schemaType || (liveSeoData as any).structuredDataType || 'EducationalOrganization') as any}
       />
 
       {/* Main Navbar */}
