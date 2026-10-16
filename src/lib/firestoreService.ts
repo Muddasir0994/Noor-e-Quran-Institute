@@ -27,6 +27,7 @@ import {
   Article,
   BlogPost,
   IslamicResource,
+  PageSeoConfig,
   UserAccount,
   UserRole
 } from '../types';
@@ -550,5 +551,30 @@ export async function deleteBlogPost(id: string): Promise<void> {
   } catch (err) {
     console.error('Error deleting blog post:', err);
     throw err;
+  }
+}
+
+// --- Site SEO configs (admin "SEO & Meta Tags" panel writes here; public site reads) ---
+const SEO_COL = 'siteSeo';
+
+export async function saveSiteSeoConfig(cfg: PageSeoConfig): Promise<void> {
+  try {
+    await setDoc(doc(db, SEO_COL, cfg.pagePath), {
+      ...cfg,
+      updatedAt: new Date().toISOString()
+    });
+  } catch (err) {
+    console.error('Error saving site SEO config:', err);
+    throw err;
+  }
+}
+
+export async function getSiteSeoConfigs(): Promise<PageSeoConfig[]> {
+  try {
+    const snap = await getDocs(collection(db, SEO_COL));
+    return snap.docs.map(d => d.data() as PageSeoConfig);
+  } catch (err) {
+    console.error('Error loading site SEO configs:', err);
+    return [];
   }
 }
