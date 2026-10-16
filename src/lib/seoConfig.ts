@@ -16,8 +16,8 @@ export const ACADEMY_BASE_URL = 'https://noorequraninstitute.me';
 export const SEO_PAGE_MAP: Record<string, SEORouteMeta> = {
   home: {
     path: '/',
-    title: 'Noor E Quran Institute | 1-on-1 Online Quran Classes with Certified Tutors',
-    description: 'Learn Quran online with Tajweed from qualified male & female teachers. Personalized 1-on-1 classes for kids and adults worldwide with flexible timings and 3-day free trial.',
+    title: 'Learn Quran Online | 1-on-1 Online Quran Classes for Kids & Adults',
+    description: 'Learn Quran online with certified male & female tutors. 1-on-1 Tajweed, Hifz & Qaida classes for kids and adults. Book a free 3-day trial today!',
     h1: 'Learn Holy Quran with Tajweed From Certified Tutors',
     primaryKeyword: 'Online Quran Classes',
     secondaryKeywords: [
@@ -36,8 +36,8 @@ export const SEO_PAGE_MAP: Record<string, SEORouteMeta> = {
   },
   courses: {
     path: '/online-quran-classes',
-    title: 'Online Quran Courses & Curriculum | Noor E Quran Institute',
-    description: 'Explore comprehensive online Quran courses: Noorani Qaida for beginners, Nazra Quran reading, Tajweed rules, and Hifz memorization with live 1-on-1 instruction.',
+    title: 'Online Quran Courses: Qaida, Nazra, Tajweed & Hifz Programs',
+    description: 'Explore online Quran courses: Noorani Qaida, Nazra, Tajweed & Hifz memorization with certified male & female tutors. 1-on-1 classes for kids & adults.',
     h1: 'Comprehensive Online Quran Learning Programs',
     primaryKeyword: 'Online Quran Courses',
     secondaryKeywords: [
@@ -193,8 +193,8 @@ export const SEO_PAGE_MAP: Record<string, SEORouteMeta> = {
   },
   packages: {
     path: '/pricing',
-    title: 'Affordable Online Quran Fee Packages | Noor E Quran Institute',
-    description: 'Transparent and affordable monthly Quran tuition plans. Multi-currency support (PKR, USD, GBP, CAD, AUD) with family discounts and 3-day free trial.',
+    title: 'Online Quran Classes Pricing | Affordable Monthly Packages',
+    description: 'Affordable monthly Quran class packages with family discounts, multi-currency support and flexible timings. Book a free 3-day trial today!',
     h1: 'Transparent Tuition & Class Packages',
     primaryKeyword: 'Affordable Online Quran Classes',
     secondaryKeywords: [
@@ -212,8 +212,8 @@ export const SEO_PAGE_MAP: Record<string, SEORouteMeta> = {
   },
   tutors: {
     path: '/faculty',
-    title: 'Our Certified Quran Faculty & Scholars | Noor E Quran Institute',
-    description: 'Meet our qualified male and female Islamic scholars and certified Huffaz. Verified Ijazah holders with extensive online teaching experience.',
+    title: 'Certified Online Quran Teachers | Male & Female Tutors',
+    description: 'Meet certified male & female Quran teachers — qualified Huffaz and Ijazah holders with years of online teaching experience. Book a free trial class!',
     h1: 'Certified Male & Female Quran Teachers',
     primaryKeyword: 'Online Quran Teacher',
     secondaryKeywords: [
@@ -288,8 +288,8 @@ export const SEO_PAGE_MAP: Record<string, SEORouteMeta> = {
   },
   blogs: {
     path: '/blog',
-    title: 'Islamic Educational Blog & Quran Learning Guides | Noor E Quran Institute',
-    description: 'Helpful articles and practical guides on Tajweed rules, Quran memorization routines, Arabic phonetics, and Islamic parenting for Muslim families.',
+    title: 'Quran Learning Blog | Tajweed, Hifz & Parenting Guides',
+    description: 'Practical guides on Tajweed, Hifz memorization, teaching kids Quran and Islamic parenting — tips from certified Quran tutors for Muslim families.',
     h1: 'Quran Learning Guides & Islamic Articles',
     primaryKeyword: 'Quran Learning Blog',
     secondaryKeywords: [

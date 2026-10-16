@@ -1,5 +1,5 @@
 import React, { useState, useEffect, Suspense, lazy } from 'react';
-import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { IconContext } from '@phosphor-icons/react';
 import { Course, PackagePlan, Tutor, Testimonial, Article } from './types';
@@ -153,13 +153,36 @@ function AppContent() {
 
   // Determine current SEO config
   const currentPath = location.pathname.toLowerCase().replace(/\/+$/, '') || '/';
+  // Map URL paths to SEO_PAGE_MAP keys (keys are semantic names, not paths)
+  const SEO_PATH_KEY_MAP: Record<string, string> = {
+    '/': 'home',
+    '/online-quran-classes': 'courses',
+    '/noorani-qaida': 'courses',
+    '/quran-reading-nazra': 'courses',
+    '/quran-with-tajweed': 'courses',
+    '/quran-memorization-hifz': 'courses',
+    '/islamic-studies': 'courses',
+    '/pricing': 'packages',
+    '/faculty': 'tutors',
+    '/tutors': 'tutors',
+    '/about': 'about',
+    '/faq': 'faq',
+    '/blog': 'blogs',
+    '/blogs': 'blogs',
+    '/contact': 'contact',
+  };
   const defaultSeo = {
-    title: 'Noor E Quran Institute | Certified Online Quran & Tajweed Academy',
-    description: 'Learn Quran online with certified male and female tutors. 1-on-1 classes with flexible timings.',
+    title: 'Learn Quran Online | 1-on-1 Online Quran Classes for Kids & Adults',
+    description: 'Learn Quran online with certified male & female tutors. 1-on-1 Tajweed, Hifz & Qaida classes for kids and adults. Book a free 3-day trial today!',
     canonicalUrl: `https://noorequraninstitute.me${currentPath === '/' ? '' : currentPath}`,
     structuredDataType: 'EducationalOrganization' as const
   };
-  const seoData = SEO_PAGE_MAP[currentPath] || defaultSeo;
+  const seoData = SEO_PAGE_MAP[SEO_PATH_KEY_MAP[currentPath]] || defaultSeo;
+
+  // Redirect renamed article slugs to their new URLs
+  if (currentPath === '/blog/the6kalimas') {
+    return <Navigate to="/blog/6-kalimas" replace />;
+  }
 
   const isPortalView = location.pathname === '/classroom' || location.pathname.startsWith('/classroom/') ||
     location.pathname === '/student' || location.pathname.startsWith('/student/') ||
