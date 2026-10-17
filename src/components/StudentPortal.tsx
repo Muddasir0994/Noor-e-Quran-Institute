@@ -11,7 +11,7 @@ import { saveProgressReportToFirebase } from '../lib/firestoreService';
 import { QuranReader } from './portal/QuranReader';
 import { Whiteboard } from './portal/Whiteboard';
 import { usePresence, usePresenceList, isOnline, lastSeenText } from './portal/usePresence';
-import { getAssignedTutor } from './portal/tutorAssignments';
+import { getAssignedTutor, getStudentByEmail } from './portal/tutorAssignments';
 import { StudentProfileBadge } from './portal/StudentProfileBadge';
 import { useLiveClasses } from './portal/useLiveClasses';
 import { submitHomework, useMyHomework } from './portal/useHomework';
@@ -74,25 +74,29 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
     } catch (e) {}
   }, []);
 
-  // Dynamically constructed active student from authenticated profile or verified record
+  // Dynamically constructed active student from authenticated profile or verified record.
+  // Account-matched: look up the real student record by login email so the name,
+  // course, teacher assignment, etc. always match the actual account.
+  const directoryStudent = getStudentByEmail(currentUser?.email);
+  const assignedTutorInfo = getAssignedTutor(currentUser?.email);
   const currentStudent = {
-    id: currentUser?.uid || userProfile?.uid || 'stu-live-1',
-    studentName: userProfile?.displayName || 'Learner (Noor E Quran Student)',
-    parentName: userProfile?.parentName || 'Parent / Guardian',
+    id: directoryStudent?.id || currentUser?.uid || userProfile?.uid || 'stu-live-1',
+    studentName: directoryStudent?.studentName || userProfile?.displayName || 'Learner (Noor E Quran Student)',
+    parentName: directoryStudent?.parentName || userProfile?.parentName || 'Parent / Guardian',
     email: currentUser?.email || userProfile?.email || 'student@noorequraninstitute.me',
     phone: userProfile?.phone || '+92 327 4496163',
-    country: userProfile?.country || 'Worldwide',
+    country: directoryStudent?.country || userProfile?.country || 'Worldwide',
     courseId: 'c-2',
-    courseName: userProfile?.courseName || 'Quran Reading / Nazra with Tajweed',
+    courseName: directoryStudent?.courseName || userProfile?.courseName || 'Quran Reading / Nazra with Tajweed',
     packageId: 'pkg-3days',
     packageName: 'Standard Learning (3 Days/Week)',
-    tutorId: 'tut-1',
-    tutorName: 'Ustadha Maryam Siddiqa',
+    tutorId: directoryStudent?.tutorId || 'tut-1',
+    tutorName: assignedTutorInfo?.name || 'Ustadha Maryam Siddiqa',
     preferredTime: 'Evening',
     preferredDays: ['Monday', 'Wednesday', 'Friday'],
     learningPace: 'Normal' as const,
     status: 'Active' as const,
-    currentSurahOrLesson: 'Surah Al-Baqarah (Ayah 142)',
+    currentSurahOrLesson: directoryStudent?.currentLesson || 'Surah Al-Baqarah (Ayah 142)',
     createdAt: userProfile?.createdAt || new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     notes: [],
