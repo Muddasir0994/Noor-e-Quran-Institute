@@ -18,6 +18,9 @@ import {
   ActivityLog,
   SystemNotification,
   DashboardStats,
+  AttendanceRecord,
+  TrialClass,
+  FeeReminder,
   LeadStatus,
   EnrollmentStatus,
   StudentStatus,
@@ -61,6 +64,8 @@ import {
   FloppyDisk,
   ArrowsClockwise,
   PhoneCall,
+  CalendarCheck,
+  VideoCamera,
   Calendar,
   CaretRight,
   ShieldCheck,
@@ -120,7 +125,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
 
   // Active view tab in admin CMS
   const [activeTab, setActiveTab] = useState<
-    'overview' | 'leads' | 'enrollments' | 'students' | 'tutors' | 'timetable' | 'finance' | 'reports' | 'payroll' | 'logs' | 'courses' | 'packages' | 'blog' | 'testimonials' | 'faqs' | 'media' | 'templates' | 'seo' | 'settings'
+    'overview' | 'leads' | 'enrollments' | 'students' | 'attendance' | 'trials' | 'tutors' | 'timetable' | 'finance' | 'reports' | 'payroll' | 'logs' | 'courses' | 'packages' | 'blog' | 'testimonials' | 'faqs' | 'media' | 'templates' | 'seo' | 'settings'
   >('overview');
 
   // Data states
@@ -132,6 +137,25 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
   const [adminCourses, setAdminCourses] = useState<Course[]>(courses || []);
   const [notifications, setNotifications] = useState<SystemNotification[]>([]);
   const [loadingData, setLoadingData] = useState(false);
+
+  // Attendance State
+  const [attendanceDate, setAttendanceDate] = useState(() => new Date().toISOString().split('T')[0]);
+  const [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecord[]>([]);
+  const [attendanceStatus, setAttendanceStatus] = useState<Record<string, 'present' | 'absent' | 'leave'>>({});
+  const [savingAttendance, setSavingAttendance] = useState(false);
+  const [attendanceMsg, setAttendanceMsg] = useState('');
+
+  // Trial Classes State
+  const [trials, setTrials] = useState<TrialClass[]>([]);
+  const [showTrialForm, setShowTrialForm] = useState(false);
+  const [trialForm, setTrialForm] = useState({
+    studentName: '', phone: '', email: '', courseId: '', courseName: '',
+    tutorId: '', tutorName: '', date: new Date().toISOString().split('T')[0],
+    time: '10:00', meetingLink: '', notes: '', leadId: ''
+  });
+
+  // Fee Reminders State
+  const [feeReminders, setFeeReminders] = useState<FeeReminder[]>([]);
 
   // Finance & Invoices State
   const [invoices, setInvoices] = useState<FeeInvoice[]>(() => {
@@ -461,6 +485,177 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
       setLoadingData(false);
     }
   };
+
+  // ---- Attendance / Trials / Fee Reminders (backend API) ----
+  const fetchAttendance = async (date: string) => {
+    try {
+      const headers = { Authorization: `Bearer ${token}` };
+      const res = await fetch(`/api/admin/attendance?date=${date}`, { headers });
+      if (res.status === 401) { handleLogout(); return; }
+      const data = await res.json();
+      if (data.success) {
+        const recs: AttendanceRecord[] = data.records || [];
+        setAttendanceRecords(recs);
+        const map: Record<string, 'present' | 'absent' | 'leave'> = {};
+        recs.forEach(r => { map[r.studentId] = r.status; });
+        setAttendanceStatus(map);
+      }
+    } catch (err) {
+      console.error('Failed to fetch attendance:', err);
+    }
+  };
+
+  const handleSaveAttendance = async () => {
+    setSavingAttendance(true);
+    setAttendanceMsg('');
+    try {
+      const headers = { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' };
+      const records = students.map(s => ({
+        studentId: s.id,
+        studentName: s.studentName,
+        status: attendanceStatus[s.id] || 'present'
+      }));
+      const res = await fetch('/api/admin/attendance', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ date: attendanceDate, records, markedBy: 'Admin' })
+      });
+      if (res.status === 401) { handleLogout(); return; }
+      const data = await res.json();
+      if (data.success) {
+        const recs: AttendanceRecord[] = data.records || [];
+        setAttendanceRecords(recs);
+        const map: Record<string, 'present' | 'absent' | 'leave'> = {};
+        recs.forEach(r => { map[r.studentId] = r.status; });
+        setAttendanceStatus(map);
+        setAttendanceMsg(`Attendance saved for ${attendanceDate}.`);
+      } else {
+        setAttendanceMsg(data.error || 'Failed to save attendance.');
+      }
+    } catch (err) {
+      setAttendanceMsg('Failed to save attendance.');
+    } finally {
+      setSavingAttendance(false);
+    }
+  };
+
+  const fetchTrials = async () => {
+    try {
+      const headers = { Authorization: `Bearer ${token}` };
+      const res = await fetch('/api/admin/trials', { headers });
+      if (res.status === 401) { handleLogout(); return; }
+      const data = await res.json();
+      if (data.success) setTrials(data.trials || []);
+    } catch (err) {
+      console.error('Failed to fetch trials:', err);
+    }
+  };
+
+  const handleCreateTrial = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const headers = { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' };
+      const res = await fetch('/api/admin/trials', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(trialForm)
+      });
+      if (res.status === 401) { handleLogout(); return; }
+      const data = await res.json();
+      if (data.success) {
+        setTrials(prev => [data.trial, ...prev]);
+        setTrialForm({
+          studentName: '', phone: '', email: '', courseId: '', courseName: '',
+          tutorId: '', tutorName: '', date: new Date().toISOString().split('T')[0],
+          time: '10:00', meetingLink: '', notes: '', leadId: ''
+        });
+        setShowTrialForm(false);
+      }
+    } catch (err) {
+      console.error('Failed to schedule trial:', err);
+    }
+  };
+
+  const handleTrialStatusChange = async (id: string, status: TrialClass['status']) => {
+    try {
+      const headers = { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' };
+      const res = await fetch(`/api/admin/trials/${id}`, {
+        method: 'PATCH',
+        headers,
+        body: JSON.stringify({ status })
+      });
+      if (res.status === 401) { handleLogout(); return; }
+      const data = await res.json();
+      if (data.success) setTrials(prev => prev.map(t => (t.id === id ? data.trial : t)));
+    } catch (err) {
+      console.error('Failed to update trial:', err);
+    }
+  };
+
+  const handleDeleteTrial = async (id: string) => {
+    if (!window.confirm('Delete this trial class?')) return;
+    try {
+      const headers = { Authorization: `Bearer ${token}` };
+      const res = await fetch(`/api/admin/trials/${id}`, { method: 'DELETE', headers });
+      if (res.status === 401) { handleLogout(); return; }
+      setTrials(prev => prev.filter(t => t.id !== id));
+    } catch (err) {
+      console.error('Failed to delete trial:', err);
+    }
+  };
+
+  const openWhatsAppForTrial = (t: TrialClass) => {
+    const cleanPhone = t.phone.replace(/[^0-9+]/g, '').replace('+', '');
+    const msg = encodeURIComponent(
+      `Assalam-o-Alaikum ${t.studentName}! This is Noor E Quran Institute. Your free trial class${t.courseName ? ` for ${t.courseName}` : ''} is scheduled on ${t.date} at ${t.time}${t.tutorName ? ` with ${t.tutorName}` : ''}.${t.meetingLink ? ` Join here: ${t.meetingLink}` : ''} JazakAllah Khair!`
+    );
+    window.open(`https://wa.me/${cleanPhone}?text=${msg}`, '_blank');
+  };
+
+  const fetchFeeReminders = async () => {
+    try {
+      const headers = { Authorization: `Bearer ${token}` };
+      const res = await fetch('/api/admin/fee-reminders', { headers });
+      if (res.status === 401) { handleLogout(); return; }
+      const data = await res.json();
+      if (data.success) setFeeReminders(data.reminders || []);
+    } catch (err) {
+      console.error('Failed to fetch fee reminders:', err);
+    }
+  };
+
+  const handleFeeReminder = async (inv: FeeInvoice) => {
+    handleSendInvoiceWhatsApp(inv);
+    try {
+      const headers = { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' };
+      const res = await fetch('/api/admin/fee-reminders', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          invoiceId: inv.id,
+          studentName: inv.studentName,
+          phone: inv.phone,
+          amount: inv.amount,
+          currency: inv.currency,
+          channel: 'whatsapp'
+        })
+      });
+      if (res.status === 401) { handleLogout(); return; }
+      const data = await res.json();
+      if (data.success) fetchFeeReminders();
+    } catch (err) {
+      console.error('Failed to log fee reminder:', err);
+    }
+  };
+
+  // Refresh tab-specific data when its tab opens
+  useEffect(() => {
+    if (!token || !isOpen) return;
+    if (activeTab === 'attendance') fetchAttendance(attendanceDate);
+    else if (activeTab === 'trials') fetchTrials();
+    else if (activeTab === 'finance') fetchFeeReminders();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab, token]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -1357,6 +1552,8 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                       { id: 'leads', label: 'Trial Inquiries', icon: Users, badge: leads.filter(l => l.status === 'New Lead').length },
                       { id: 'enrollments', label: 'Enrollments', icon: UserCheck, badge: enrollments.filter(e => e.status === 'New Application').length },
                       { id: 'students', label: 'Students & Timetable', icon: GraduationCap },
+                      { id: 'attendance', label: 'Attendance', icon: CalendarCheck },
+                      { id: 'trials', label: 'Trial Classes', icon: PhoneCall },
                       { id: 'tutors', label: 'Faculty & Scholars', icon: Certificate },
                       { id: 'timetable', label: 'Weekly Schedule Matrix', icon: Calendar },
                       { id: 'finance', label: 'Billing & Invoices', icon: Receipt, badge: invoices.filter(i => i.status === 'Pending').length },
@@ -1740,6 +1937,281 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                 </div>
               )}
 
+              {/* TAB: DAILY ATTENDANCE */}
+              {activeTab === 'attendance' && (
+                <div className="space-y-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#F8F5EE] p-4 rounded-sm border border-[#E8E0D1]">
+                    <div>
+                      <h3 className="font-editorial text-2xl text-[#0B332D] font-bold">Daily Attendance</h3>
+                      <p className="text-xs text-gray-500 font-sans">Mark present, absent or leave for each student, day by day.</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {attendanceRecords.length > 0 && (
+                        <span className="px-2 py-1 text-[10px] font-bold rounded-xs bg-emerald-100 text-emerald-800 border border-emerald-200 font-sans">
+                          ✓ Marked
+                        </span>
+                      )}
+                      <input
+                        type="date"
+                        value={attendanceDate}
+                        onChange={e => { setAttendanceDate(e.target.value); fetchAttendance(e.target.value); }}
+                        className="px-3 py-2 border border-[#E8E0D1] bg-[#FCFBF8] rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]"
+                      />
+                      <button
+                        onClick={handleSaveAttendance}
+                        disabled={savingAttendance}
+                        className="px-4 py-2 bg-[#0B332D] text-[#F8F5EE] text-xs font-sans font-semibold uppercase tracking-wider rounded-sm hover:bg-[#07221E] shadow-xs cursor-pointer disabled:opacity-60"
+                      >
+                        {savingAttendance ? 'Saving...' : 'Save Attendance'}
+                      </button>
+                    </div>
+                  </div>
+
+                  {attendanceMsg && (
+                    <div className="text-xs font-sans font-semibold text-emerald-800 bg-emerald-50 border border-emerald-200 rounded-sm px-3 py-2">{attendanceMsg}</div>
+                  )}
+
+                  <div className="bg-[#FCFBF8] rounded-sm border border-[#E8E0D1] shadow-xs overflow-hidden">
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left text-xs font-sans">
+                        <thead className="bg-[#F8F5EE] text-[#0B332D] font-bold uppercase tracking-wider border-b border-[#E8E0D1] text-[10px]">
+                          <tr>
+                            <th className="p-3.5">Student</th>
+                            <th className="p-3.5">Course</th>
+                            <th className="p-3.5 text-center">Status</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-[#E8E0D1]/60">
+                          {students.map(stu => {
+                            const st = attendanceStatus[stu.id] || 'present';
+                            const opts: { val: 'present' | 'absent' | 'leave'; label: string; activeCls: string }[] = [
+                              { val: 'present', label: 'Present', activeCls: 'bg-emerald-600 text-white border-emerald-600' },
+                              { val: 'absent', label: 'Absent', activeCls: 'bg-red-600 text-white border-red-600' },
+                              { val: 'leave', label: 'Leave', activeCls: 'bg-amber-500 text-white border-amber-500' }
+                            ];
+                            return (
+                              <tr key={stu.id} className="hover:bg-[#F8F5EE]/50 transition-colors">
+                                <td className="p-3.5">
+                                  <div className="font-bold text-[#0B332D]">{stu.studentName}</div>
+                                  <div className="text-[10px] text-gray-500">{stu.parentName}</div>
+                                </td>
+                                <td className="p-3.5 text-gray-700">{stu.courseName}</td>
+                                <td className="p-3.5">
+                                  <div className="flex items-center justify-center gap-1.5">
+                                    {opts.map(o => (
+                                      <button
+                                        key={o.val}
+                                        onClick={() => setAttendanceStatus(prev => ({ ...prev, [stu.id]: o.val }))}
+                                        className={`px-3 py-1.5 text-[11px] font-bold rounded-xs border transition-colors cursor-pointer ${st === o.val ? o.activeCls : 'bg-white text-gray-500 border-[#E8E0D1] hover:border-gray-400'}`}
+                                      >
+                                        {o.label}
+                                      </button>
+                                    ))}
+                                  </div>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                      {students.length === 0 && (
+                        <div className="p-6 text-center text-xs text-gray-400 font-sans">No students enrolled yet.</div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="text-xs font-sans text-gray-600 bg-[#F8F5EE] border border-[#E8E0D1] rounded-sm px-4 py-2.5">
+                    <span className="font-bold text-emerald-700">{students.filter(s => (attendanceStatus[s.id] || 'present') === 'present').length} present</span>
+                    {' • '}
+                    <span className="font-bold text-red-700">{students.filter(s => attendanceStatus[s.id] === 'absent').length} absent</span>
+                    {' • '}
+                    <span className="font-bold text-amber-700">{students.filter(s => attendanceStatus[s.id] === 'leave').length} on leave</span>
+                    <span className="text-gray-400"> — {attendanceDate}</span>
+                  </div>
+                </div>
+              )}
+
+              {/* TAB: TRIAL CLASSES */}
+              {activeTab === 'trials' && (
+                <div className="space-y-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#F8F5EE] p-4 rounded-sm border border-[#E8E0D1]">
+                    <div>
+                      <h3 className="font-editorial text-2xl text-[#0B332D] font-bold">Trial Classes</h3>
+                      <p className="text-xs text-gray-500 font-sans">Schedule free trial classes and track their outcome.</p>
+                    </div>
+                    <button
+                      onClick={() => setShowTrialForm(v => !v)}
+                      className="px-4 py-2 bg-[#0B332D] text-[#F8F5EE] text-xs font-sans font-semibold uppercase tracking-wider rounded-sm hover:bg-[#07221E] flex items-center gap-1.5 shadow-xs cursor-pointer"
+                    >
+                      <Plus className="w-4 h-4 text-[#B79A62]" />
+                      <span>{showTrialForm ? 'Close Form' : 'Schedule Trial'}</span>
+                    </button>
+                  </div>
+
+                  {showTrialForm && (
+                    <form onSubmit={handleCreateTrial} className="bg-[#FCFBF8] rounded-sm border border-[#E8E0D1] shadow-xs p-4 space-y-3">
+                      <div>
+                        <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Pick from leads (optional)</label>
+                        <select
+                          value={trialForm.leadId}
+                          onChange={e => {
+                            const lead = leads.find(l => l.id === e.target.value);
+                            if (lead) setTrialForm(f => ({ ...f, leadId: lead.id, studentName: lead.studentName, phone: lead.phone, email: lead.email || '', courseId: lead.courseId, courseName: lead.courseName }));
+                            else setTrialForm(f => ({ ...f, leadId: '' }));
+                          }}
+                          className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]"
+                        >
+                          <option value="">— Select a lead to autofill —</option>
+                          {leads.map(l => <option key={l.id} value={l.id}>{l.studentName} • {l.phone}</option>)}
+                        </select>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Student Name *</label>
+                          <input required value={trialForm.studentName} onChange={e => setTrialForm(f => ({ ...f, studentName: e.target.value }))} className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]" />
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Phone *</label>
+                          <input required value={trialForm.phone} onChange={e => setTrialForm(f => ({ ...f, phone: e.target.value }))} className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]" />
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Email</label>
+                          <input type="email" value={trialForm.email} onChange={e => setTrialForm(f => ({ ...f, email: e.target.value }))} className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]" />
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Course</label>
+                          <select
+                            value={trialForm.courseName}
+                            onChange={e => {
+                              const c = adminCourses.find(c => c.name === e.target.value);
+                              setTrialForm(f => ({ ...f, courseName: e.target.value, courseId: c?.id || '' }));
+                            }}
+                            className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]"
+                          >
+                            <option value="">Select course</option>
+                            {adminCourses.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Tutor</label>
+                          <select
+                            value={trialForm.tutorName}
+                            onChange={e => {
+                              const t = tutors.find(t => t.name === e.target.value);
+                              setTrialForm(f => ({ ...f, tutorName: e.target.value, tutorId: t?.id || '' }));
+                            }}
+                            className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]"
+                          >
+                            <option value="">Select tutor</option>
+                            {tutors.map(t => <option key={t.id} value={t.name}>{t.name}</option>)}
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Meeting Link</label>
+                          <input value={trialForm.meetingLink} onChange={e => setTrialForm(f => ({ ...f, meetingLink: e.target.value }))} placeholder="https://meet.jit.si/..." className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]" />
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Date *</label>
+                          <input required type="date" value={trialForm.date} onChange={e => setTrialForm(f => ({ ...f, date: e.target.value }))} className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]" />
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Time *</label>
+                          <input required type="time" value={trialForm.time} onChange={e => setTrialForm(f => ({ ...f, time: e.target.value }))} className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]" />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Notes</label>
+                        <textarea value={trialForm.notes} onChange={e => setTrialForm(f => ({ ...f, notes: e.target.value }))} rows={2} className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]" />
+                      </div>
+                      <button type="submit" className="px-4 py-2 bg-[#0B332D] text-[#F8F5EE] text-xs font-sans font-semibold uppercase tracking-wider rounded-sm hover:bg-[#07221E] shadow-xs cursor-pointer">
+                        Schedule Trial Class
+                      </button>
+                    </form>
+                  )}
+
+                  <div className="bg-[#FCFBF8] rounded-sm border border-[#E8E0D1] shadow-xs overflow-hidden">
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left text-xs font-sans">
+                        <thead className="bg-[#F8F5EE] text-[#0B332D] font-bold uppercase tracking-wider border-b border-[#E8E0D1] text-[10px]">
+                          <tr>
+                            <th className="p-3.5">Student</th>
+                            <th className="p-3.5">Course / Tutor</th>
+                            <th className="p-3.5">Date &amp; Time</th>
+                            <th className="p-3.5">Status</th>
+                            <th className="p-3.5 text-right">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-[#E8E0D1]/60">
+                          {[...trials].sort((a, b) => `${a.date} ${a.time}`.localeCompare(`${b.date} ${b.time}`)).map(t => (
+                            <tr key={t.id} className="hover:bg-[#F8F5EE]/50 transition-colors">
+                              <td className="p-3.5">
+                                <div className="font-bold text-[#0B332D]">{t.studentName}</div>
+                                <div className="text-[10px] text-gray-500">{t.phone}{t.email ? ` • ${t.email}` : ''}</div>
+                                {t.notes && <div className="text-[10px] text-gray-400 italic mt-0.5">{t.notes}</div>}
+                              </td>
+                              <td className="p-3.5 text-gray-700">
+                                {t.courseName || '—'}
+                                {t.tutorName && <div className="text-[10px] text-gray-500">{t.tutorName}</div>}
+                              </td>
+                              <td className="p-3.5 font-mono text-[11px] text-gray-700">{t.date} • {t.time}</td>
+                              <td className="p-3.5">
+                                <select
+                                  value={t.status}
+                                  onChange={e => handleTrialStatusChange(t.id, e.target.value as TrialClass['status'])}
+                                  className={`px-2 py-1 text-[10px] font-bold rounded-xs border cursor-pointer focus:outline-none ${t.status === 'scheduled' ? 'bg-amber-100 text-amber-800 border-amber-200'
+                                    : t.status === 'completed' ? 'bg-emerald-100 text-emerald-800 border-emerald-200'
+                                    : t.status === 'converted' ? 'bg-blue-100 text-blue-800 border-blue-200'
+                                    : t.status === 'cancelled' ? 'bg-gray-100 text-gray-600 border-gray-200'
+                                    : 'bg-red-100 text-red-800 border-red-200'}`}
+                                >
+                                  <option value="scheduled">Scheduled</option>
+                                  <option value="completed">Completed</option>
+                                  <option value="converted">Converted</option>
+                                  <option value="cancelled">Cancelled</option>
+                                  <option value="no-show">No-show</option>
+                                </select>
+                              </td>
+                              <td className="p-3.5 text-right">
+                                <div className="inline-flex items-center gap-1.5">
+                                  <button
+                                    onClick={() => openWhatsAppForTrial(t)}
+                                    className="p-1.5 text-emerald-700 hover:text-emerald-900 cursor-pointer"
+                                    title="Send trial details on WhatsApp"
+                                  >
+                                    <WhatsappLogo className="w-4 h-4" weight="fill" />
+                                  </button>
+                                  {t.meetingLink && (
+                                    <a
+                                      href={t.meetingLink}
+                                      target="_blank"
+                                      rel="noreferrer"
+                                      className="p-1.5 text-[#0B332D] hover:text-[#B79A62] cursor-pointer"
+                                      title="Join meeting"
+                                    >
+                                      <VideoCamera className="w-4 h-4" />
+                                    </a>
+                                  )}
+                                  <button
+                                    onClick={() => handleDeleteTrial(t.id)}
+                                    className="p-1.5 text-red-600 hover:text-red-800 cursor-pointer"
+                                    title="Delete trial"
+                                  >
+                                    <Trash className="w-4 h-4" />
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                      {trials.length === 0 && (
+                        <div className="p-6 text-center text-xs text-gray-400 font-sans">No trial classes scheduled yet.</div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* TAB 5: TUTORS & FACULTY WITH PHOTO CROP */}
               {activeTab === 'tutors' && (
                 <div className="space-y-4">
@@ -2021,6 +2493,26 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                                     <Receipt className="w-4 h-4" />
                                   </button>
                                 </div>
+                                {inv.status === 'Pending' && (
+                                  <div className="mt-1.5">
+                                    <button
+                                      onClick={() => handleFeeReminder(inv)}
+                                      className="px-2.5 py-1 bg-[#B79A62] text-white text-[10px] font-sans font-bold rounded-xs hover:bg-[#a3874f] cursor-pointer inline-flex items-center gap-1 shadow-xs"
+                                      title="Send fee reminder on WhatsApp and log it"
+                                    >
+                                      <WhatsappLogo className="w-3.5 h-3.5" weight="fill" />
+                                      <span>Remind</span>
+                                    </button>
+                                    {(() => {
+                                      const rs = feeReminders.filter(r => r.invoiceId === inv.id);
+                                      return rs.length > 0 ? (
+                                        <div className="text-[10px] text-gray-500 font-sans mt-1">
+                                          {rs.length} reminder{rs.length > 1 ? 's' : ''} sent • last {rs[0].sentAt?.split('T')[0]}
+                                        </div>
+                                      ) : null;
+                                    })()}
+                                  </div>
+                                )}
                               </td>
                             </tr>
                           ))}
