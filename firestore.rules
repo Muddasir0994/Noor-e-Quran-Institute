@@ -85,6 +85,18 @@ service cloud.firestore {
       allow read, write: if isAuthenticated();
     }
 
+    // Portal presence (online status) — readable by anyone signed in, writable by owner
+    match /presence/{email} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+
+    // Live classes — readable by anyone, writable by signed-in teachers
+    match /liveClasses/{classId} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+
     // Default catch-all: deny everything not explicitly matched above
     match /{document=**} {
       allow read, write: if false;
