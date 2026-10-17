@@ -6,6 +6,7 @@ import { Course, PackagePlan, Tutor, Testimonial, Article, PageSeoConfig } from 
 import { ALL_COURSES, ALL_PACKAGES, INITIAL_TUTORS, INITIAL_TESTIMONIALS, INITIAL_ARTICLES } from './data/academyData';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { SEOHead } from './components/SEOHead';
+import { TilawatPlayer } from './components/TilawatPlayer';
 import { SEO_PAGE_MAP } from './lib/seoConfig';
 import { getRoleForEmail } from './lib/roleUtils';
 import type { CountryKey } from './components/InternationalLanding';
@@ -743,6 +744,9 @@ function AppContent() {
           />
         )}
       </Suspense>
+
+      {/* Soft background Quran recitation (Tilawat) */}
+      <TilawatPlayer />
     </div>
   );
 }
