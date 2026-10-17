@@ -84,3 +84,22 @@ export function isOnline(entry?: PresenceEntry | null): boolean {
     return !!entry.online;
   }
 }
+
+// Human-readable "last seen" text for offline users.
+export function lastSeenText(entry?: PresenceEntry | null): string {
+  if (!entry) return 'Never seen';
+  if (isOnline(entry)) return 'Online now';
+  try {
+    const ts = entry.lastSeen?.toMillis ? entry.lastSeen.toMillis() : 0;
+    if (!ts) return 'Offline';
+    const mins = Math.floor((Date.now() - ts) / 60000);
+    if (mins < 1) return 'Just now';
+    if (mins < 60) return `${mins} min ago`;
+    const hrs = Math.floor(mins / 60);
+    if (hrs < 24) return `${hrs} hr${hrs > 1 ? 's' : ''} ago`;
+    const days = Math.floor(hrs / 24);
+    return `${days} day${days > 1 ? 's' : ''} ago`;
+  } catch {
+    return 'Offline';
+  }
+}
