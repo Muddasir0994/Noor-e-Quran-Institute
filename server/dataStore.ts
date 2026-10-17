@@ -17,7 +17,10 @@ import {
   ContactMessage,
   SystemNotification,
   DashboardStats,
-  Note
+  Note,
+  AttendanceRecord,
+  TrialClass,
+  FeeReminder
 } from '../src/types.js';
 import {
   ALL_COURSES,
@@ -44,6 +47,9 @@ interface DatabaseSchema {
   contacts: ContactMessage[];
   notifications: SystemNotification[];
   adminTokens: string[];
+  attendance: AttendanceRecord[];
+  trials: TrialClass[];
+  feeReminders: FeeReminder[];
 }
 
 const DATA_DIR = path.join(process.cwd(), 'data');
@@ -92,7 +98,10 @@ class DataStore {
           resources: parsed.resources?.length ? parsed.resources : INITIAL_RESOURCES,
           contacts: parsed.contacts || [],
           notifications: parsed.notifications || [],
-          adminTokens: parsed.adminTokens || []
+          adminTokens: parsed.adminTokens || [],
+          attendance: parsed.attendance || [],
+          trials: parsed.trials || [],
+          feeReminders: parsed.feeReminders || []
         };
       } catch (err) {
         console.error('Error reading academy_db.json, seeding initial data:', err);
@@ -290,7 +299,10 @@ class DataStore {
       resources: INITIAL_RESOURCES,
       contacts: [],
       notifications: [],
-      adminTokens: []
+      adminTokens: [],
+      attendance: [],
+      trials: [],
+      feeReminders: []
     };
 
     this.saveDatabase(initialData);
@@ -706,6 +718,109 @@ class DataStore {
   }
 
   // --- AUTH TOKENS ---
+  // --- ATTENDANCE ---
+  public getAttendanceByDate(date: string): AttendanceRecord[] {
+    return this.data.attendance.filter(a => a.date === date);
+  }
+
+  public getAttendanceForStudent(studentId: string, limit = 60): AttendanceRecord[] {
+    return this.data.attendance
+      .filter(a => a.studentId === studentId)
+      .sort((a, b) => b.date.localeCompare(a.date))
+      .slice(0, limit);
+  }
+
+  public markAttendance(
+    date: string,
+    records: { studentId: string; studentName: string; status: 'present' | 'absent' | 'leave' }[],
+    markedBy = 'Admin'
+  ): AttendanceRecord[] {
+    const now = new Date().toISOString();
+    const saved: AttendanceRecord[] = [];
+    for (const r of records) {
+      const existing = this.data.attendance.find(a => a.date === date && a.studentId === r.studentId);
+      if (existing) {
+        existing.status = r.status;
+        existing.studentName = r.studentName;
+        existing.markedBy = markedBy;
+        existing.updatedAt = now;
+        saved.push(existing);
+      } else {
+        const rec: AttendanceRecord = {
+          id: `att-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+          date,
+          studentId: r.studentId,
+          studentName: r.studentName,
+          status: r.status,
+          markedBy,
+          createdAt: now,
+          updatedAt: now
+        };
+        this.data.attendance.push(rec);
+        saved.push(rec);
+      }
+    }
+    this.saveDatabase();
+    return saved;
+  }
+
+  // --- TRIAL CLASSES ---
+  public getTrials(): TrialClass[] {
+    return [...this.data.trials].sort((a, b) =>
+      (a.date + a.time).localeCompare(b.date + b.time)
+    );
+  }
+
+  public addTrial(trialData: Omit<TrialClass, 'id' | 'status' | 'createdAt' | 'updatedAt'> & { status?: TrialClass['status'] }): TrialClass {
+    const now = new Date().toISOString();
+    const trial: TrialClass = {
+      ...trialData,
+      id: `trial-${Date.now()}`,
+      status: trialData.status || 'scheduled',
+      createdAt: now,
+      updatedAt: now
+    };
+    this.data.trials.unshift(trial);
+    this.saveDatabase();
+    return trial;
+  }
+
+  public updateTrial(id: string, updates: Partial<TrialClass>): TrialClass | null {
+    const idx = this.data.trials.findIndex(t => t.id === id);
+    if (idx === -1) return null;
+    this.data.trials[idx] = { ...this.data.trials[idx], ...updates, updatedAt: new Date().toISOString() };
+    this.saveDatabase();
+    return this.data.trials[idx];
+  }
+
+  public deleteTrial(id: string): boolean {
+    const idx = this.data.trials.findIndex(t => t.id === id);
+    if (idx === -1) return false;
+    this.data.trials.splice(idx, 1);
+    this.saveDatabase();
+    return true;
+  }
+
+  // --- FEE REMINDERS ---
+  public getFeeReminders(): FeeReminder[] {
+    return [...this.data.feeReminders].sort((a, b) => b.sentAt.localeCompare(a.sentAt));
+  }
+
+  public getFeeRemindersForInvoice(invoiceId: string): FeeReminder[] {
+    return this.data.feeReminders.filter(r => r.invoiceId === invoiceId);
+  }
+
+  public addFeeReminder(remData: Omit<FeeReminder, 'id' | 'sentAt'>): FeeReminder {
+    const reminder: FeeReminder = {
+      ...remData,
+      id: `rem-${Date.now()}`,
+      sentAt: new Date().toISOString()
+    };
+    this.data.feeReminders.unshift(reminder);
+    this.saveDatabase();
+    return reminder;
+  }
+
   public createAdminSession(): string {
     const token = crypto.randomBytes(32).toString('hex');
     this.data.adminTokens.push(token);
