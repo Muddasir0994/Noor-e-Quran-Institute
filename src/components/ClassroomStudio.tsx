@@ -122,7 +122,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
   // ------------------------------------------
   // ------------------------------------------
   // 1. QURAN MUSHAF READER STATE (full 114 surahs; rich bundled data preferred,
-  //    otherwise ayahs load on demand from the free api.alquran.cloud API)
+  //    otherwise ayahs load on demand via our /api/quran proxy (api.alquran.cloud))
   // ------------------------------------------
   const [selectedSurahNumber, setSelectedSurahNumber] = useState<number>(() => {
     return targetSurahNum >= 1 && targetSurahNum <= 114 ? targetSurahNum : 1;
@@ -167,16 +167,16 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
     setApiError(null);
     setApiAyahs(null);
     Promise.all([
-      fetch(`https://api.alquran.cloud/v1/surah/${selectedSurahNumber}/quran-uthmani`).then(r => {
+      fetch(`/api/quran/surah/${selectedSurahNumber}/quran-uthmani`).then(r => {
         if (!r.ok) throw new Error('arabic');
         return r.json();
       }),
-      fetch(`https://api.alquran.cloud/v1/surah/${selectedSurahNumber}/en.asad`).then(r => {
+      fetch(`/api/quran/surah/${selectedSurahNumber}/en.asad`).then(r => {
         if (!r.ok) throw new Error('english');
         return r.json();
       }),
       // Kanz-ul-Iman Urdu translation (Ahmed Raza Khan) — optional; never blocks the surah
-      fetch(`https://api.alquran.cloud/v1/surah/${selectedSurahNumber}/ur.kanzuliman`).then(r => {
+      fetch(`/api/quran/surah/${selectedSurahNumber}/ur.kanzuliman`).then(r => {
         if (!r.ok) throw new Error('urdu');
         return r.json();
       }).catch(() => null)
@@ -324,11 +324,11 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
     setJuzAyahs(null);
     let cancelled = false;
     Promise.all([
-      fetch(`https://api.alquran.cloud/v1/juz/${juzNum}/quran-uthmani`).then(r => {
+      fetch(`/api/quran/juz/${juzNum}/quran-uthmani`).then(r => {
         if (!r.ok) throw new Error('ar');
         return r.json();
       }),
-      fetch(`https://api.alquran.cloud/v1/juz/${juzNum}/en.asad`).then(r => {
+      fetch(`/api/quran/juz/${juzNum}/en.asad`).then(r => {
         if (!r.ok) throw new Error('en');
         return r.json();
       })
@@ -373,7 +373,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
     setSearchLoading(true);
     setSearchError(null);
     setSearchResults(null);
-    fetch(`https://api.alquran.cloud/v1/search/${encodeURIComponent(q)}/all/en`)
+    fetch(`/api/quran/search/${encodeURIComponent(q)}/all/en`)
       .then(r => {
         if (!r.ok) throw new Error('search');
         return r.json();
@@ -461,8 +461,8 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
     const n = (dayOfYear % 6236) + 1;
     let cancelled = false;
     Promise.all([
-      fetch(`https://api.alquran.cloud/v1/ayah/${n}/quran-uthmani`).then(r => r.json()),
-      fetch(`https://api.alquran.cloud/v1/ayah/${n}/en.asad`).then(r => r.json())
+      fetch(`/api/quran/ayah/${n}/quran-uthmani`).then(r => r.json()),
+      fetch(`/api/quran/ayah/${n}/en.asad`).then(r => r.json())
     ]).then(([ar, en]) => {
       if (cancelled) return;
       const s = ar?.data?.surah;

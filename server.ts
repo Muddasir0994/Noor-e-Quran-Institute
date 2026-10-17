@@ -1060,6 +1060,38 @@ app.post('/api/coupons/validate', (req, res) => {
 });
 
 // -------------------------------------------------------------
+// Quran API proxy (api.alquran.cloud) — public Quran data.
+// Proxied through our server so the Classroom Studio works even
+// when a student's network blocks the third-party API domain.
+// Strict path whitelist; short server-side cache.
+// -------------------------------------------------------------
+const QURAN_API_BASE = 'https://api.alquran.cloud/v1';
+const quranCache = new Map<string, { data: any; expires: number }>();
+
+app.get('/api/quran/*', async (req, res) => {
+  const path = (req.params as any)[0] || '';
+  if (!/^(surah\/\d{1,3}\/[a-z.\-]+|juz\/\d{1,2}\/[a-z.\-]+|ayah\/\d{1,4}\/[a-z.\-]+|search\/[^/]{1,60}\/all\/en)$/.test(path)) {
+    return res.status(400).json({ error: 'Invalid Quran API path.' });
+  }
+  const cacheKey = path;
+  const cached = quranCache.get(cacheKey);
+  if (cached && cached.expires > Date.now()) {
+    return res.json(cached.data);
+  }
+  try {
+    const r = await fetch(`${QURAN_API_BASE}/${path}`, { signal: AbortSignal.timeout(15000) });
+    const data = await r.json();
+    if (r.ok) {
+      quranCache.set(cacheKey, { data, expires: Date.now() + 60 * 60 * 1000 });
+      if (quranCache.size > 500) quranCache.clear();
+    }
+    res.status(r.status).json(data);
+  } catch {
+    res.status(502).json({ error: 'Quran service temporarily unavailable.' });
+  }
+});
+
+// -------------------------------------------------------------
 // Referrals (parent referral tracking)
 // -------------------------------------------------------------
 app.get('/api/admin/referrals', requireAdmin, (req, res) => {
