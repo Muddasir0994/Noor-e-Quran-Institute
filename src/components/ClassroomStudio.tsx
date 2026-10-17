@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import {
   QURAN_SURAHS,
@@ -13,6 +13,7 @@ import {
 import { QURAN_SURAH_LIST, SurahMeta } from '../data/quranSurahList';
 import { TAJWEED_RULES, TAJWEED_CATEGORIES } from '../data/tajweedRules';
 import { ISLAMIC_BOOKS, BOOK_CATEGORIES } from '../data/islamicBooks';
+import { URDU_TAFSIRS } from '../data/urduTafsirs';
 import { saveProgressReportToFirebase } from '../lib/firestoreService';
 import {
   BookOpen,
@@ -52,7 +53,8 @@ import {
   Sun,
   ArrowSquareOut,
   X,
-  Books
+  Books,
+  BookBookmark
 } from '@phosphor-icons/react';
 import { useAuth } from '../context/AuthContext';
 
@@ -110,8 +112,8 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
   const { surah } = useParams<{ surah?: string }>();
   const targetSurahNum = surah ? parseInt(surah, 10) : initialSurahNumber;
 
-  // Main Studio Mode: 'quran' | 'qaida' | 'whiteboard' | 'duas' | 'salah' | 'tajweed' | 'books'
-  const [studioMode, setStudioMode] = useState<'quran' | 'qaida' | 'whiteboard' | 'duas' | 'salah' | 'tajweed' | 'books'>(
+  // Main Studio Mode: 'quran' | 'qaida' | 'whiteboard' | 'duas' | 'salah' | 'tajweed' | 'books' | 'tafsir'
+  const [studioMode, setStudioMode] = useState<'quran' | 'qaida' | 'whiteboard' | 'duas' | 'salah' | 'tajweed' | 'books' | 'tafsir'>(
     surah ? 'quran' : initialMode
   );
 
@@ -140,7 +142,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
   // A few surahs ship with rich bundled data (transliteration, Urdu, tajweed notes).
   const bundledSurah: SurahData | null = QURAN_SURAHS.find(s => s.number === selectedSurahNumber) ?? null;
 
-  interface ApiAyah { numberInSurah: number; arabic: string; english: string; }
+  interface ApiAyah { numberInSurah: number; arabic: string; english: string; urduKanzulIman: string; }
   const [apiAyahs, setApiAyahs] = useState<ApiAyah[] | null>(null);
   const [apiLoading, setApiLoading] = useState<boolean>(false);
   const [apiError, setApiError] = useState<string | null>(null);
@@ -172,14 +174,21 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
       fetch(`https://api.alquran.cloud/v1/surah/${selectedSurahNumber}/en.asad`).then(r => {
         if (!r.ok) throw new Error('english');
         return r.json();
-      })
-    ]).then(([ar, en]) => {
+      }),
+      // Kanz-ul-Iman Urdu translation (Ahmed Raza Khan) — optional; never blocks the surah
+      fetch(`https://api.alquran.cloud/v1/surah/${selectedSurahNumber}/ur.kanzuliman`).then(r => {
+        if (!r.ok) throw new Error('urdu');
+        return r.json();
+      }).catch(() => null)
+    ]).then(([ar, en, ur]) => {
       if (cancelled) return;
       const enAyahs: any[] = en?.data?.ayahs ?? [];
+      const urAyahs: any[] = ur?.data?.ayahs ?? [];
       const merged: ApiAyah[] = (ar?.data?.ayahs ?? []).map((a: any, i: number) => ({
         numberInSurah: a.numberInSurah,
         arabic: a.text,
-        english: enAyahs[i]?.text ?? ''
+        english: enAyahs[i]?.text ?? '',
+        urduKanzulIman: urAyahs[i]?.text ?? ''
       }));
       surahCacheRef.current.set(selectedSurahNumber, merged);
       setApiAyahs(merged);
@@ -216,6 +225,15 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
       audioUrl: alafasyAudioUrl(surahMeta.number, a.numberInSurah)
     }))
   };
+
+  // Kanz-ul-Iman Urdu text lookup per ayah (API-loaded surahs only; bundled surahs keep their own `urdu`)
+  const kanzulImanMap = useMemo(() => {
+    const m = new Map<number, string>();
+    (apiAyahs ?? []).forEach(a => {
+      if (a.urduKanzulIman) m.set(a.numberInSurah, a.urduKanzulIman);
+    });
+    return m;
+  }, [apiAyahs]);
 
   const [activeAyahNumber, setActiveAyahNumber] = useState<number | null>(null);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
@@ -1065,6 +1083,18 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
             <Books className="w-4 h-4 text-[#D4A72C]" weight="duotone" />
             <span>Islamic Books Library</span>
           </button>
+
+          <button
+            onClick={() => { stopAudio(); setStudioMode('tafsir'); }}
+            className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer ${
+              studioMode === 'tafsir'
+                ? 'bg-[#064E3B] text-white shadow-xs'
+                : 'text-gray-600 hover:bg-gray-100'
+            }`}
+          >
+            <BookBookmark className="w-4 h-4 text-[#D4A72C]" weight="duotone" />
+            <span>Urdu Tafsir Library</span>
+          </button>
         </div>
 
         <div className="hidden md:flex items-center gap-3 text-xs text-gray-500 font-medium">
@@ -1635,6 +1665,14 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
                         <p className="text-base sm:text-lg font-urdu text-emerald-950 text-right leading-loose font-normal mt-1" dir="rtl">
                           <strong className="text-gray-400 text-xs ml-2 font-sans">اردو:</strong>
                           {ayah.urdu}
+                        </p>
+                      )}
+
+                      {/* Kanz-ul-Iman Urdu translation (API-loaded surahs only) */}
+                      {!ayah.urdu && kanzulImanMap.get(ayah.numberInSurah) && (translationLang === 'both' || translationLang === 'urdu') && (
+                        <p className="text-base sm:text-lg font-urdu text-emerald-950 text-right leading-loose font-normal mt-1" dir="rtl">
+                          <strong className="text-gray-400 text-xs ml-2 font-sans">کنزالایمان:</strong>
+                          {kanzulImanMap.get(ayah.numberInSurah)}
                         </p>
                       )}
                     </div>
@@ -2450,6 +2488,86 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
                     className="mt-4 inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-[#064E3B] text-white hover:bg-emerald-900 transition-colors"
                   >
                     <span>{book.linkLabel}</span>
+                    <ArrowSquareOut className="w-3.5 h-3.5 text-[#D4A72C]" />
+                  </a>
+                </div>
+              ))}
+            </div>
+
+          </div>
+        )}
+
+        {/* ============================================================== */}
+        {/* VIEW 8: URDU TAFSIR LIBRARY */}
+        {/* ============================================================== */}
+        {studioMode === 'tafsir' && (
+          <div className="space-y-6">
+
+            <div className="bg-white p-4 sm:p-5 rounded-2xl border border-gray-200 shadow-xs">
+              <h3 className="text-base font-bold text-[#064E3B] flex items-center gap-2">
+                <BookBookmark className="w-5 h-5 text-[#D4A72C]" weight="duotone" />
+                Urdu Tafsir Library
+              </h3>
+              <p className="text-xs text-gray-500 mt-1">
+                Authentic Ahle Sunnat tafsirs in Urdu — understand every ayah with classical scholarship.
+              </p>
+            </div>
+
+            {URDU_TAFSIRS.filter(t => t.featured).map(tafsir => (
+              <div key={tafsir.id} className="rounded-2xl border-2 border-[#D4A72C] bg-gradient-to-br from-amber-50 via-white to-emerald-50 p-5 sm:p-7 shadow-xs">
+                <span className="inline-block text-[10px] font-extrabold uppercase tracking-widest text-[#064E3B] bg-[#D4A72C] px-3 py-1 rounded-full mb-3">
+                  ★ Featured Tafsir
+                </span>
+                <h4 className="font-editorial text-xl sm:text-2xl font-extrabold text-[#0B332D]">{tafsir.title}</h4>
+                <p className="font-arabic text-2xl text-emerald-800 mt-1">{tafsir.arabicTitle}</p>
+                <p className="text-xs text-gray-600 font-medium mt-2">
+                  by {tafsir.author} <span className="text-gray-400">• {tafsir.authorTitle}</span>
+                </p>
+                <p className="text-sm text-gray-700 leading-relaxed mt-3 max-w-3xl">{tafsir.description}</p>
+                <div className="flex flex-wrap gap-2 mt-4">
+                  <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#064E3B] bg-emerald-100 px-2.5 py-1 rounded-full border border-emerald-200">
+                    {tafsir.volumes}
+                  </span>
+                  <span className="text-[10px] font-bold text-gray-500 bg-gray-100 px-2.5 py-1 rounded-full">
+                    {tafsir.language}
+                  </span>
+                </div>
+                <a
+                  href={tafsir.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-5 inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl text-xs font-bold bg-[#0B332D] text-white hover:bg-emerald-900 transition-colors"
+                >
+                  <span>{tafsir.linkLabel}</span>
+                  <ArrowSquareOut className="w-3.5 h-3.5 text-[#D4A72C]" />
+                </a>
+              </div>
+            ))}
+
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {URDU_TAFSIRS.filter(t => !t.featured).map(tafsir => (
+                <div key={tafsir.id} className="bg-white rounded-2xl border border-gray-200 shadow-xs p-5 flex flex-col">
+                  <h4 className="text-sm sm:text-base font-bold text-[#064E3B]">{tafsir.title}</h4>
+                  <p className="font-arabic text-lg text-emerald-800 mt-0.5">{tafsir.arabicTitle}</p>
+                  <p className="text-xs text-gray-500 font-medium mt-1">
+                    by {tafsir.author} <span className="text-gray-400">• {tafsir.authorTitle}</span>
+                  </p>
+                  <p className="text-xs text-gray-600 leading-relaxed mt-2 flex-1">{tafsir.description}</p>
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#064E3B] bg-emerald-100 px-2.5 py-1 rounded-full border border-emerald-200">
+                      {tafsir.volumes}
+                    </span>
+                    <span className="text-[10px] font-bold text-gray-500 bg-gray-100 px-2.5 py-1 rounded-full">
+                      {tafsir.language}
+                    </span>
+                  </div>
+                  <a
+                    href={tafsir.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-4 inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-[#064E3B] text-white hover:bg-emerald-900 transition-colors"
+                  >
+                    <span>{tafsir.linkLabel}</span>
                     <ArrowSquareOut className="w-3.5 h-3.5 text-[#D4A72C]" />
                   </a>
                 </div>
