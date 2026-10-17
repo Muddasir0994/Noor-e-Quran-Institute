@@ -902,6 +902,86 @@ app.post('/api/admin/assessments', requireAdmin, (req, res) => {
   res.status(201).json({ success: true, assessment });
 });
 
+// -------------------------------------------------------------
+// Attendance (per-class present/absent/leave marking)
+// -------------------------------------------------------------
+app.get('/api/admin/attendance', requireAdmin, (req, res) => {
+  const date = (req.query.date as string) || new Date().toISOString().split('T')[0];
+  res.json({ success: true, date, records: dataStore.getAttendanceByDate(date) });
+});
+
+app.get('/api/admin/attendance/student/:studentId', requireAdmin, (req, res) => {
+  res.json({ success: true, records: dataStore.getAttendanceForStudent(req.params.studentId) });
+});
+
+app.post('/api/admin/attendance', requireAdmin, (req, res) => {
+  const { date, records, markedBy } = req.body;
+  if (!date || !Array.isArray(records) || records.length === 0) {
+    return res.status(400).json({ error: 'date and a non-empty records array are required.' });
+  }
+  const validStatuses = ['present', 'absent', 'leave'];
+  for (const r of records) {
+    if (!r.studentId || !validStatuses.includes(r.status)) {
+      return res.status(400).json({ error: 'Each record needs studentId and a valid status (present/absent/leave).' });
+    }
+  }
+  const saved = dataStore.markAttendance(date, records, markedBy || 'Admin');
+  res.status(201).json({ success: true, date, records: saved });
+});
+
+// -------------------------------------------------------------
+// Trial Classes (lead -> scheduled trial -> conversion tracking)
+// -------------------------------------------------------------
+app.get('/api/admin/trials', requireAdmin, (req, res) => {
+  res.json({ success: true, trials: dataStore.getTrials() });
+});
+
+app.post('/api/admin/trials', requireAdmin, (req, res) => {
+  const { studentName, phone, date, time } = req.body;
+  if (!studentName || !phone || !date || !time) {
+    return res.status(400).json({ error: 'studentName, phone, date and time are required.' });
+  }
+  const trial = dataStore.addTrial(req.body);
+  res.status(201).json({ success: true, trial });
+});
+
+app.patch('/api/admin/trials/:id', requireAdmin, (req, res) => {
+  const trial = dataStore.updateTrial(req.params.id, req.body);
+  if (!trial) return res.status(404).json({ error: 'Trial not found' });
+  res.json({ success: true, trial });
+});
+
+app.delete('/api/admin/trials/:id', requireAdmin, (req, res) => {
+  const deleted = dataStore.deleteTrial(req.params.id);
+  if (!deleted) return res.status(404).json({ error: 'Trial not found' });
+  res.json({ success: true, message: 'Trial deleted successfully' });
+});
+
+// -------------------------------------------------------------
+// Fee Reminders (log of payment reminders sent for invoices)
+// -------------------------------------------------------------
+app.get('/api/admin/fee-reminders', requireAdmin, (req, res) => {
+  const { invoiceId } = req.query;
+  const reminders = invoiceId
+    ? dataStore.getFeeRemindersForInvoice(invoiceId as string)
+    : dataStore.getFeeReminders();
+  res.json({ success: true, reminders });
+});
+
+app.post('/api/admin/fee-reminders', requireAdmin, (req, res) => {
+  const { invoiceId, studentName, phone, amount, currency, channel } = req.body;
+  if (!invoiceId || !studentName || !phone || amount == null) {
+    return res.status(400).json({ error: 'invoiceId, studentName, phone and amount are required.' });
+  }
+  const reminder = dataStore.addFeeReminder({
+    invoiceId, studentName, phone, amount,
+    currency: currency || 'USD',
+    channel: channel === 'email' ? 'email' : 'whatsapp',
+    sentBy: 'Admin'
+  });
+  res.status(201).json({ success: true, reminder });
+});
+
 // IndexNow Instant Search Engine Indexing Endpoint
 app.post('/api/indexnow/submit', async (req, res) => {
   const DEFAULT_URL_LIST = [
