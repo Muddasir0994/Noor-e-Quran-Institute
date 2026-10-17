@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Tutor,
   Student,
@@ -8,8 +8,12 @@ import {
 import { saveProgressReportToFirebase } from '../lib/firestoreService';
 import { useAuth } from '../context/AuthContext';
 import { QuranReader } from './portal/QuranReader';
+import { Whiteboard } from './portal/Whiteboard';
 import { usePresence, usePresenceList, isOnline, KNOWN_STUDENTS } from './portal/usePresence';
 import { useLiveClasses, startLiveClass, endLiveClass, LiveClass } from './portal/useLiveClasses';
+import { useHomeworkSubmissions, reviewHomework, HomeworkSubmission } from './portal/useHomework';
+import { markAttendance, useTodayAttendance, AttendanceStatus } from './portal/useAttendance';
+import { useMessageThread, useUnreadCount, sendPortalMessage, markThreadRead, threadIdFor } from './portal/useMessages';
 import {
   Users,
   Calendar,
@@ -29,7 +33,12 @@ import {
   GraduationCap,
   Copy,
   PhoneDisconnect,
-  Circle
+  Circle,
+  ChalkboardTeacher,
+  ClipboardText,
+  ChatCircleText,
+  PaperPlaneTilt,
+  Checks
 } from '@phosphor-icons/react';
 
 interface TeacherPortalProps {
@@ -45,7 +54,7 @@ export const TeacherPortal: React.FC<TeacherPortalProps> = ({
 
   // Tutor switcher
   const [selectedTutorId, setSelectedTutorId] = useState<string>('tut-1');
-  const [activeTab, setActiveTab] = useState<'schedule' | 'students' | 'evaluator' | 'profile' | 'quran' | 'liveclass'>('schedule');
+  const [activeTab, setActiveTab] = useState<'schedule' | 'students' | 'evaluator' | 'profile' | 'quran' | 'liveclass' | 'whiteboard' | 'homework' | 'messages'>('schedule');
 
   // Evaluation form state
   const [evalStudent, setEvalStudent] = useState<{ id: string; name: string; course: string; currentLesson: string } | null>(null);
@@ -103,6 +112,34 @@ export const TeacherPortal: React.FC<TeacherPortalProps> = ({
   usePresence(currentUser?.email || undefined, currentTutor.name, 'teacher');
   const presenceList = usePresenceList();
   const liveClasses = useLiveClasses();
+
+  // Teacher identity for Firestore features (homework/attendance/messages)
+  const teacherEmail = (currentUser?.email || '').toLowerCase();
+  const teacherName = currentTutor.name;
+
+  // Homework review (realtime submissions from my students)
+  const homeworkSubs = useHomeworkSubmissions(teacherEmail || undefined);
+  const [feedbackDraft, setFeedbackDraft] = useState<Record<string, string>>({});
+  const [reviewingId, setReviewingId] = useState<string | null>(null);
+
+  // Attendance (today)
+  const todayAttendance = useTodayAttendance();
+  const [attSaving, setAttSaving] = useState<string | null>(null);
+
+  // Messages
+  const unreadCount = useUnreadCount(teacherEmail || undefined);
+  const [msgStudentEmail, setMsgStudentEmail] = useState<string>(KNOWN_STUDENTS[0]?.email || '');
+  const msgStudent = KNOWN_STUDENTS.find(s => s.email === msgStudentEmail) || KNOWN_STUDENTS[0];
+  const thread = useMessageThread(teacherEmail || undefined, msgStudentEmail || undefined);
+  const [msgDraft, setMsgDraft] = useState('');
+  const [msgSending, setMsgSending] = useState(false);
+
+  // Mark thread read when viewing messages.
+  useEffect(() => {
+    if (activeTab === 'messages' && teacherEmail && msgStudentEmail && thread.length > 0) {
+      markThreadRead(threadIdFor(teacherEmail, msgStudentEmail), teacherEmail).catch(() => {});
+    }
+  }, [activeTab, msgStudentEmail, thread.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Live class state (this teacher's active session)
   const [myLiveClass, setMyLiveClass] = useState<LiveClass | null>(null);
@@ -224,7 +261,10 @@ export const TeacherPortal: React.FC<TeacherPortalProps> = ({
             { id: 'schedule', label: "Today's Live Classes", icon: Calendar },
             { id: 'students', label: 'My Assigned Students', icon: Users },
             { id: 'quran', label: 'Quran Reader', icon: BookOpen },
+            { id: 'whiteboard', label: 'Whiteboard', icon: ChalkboardTeacher },
             { id: 'liveclass', label: 'Start Live Class', icon: VideoCamera },
+            { id: 'homework', label: 'Homework Review', icon: ClipboardText },
+            { id: 'messages', label: 'Messages', icon: ChatCircleText, badge: unreadCount },
             { id: 'evaluator', label: 'Log Sabaq & Daily Evaluation', icon: Certificate },
             { id: 'profile', label: 'Faculty Profile & Timetable', icon: ShieldCheck }
           ].map(tab => {
@@ -233,7 +273,7 @@ export const TeacherPortal: React.FC<TeacherPortalProps> = ({
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
-                className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer ${
+                className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer relative ${
                   activeTab === tab.id
                     ? 'bg-[#064E3B] text-white shadow-xs'
                     : 'text-gray-600 hover:bg-gray-100'
@@ -241,6 +281,11 @@ export const TeacherPortal: React.FC<TeacherPortalProps> = ({
               >
                 <Icon className="w-4 h-4 text-[#D4A72C]" weight="duotone" />
                 <span>{tab.label}</span>
+                {!!(tab as any).badge && (tab as any).badge > 0 && (
+                  <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-rose-600 text-white text-[10px] font-bold flex items-center justify-center">
+                    {(tab as any).badge}
+                  </span>
+                )}
               </button>
             );
           })}
@@ -363,16 +408,54 @@ export const TeacherPortal: React.FC<TeacherPortalProps> = ({
                 {KNOWN_STUDENTS.map(s => {
                   const entry = presenceList.find(p => p.email.toLowerCase() === s.email.toLowerCase());
                   const online = isOnline(entry);
+                  const att = todayAttendance[s.email.toLowerCase()];
+                  const saving = attSaving === s.email;
+                  const mark = async (status: AttendanceStatus) => {
+                    if (!teacherEmail) return;
+                    setAttSaving(s.email);
+                    try {
+                      await markAttendance({ studentEmail: s.email, studentName: s.name, status, markedBy: teacherEmail });
+                    } catch {}
+                    setAttSaving(null);
+                  };
+                  const attBtn = (status: AttendanceStatus, label: string) => (
+                    <button
+                      key={status}
+                      onClick={() => mark(status)}
+                      disabled={saving}
+                      className={`flex-1 py-1 rounded-lg text-[10px] font-bold transition-colors cursor-pointer disabled:opacity-50 ${
+                        att === status
+                          ? status === 'present' ? 'bg-emerald-600 text-white'
+                          : status === 'absent' ? 'bg-rose-600 text-white'
+                          : 'bg-amber-500 text-white'
+                          : 'bg-white text-gray-600 border border-gray-300 hover:bg-gray-100'
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  );
                   return (
-                    <div key={s.id} className="flex items-center gap-3 bg-gray-50 p-3 rounded-2xl border border-gray-200">
-                      <span className={`w-3 h-3 rounded-full shrink-0 ${online ? 'bg-emerald-500 animate-pulse' : 'bg-gray-300'}`} title={online ? 'Online' : 'Offline'} />
-                      <div className="min-w-0">
-                        <p className="text-sm font-bold text-[#064E3B] truncate">{s.name}</p>
-                        <p className="text-[11px] text-gray-500 truncate">{s.course}</p>
+                    <div key={s.id} className="bg-gray-50 p-3 rounded-2xl border border-gray-200 space-y-2">
+                      <div className="flex items-center gap-3">
+                        <span className={`w-3 h-3 rounded-full shrink-0 ${online ? 'bg-emerald-500 animate-pulse' : 'bg-gray-300'}`} title={online ? 'Online' : 'Offline'} />
+                        <div className="min-w-0">
+                          <p className="text-sm font-bold text-[#064E3B] truncate">{s.name}</p>
+                          <p className="text-[11px] text-gray-500 truncate">{s.course}</p>
+                        </div>
+                        <span className={`ml-auto text-[10px] font-bold px-2 py-0.5 rounded-full ${online ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-200 text-gray-500'}`}>
+                          {online ? 'Online' : 'Offline'}
+                        </span>
                       </div>
-                      <span className={`ml-auto text-[10px] font-bold px-2 py-0.5 rounded-full ${online ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-200 text-gray-500'}`}>
-                        {online ? 'Online' : 'Offline'}
-                      </span>
+                      <div>
+                        <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wide mb-1">
+                          Today's Attendance {att ? <span className="text-[#064E3B]">• {att === 'present' ? 'Present' : att === 'absent' ? 'Absent' : 'Leave'}</span> : <span className="text-gray-400">• Not marked</span>}
+                        </p>
+                        <div className="flex gap-1.5">
+                          {attBtn('present', saving ? '…' : 'Present')}
+                          {attBtn('absent', saving ? '…' : 'Absent')}
+                          {attBtn('leave', saving ? '…' : 'Leave')}
+                        </div>
+                      </div>
                     </div>
                   );
                 })}
@@ -437,6 +520,173 @@ export const TeacherPortal: React.FC<TeacherPortalProps> = ({
         {/* ============================================================== */}
         {activeTab === 'quran' && (
           <QuranReader />
+        )}
+
+        {/* ============================================================== */}
+        {/* TAB: WHITEBOARD */}
+        {/* ============================================================== */}
+        {activeTab === 'whiteboard' && (
+          <Whiteboard
+            title="Teaching Whiteboard"
+            subtitle="Write Arabic letters, circle Makharij mistakes, highlight Tajweed rules during your 1-on-1 class."
+          />
+        )}
+
+        {/* ============================================================== */}
+        {/* TAB: HOMEWORK REVIEW */}
+        {/* ============================================================== */}
+        {activeTab === 'homework' && (
+          <div className="space-y-4">
+            <div className="bg-white p-6 rounded-3xl border border-gray-200 shadow-xs">
+              <h3 className="text-base font-bold text-[#064E3B] flex items-center gap-2 mb-1">
+                <ClipboardText className="w-4 h-4 text-[#D4A72C]" weight="duotone" />
+                Homework Submissions ({homeworkSubs.length})
+              </h3>
+              <p className="text-xs text-gray-500 mb-4">Review written homework submitted by your students. Add feedback and mark as reviewed.</p>
+              {homeworkSubs.length === 0 ? (
+                <div className="text-center py-10 text-gray-400 text-sm">
+                  <ClipboardText className="w-10 h-10 mx-auto mb-2 text-gray-300" weight="duotone" />
+                  No homework submissions yet. They will appear here when students submit.
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {homeworkSubs.map(h => (
+                    <div key={h.id} className="bg-gray-50 border border-gray-200 rounded-2xl p-4 space-y-3">
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <div>
+                          <p className="text-sm font-bold text-[#064E3B]">{h.title}</p>
+                          <p className="text-[11px] text-gray-500">
+                            {h.studentName} ({h.studentEmail}) •
+                            {' '}{h.submittedAt?.toDate ? h.submittedAt.toDate().toLocaleString() : 'recently'}
+                          </p>
+                        </div>
+                        <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full ${h.status === 'reviewed' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}`}>
+                          {h.status === 'reviewed' ? 'Reviewed' : 'Pending Review'}
+                        </span>
+                      </div>
+                      <div className="bg-white border border-gray-200 rounded-xl p-3 text-sm text-gray-700 whitespace-pre-wrap">
+                        {h.textAnswer}
+                      </div>
+                      {h.status === 'reviewed' && h.feedback ? (
+                        <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-sm">
+                          <p className="text-[11px] font-bold text-emerald-800 uppercase tracking-wide mb-1">Your Feedback</p>
+                          <p className="text-gray-700 whitespace-pre-wrap">{h.feedback}</p>
+                        </div>
+                      ) : (
+                        <div className="space-y-2">
+                          <textarea
+                            value={feedbackDraft[h.id] || ''}
+                            onChange={e => setFeedbackDraft(prev => ({ ...prev, [h.id]: e.target.value }))}
+                            placeholder="Write feedback for the student… (e.g. MashaAllah, work on the Qalqalah letters)"
+                            rows={2}
+                            className="w-full text-sm border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-[#064E3B]/30"
+                          />
+                          <button
+                            onClick={async () => {
+                              const fb = (feedbackDraft[h.id] || '').trim();
+                              if (!fb) return;
+                              setReviewingId(h.id);
+                              try { await reviewHomework(h.id, fb); } catch {}
+                              setReviewingId(null);
+                            }}
+                            disabled={reviewingId === h.id}
+                            className="px-4 py-2 bg-[#064E3B] text-white text-xs font-bold rounded-xl hover:bg-emerald-900 transition-colors cursor-pointer disabled:opacity-50 flex items-center gap-1.5"
+                          >
+                            <Checks className="w-3.5 h-3.5" weight="bold" />
+                            {reviewingId === h.id ? 'Saving…' : 'Mark Reviewed with Feedback'}
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* ============================================================== */}
+        {/* TAB: MESSAGES */}
+        {/* ============================================================== */}
+        {activeTab === 'messages' && (
+          <div className="bg-white p-4 sm:p-6 rounded-3xl border border-gray-200 shadow-xs">
+            <h3 className="text-base font-bold text-[#064E3B] flex items-center gap-2 mb-1">
+              <ChatCircleText className="w-4 h-4 text-[#D4A72C]" weight="duotone" />
+              Messages with Students
+              {unreadCount > 0 && (
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-600 text-white">{unreadCount} new</span>
+              )}
+            </h3>
+            <p className="text-xs text-gray-500 mb-4">Chat directly with your students about lessons, homework and schedules.</p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="space-y-2">
+                {KNOWN_STUDENTS.map(s => (
+                  <button
+                    key={s.email}
+                    onClick={() => { setMsgStudentEmail(s.email); setMsgDraft(''); }}
+                    className={`w-full text-left p-3 rounded-2xl border transition-colors cursor-pointer ${
+                      msgStudentEmail === s.email ? 'bg-[#064E3B] text-white border-[#064E3B]' : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
+                    }`}
+                  >
+                    <p className={`text-sm font-bold ${msgStudentEmail === s.email ? 'text-white' : 'text-[#064E3B]'}`}>{s.name}</p>
+                    <p className={`text-[11px] ${msgStudentEmail === s.email ? 'text-white/70' : 'text-gray-500'}`}>{s.course}</p>
+                  </button>
+                ))}
+              </div>
+              <div className="md:col-span-2 flex flex-col border border-gray-200 rounded-2xl overflow-hidden" style={{ minHeight: 380 }}>
+                <div className="bg-gray-50 border-b border-gray-200 px-4 py-2.5">
+                  <p className="text-sm font-bold text-[#064E3B]">{msgStudent?.name}</p>
+                  <p className="text-[11px] text-gray-500">{msgStudent?.email}</p>
+                </div>
+                <div className="flex-1 overflow-y-auto p-4 space-y-2.5 bg-[#F8F5EE]" style={{ maxHeight: 320 }}>
+                  {thread.length === 0 ? (
+                    <p className="text-center text-gray-400 text-sm py-8">No messages yet. Say Salam to start the conversation.</p>
+                  ) : thread.map(m => {
+                    const mine = m.fromEmail.toLowerCase() === teacherEmail;
+                    return (
+                      <div key={m.id} className={`flex ${mine ? 'justify-end' : 'justify-start'}`}>
+                        <div className={`max-w-[80%] px-3.5 py-2 rounded-2xl text-sm ${mine ? 'bg-[#064E3B] text-white rounded-br-md' : 'bg-white text-gray-800 border border-gray-200 rounded-bl-md'}`}>
+                          <p className="whitespace-pre-wrap">{m.text}</p>
+                          <p className={`text-[10px] mt-1 ${mine ? 'text-white/60' : 'text-gray-400'}`}>
+                            {m.createdAt?.toDate ? m.createdAt.toDate().toLocaleString() : ''}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                <form
+                  onSubmit={async (e) => {
+                    e.preventDefault();
+                    const text = msgDraft.trim();
+                    if (!text || !teacherEmail || !msgStudentEmail) return;
+                    setMsgSending(true);
+                    try {
+                      await sendPortalMessage({ fromEmail: teacherEmail, fromName: teacherName, fromRole: 'teacher', toEmail: msgStudentEmail, text });
+                      setMsgDraft('');
+                    } catch {}
+                    setMsgSending(false);
+                  }}
+                  className="flex gap-2 p-3 border-t border-gray-200 bg-white"
+                >
+                  <input
+                    value={msgDraft}
+                    onChange={e => setMsgDraft(e.target.value)}
+                    placeholder={`Message ${msgStudent?.name || 'student'}…`}
+                    className="flex-1 text-sm border border-gray-300 rounded-xl px-3.5 py-2 focus:outline-none focus:ring-2 focus:ring-[#064E3B]/30"
+                  />
+                  <button
+                    type="submit"
+                    disabled={msgSending || !msgDraft.trim()}
+                    className="px-4 py-2 bg-[#064E3B] text-white text-xs font-bold rounded-xl hover:bg-emerald-900 transition-colors cursor-pointer disabled:opacity-50 flex items-center gap-1.5"
+                  >
+                    <PaperPlaneTilt className="w-3.5 h-3.5" weight="fill" />
+                    Send
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
         )}
 
         {/* ============================================================== */}
