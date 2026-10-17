@@ -540,12 +540,34 @@ class DataStore {
     return Array.isArray(docs) ? docs : [];
   }
 
+  private pendingData: DatabaseSchema | null = null;
+  private writePromise: Promise<void> | null = null;
+
   private saveDatabase(dataToSave?: DatabaseSchema) {
-    try {
-      const payload = dataToSave || this.data;
-      fs.writeFileSync(DB_FILE, JSON.stringify(payload, null, 2), 'utf-8');
-    } catch (err) {
-      console.error('Failed to write academy_db.json:', err);
+    // ⚡ Bolt: Replaced synchronous blocking write with an async concurrency queue
+    this.pendingData = dataToSave || this.data;
+    if (!this.writePromise) {
+      this.writePromise = this.processWriteQueue();
+    }
+  }
+
+  private async processWriteQueue() {
+    while (this.pendingData) {
+      const payload = this.pendingData;
+      this.pendingData = null;
+      try {
+        await fs.promises.writeFile(DB_FILE, JSON.stringify(payload, null, 2), 'utf-8');
+      } catch (err) {
+        console.error('Failed to write academy_db.json:', err);
+      }
+    }
+    this.writePromise = null;
+  }
+
+  // Await this during graceful shutdown to prevent data loss
+  public async flush() {
+    while (this.writePromise) {
+      await this.writePromise;
     }
   }
 
