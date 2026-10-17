@@ -8,7 +8,6 @@ Disallow: /staff-portal
 Disallow: /student-portal/private/
 Disallow: /teacher-portal/private/
 Disallow: /dashboard
-Disallow: /classroom/
 Disallow: /api/
 
 # Googlebot & Bingbot
