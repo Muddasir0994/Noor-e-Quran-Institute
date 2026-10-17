@@ -1,6 +1,8 @@
 import React, { Component, useState, useEffect, useRef } from 'react';
 import { BlogPost } from '../types';
-import { getAllBlogPosts, saveBlogPost, deleteBlogPost } from '../lib/firestoreService';
+// Blog management now goes through the server admin API (requireAdmin),
+// not direct Firestore — the admin's custom token is sufficient and no
+// Firebase Auth session is required.
 import { storage, storageRef, uploadBytes, getDownloadURL } from '../lib/firebase';
 import { ImageCropModal } from '../components/ImageCropModal';
 import DOMPurify from 'dompurify';
@@ -76,13 +78,21 @@ export const BlogEditor: React.FC<BlogEditorProps> = ({ onViewPost }) => {
   const contentEditableRef = useRef<HTMLDivElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
+  const getAdminHeaders = (): HeadersInit => {
+    const token = localStorage.getItem('alnoor_admin_token') || sessionStorage.getItem('alnoor_admin_token') || '';
+    return { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' };
+  };
+
   const fetchPosts = async () => {
     setLoading(true);
     try {
-      const data = await getAllBlogPosts();
-      setPosts(data);
+      const res = await fetch('/api/admin/blog-posts', { headers: getAdminHeaders() });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      setPosts(data.posts || []);
     } catch (err) {
       console.error('Error loading blog posts:', err);
+      setStatusMessage({ type: 'error', text: 'Could not load blog posts. Check your connection and try again.' });
     } finally {
       setLoading(false);
     }
@@ -306,13 +316,21 @@ export const BlogEditor: React.FC<BlogEditorProps> = ({ onViewPost }) => {
     };
 
     try {
-      await saveBlogPost(postPayload);
+      const res = await fetch('/api/admin/blog-posts', {
+        method: 'POST',
+        headers: getAdminHeaders(),
+        body: JSON.stringify(postPayload),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || `HTTP ${res.status}`);
+      }
       setStatusMessage({ type: 'success', text: 'Article published & saved successfully!' });
       await fetchPosts();
       setIsEditing(false);
-    } catch (err) {
+    } catch (err: any) {
       console.error('Save failed:', err);
-      setStatusMessage({ type: 'error', text: 'Failed to save blog post. Check console.' });
+      setStatusMessage({ type: 'error', text: `Failed to save blog post: ${err.message || 'unknown error'}` });
     } finally {
       setSaving(false);
     }
@@ -321,12 +339,19 @@ export const BlogEditor: React.FC<BlogEditorProps> = ({ onViewPost }) => {
   const handleDelete = async (id: string, postTitle: string) => {
     if (!window.confirm(`Are you sure you want to delete "${postTitle}"?`)) return;
     try {
-      await deleteBlogPost(id);
+      const res = await fetch(`/api/admin/blog-posts/${encodeURIComponent(id)}`, {
+        method: 'DELETE',
+        headers: getAdminHeaders(),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || `HTTP ${res.status}`);
+      }
       setPosts(prev => prev.filter(p => p.id !== id));
       setStatusMessage({ type: 'success', text: 'Blog post deleted.' });
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      setStatusMessage({ type: 'error', text: 'Failed to delete blog post.' });
+      setStatusMessage({ type: 'error', text: `Failed to delete blog post: ${err.message || 'unknown error'}` });
     }
   };
 

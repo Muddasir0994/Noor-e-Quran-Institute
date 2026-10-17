@@ -15,8 +15,8 @@ export interface PageMeta {
 
 export const KNOWN_STATIC_ROUTES: Record<string, PageMeta> = {
   '/': {
-    title: 'Noor E Quran Institute | 1-on-1 Online Quran Classes with Certified Tutors',
-    description: 'Learn Quran online with qualified male & female teachers at Noor E Quran Institute. 1-on-1 Tajweed classes for kids and adults worldwide with flexible timings and a free trial.',
+    title: 'Learn Quran Online | 1-on-1 Online Quran Classes for Kids & Adults',
+    description: 'Learn Quran online with certified male & female tutors. 1-on-1 Tajweed, Hifz & Qaida classes for kids and adults. Book a free 3-day trial today!',
     canonical: `${ACADEMY_BASE_URL}/`,
     ogType: 'website',
     ogImage: `${ACADEMY_BASE_URL}/logo.webp`,

@@ -7,6 +7,10 @@ import { createServer as createViteServer } from 'vite';
 import dotenv from 'dotenv';
 import nodemailer from 'nodemailer';
 import { dataStore } from './server/dataStore.js';
+import {
+  isFirestoreEnabled,
+  getFirestoreDb,
+} from './server/firestore.js';
 import { 
   resolveRouteMetadata, 
   injectSeoTagsIntoHtml, 
@@ -167,12 +171,55 @@ const LOGIN_MAX_FAILURES = 10;
 const loginFailures = new Map<string, { count: number; resetAt: number }>();
 
 function clientIp(req: Request): string {
-  // Prefer Cloudflare's real-client header, then X-Forwarded-For, then socket.
-  const cf = (req.headers['cf-connecting-ip'] as string) || '';
-  if (cf) return cf.split(',')[0].trim();
-  const xff = (req.headers['x-forwarded-for'] as string) || '';
-  if (xff) return xff.split(',')[0].trim();
-  return req.ip || (req.socket && req.socket.remoteAddress) || 'unknown';
+  const socketIp = req.ip || (req.socket && req.socket.remoteAddress) || 'unknown';
+  // Only trust Cloudflare's client-IP header when the direct peer is actually
+  // Cloudflare's network. This prevents attackers bypassing Cloudflare and
+  // hitting the origin directly from spoofing cf-connecting-ip to evade
+  // rate limits.
+  if (isCloudflareIp(socketIp)) {
+    const cf = (req.headers['cf-connecting-ip'] as string) || '';
+    if (cf) return cf.split(',')[0].trim();
+  }
+  // Otherwise use the direct peer IP (or X-Forwarded-For only as a hint
+  // when we know we're behind a trusted proxy — here we do NOT trust it
+  // from untrusted peers).
+  return socketIp;
+}
+
+// Cloudflare's published IPv4 ranges (https://www.cloudflare.com/ips/).
+// Used to validate that cf-connecting-ip comes from Cloudflare itself.
+const CLOUDFLARE_IPV4_RANGES = [
+  '103.21.244.0/22', '103.22.200.0/22', '103.31.4.0/22', '104.16.0.0/13',
+  '104.24.0.0/14', '108.162.192.0/18', '131.0.72.0/22', '141.101.64.0/18',
+  '162.158.0.0/15', '172.64.0.0/13', '173.245.48.0/20', '188.114.96.0/20',
+  '190.93.240.0/20', '197.234.240.0/22', '198.41.128.0/17',
+];
+
+function ipToInt(ip: string): number | null {
+  const parts = ip.trim().split('.');
+  if (parts.length !== 4) return null;
+  let num = 0;
+  for (const p of parts) {
+    const n = parseInt(p, 10);
+    if (isNaN(n) || n < 0 || n > 255) return null;
+    num = (num << 8) + n;
+  }
+  return num >>> 0;
+}
+
+function isCloudflareIp(ip: string): boolean {
+  // Strip IPv6-mapped IPv4 prefix (::ffff:1.2.3.4)
+  const clean = ip.replace(/^::ffff:/, '');
+  const ipNum = ipToInt(clean);
+  if (ipNum === null) return false;
+  for (const range of CLOUDFLARE_IPV4_RANGES) {
+    const [base, bits] = range.split('/');
+    const baseNum = ipToInt(base);
+    if (baseNum === null) continue;
+    const mask = bits === '0' ? 0 : (~((1 << (32 - parseInt(bits, 10))) - 1) >>> 0);
+    if ((ipNum & mask) === (baseNum & mask)) return true;
+  }
+  return false;
 }
 
 function getLoginFailureRecord(ip: string) {
@@ -388,7 +435,7 @@ app.post('/api/auth/send-phone-otp', checkPublicRateLimit, (req, res) => {
 });
 
 // 2. Verify Student Phone OTP
-app.post('/api/auth/verify-phone-otp', (req, res) => {
+app.post('/api/auth/verify-phone-otp', checkPublicRateLimit, (req, res) => {
   try {
     const { phone, otp } = req.body;
     if (!phone || !otp) {
@@ -398,15 +445,6 @@ app.post('/api/auth/verify-phone-otp', (req, res) => {
     const cleanPhone = normalizePhone(phone);
     const cleanOtp = otp.toString().trim();
     const record = otpStore.get(cleanPhone);
-
-    // Optional development test override (strictly disabled in production)
-    if (process.env.ALLOW_TEST_OTP === 'true' && process.env.NODE_ENV !== 'production' && cleanOtp === '123456') {
-      return res.json({
-        success: true,
-        verified: true,
-        message: 'Phone number verified successfully (dev override)!'
-      });
-    }
 
     if (!record) {
       return res.status(400).json({
@@ -847,8 +885,11 @@ app.get('/api/admin/students', requireAdmin, (req, res) => {
 });
 
 app.post('/api/admin/students', requireAdmin, (req, res) => {
-  const student = dataStore.addStudent(req.body);
-  res.status(201).json({ success: true, student });
+  const { student, deduplicated } = dataStore.addStudent(req.body);
+  // addStudent is idempotent on enrollmentId: if a student already exists
+  // for the given enrollment, the existing record is returned with
+  // deduplicated=true instead of creating a duplicate.
+  res.status(201).json({ success: true, student, deduplicated });
 });
 
 app.patch('/api/admin/students/:id', requireAdmin, (req, res) => {
@@ -1211,14 +1252,472 @@ app.post('/api/indexnow/submit', requireAdmin, async (req, res) => {
 });
 
 // Testimonials Admin
+app.get('/api/admin/testimonials', requireAdmin, (req, res) => {
+  try {
+    res.json({ success: true, testimonials: dataStore.getTestimonials() });
+  } catch (err: any) {
+    res.status(500).json({ error: 'Failed to fetch testimonials' });
+  }
+});
+
 app.post('/api/admin/testimonials', requireAdmin, (req, res) => {
-  const testimonial = dataStore.addTestimonial(req.body);
+  const t = req.body;
+  if (!t || typeof t !== 'object') return res.status(400).json({ error: 'Invalid testimonial data' });
+  if (!t.name || typeof t.name !== 'string' || !t.name.trim()) {
+    return res.status(400).json({ error: 'Name is required' });
+  }
+  if (!t.comment || typeof t.comment !== 'string' || !t.comment.trim()) {
+    return res.status(400).json({ error: 'Comment is required' });
+  }
+  const clean = {
+    name: String(t.name).slice(0, 100),
+    studentOrParent: String(t.studentOrParent || 'Parent').slice(0, 50),
+    location: String(t.location || '').slice(0, 100),
+    countryFlag: typeof t.countryFlag === 'string' ? t.countryFlag.slice(0, 10) : undefined,
+    courseName: String(t.courseName || '').slice(0, 100),
+    rating: Math.min(5, Math.max(1, Number(t.rating) || 5)),
+    comment: String(t.comment).slice(0, 2000),
+    status: t.status === 'pending' ? 'pending' : 'published'
+  } as const;
+  const testimonial = dataStore.addTestimonial(clean);
   res.status(201).json({ success: true, testimonial });
+});
+
+app.patch('/api/admin/testimonials/:id', requireAdmin, (req, res) => {
+  const updated = dataStore.updateTestimonial(req.params.id, req.body || {});
+  if (!updated) return res.status(404).json({ error: 'Testimonial not found' });
+  res.json({ success: true, testimonial: updated });
 });
 
 app.delete('/api/admin/testimonials/:id', requireAdmin, (req, res) => {
   const ok = dataStore.deleteTestimonial(req.params.id);
   res.json({ success: ok });
+});
+
+// Packages Admin (Phase 2: admin now manages the same packages the public site reads)
+app.get('/api/admin/packages', requireAdmin, (req, res) => {
+  try {
+    res.json({ success: true, packages: dataStore.getPackages() });
+  } catch (err: any) {
+    res.status(500).json({ error: 'Failed to fetch packages' });
+  }
+});
+
+app.post('/api/admin/packages', requireAdmin, (req, res) => {
+  const p = req.body;
+  if (!p || typeof p !== 'object') return res.status(400).json({ error: 'Invalid package data' });
+  if (!p.name || typeof p.name !== 'string' || !p.name.trim()) {
+    return res.status(400).json({ error: 'Package name is required' });
+  }
+  const num = (v: any, d: number) => { const n = Number(v); return isNaN(n) || n < 0 ? d : n; };
+  const clean = {
+    name: String(p.name).slice(0, 100),
+    code: ['pkg-2days', 'pkg-3days', 'pkg-5days', 'pkg-weekend'].includes(p.code) ? p.code : 'pkg-3days',
+    daysPerWeek: String(p.daysPerWeek || '').slice(0, 50),
+    classesPerMonth: num(p.classesPerMonth, 12),
+    classDurationMinutes: num(p.classDurationMinutes, 30),
+    monthlyFeePKR: num(p.monthlyFeePKR, 0),
+    monthlyFeeUSD: num(p.monthlyFeeUSD, 0),
+    monthlyFeeGBP: num(p.monthlyFeeGBP, 0),
+    monthlyFeeEUR: num(p.monthlyFeeEUR, 0),
+    monthlyFeeAED: num(p.monthlyFeeAED, 0),
+    monthlyFeeCAD: num(p.monthlyFeeCAD, 0),
+    monthlyFeeAUD: num(p.monthlyFeeAUD, 0),
+    isPopular: p.isPopular === true,
+    badge: typeof p.badge === 'string' ? p.badge.slice(0, 50) : undefined,
+    features: Array.isArray(p.features) ? p.features.map(String).slice(0, 15) : [],
+    description: String(p.description || '').slice(0, 500)
+  } as const;
+  const pkg = dataStore.addPackage(clean);
+  res.status(201).json({ success: true, package: pkg });
+});
+
+app.patch('/api/admin/packages/:id', requireAdmin, (req, res) => {
+  const updated = dataStore.updatePackage(req.params.id, req.body || {});
+  if (!updated) return res.status(404).json({ error: 'Package not found' });
+  res.json({ success: true, package: updated });
+});
+
+app.delete('/api/admin/packages/:id', requireAdmin, (req, res) => {
+  const ok = dataStore.deletePackage(req.params.id);
+  res.json({ success: ok });
+});
+
+// FAQs Admin (Phase 2)
+app.get('/api/admin/faqs', requireAdmin, (req, res) => {
+  try {
+    res.json({ success: true, faqs: dataStore.getFaqs() });
+  } catch (err: any) {
+    res.status(500).json({ error: 'Failed to fetch FAQs' });
+  }
+});
+
+app.post('/api/admin/faqs', requireAdmin, (req, res) => {
+  const f = req.body;
+  if (!f || typeof f !== 'object') return res.status(400).json({ error: 'Invalid FAQ data' });
+  if (!f.question || typeof f.question !== 'string' || !f.question.trim()) {
+    return res.status(400).json({ error: 'Question is required' });
+  }
+  if (!f.answer || typeof f.answer !== 'string' || !f.answer.trim()) {
+    return res.status(400).json({ error: 'Answer is required' });
+  }
+  const faq = dataStore.addFaq({
+    question: String(f.question).slice(0, 500),
+    answer: String(f.answer).slice(0, 5000),
+    category: typeof f.category === 'string' ? f.category.slice(0, 50) : undefined,
+    order: Number(f.order) || 0
+  });
+  res.status(201).json({ success: true, faq });
+});
+
+app.patch('/api/admin/faqs/:id', requireAdmin, (req, res) => {
+  const updated = dataStore.updateFaq(req.params.id, req.body || {});
+  if (!updated) return res.status(404).json({ error: 'FAQ not found' });
+  res.json({ success: true, faq: updated });
+});
+
+app.delete('/api/admin/faqs/:id', requireAdmin, (req, res) => {
+  const ok = dataStore.deleteFaq(req.params.id);
+  res.json({ success: ok });
+});
+
+// Public FAQs (published content only)
+app.get('/api/faqs', (req, res) => {
+  try {
+    res.json({ success: true, faqs: dataStore.getFaqs() });
+  } catch (err: any) {
+    res.status(500).json({ error: 'Failed to fetch FAQs' });
+  }
+});
+
+// Site Settings Admin (Phase 2: singleton)
+app.get('/api/admin/settings', requireAdmin, (req, res) => {
+  try {
+    res.json({ success: true, settings: dataStore.getSiteSettings() });
+  } catch (err: any) {
+    res.status(500).json({ error: 'Failed to fetch settings' });
+  }
+});
+
+app.post('/api/admin/settings', requireAdmin, (req, res) => {
+  const s = req.body;
+  if (!s || typeof s !== 'object') return res.status(400).json({ error: 'Invalid settings data' });
+  const clean: Record<string, any> = {};
+  if (typeof s.announcementBarText === 'string') clean.announcementBarText = s.announcementBarText.slice(0, 300);
+  if (typeof s.announcementBarEnabled === 'boolean') clean.announcementBarEnabled = s.announcementBarEnabled;
+  if (typeof s.announcementBadge === 'string') clean.announcementBadge = s.announcementBadge.slice(0, 50);
+  if (typeof s.heroHeadline === 'string') clean.heroHeadline = s.heroHeadline.slice(0, 200);
+  if (typeof s.heroSubtitle === 'string') clean.heroSubtitle = s.heroSubtitle.slice(0, 500);
+  if (typeof s.primaryWhatsApp === 'string') clean.primaryWhatsApp = s.primaryWhatsApp.slice(0, 30);
+  if (typeof s.officialEmail === 'string') clean.officialEmail = s.officialEmail.slice(0, 100);
+  if (typeof s.emergencyPhone === 'string') clean.emergencyPhone = s.emergencyPhone.slice(0, 30);
+  if (typeof s.address === 'string') clean.address = s.address.slice(0, 200);
+  if (typeof s.freeTrialDays === 'number' && s.freeTrialDays >= 0) clean.freeTrialDays = Math.floor(s.freeTrialDays);
+  const settings = dataStore.updateSiteSettings(clean);
+  res.json({ success: true, settings });
+});
+
+// Media Assets Admin (Phase 2: metadata only, no binary upload here)
+app.get('/api/admin/media', requireAdmin, (req, res) => {
+  try {
+    res.json({ success: true, media: dataStore.getMediaAssets() });
+  } catch (err: any) {
+    res.status(500).json({ error: 'Failed to fetch media assets' });
+  }
+});
+
+app.post('/api/admin/media', requireAdmin, (req, res) => {
+  const m = req.body;
+  if (!m || typeof m !== 'object') return res.status(400).json({ error: 'Invalid media data' });
+  if (!m.name || typeof m.name !== 'string' || !m.name.trim()) {
+    return res.status(400).json({ error: 'Name is required' });
+  }
+  if (!m.url || typeof m.url !== 'string' || !m.url.trim()) {
+    return res.status(400).json({ error: 'URL is required' });
+  }
+  // URL validation: allow relative paths and http(s) URLs only.
+  const url = m.url.trim();
+  const urlOk = url.startsWith('/') || /^https?:\/\/[^\s]+$/i.test(url);
+  if (!urlOk) return res.status(400).json({ error: 'URL must be a relative path or http(s) URL' });
+  const asset = dataStore.addMediaAsset({
+    name: String(m.name).slice(0, 150),
+    category: ['banner', 'tutor', 'course', 'blog', 'document', 'icon'].includes(m.category) ? m.category : 'banner',
+    url: url.slice(0, 500),
+    fileSize: typeof m.fileSize === 'string' ? m.fileSize.slice(0, 20) : undefined
+  });
+  res.status(201).json({ success: true, asset });
+});
+
+app.delete('/api/admin/media/:id', requireAdmin, (req, res) => {
+  const ok = dataStore.deleteMediaAsset(req.params.id);
+  res.json({ success: ok });
+});
+
+// Message Templates Admin (Phase 2)
+app.get('/api/admin/templates', requireAdmin, (req, res) => {
+  try {
+    res.json({ success: true, templates: dataStore.getMessageTemplates() });
+  } catch (err: any) {
+    res.status(500).json({ error: 'Failed to fetch templates' });
+  }
+});
+
+app.post('/api/admin/templates', requireAdmin, (req, res) => {
+  const t = req.body;
+  if (!t || typeof t !== 'object') return res.status(400).json({ error: 'Invalid template data' });
+  if (!t.title || typeof t.title !== 'string' || !t.title.trim()) {
+    return res.status(400).json({ error: 'Title is required' });
+  }
+  if (!t.body || typeof t.body !== 'string' || !t.body.trim()) {
+    return res.status(400).json({ error: 'Body is required' });
+  }
+  const tpl = dataStore.addMessageTemplate({
+    title: String(t.title).slice(0, 150),
+    channel: ['whatsapp', 'email', 'both'].includes(t.channel) ? t.channel : 'whatsapp',
+    subject: typeof t.subject === 'string' ? t.subject.slice(0, 200) : undefined,
+    body: String(t.body).slice(0, 10000),
+    availableVariables: Array.isArray(t.availableVariables) ? t.availableVariables.map(String).slice(0, 20) : []
+  });
+  res.status(201).json({ success: true, template: tpl });
+});
+
+app.patch('/api/admin/templates/:id', requireAdmin, (req, res) => {
+  const updated = dataStore.updateMessageTemplate(req.params.id, req.body || {});
+  if (!updated) return res.status(404).json({ error: 'Template not found' });
+  res.json({ success: true, template: updated });
+});
+
+app.delete('/api/admin/templates/:id', requireAdmin, (req, res) => {
+  const ok = dataStore.deleteMessageTemplate(req.params.id);
+  res.json({ success: ok });
+});
+
+// Invoices Admin (Phase 2: moved from browser localStorage to server)
+app.get('/api/admin/invoices', requireAdmin, (req, res) => {
+  try {
+    res.json({ success: true, invoices: dataStore.getInvoices() });
+  } catch (err: any) {
+    res.status(500).json({ error: 'Failed to fetch invoices' });
+  }
+});
+
+app.post('/api/admin/invoices', requireAdmin, (req, res) => {
+  const v = req.body;
+  if (!v || typeof v !== 'object') return res.status(400).json({ error: 'Invalid invoice data' });
+  if (!v.studentName || typeof v.studentName !== 'string' || !v.studentName.trim()) {
+    return res.status(400).json({ error: 'Student name is required' });
+  }
+  const amount = Number(v.amount);
+  // Explicit handling: amount must be a finite non-negative number. Zero is
+  // allowed (explicitly a zero-fee invoice); NaN/negative are rejected.
+  if (!isFinite(amount) || amount < 0) {
+    return res.status(400).json({ error: 'Amount must be a non-negative number' });
+  }
+  const currencies = ['PKR', 'USD', 'GBP', 'EUR', 'AED', 'CAD', 'AUD'];
+  if (!currencies.includes(v.currency)) {
+    return res.status(400).json({ error: 'Invalid currency' });
+  }
+  if (!v.billingMonth || typeof v.billingMonth !== 'string' || !v.billingMonth.trim()) {
+    return res.status(400).json({ error: 'Billing month is required' });
+  }
+  if (!v.dueDate || typeof v.dueDate !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(v.dueDate)) {
+    return res.status(400).json({ error: 'Due date must be YYYY-MM-DD' });
+  }
+  const statuses = ['Paid', 'Pending', 'Overdue', 'Waived'];
+  const invoice = dataStore.addInvoice({
+    studentId: typeof v.studentId === 'string' ? v.studentId : '',
+    studentName: String(v.studentName).slice(0, 100),
+    parentName: String(v.parentName || '').slice(0, 100),
+    phone: String(v.phone || '').slice(0, 30),
+    courseName: String(v.courseName || '').slice(0, 100),
+    packageName: String(v.packageName || '').slice(0, 100),
+    amount,
+    currency: v.currency,
+    billingMonth: String(v.billingMonth).slice(0, 30),
+    dueDate: v.dueDate,
+    paidDate: typeof v.paidDate === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v.paidDate) ? v.paidDate : undefined,
+    status: statuses.includes(v.status) ? v.status : 'Pending',
+    paymentMethod: ['Bank Transfer', 'JazzCash', 'Easypaisa', 'Stripe / Card', 'PayPal'].includes(v.paymentMethod)
+      ? v.paymentMethod : undefined
+  });
+  res.status(201).json({ success: true, invoice });
+});
+
+app.patch('/api/admin/invoices/:id', requireAdmin, (req, res) => {
+  const body = req.body || {};
+  // Validate fields that are being changed.
+  if (body.amount !== undefined) {
+    const amount = Number(body.amount);
+    if (!isFinite(amount) || amount < 0) {
+      return res.status(400).json({ error: 'Amount must be a non-negative number' });
+    }
+    body.amount = amount;
+  }
+  if (body.currency !== undefined && !['PKR', 'USD', 'GBP', 'EUR', 'AED', 'CAD', 'AUD'].includes(body.currency)) {
+    return res.status(400).json({ error: 'Invalid currency' });
+  }
+  if (body.status !== undefined && !['Paid', 'Pending', 'Overdue', 'Waived'].includes(body.status)) {
+    return res.status(400).json({ error: 'Invalid status' });
+  }
+  const updated = dataStore.updateInvoice(req.params.id, body);
+  if (!updated) return res.status(404).json({ error: 'Invoice not found' });
+  res.json({ success: true, invoice: updated });
+});
+
+app.delete('/api/admin/invoices/:id', requireAdmin, (req, res) => {
+  const ok = dataStore.deleteInvoice(req.params.id);
+  res.json({ success: ok });
+});
+
+// Student Report Cards Admin (Phase 2)
+app.get('/api/admin/reports', requireAdmin, (req, res) => {
+  try {
+    res.json({ success: true, reports: dataStore.getReportCards() });
+  } catch (err: any) {
+    res.status(500).json({ error: 'Failed to fetch report cards' });
+  }
+});
+
+app.post('/api/admin/reports', requireAdmin, (req, res) => {
+  const r = req.body;
+  if (!r || typeof r !== 'object') return res.status(400).json({ error: 'Invalid report data' });
+  if (!r.studentName || typeof r.studentName !== 'string' || !r.studentName.trim()) {
+    return res.status(400).json({ error: 'Student name is required' });
+  }
+  if (!r.evaluationMonth || typeof r.evaluationMonth !== 'string' || !r.evaluationMonth.trim()) {
+    return res.status(400).json({ error: 'Evaluation month is required' });
+  }
+  const grades = ['A+', 'A', 'B+', 'B', 'Needs Practice'];
+  // Explicit missing-data handling: attendancePercentage may be omitted
+  // (unknown) but if provided must be 0–100. Zero is a legitimate value.
+  let attendancePercentage: number | undefined;
+  if (r.attendancePercentage !== undefined && r.attendancePercentage !== null && r.attendancePercentage !== '') {
+    const ap = Number(r.attendancePercentage);
+    if (!isFinite(ap) || ap < 0 || ap > 100) {
+      return res.status(400).json({ error: 'Attendance percentage must be 0–100' });
+    }
+    attendancePercentage = ap;
+  }
+  const report = dataStore.addReportCard({
+    studentId: typeof r.studentId === 'string' ? r.studentId : '',
+    studentName: String(r.studentName).slice(0, 100),
+    courseName: String(r.courseName || '').slice(0, 100),
+    tutorName: String(r.tutorName || '').slice(0, 100),
+    evaluationMonth: String(r.evaluationMonth).slice(0, 30),
+    currentSabaq: String(r.currentSabaq || '').slice(0, 200),
+    readingGrade: grades.includes(r.readingGrade) ? r.readingGrade : 'Needs Practice',
+    tajweedGrade: grades.includes(r.tajweedGrade) ? r.tajweedGrade : 'Needs Practice',
+    attendancePercentage: attendancePercentage as number,
+    hifzSurahCount: r.hifzSurahCount !== undefined ? Math.max(0, Number(r.hifzSurahCount) || 0) : undefined,
+    teacherRemarks: String(r.teacherRemarks || '').slice(0, 2000),
+    generatedDate: new Date().toISOString().split('T')[0]
+  });
+  res.status(201).json({ success: true, report });
+});
+
+app.patch('/api/admin/reports/:id', requireAdmin, (req, res) => {
+  const updated = dataStore.updateReportCard(req.params.id, req.body || {});
+  if (!updated) return res.status(404).json({ error: 'Report not found' });
+  res.json({ success: true, report: updated });
+});
+
+app.delete('/api/admin/reports/:id', requireAdmin, (req, res) => {
+  const ok = dataStore.deleteReportCard(req.params.id);
+  res.json({ success: ok });
+});
+
+// Tutor Payroll Admin (Phase 2)
+app.get('/api/admin/payroll', requireAdmin, (req, res) => {
+  try {
+    res.json({ success: true, payroll: dataStore.getPayroll() });
+  } catch (err: any) {
+    res.status(500).json({ error: 'Failed to fetch payroll' });
+  }
+});
+
+app.post('/api/admin/payroll', requireAdmin, (req, res) => {
+  const p = req.body;
+  if (!p || typeof p !== 'object') return res.status(400).json({ error: 'Invalid payroll data' });
+  if (!p.tutorName || typeof p.tutorName !== 'string' || !p.tutorName.trim()) {
+    return res.status(400).json({ error: 'Tutor name is required' });
+  }
+  if (!p.billingMonth || typeof p.billingMonth !== 'string' || !p.billingMonth.trim()) {
+    return res.status(400).json({ error: 'Billing month is required' });
+  }
+  const classesConducted = Number(p.classesConducted);
+  const ratePerClassPKR = Number(p.ratePerClassPKR);
+  if (!isFinite(classesConducted) || classesConducted < 0) {
+    return res.status(400).json({ error: 'Classes conducted must be a non-negative number' });
+  }
+  if (!isFinite(ratePerClassPKR) || ratePerClassPKR < 0) {
+    return res.status(400).json({ error: 'Rate per class must be a non-negative number' });
+  }
+  // Server-computed total: never trust a client-supplied total.
+  const totalPayoutPKR = Math.round(classesConducted * ratePerClassPKR);
+  const record = dataStore.addPayroll({
+    tutorId: typeof p.tutorId === 'string' ? p.tutorId : '',
+    tutorName: String(p.tutorName).slice(0, 100),
+    billingMonth: String(p.billingMonth).slice(0, 30),
+    classesConducted,
+    ratePerClassPKR,
+    totalPayoutPKR,
+    status: p.status === 'Paid' ? 'Paid' : 'Pending',
+    paidDate: typeof p.paidDate === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(p.paidDate) ? p.paidDate : undefined
+  });
+  res.status(201).json({ success: true, payroll: record });
+});
+
+app.patch('/api/admin/payroll/:id', requireAdmin, (req, res) => {
+  const body = req.body || {};
+  // Recompute total if classes or rate change.
+  if (body.classesConducted !== undefined || body.ratePerClassPKR !== undefined) {
+    const existing = dataStore.getPayroll().find(x => x.id === req.params.id);
+    if (!existing) return res.status(404).json({ error: 'Payroll record not found' });
+    const cc = body.classesConducted !== undefined ? Number(body.classesConducted) : existing.classesConducted;
+    const rate = body.ratePerClassPKR !== undefined ? Number(body.ratePerClassPKR) : existing.ratePerClassPKR;
+    if (!isFinite(cc) || cc < 0 || !isFinite(rate) || rate < 0) {
+      return res.status(400).json({ error: 'Classes and rate must be non-negative numbers' });
+    }
+    body.classesConducted = cc;
+    body.ratePerClassPKR = rate;
+    body.totalPayoutPKR = Math.round(cc * rate);
+  }
+  if (body.status !== undefined && !['Paid', 'Pending'].includes(body.status)) {
+    return res.status(400).json({ error: 'Invalid status' });
+  }
+  const updated = dataStore.updatePayroll(req.params.id, body);
+  if (!updated) return res.status(404).json({ error: 'Payroll record not found' });
+  res.json({ success: true, payroll: updated });
+});
+
+app.delete('/api/admin/payroll/:id', requireAdmin, (req, res) => {
+  const ok = dataStore.deletePayroll(req.params.id);
+  res.json({ success: ok });
+});
+
+// Activity Logs Admin (Phase 2: durable server-side log)
+app.get('/api/admin/logs', requireAdmin, (req, res) => {
+  try {
+    const limit = Math.min(500, Math.max(1, Number(req.query.limit) || 200));
+    res.json({ success: true, logs: dataStore.getActivityLogs(limit) });
+  } catch (err: any) {
+    res.status(500).json({ error: 'Failed to fetch activity logs' });
+  }
+});
+
+app.post('/api/admin/logs', requireAdmin, (req, res) => {
+  const l = req.body;
+  if (!l || typeof l !== 'object') return res.status(400).json({ error: 'Invalid log data' });
+  if (!l.action || typeof l.action !== 'string' || !l.action.trim()) {
+    return res.status(400).json({ error: 'Action is required' });
+  }
+  const categories = ['Student', 'Enrollment', 'Faculty', 'Course', 'Finance', 'Settings', 'System'];
+  const log = dataStore.addActivityLog({
+    action: String(l.action).slice(0, 500),
+    category: categories.includes(l.category) ? l.category : 'System',
+    user: String(l.user || 'Admin').slice(0, 100)
+  });
+  res.status(201).json({ success: true, log });
 });
 
 // Articles Admin
@@ -1230,6 +1729,131 @@ app.post('/api/admin/articles', requireAdmin, (req, res) => {
 app.delete('/api/admin/articles/:id', requireAdmin, (req, res) => {
   const ok = dataStore.deleteArticle(req.params.id);
   res.json({ success: ok });
+});
+
+// Blog Posts Admin (Firestore `blogPosts` collection via Admin SDK).
+// The admin panel's custom token (not Firebase Auth) is sufficient here —
+// auth is enforced server-side by requireAdmin. This replaces direct
+// client-side Firestore writes from BlogEditor, which required a Firebase
+// Auth session the admin login never establishes.
+const BLOG_POSTS_COL = 'blogPosts';
+
+function blogPostsDb() {
+  if (!isFirestoreEnabled()) return null;
+  return getFirestoreDb();
+}
+
+app.get('/api/admin/blog-posts', requireAdmin, async (req, res) => {
+  const db = blogPostsDb();
+  if (!db) return res.status(503).json({ error: 'Blog database not available' });
+  try {
+    const snap = await db.collection(BLOG_POSTS_COL).orderBy('createdAt', 'desc').get();
+    const posts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    res.json({ success: true, posts });
+  } catch (err: any) {
+    console.error('[api] GET /api/admin/blog-posts failed:', err.message);
+    res.status(500).json({ error: 'Failed to load blog posts' });
+  }
+});
+
+app.post('/api/admin/blog-posts', requireAdmin, async (req, res) => {
+  const db = blogPostsDb();
+  if (!db) return res.status(503).json({ error: 'Blog database not available' });
+  const post = req.body;
+  if (!post || typeof post !== 'object') {
+    return res.status(400).json({ error: 'Invalid post data' });
+  }
+  if (!post.title || typeof post.title !== 'string' || !post.title.trim()) {
+    return res.status(400).json({ error: 'Post title is required' });
+  }
+  if (!post.slug || typeof post.slug !== 'string' || !post.slug.trim()) {
+    return res.status(400).json({ error: 'Post slug is required' });
+  }
+  // Sanitize: only allow known fields, enforce types.
+  const clean: Record<string, any> = {
+    title: String(post.title).slice(0, 200),
+    slug: String(post.slug).toLowerCase().replace(/[^a-z0-9-]/g, '-').slice(0, 100),
+    excerpt: typeof post.excerpt === 'string' ? post.excerpt.slice(0, 500) : '',
+    content: typeof post.content === 'string' ? post.content : '',
+    coverImage: typeof post.coverImage === 'string' ? post.coverImage.slice(0, 500) : '',
+    tags: Array.isArray(post.tags) ? post.tags.map(String).slice(0, 10) : [],
+    published: post.published === true,
+    featured: post.featured === true,
+    author: typeof post.author === 'string' ? post.author.slice(0, 100) : 'Noor E Quran',
+    metaTitle: typeof post.metaTitle === 'string' ? post.metaTitle.slice(0, 200) : '',
+    metaDescription: typeof post.metaDescription === 'string' ? post.metaDescription.slice(0, 300) : '',
+    updatedAt: new Date().toISOString(),
+  };
+  try {
+    const id = typeof post.id === 'string' && post.id.trim() ? post.id.trim().slice(0, 100) : db.collection(BLOG_POSTS_COL).doc().id;
+    const existing = await db.collection(BLOG_POSTS_COL).doc(id).get();
+    if (!existing.exists) {
+      clean.createdAt = new Date().toISOString();
+    }
+    await db.collection(BLOG_POSTS_COL).doc(id).set(clean, { merge: true });
+    res.status(201).json({ success: true, post: { id, ...clean } });
+  } catch (err: any) {
+    console.error('[api] POST /api/admin/blog-posts failed:', err.message);
+    res.status(500).json({ error: 'Failed to save blog post' });
+  }
+});
+
+app.delete('/api/admin/blog-posts/:id', requireAdmin, async (req, res) => {
+  const db = blogPostsDb();
+  if (!db) return res.status(503).json({ error: 'Blog database not available' });
+  const id = String(req.params.id).slice(0, 100);
+  if (!id) return res.status(400).json({ error: 'Invalid post ID' });
+  try {
+    await db.collection(BLOG_POSTS_COL).doc(id).delete();
+    res.json({ success: true });
+  } catch (err: any) {
+    console.error('[api] DELETE /api/admin/blog-posts failed:', err.message);
+    res.status(500).json({ error: 'Failed to delete blog post' });
+  }
+});
+
+// Site SEO Admin (Firestore `siteSeo` collection via Admin SDK).
+// Same rationale as blog posts: server-enforced admin auth instead of
+// relying on a Firebase Auth session.
+const SITE_SEO_COL = 'siteSeo';
+
+app.get('/api/admin/site-seo', requireAdmin, async (req, res) => {
+  const db = blogPostsDb();
+  if (!db) return res.status(503).json({ error: 'SEO database not available' });
+  try {
+    const snap = await db.collection(SITE_SEO_COL).get();
+    const configs: Record<string, any> = {};
+    snap.docs.forEach(d => { configs[d.id] = d.data(); });
+    res.json({ success: true, configs });
+  } catch (err: any) {
+    console.error('[api] GET /api/admin/site-seo failed:', err.message);
+    res.status(500).json({ error: 'Failed to load SEO configs' });
+  }
+});
+
+app.post('/api/admin/site-seo', requireAdmin, async (req, res) => {
+  const db = blogPostsDb();
+  if (!db) return res.status(503).json({ error: 'SEO database not available' });
+  const { pageId, config } = req.body;
+  if (!pageId || typeof pageId !== 'string') {
+    return res.status(400).json({ error: 'pageId is required' });
+  }
+  if (!config || typeof config !== 'object') {
+    return res.status(400).json({ error: 'config is required' });
+  }
+  const clean: Record<string, any> = {
+    title: typeof config.title === 'string' ? config.title.slice(0, 200) : '',
+    description: typeof config.description === 'string' ? config.description.slice(0, 300) : '',
+    keywords: typeof config.keywords === 'string' ? config.keywords.slice(0, 300) : '',
+    updatedAt: new Date().toISOString(),
+  };
+  try {
+    await db.collection(SITE_SEO_COL).doc(pageId.slice(0, 100)).set(clean, { merge: true });
+    res.json({ success: true, config: clean });
+  } catch (err: any) {
+    console.error('[api] POST /api/admin/site-seo failed:', err.message);
+    res.status(500).json({ error: 'Failed to save SEO config' });
+  }
 });
 
 // Resources Admin

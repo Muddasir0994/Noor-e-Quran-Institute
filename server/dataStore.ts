@@ -24,7 +24,15 @@ import {
   HifzLog,
   TutorAvailability,
   Coupon,
-  Referral
+  Referral,
+  FeeInvoice,
+  StudentReportCard,
+  TutorPayroll,
+  ActivityLog,
+  FAQItem,
+  SiteSettings,
+  MediaAsset,
+  MessageTemplate
 } from '../src/types.js';
 import {
   ALL_COURSES,
@@ -32,7 +40,11 @@ import {
   INITIAL_TUTORS,
   INITIAL_TESTIMONIALS,
   INITIAL_ARTICLES,
-  INITIAL_RESOURCES
+  INITIAL_RESOURCES,
+  INITIAL_FAQS,
+  DEFAULT_SITE_SETTINGS,
+  INITIAL_MEDIA_ASSETS,
+  INITIAL_MESSAGE_TEMPLATES
 } from '../src/data/academyData.js';
 import {
   initFirestore,
@@ -41,6 +53,16 @@ import {
   deleteDocFromFirestore,
   loadCollectionFromFirestore
 } from '../server/firestore.js';
+
+// Admin session with explicit expiry. Tokens are valid for 24 hours from
+// creation; expired tokens are rejected and pruned on validation.
+export interface AdminSession {
+  token: string;
+  createdAt: string; // ISO timestamp
+  expiresAt: string; // ISO timestamp
+}
+
+export const ADMIN_SESSION_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
 
 interface DatabaseSchema {
   courses: Course[];
@@ -57,7 +79,7 @@ interface DatabaseSchema {
   resources: IslamicResource[];
   contacts: ContactMessage[];
   notifications: SystemNotification[];
-  adminTokens: string[];
+  adminTokens: AdminSession[];
   attendance: AttendanceRecord[];
   trials: TrialClass[];
   feeReminders: FeeReminder[];
@@ -65,6 +87,15 @@ interface DatabaseSchema {
   availability: TutorAvailability[];
   coupons: Coupon[];
   referrals: Referral[];
+  // Phase 2: browser-only business/CMS modules moved to shared server persistence.
+  invoices: FeeInvoice[];
+  reportCards: StudentReportCard[];
+  payroll: TutorPayroll[];
+  activityLogs: ActivityLog[];
+  faqs: FAQItem[];
+  siteSettings: SiteSettings;
+  mediaAssets: MediaAsset[];
+  messageTemplates: MessageTemplate[];
 }
 
 const DATA_DIR = path.join(process.cwd(), 'data');
@@ -96,7 +127,10 @@ class DataStore {
       'courses', 'packages', 'leads', 'enrollments', 'students', 'tutors',
       'classes', 'progressReports', 'assessments', 'testimonials', 'articles',
       'resources', 'contacts', 'attendance', 'trials', 'feeReminders',
-      'hifzLogs', 'availability', 'coupons', 'referrals'
+      'hifzLogs', 'availability', 'coupons', 'referrals',
+      // Phase 2: browser-only modules moved to shared server persistence.
+      'invoices', 'reportCards', 'payroll', 'activityLogs', 'faqs',
+      'mediaAssets', 'messageTemplates'
     ];
     for (const coll of collections) {
       const docs = await loadCollectionFromFirestore(coll);
@@ -125,6 +159,15 @@ class DataStore {
         }
       }
     }
+    // siteSettings is a singleton document (not an array collection).
+    try {
+      const settingsDocs = await loadCollectionFromFirestore('siteSettings');
+      if (settingsDocs.length > 0 && settingsDocs[0]) {
+        this.data.siteSettings = { ...DEFAULT_SITE_SETTINGS, ...(settingsDocs[0] as any) };
+      } else {
+        syncDocToFirestore('siteSettings', 'singleton', this.data.siteSettings).catch(() => {});
+      }
+    } catch { /* keep local settings on failure */ }
     // Refresh the local JSON cache with the merged dataset.
     this.saveDatabase();
   }
@@ -176,14 +219,31 @@ class DataStore {
           resources: parsed.resources?.length ? parsed.resources : INITIAL_RESOURCES,
           contacts: parsed.contacts || [],
           notifications: parsed.notifications || [],
-          adminTokens: parsed.adminTokens || [],
+          // Migrate legacy string tokens (no expiry) — treat as expired to force re-login.
+          adminTokens: Array.isArray(parsed.adminTokens)
+            ? parsed.adminTokens
+                .filter((t: any) => t && typeof t === 'object' && typeof t.token === 'string' && typeof t.expiresAt === 'string')
+                .filter((t: AdminSession) => new Date(t.expiresAt).getTime() > Date.now())
+            : [],
           attendance: parsed.attendance || [],
           trials: parsed.trials || [],
           feeReminders: parsed.feeReminders || [],
           hifzLogs: parsed.hifzLogs || [],
           availability: parsed.availability || [],
           coupons: parsed.coupons || [],
-          referrals: parsed.referrals || []
+          referrals: parsed.referrals || [],
+          // Phase 2: operational/CMS collections. Invoices, report cards,
+          // payroll and activity logs start EMPTY — never seed demo financial
+          // records. FAQs, settings, media and templates fall back to the
+          // bundled CMS defaults (site content, not operational records).
+          invoices: parsed.invoices || [],
+          reportCards: parsed.reportCards || [],
+          payroll: parsed.payroll || [],
+          activityLogs: parsed.activityLogs || [],
+          faqs: parsed.faqs?.length ? parsed.faqs : INITIAL_FAQS,
+          siteSettings: parsed.siteSettings || DEFAULT_SITE_SETTINGS,
+          mediaAssets: parsed.mediaAssets?.length ? parsed.mediaAssets : INITIAL_MEDIA_ASSETS,
+          messageTemplates: parsed.messageTemplates?.length ? parsed.messageTemplates : INITIAL_MESSAGE_TEMPLATES
         };
       } catch (err) {
         console.error('Error reading academy_db.json, seeding initial data:', err);
@@ -460,7 +520,16 @@ class DataStore {
       hifzLogs: [],
       availability: [],
       coupons: [],
-      referrals: []
+      referrals: [],
+      // Phase 2: no demo financial/operational records are seeded.
+      invoices: [],
+      reportCards: [],
+      payroll: [],
+      activityLogs: [],
+      faqs: INITIAL_FAQS,
+      siteSettings: DEFAULT_SITE_SETTINGS,
+      mediaAssets: INITIAL_MEDIA_ASSETS,
+      messageTemplates: INITIAL_MESSAGE_TEMPLATES
     };
   }
 
@@ -566,6 +635,14 @@ class DataStore {
     return this.data.packages[idx];
   }
 
+  public deletePackage(id: string): boolean {
+    const idx = this.data.packages.findIndex(p => p.id === id);
+    if (idx === -1) return false;
+    this.data.packages.splice(idx, 1);
+    this.persist('packages', id, null);
+    return true;
+  }
+
   // --- LEADS / TRIALS ---
   public getLeads(): Lead[] {
     return this.data.leads;
@@ -583,6 +660,18 @@ class DataStore {
       courseId: leadData.courseId,
       courseName: leadData.courseName,
       tutorGender: leadData.tutorGender || 'No Preference',
+      // Preserve the public's teacher choice. Validate tutor ID against actual tutors;
+      // if invalid, store the name but leave ID undefined (admin can re-assign).
+      preferredTutorId: (() => {
+        const tid = leadData.preferredTutorId;
+        if (tid && typeof tid === 'string' && this.data.tutors.some(t => t.id === tid)) {
+          return tid;
+        }
+        return undefined;
+      })(),
+      preferredTutorName: typeof leadData.preferredTutorName === 'string'
+        ? leadData.preferredTutorName.slice(0, 100)
+        : undefined,
       timeSlot: leadData.timeSlot || 'Morning',
       preferredDays: leadData.preferredDays || ['Monday', 'Tuesday', 'Wednesday'],
       preferredTimeRange: leadData.preferredTimeRange || '',
@@ -658,18 +747,27 @@ class DataStore {
     return this.data.students;
   }
 
-  public addStudent(studentData: Omit<Student, 'id' | 'notes' | 'createdAt' | 'updatedAt'>): Student {
+  public addStudent(studentData: Omit<Student, 'id' | 'notes' | 'createdAt' | 'updatedAt'>): { student: Student; deduplicated: boolean } {
     const now = new Date().toISOString();
+    // Idempotency: if enrollmentId is provided and a student already exists
+    // for that enrollment, return the existing student instead of creating
+    // a duplicate. This makes repeated/concurrent approval safe.
+    if (studentData.enrollmentId) {
+      const existing = this.data.students.find(s => s.enrollmentId === studentData.enrollmentId);
+      if (existing) {
+        return { student: existing, deduplicated: true };
+      }
+    }
     const newStudent: Student = {
       ...studentData,
-      id: `stu-${Date.now()}`,
+      id: `stu-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
       notes: [],
       createdAt: now,
       updatedAt: now
     };
     this.data.students.unshift(newStudent);
     this.persist('students', newStudent.id, newStudent);
-    return newStudent;
+    return { student: newStudent, deduplicated: false };
   }
 
   public updateStudent(id: string, updates: Partial<Student>): Student | null {
@@ -1093,21 +1191,286 @@ class DataStore {
     return this.data.referrals[idx];
   }
 
+  // --- INVOICES (Phase 2: moved from browser localStorage to server) ---
+  // Invoice numbers are server-generated sequences: NQ-<year>-<seq> where seq
+  // is a per-year monotonic counter, guaranteeing uniqueness.
+  public getInvoices(): FeeInvoice[] {
+    return this.data.invoices;
+  }
+
+  private nextInvoiceNumber(): string {
+    const year = new Date().getFullYear();
+    const prefix = `NQ-${year}-`;
+    let max = 0;
+    for (const inv of this.data.invoices) {
+      if (inv.invoiceNumber && inv.invoiceNumber.startsWith(prefix)) {
+        const n = parseInt(inv.invoiceNumber.slice(prefix.length), 10);
+        if (!isNaN(n) && n > max) max = n;
+      }
+    }
+    return `${prefix}${String(max + 1).padStart(4, '0')}`;
+  }
+
+  public addInvoice(invoiceData: Omit<FeeInvoice, 'id' | 'invoiceNumber'> & { invoiceNumber?: string }): FeeInvoice {
+    const newInvoice: FeeInvoice = {
+      ...invoiceData,
+      id: `inv-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      // Server-enforced unique invoice number; ignore client-supplied values.
+      invoiceNumber: this.nextInvoiceNumber()
+    };
+    this.data.invoices.unshift(newInvoice);
+    this.persist('invoices', newInvoice.id, newInvoice);
+    return newInvoice;
+  }
+
+  public updateInvoice(id: string, updates: Partial<FeeInvoice>): FeeInvoice | null {
+    const idx = this.data.invoices.findIndex(i => i.id === id);
+    if (idx === -1) return null;
+    // invoiceNumber is immutable once assigned.
+    const { invoiceNumber: _ignored, id: _idIgnored, ...safeUpdates } = updates as any;
+    this.data.invoices[idx] = { ...this.data.invoices[idx], ...safeUpdates };
+    this.persist('invoices', id, this.data.invoices[idx]);
+    return this.data.invoices[idx];
+  }
+
+  public deleteInvoice(id: string): boolean {
+    const idx = this.data.invoices.findIndex(i => i.id === id);
+    if (idx === -1) return false;
+    this.data.invoices.splice(idx, 1);
+    this.persist('invoices', id, null);
+    return true;
+  }
+
+  // --- STUDENT REPORT CARDS (Phase 2) ---
+  public getReportCards(): StudentReportCard[] {
+    return this.data.reportCards;
+  }
+
+  public addReportCard(reportData: Omit<StudentReportCard, 'id'>): StudentReportCard {
+    const newReport: StudentReportCard = {
+      ...reportData,
+      id: `rep-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
+    };
+    this.data.reportCards.unshift(newReport);
+    this.persist('reportCards', newReport.id, newReport);
+    return newReport;
+  }
+
+  public updateReportCard(id: string, updates: Partial<StudentReportCard>): StudentReportCard | null {
+    const idx = this.data.reportCards.findIndex(r => r.id === id);
+    if (idx === -1) return null;
+    const { id: _idIgnored, ...safeUpdates } = updates as any;
+    this.data.reportCards[idx] = { ...this.data.reportCards[idx], ...safeUpdates };
+    this.persist('reportCards', id, this.data.reportCards[idx]);
+    return this.data.reportCards[idx];
+  }
+
+  public deleteReportCard(id: string): boolean {
+    const idx = this.data.reportCards.findIndex(r => r.id === id);
+    if (idx === -1) return false;
+    this.data.reportCards.splice(idx, 1);
+    this.persist('reportCards', id, null);
+    return true;
+  }
+
+  // --- TUTOR PAYROLL (Phase 2) ---
+  public getPayroll(): TutorPayroll[] {
+    return this.data.payroll;
+  }
+
+  public addPayroll(payrollData: Omit<TutorPayroll, 'id' | 'totalPayoutPKR'> & { totalPayoutPKR?: number }): TutorPayroll {
+    // Server-computed total: never trust a client-supplied totalPayoutPKR.
+    const { totalPayoutPKR: _ignored, ...rest } = payrollData as any;
+    const newPayroll: TutorPayroll = {
+      ...rest,
+      id: `pay-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      totalPayoutPKR: Math.round(Number(rest.classesConducted || 0) * Number(rest.ratePerClassPKR || 0))
+    };
+    this.data.payroll.unshift(newPayroll);
+    this.persist('payroll', newPayroll.id, newPayroll);
+    return newPayroll;
+  }
+
+  public updatePayroll(id: string, updates: Partial<TutorPayroll>): TutorPayroll | null {
+    const idx = this.data.payroll.findIndex(p => p.id === id);
+    if (idx === -1) return null;
+    // Never trust a client-supplied total: recompute from classes × rate.
+    const { id: _idIgnored, totalPayoutPKR: _totalIgnored, ...safeUpdates } = updates as any;
+    const merged = { ...this.data.payroll[idx], ...safeUpdates };
+    merged.totalPayoutPKR = Math.round(Number(merged.classesConducted || 0) * Number(merged.ratePerClassPKR || 0));
+    this.data.payroll[idx] = merged;
+    this.persist('payroll', id, this.data.payroll[idx]);
+    return this.data.payroll[idx];
+  }
+
+  public deletePayroll(id: string): boolean {
+    const idx = this.data.payroll.findIndex(p => p.id === id);
+    if (idx === -1) return false;
+    this.data.payroll.splice(idx, 1);
+    this.persist('payroll', id, null);
+    return true;
+  }
+
+  // --- ACTIVITY LOGS (Phase 2: durable server-side event log) ---
+  public getActivityLogs(limit = 200): ActivityLog[] {
+    return this.data.activityLogs.slice(0, limit);
+  }
+
+  public addActivityLog(logData: Omit<ActivityLog, 'id' | 'timestamp'>): ActivityLog {
+    const newLog: ActivityLog = {
+      ...logData,
+      id: `log-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      timestamp: new Date().toISOString()
+    };
+    this.data.activityLogs.unshift(newLog);
+    // Keep the log bounded server-side (1000 entries) to prevent unbounded growth.
+    if (this.data.activityLogs.length > 1000) {
+      this.data.activityLogs = this.data.activityLogs.slice(0, 1000);
+    }
+    this.persist('activityLogs', newLog.id, newLog);
+    return newLog;
+  }
+
+  // --- FAQS (Phase 2) ---
+  public getFaqs(): FAQItem[] {
+    return [...this.data.faqs].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+  }
+
+  public addFaq(faqData: Omit<FAQItem, 'id'>): FAQItem {
+    const newFaq: FAQItem = {
+      ...faqData,
+      id: `faq-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
+    };
+    this.data.faqs.push(newFaq);
+    this.persist('faqs', newFaq.id, newFaq);
+    return newFaq;
+  }
+
+  public updateFaq(id: string, updates: Partial<FAQItem>): FAQItem | null {
+    const idx = this.data.faqs.findIndex(f => f.id === id);
+    if (idx === -1) return null;
+    const { id: _idIgnored, ...safeUpdates } = updates as any;
+    this.data.faqs[idx] = { ...this.data.faqs[idx], ...safeUpdates };
+    this.persist('faqs', id, this.data.faqs[idx]);
+    return this.data.faqs[idx];
+  }
+
+  public deleteFaq(id: string): boolean {
+    const idx = this.data.faqs.findIndex(f => f.id === id);
+    if (idx === -1) return false;
+    this.data.faqs.splice(idx, 1);
+    this.persist('faqs', id, null);
+    return true;
+  }
+
+  // --- SITE SETTINGS (Phase 2: single document) ---
+  public getSiteSettings(): SiteSettings {
+    return this.data.siteSettings;
+  }
+
+  public updateSiteSettings(updates: Partial<SiteSettings>): SiteSettings {
+    this.data.siteSettings = { ...this.data.siteSettings, ...updates };
+    this.persist('siteSettings', 'singleton', this.data.siteSettings);
+    return this.data.siteSettings;
+  }
+
+  // --- MEDIA ASSETS (Phase 2) ---
+  public getMediaAssets(): MediaAsset[] {
+    return this.data.mediaAssets;
+  }
+
+  public addMediaAsset(assetData: Omit<MediaAsset, 'id' | 'uploadedAt'>): MediaAsset {
+    const newAsset: MediaAsset = {
+      ...assetData,
+      id: `med-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      uploadedAt: new Date().toISOString().split('T')[0]
+    };
+    this.data.mediaAssets.unshift(newAsset);
+    this.persist('mediaAssets', newAsset.id, newAsset);
+    return newAsset;
+  }
+
+  public deleteMediaAsset(id: string): boolean {
+    const idx = this.data.mediaAssets.findIndex(m => m.id === id);
+    if (idx === -1) return false;
+    this.data.mediaAssets.splice(idx, 1);
+    this.persist('mediaAssets', id, null);
+    return true;
+  }
+
+  // --- MESSAGE TEMPLATES (Phase 2) ---
+  public getMessageTemplates(): MessageTemplate[] {
+    return this.data.messageTemplates;
+  }
+
+  public addMessageTemplate(tplData: Omit<MessageTemplate, 'id'>): MessageTemplate {
+    const newTpl: MessageTemplate = {
+      ...tplData,
+      id: `tmpl-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
+    };
+    this.data.messageTemplates.push(newTpl);
+    this.persist('messageTemplates', newTpl.id, newTpl);
+    return newTpl;
+  }
+
+  public updateMessageTemplate(id: string, updates: Partial<MessageTemplate>): MessageTemplate | null {
+    const idx = this.data.messageTemplates.findIndex(t => t.id === id);
+    if (idx === -1) return null;
+    const { id: _idIgnored, ...safeUpdates } = updates as any;
+    this.data.messageTemplates[idx] = { ...this.data.messageTemplates[idx], ...safeUpdates };
+    this.persist('messageTemplates', id, this.data.messageTemplates[idx]);
+    return this.data.messageTemplates[idx];
+  }
+
+  public deleteMessageTemplate(id: string): boolean {
+    const idx = this.data.messageTemplates.findIndex(t => t.id === id);
+    if (idx === -1) return false;
+    this.data.messageTemplates.splice(idx, 1);
+    this.persist('messageTemplates', id, null);
+    return true;
+  }
+
   public createAdminSession(): string {
     const token = crypto.randomBytes(32).toString('hex');
-    this.data.adminTokens.push(token);
+    const now = new Date();
+    const session: AdminSession = {
+      token,
+      createdAt: now.toISOString(),
+      expiresAt: new Date(now.getTime() + ADMIN_SESSION_TTL_MS).toISOString(),
+    };
+    // Prune expired sessions on creation to bound array growth.
+    this.data.adminTokens = this.data.adminTokens.filter(
+      s => new Date(s.expiresAt).getTime() > Date.now()
+    );
+    this.data.adminTokens.push(session);
     this.saveDatabase();
     return token;
   }
 
   public isValidToken(token: string): boolean {
     if (!token) return false;
-    return this.data.adminTokens.includes(token);
+    const now = Date.now();
+    const session = this.data.adminTokens.find(s => s.token === token);
+    if (!session) return false;
+    if (new Date(session.expiresAt).getTime() <= now) {
+      // Expired: remove it so the array doesn't grow unbounded.
+      this.data.adminTokens = this.data.adminTokens.filter(s => s.token !== token);
+      this.saveDatabase();
+      return false;
+    }
+    return true;
   }
 
   public revokeToken(token: string) {
-    this.data.adminTokens = this.data.adminTokens.filter(t => t !== token);
+    this.data.adminTokens = this.data.adminTokens.filter(s => s.token !== token);
     this.saveDatabase();
+  }
+
+  /** Remaining milliseconds before the token expires, or 0 if invalid/expired. */
+  public getTokenTtlMs(token: string): number {
+    const session = this.data.adminTokens.find(s => s.token === token);
+    if (!session) return 0;
+    return Math.max(0, new Date(session.expiresAt).getTime() - Date.now());
   }
 }
 
