@@ -7,6 +7,9 @@ import {
 } from '../types';
 import { saveProgressReportToFirebase } from '../lib/firestoreService';
 import { useAuth } from '../context/AuthContext';
+import { QuranReader } from './portal/QuranReader';
+import { usePresence, usePresenceList, isOnline, KNOWN_STUDENTS } from './portal/usePresence';
+import { useLiveClasses, startLiveClass, endLiveClass, LiveClass } from './portal/useLiveClasses';
 import {
   Users,
   Calendar,
@@ -23,7 +26,10 @@ import {
   TrendUp,
   ShieldCheck,
   Star,
-  GraduationCap
+  GraduationCap,
+  Copy,
+  PhoneDisconnect,
+  Circle
 } from '@phosphor-icons/react';
 
 interface TeacherPortalProps {
@@ -39,7 +45,7 @@ export const TeacherPortal: React.FC<TeacherPortalProps> = ({
 
   // Tutor switcher
   const [selectedTutorId, setSelectedTutorId] = useState<string>('tut-1');
-  const [activeTab, setActiveTab] = useState<'schedule' | 'students' | 'evaluator' | 'profile'>('schedule');
+  const [activeTab, setActiveTab] = useState<'schedule' | 'students' | 'evaluator' | 'profile' | 'quran' | 'liveclass'>('schedule');
 
   // Evaluation form state
   const [evalStudent, setEvalStudent] = useState<{ id: string; name: string; course: string; currentLesson: string } | null>(null);
@@ -92,6 +98,25 @@ export const TeacherPortal: React.FC<TeacherPortalProps> = ({
   ];
 
   const currentTutor = sampleTutors.find(t => t.id === selectedTutorId) || sampleTutors[0];
+
+  // Online presence: publish teacher online status + watch who is online
+  usePresence(currentUser?.email || undefined, currentTutor.name, 'teacher');
+  const presenceList = usePresenceList();
+  const liveClasses = useLiveClasses();
+
+  // Live class state (this teacher's active session)
+  const [myLiveClass, setMyLiveClass] = useState<LiveClass | null>(null);
+  const [startingClass, setStartingClass] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [liveError, setLiveError] = useState<string | null>(null);
+
+  // If this teacher already has a live class (e.g. after refresh), pick it up
+  React.useEffect(() => {
+    const mine = liveClasses.find(c => c.teacherId === currentTutor.id || (currentUser?.email && c.teacherEmail === currentUser.email));
+    if (mine && !myLiveClass) setMyLiveClass(mine);
+    if (!mine && myLiveClass) setMyLiveClass(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [liveClasses]);
 
   const handleSaveEvaluation = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -198,6 +223,8 @@ export const TeacherPortal: React.FC<TeacherPortalProps> = ({
           {[
             { id: 'schedule', label: "Today's Live Classes", icon: Calendar },
             { id: 'students', label: 'My Assigned Students', icon: Users },
+            { id: 'quran', label: 'Quran Reader', icon: BookOpen },
+            { id: 'liveclass', label: 'Start Live Class', icon: VideoCamera },
             { id: 'evaluator', label: 'Log Sabaq & Daily Evaluation', icon: Certificate },
             { id: 'profile', label: 'Faculty Profile & Timetable', icon: ShieldCheck }
           ].map(tab => {
@@ -325,6 +352,33 @@ export const TeacherPortal: React.FC<TeacherPortalProps> = ({
         {/* ============================================================== */}
         {activeTab === 'students' && (
           <div className="space-y-6">
+            {/* Students Online presence */}
+            <div className="bg-white p-6 rounded-3xl border border-gray-200 shadow-xs">
+              <h3 className="text-base font-bold text-[#064E3B] mb-1 flex items-center gap-2">
+                <Circle className="w-3 h-3 text-emerald-500" weight="fill" />
+                Students Online Now
+              </h3>
+              <p className="text-xs text-gray-500 mb-4">Live presence — green means the student is online right now.</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {KNOWN_STUDENTS.map(s => {
+                  const entry = presenceList.find(p => p.email.toLowerCase() === s.email.toLowerCase());
+                  const online = isOnline(entry);
+                  return (
+                    <div key={s.id} className="flex items-center gap-3 bg-gray-50 p-3 rounded-2xl border border-gray-200">
+                      <span className={`w-3 h-3 rounded-full shrink-0 ${online ? 'bg-emerald-500 animate-pulse' : 'bg-gray-300'}`} title={online ? 'Online' : 'Offline'} />
+                      <div className="min-w-0">
+                        <p className="text-sm font-bold text-[#064E3B] truncate">{s.name}</p>
+                        <p className="text-[11px] text-gray-500 truncate">{s.course}</p>
+                      </div>
+                      <span className={`ml-auto text-[10px] font-bold px-2 py-0.5 rounded-full ${online ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-200 text-gray-500'}`}>
+                        {online ? 'Online' : 'Offline'}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
             <div className="bg-white p-6 rounded-3xl border border-gray-200 shadow-xs">
               <h3 className="text-base font-bold text-[#064E3B] mb-4">
                 Active Student Roster ({currentTutor.studentsCount} Students)
@@ -374,6 +428,116 @@ export const TeacherPortal: React.FC<TeacherPortalProps> = ({
                   </div>
                 ))}
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* ============================================================== */}
+        {/* TAB: QURAN READER */}
+        {/* ============================================================== */}
+        {activeTab === 'quran' && (
+          <QuranReader />
+        )}
+
+        {/* ============================================================== */}
+        {/* TAB: START LIVE CLASS */}
+        {/* ============================================================== */}
+        {activeTab === 'liveclass' && (
+          <div className="space-y-6">
+            <div className="bg-white p-6 sm:p-8 rounded-3xl border border-gray-200 shadow-xs max-w-2xl mx-auto space-y-5">
+              <div className="flex items-center gap-2">
+                <VideoCamera className="w-5 h-5 text-[#D4A72C]" weight="duotone" />
+                <h3 className="text-lg font-bold text-[#064E3B]">Live Class Room</h3>
+              </div>
+              <p className="text-xs text-gray-500">
+                Start an instant video class. Students see a <strong>Join Live Class</strong> button in their portal the moment you go live.
+              </p>
+
+              {liveError && (
+                <div className="bg-red-50 border border-red-200 p-3 rounded-2xl text-xs font-bold text-red-800">
+                  {liveError}
+                </div>
+              )}
+
+              {!myLiveClass ? (
+                <button
+                  onClick={async () => {
+                    setStartingClass(true);
+                    setLiveError(null);
+                    try {
+                      const created = await startLiveClass(
+                        currentTutor.id,
+                        currentUser?.email || `${currentTutor.id}@noorequraninstitute.me`,
+                        currentTutor.name
+                      );
+                      setMyLiveClass({
+                        id: created.id,
+                        teacherId: currentTutor.id,
+                        teacherEmail: currentUser?.email || '',
+                        teacherName: currentTutor.name,
+                        meetingLink: created.meetingLink,
+                        startedAt: null,
+                        status: 'live'
+                      });
+                    } catch {
+                      setLiveError('Could not start the live class. Please try again.');
+                    } finally {
+                      setStartingClass(false);
+                    }
+                  }}
+                  disabled={startingClass}
+                  className="w-full py-4 rounded-2xl bg-[#064E3B] hover:bg-emerald-900 text-white font-bold text-sm flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+                >
+                  <VideoCamera className="w-5 h-5 text-[#D4A72C]" weight="duotone" />
+                  <span>{startingClass ? 'Starting...' : 'Start Live Class Now'}</span>
+                </button>
+              ) : (
+                <div className="space-y-4">
+                  <div className="bg-emerald-50 border border-emerald-200 p-4 rounded-2xl flex items-center gap-3">
+                    <span className="w-3 h-3 rounded-full bg-emerald-500 animate-pulse" />
+                    <div>
+                      <p className="text-sm font-bold text-emerald-900">You are LIVE</p>
+                      <p className="text-[11px] text-emerald-700 break-all">{myLiveClass.meetingLink}</p>
+                    </div>
+                  </div>
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <button
+                      onClick={() => {
+                        try {
+                          navigator.clipboard.writeText(myLiveClass.meetingLink);
+                          setCopied(true);
+                          setTimeout(() => setCopied(false), 2000);
+                        } catch {}
+                      }}
+                      className="flex-1 py-3 rounded-xl bg-gray-100 hover:bg-gray-200 text-[#064E3B] text-xs font-bold flex items-center justify-center gap-2 cursor-pointer"
+                    >
+                      <Copy className="w-4 h-4" weight="bold" />
+                      <span>{copied ? 'Copied!' : 'Copy Class Link'}</span>
+                    </button>
+                    <a
+                      href={myLiveClass.meetingLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 py-3 rounded-xl bg-[#D4A72C] text-[#064E3B] text-xs font-bold flex items-center justify-center gap-2 hover:brightness-110"
+                    >
+                      <VideoCamera className="w-4 h-4" weight="duotone" />
+                      <span>Open Classroom</span>
+                    </a>
+                  </div>
+                  <button
+                    onClick={async () => {
+                      try {
+                        await endLiveClass(myLiveClass.id);
+                      } catch {}
+                      setMyLiveClass(null);
+                    }}
+                    className="w-full py-3 rounded-xl bg-red-700 hover:bg-red-800 text-white text-xs font-bold flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    <PhoneDisconnect className="w-4 h-4" weight="bold" />
+                    <span>End Live Class</span>
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         )}
