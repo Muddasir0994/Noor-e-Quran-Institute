@@ -195,6 +195,27 @@ function checkAdminLoginRateLimit(req: Request, res: Response, next: NextFunctio
   next();
 }
 
+// General rate limiter for public endpoints (spam/abuse prevention)
+const publicRateLimits = new Map<string, { count: number; resetAt: number }>();
+const PUBLIC_RATE_WINDOW_MS = 15 * 60 * 1000; // 15 minutes
+const PUBLIC_RATE_MAX = 20; // 20 requests per IP per 15 min
+function checkPublicRateLimit(req: Request, res: Response, next: NextFunction) {
+  const ip = clientIp(req);
+  const now = Date.now();
+  let rec = publicRateLimits.get(ip);
+  if (!rec || now > rec.resetAt) {
+    rec = { count: 0, resetAt: now + PUBLIC_RATE_WINDOW_MS };
+    publicRateLimits.set(ip, rec);
+  }
+  rec.count += 1;
+  if (rec.count > PUBLIC_RATE_MAX) {
+    const retryAfter = Math.max(1, Math.ceil((rec.resetAt - now) / 1000));
+    res.setHeader('Retry-After', retryAfter.toString());
+    return res.status(429).json({ error: 'Too many requests. Please try again later.' });
+  }
+  next();
+}
+
 function recordAdminLoginFailure(req: Request) {
   getLoginFailureRecord(clientIp(req)).count += 1;
 }
@@ -319,7 +340,7 @@ function normalizePhone(p: string): string {
 }
 
 // 1. Send OTP to Student Phone / WhatsApp & Email
-app.post('/api/auth/send-phone-otp', (req, res) => {
+app.post('/api/auth/send-phone-otp', checkPublicRateLimit, (req, res) => {
   try {
     const { phone, email, studentName } = req.body;
     if (!phone || phone.trim().length < 7) {
@@ -505,7 +526,7 @@ app.get('/api/resources', (req, res) => {
 });
 
 // Book Free Trial (Lead Creation)
-app.post('/api/book-trial', (req, res) => {
+app.post('/api/book-trial', checkPublicRateLimit, (req, res) => {
   try {
     const {
       studentName,
@@ -595,7 +616,7 @@ app.post('/api/book-trial', (req, res) => {
 });
 
 // Full Enrollment Application
-app.post('/api/enroll', (req, res) => {
+app.post('/api/enroll', checkPublicRateLimit, (req, res) => {
   try {
     const {
       studentName,
@@ -688,7 +709,7 @@ app.post('/api/enroll', (req, res) => {
 });
 
 // Contact Form Submission
-app.post('/api/contact', (req, res) => {
+app.post('/api/contact', checkPublicRateLimit, (req, res) => {
   try {
     const { name, email, phone, country, subject, message } = req.body;
 
@@ -705,15 +726,18 @@ app.post('/api/contact', (req, res) => {
       message
     });
 
+    // HTML-escape user input to prevent HTML injection in admin email
+    const esc = (s: string) => String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
     sendAdminNotificationEmail(
-      `New Inquiry: ${msg.name} - ${msg.subject}`,
+      `New Inquiry: ${esc(msg.name)} - ${esc(msg.subject)}`,
       `<h2>New Contact Inquiry - Noor-e-Quran Institute</h2>
-      <p><strong>Name:</strong> ${msg.name}</p>
-      <p><strong>WhatsApp / Phone:</strong> ${msg.phone || 'N/A'}</p>
-      <p><strong>Country:</strong> ${msg.country || 'N/A'}</p>
-      <p><strong>Email:</strong> ${msg.email || 'N/A'}</p>
-      <p><strong>Subject:</strong> ${msg.subject}</p>
-      <p><strong>Message:</strong><br/>${msg.message.replace(/\n/g, '<br/>')}</p>`
+      <p><strong>Name:</strong> ${esc(msg.name)}</p>
+      <p><strong>WhatsApp / Phone:</strong> ${esc(msg.phone) || 'N/A'}</p>
+      <p><strong>Country:</strong> ${esc(msg.country) || 'N/A'}</p>
+      <p><strong>Email:</strong> ${esc(msg.email) || 'N/A'}</p>
+      <p><strong>Subject:</strong> ${esc(msg.subject)}</p>
+      <p><strong>Message:</strong><br/>${esc(msg.message).replace(/\n/g, '<br/>')}</p>`
     );
 
     res.status(201).json({
@@ -1114,7 +1138,7 @@ app.patch('/api/admin/referrals/:id', requireAdmin, (req, res) => {
 });
 
 // IndexNow Instant Search Engine Indexing Endpoint
-app.post('/api/indexnow/submit', async (req, res) => {
+app.post('/api/indexnow/submit', requireAdmin, async (req, res) => {
   const DEFAULT_URL_LIST = [
     'https://noorequraninstitute.me/',
     'https://noorequraninstitute.me/courses',
@@ -1299,7 +1323,11 @@ app.post('/api/upload-image', requireAdmin, async (req: Request, res: Response) 
 // -------------------------------------------------------------
 app.get('/google:code.html', (req, res) => {
   const code = req.params.code;
-  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  // Validate: only alphanumeric, dash, underscore (prevents XSS)
+  if (!/^[a-zA-Z0-9_-]+$/.test(code)) {
+    return res.status(400).type('text/plain').send('Invalid verification code');
+  }
+  res.setHeader('Content-Type', 'text/plain; charset=utf-8');
   res.send(`google-site-verification: google${code}.html`);
 });
 
