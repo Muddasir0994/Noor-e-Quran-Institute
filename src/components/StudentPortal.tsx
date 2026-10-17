@@ -10,7 +10,7 @@ import { useAuth } from '../context/AuthContext';
 import { saveProgressReportToFirebase } from '../lib/firestoreService';
 import { QuranReader } from './portal/QuranReader';
 import { Whiteboard } from './portal/Whiteboard';
-import { usePresence, usePresenceList, isOnline } from './portal/usePresence';
+import { usePresence, usePresenceList, isOnline, lastSeenText } from './portal/usePresence';
 import { useLiveClasses } from './portal/useLiveClasses';
 import { submitHomework, useMyHomework } from './portal/useHomework';
 import { useMessageThread, useUnreadCount, sendPortalMessage, markThreadRead, threadIdFor } from './portal/useMessages';
@@ -347,8 +347,8 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
                         <p className="text-sm font-bold text-[#064E3B] truncate">{t.name}</p>
                         <p className="text-[11px] text-gray-500 truncate">{t.specialization}</p>
                       </div>
-                      <span className={`ml-auto text-[10px] font-bold px-2 py-0.5 rounded-full ${online ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-200 text-gray-500'}`}>
-                        {online ? 'Online' : 'Offline'}
+                      <span className={`ml-auto text-[10px] font-bold px-2 py-0.5 rounded-full ${online ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-200 text-gray-500'}`} title={online ? 'Online now' : lastSeenText(entry)}>
+                        {online ? 'Online' : lastSeenText(entry)}
                       </span>
                     </div>
                   );
