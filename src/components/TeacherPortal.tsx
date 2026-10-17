@@ -10,7 +10,7 @@ import { useAuth } from '../context/AuthContext';
 import { QuranReader } from './portal/QuranReader';
 import { Whiteboard } from './portal/Whiteboard';
 import { usePresence, usePresenceList, isOnline, lastSeenText, KNOWN_STUDENTS } from './portal/usePresence';
-import { getAssignedStudentEmails, getTutorByEmail } from './portal/tutorAssignments';
+import { getAssignedStudentEmails, getTutorByEmail, TUTOR_DIRECTORY, STUDENT_DIRECTORY } from './portal/tutorAssignments';
 import { useLiveClasses, startLiveClass, endLiveClass, LiveClass } from './portal/useLiveClasses';
 import { useHomeworkSubmissions, reviewHomework, HomeworkSubmission } from './portal/useHomework';
 import { markAttendance, useTodayAttendance, AttendanceStatus } from './portal/useAttendance';
@@ -71,42 +71,36 @@ export const TeacherPortal: React.FC<TeacherPortalProps> = ({
   const [evalRemarks, setEvalRemarks] = useState('MashaAllah showed great improvement in breath control today!');
   const [evalSavedSuccess, setEvalSavedSuccess] = useState(false);
 
-  const sampleTutors = [
-    {
-      id: 'tut-1',
-      name: 'Ustadha Maryam Siddiqa',
-      gender: 'Female',
-      qualification: 'Ijazah Holder (Al-Azhar University)',
-      specialization: 'Tajweed Rules & Noorani Qaida for Kids & Sisters',
+  // Tutor profiles built from the real directory (NOT sample/fake data).
+  // Each tutor's classes show their ACTUALLY assigned students.
+  const sampleTutors = TUTOR_DIRECTORY.map(t => {
+    const assignedStudentEmails = getAssignedStudentEmails(t.email);
+    const assignedStudents = STUDENT_DIRECTORY.filter(s =>
+      assignedStudentEmails.includes(s.email.toLowerCase())
+    );
+    return {
+      id: t.id,
+      name: t.name,
+      gender: t.id === 'tut-1' || t.id === 'tut-3' ? 'Female' : 'Male',
+      qualification: t.id === 'tut-1' ? 'Ijazah Holder (Al-Azhar University)' : 'Certified Qari / Alim',
+      specialization: t.specialization,
       rating: 4.9,
       experienceYears: 7,
       phone: '+92 327 4496163',
-      email: 'maryam.s@alnoorquranacademy.com',
-      studentsCount: 22,
-      todayClasses: [
-        { id: 'c-101', time: '5:00 PM', studentName: 'Ayaan Mahmood (Age 8)', studentId: 'stu-301', course: 'Nazra with Tajweed', country: 'United Kingdom', currentLesson: 'Surah Al-Baqarah 142', surahNum: 2 },
-        { id: 'c-102', time: '5:45 PM', studentName: 'Hamza Farhan (Age 12)', studentId: 'stu-302', course: 'Quran Memorization / Hifz', country: 'Canada', currentLesson: 'Juz 6 Revision', surahNum: 4 },
-        { id: 'c-103', time: '6:30 PM', studentName: 'Fatima Zahra (Age 6)', studentId: 'stu-303', course: 'Noorani Qaida', country: 'USA', currentLesson: 'Lesson 4: Tanween', surahNum: 1 },
-        { id: 'c-104', time: '7:15 PM', studentName: 'Dr. Bilal Siddiqui', studentId: 'stu-304', course: 'Adult Tajweed Improvement', country: 'UAE', currentLesson: 'Makharij & Waqf Rules', surahNum: 2 }
-      ]
-    },
-    {
-      id: 'tut-2',
-      name: 'Qari Tariq Mahmood',
-      gender: 'Male',
-      qualification: 'Hafiz & Qari (Wifaq-ul-Madaris Certified)',
-      specialization: 'Hifz Memorization & Advanced Tajweed',
-      rating: 5.0,
-      experienceYears: 10,
-      phone: '+92 327 4496163',
-      email: 'tariq.m@alnoorquranacademy.com',
-      studentsCount: 28,
-      todayClasses: [
-        { id: 'c-201', time: '4:30 PM', studentName: 'Zayd Ali (Age 10)', studentId: 'stu-401', course: 'Hifz Track', country: 'UK', currentLesson: 'Juz 3 Revision', surahNum: 3 },
-        { id: 'c-202', time: '5:15 PM', studentName: 'Ibrahim Malik (Age 14)', studentId: 'stu-402', course: 'Tajweed Rules', country: 'Australia', currentLesson: 'Surah Yaseen', surahNum: 36 }
-      ]
-    }
-  ];
+      email: t.email,
+      studentsCount: assignedStudents.length,
+      todayClasses: assignedStudents.map((s, i) => ({
+        id: `c-${t.id}-${i}`,
+        time: ['5:00 PM', '5:45 PM', '6:30 PM', '7:15 PM'][i % 4],
+        studentName: s.studentName,
+        studentId: s.id,
+        course: s.courseName,
+        country: s.country,
+        currentLesson: s.currentLesson,
+        surahNum: 2
+      }))
+    };
+  });
 
   const currentTutor = sampleTutors.find(t => t.id === selectedTutorId) || sampleTutors[0];
 
@@ -468,7 +462,7 @@ export const TeacherPortal: React.FC<TeacherPortalProps> = ({
                       </div>
                     </div>
                   );
-                  });
+                  })
                 })()}
               </div>
             </div>
@@ -479,27 +473,28 @@ export const TeacherPortal: React.FC<TeacherPortalProps> = ({
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {[
-                  { name: 'Ayaan Mahmood', age: 8, country: 'United Kingdom', course: 'Nazra with Tajweed', pace: 'Normal', progress: 'Surah Al-Baqarah (Ayah 142)', attendance: '98%' },
-                  { name: 'Hamza Farhan', age: 12, country: 'Canada', course: 'Hifz Memorization', pace: 'Fast', progress: 'Juz 6 (Surah An-Nisa)', attendance: '100%' },
-                  { name: 'Fatima Zahra', age: 6, country: 'USA', course: 'Noorani Qaida for Kids', pace: 'Slow Learner (Gentle)', progress: 'Lesson 4: Tanween', attendance: '95%' },
-                  { name: 'Dr. Bilal Siddiqui (Adult)', age: 34, country: 'UAE', course: 'Adult Tajweed Polish', pace: 'Normal', progress: 'Makharij & Waqf Rules', attendance: '100%' }
-                ].map((s, idx) => (
-                  <div key={idx} className="bg-gray-50 p-5 rounded-2xl border border-gray-200 space-y-3">
+                {(() => {
+                  const rosterEmails = getAssignedStudentEmails(teacherEmail);
+                  const roster = STUDENT_DIRECTORY.filter(s => rosterEmails.includes(s.email.toLowerCase()));
+                  if (roster.length === 0) {
+                    return <p className="text-xs text-gray-500 col-span-full">No students assigned to you yet.</p>;
+                  }
+                  return roster.map((s, idx) => (
+                  <div key={s.id} className="bg-gray-50 p-5 rounded-2xl border border-gray-200 space-y-3">
                     <div className="flex justify-between items-start">
                       <div>
-                        <h4 className="text-base font-bold text-[#064E3B]">{s.name}</h4>
-                        <p className="text-xs text-gray-500">{s.country} • Age: {s.age}</p>
+                        <h4 className="text-base font-bold text-[#064E3B]">{s.studentName}</h4>
+                        <p className="text-xs text-gray-500">{s.country}</p>
                       </div>
                       <span className="bg-emerald-100 text-emerald-900 text-xs font-bold px-2.5 py-1 rounded-md">
-                        {s.pace}
+                        Active
                       </span>
                     </div>
 
                     <div className="text-xs space-y-1 text-gray-700 bg-white p-3 rounded-xl border border-gray-200">
-                      <p><strong>Course:</strong> {s.course}</p>
-                      <p><strong>Current Lesson:</strong> {s.progress}</p>
-                      <p><strong>Attendance:</strong> {s.attendance}</p>
+                      <p><strong>Course:</strong> {s.courseName}</p>
+                      <p><strong>Current Lesson:</strong> {s.currentLesson}</p>
+                      <p><strong>Parent:</strong> {s.parentName}</p>
                     </div>
 
                     <div className="flex gap-2 pt-1">
@@ -520,7 +515,8 @@ export const TeacherPortal: React.FC<TeacherPortalProps> = ({
                       </a>
                     </div>
                   </div>
-                ))}
+                  ));
+                })()}
               </div>
             </div>
           </div>
