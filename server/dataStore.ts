@@ -34,6 +34,13 @@ import {
   INITIAL_ARTICLES,
   INITIAL_RESOURCES
 } from '../src/data/academyData.js';
+import {
+  initFirestore,
+  isFirestoreEnabled,
+  syncDocToFirestore,
+  deleteDocFromFirestore,
+  loadCollectionFromFirestore
+} from '../server/firestore.js';
 
 interface DatabaseSchema {
   courses: Course[];
@@ -69,6 +76,57 @@ class DataStore {
   constructor() {
     this.ensureDataDirectory();
     this.data = this.loadDatabase();
+    // Fire-and-forget: overlay Firestore data when the service account is configured.
+    this.initialize().catch(() => {});
+  }
+
+  // Load Firestore collections over the local JSON data (Firestore wins for
+  // collections that have documents; empty collections keep JSON/seed values).
+  private async initialize(): Promise<void> {
+    let enabled = false;
+    try {
+      enabled = initFirestore();
+    } catch {
+      enabled = false;
+    }
+    if (!enabled || !isFirestoreEnabled()) return;
+    const collections: (keyof DatabaseSchema)[] = [
+      'courses', 'packages', 'leads', 'enrollments', 'students', 'tutors',
+      'classes', 'progressReports', 'assessments', 'testimonials', 'articles',
+      'resources', 'contacts', 'attendance', 'trials', 'feeReminders',
+      'hifzLogs', 'availability', 'coupons', 'referrals'
+    ];
+    for (const coll of collections) {
+      const docs = await loadCollectionFromFirestore(coll);
+      if (docs.length > 0) {
+        (this.data as any)[coll] = docs;
+      } else {
+        // Firestore empty: push our current in-memory docs (JSON/seed) so
+        // Firestore becomes the durable source of truth going forward.
+        const localDocs = (this.data as any)[coll];
+        if (Array.isArray(localDocs) && localDocs.length > 0) {
+          for (const doc of localDocs) {
+            if (doc && doc.id) {
+              syncDocToFirestore(coll, String(doc.id), doc).catch(() => {});
+            }
+          }
+        }
+      }
+    }
+    // Refresh the local JSON cache with the merged dataset.
+    this.saveDatabase();
+  }
+
+  // Write-through: persist to the local JSON cache AND sync the single
+  // document to Firestore (fire-and-forget; methods stay synchronous).
+  // Pass doc=null to delete the document from Firestore.
+  private persist(collection: string, id: string, doc: any | null): void {
+    this.saveDatabase();
+    if (doc !== null) {
+      syncDocToFirestore(collection, id, doc).catch(() => {});
+    } else {
+      deleteDocFromFirestore(collection, id).catch(() => {});
+    }
   }
 
   private ensureDataDirectory() {
@@ -441,7 +499,7 @@ class DataStore {
       id: `c-${Date.now()}`
     };
     this.data.courses.push(newCourse);
-    this.saveDatabase();
+    this.persist('courses', newCourse.id, newCourse);
     return newCourse;
   }
 
@@ -449,7 +507,7 @@ class DataStore {
     const idx = this.data.courses.findIndex(c => c.id === id);
     if (idx === -1) return null;
     this.data.courses[idx] = { ...this.data.courses[idx], ...updates };
-    this.saveDatabase();
+    this.persist('courses', id, this.data.courses[idx]);
     return this.data.courses[idx];
   }
 
@@ -457,7 +515,7 @@ class DataStore {
     const initialLen = this.data.courses.length;
     this.data.courses = this.data.courses.filter(c => c.id !== id);
     if (this.data.courses.length !== initialLen) {
-      this.saveDatabase();
+      this.persist('courses', id, null);
       return true;
     }
     return false;
@@ -474,7 +532,7 @@ class DataStore {
       id: `pkg-${Date.now()}`
     };
     this.data.packages.push(newPkg);
-    this.saveDatabase();
+    this.persist('packages', newPkg.id, newPkg);
     return newPkg;
   }
 
@@ -482,7 +540,7 @@ class DataStore {
     const idx = this.data.packages.findIndex(p => p.id === id);
     if (idx === -1) return null;
     this.data.packages[idx] = { ...this.data.packages[idx], ...updates };
-    this.saveDatabase();
+    this.persist('packages', id, this.data.packages[idx]);
     return this.data.packages[idx];
   }
 
@@ -516,7 +574,7 @@ class DataStore {
     };
 
     this.data.leads.unshift(newLead);
-    this.saveDatabase();
+    this.persist('leads', newLead.id, newLead);
     return newLead;
   }
 
@@ -524,7 +582,7 @@ class DataStore {
     const idx = this.data.leads.findIndex(l => l.id === id);
     if (idx === -1) return null;
     this.data.leads[idx] = { ...this.data.leads[idx], ...updates, updatedAt: new Date().toISOString() };
-    this.saveDatabase();
+    this.persist('leads', id, this.data.leads[idx]);
     return this.data.leads[idx];
   }
 
@@ -538,7 +596,7 @@ class DataStore {
       createdAt: new Date().toISOString()
     });
     lead.updatedAt = new Date().toISOString();
-    this.saveDatabase();
+    this.persist('leads', id, lead);
     return lead;
   }
 
@@ -561,7 +619,7 @@ class DataStore {
     };
 
     this.data.enrollments.unshift(newEnrollment);
-    this.saveDatabase();
+    this.persist('enrollments', newEnrollment.id, newEnrollment);
     return newEnrollment;
   }
 
@@ -569,7 +627,7 @@ class DataStore {
     const idx = this.data.enrollments.findIndex(e => e.id === id);
     if (idx === -1) return null;
     this.data.enrollments[idx] = { ...this.data.enrollments[idx], ...updates, updatedAt: new Date().toISOString() };
-    this.saveDatabase();
+    this.persist('enrollments', id, this.data.enrollments[idx]);
     return this.data.enrollments[idx];
   }
 
@@ -588,7 +646,7 @@ class DataStore {
       updatedAt: now
     };
     this.data.students.unshift(newStudent);
-    this.saveDatabase();
+    this.persist('students', newStudent.id, newStudent);
     return newStudent;
   }
 
@@ -596,7 +654,7 @@ class DataStore {
     const idx = this.data.students.findIndex(s => s.id === id);
     if (idx === -1) return null;
     this.data.students[idx] = { ...this.data.students[idx], ...updates, updatedAt: new Date().toISOString() };
-    this.saveDatabase();
+    this.persist('students', id, this.data.students[idx]);
     return this.data.students[idx];
   }
 
@@ -613,7 +671,7 @@ class DataStore {
       createdAt: new Date().toISOString()
     };
     this.data.tutors.push(newTutor);
-    this.saveDatabase();
+    this.persist('tutors', newTutor.id, newTutor);
     return newTutor;
   }
 
@@ -621,7 +679,7 @@ class DataStore {
     const idx = this.data.tutors.findIndex(t => t.id === id);
     if (idx === -1) return null;
     this.data.tutors[idx] = { ...this.data.tutors[idx], ...updates };
-    this.saveDatabase();
+    this.persist('tutors', id, this.data.tutors[idx]);
     return this.data.tutors[idx];
   }
 
@@ -636,7 +694,7 @@ class DataStore {
       id: `cls-${Date.now()}`
     };
     this.data.classes.unshift(newClass);
-    this.saveDatabase();
+    this.persist('classes', newClass.id, newClass);
     return newClass;
   }
 
@@ -644,7 +702,7 @@ class DataStore {
     const idx = this.data.classes.findIndex(c => c.id === id);
     if (idx === -1) return null;
     this.data.classes[idx] = { ...this.data.classes[idx], ...updates };
-    this.saveDatabase();
+    this.persist('classes', id, this.data.classes[idx]);
     return this.data.classes[idx];
   }
 
@@ -660,7 +718,7 @@ class DataStore {
       createdAt: new Date().toISOString()
     };
     this.data.progressReports.unshift(newReport);
-    this.saveDatabase();
+    this.persist('progressReports', newReport.id, newReport);
     return newReport;
   }
 
@@ -676,7 +734,7 @@ class DataStore {
       assessedAt: new Date().toISOString()
     };
     this.data.assessments.unshift(newAssessment);
-    this.saveDatabase();
+    this.persist('assessments', newAssessment.id, newAssessment);
     return newAssessment;
   }
 
@@ -692,7 +750,7 @@ class DataStore {
       date: new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
     };
     this.data.testimonials.unshift(newTestimonial);
-    this.saveDatabase();
+    this.persist('testimonials', newTestimonial.id, newTestimonial);
     return newTestimonial;
   }
 
@@ -700,7 +758,7 @@ class DataStore {
     const idx = this.data.testimonials.findIndex(t => t.id === id);
     if (idx === -1) return null;
     this.data.testimonials[idx] = { ...this.data.testimonials[idx], ...updates };
-    this.saveDatabase();
+    this.persist('testimonials', id, this.data.testimonials[idx]);
     return this.data.testimonials[idx];
   }
 
@@ -708,7 +766,7 @@ class DataStore {
     const initialLen = this.data.testimonials.length;
     this.data.testimonials = this.data.testimonials.filter(t => t.id !== id);
     if (this.data.testimonials.length !== initialLen) {
-      this.saveDatabase();
+      this.persist('testimonials', id, null);
       return true;
     }
     return false;
@@ -730,7 +788,7 @@ class DataStore {
       publishedAt: new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
     };
     this.data.articles.unshift(newArticle);
-    this.saveDatabase();
+    this.persist('articles', newArticle.id, newArticle);
     return newArticle;
   }
 
@@ -738,7 +796,7 @@ class DataStore {
     const idx = this.data.articles.findIndex(a => a.id === id);
     if (idx === -1) return null;
     this.data.articles[idx] = { ...this.data.articles[idx], ...updates };
-    this.saveDatabase();
+    this.persist('articles', id, this.data.articles[idx]);
     return this.data.articles[idx];
   }
 
@@ -746,7 +804,7 @@ class DataStore {
     const initialLen = this.data.articles.length;
     this.data.articles = this.data.articles.filter(a => a.id !== id);
     if (this.data.articles.length !== initialLen) {
-      this.saveDatabase();
+      this.persist('articles', id, null);
       return true;
     }
     return false;
@@ -763,7 +821,7 @@ class DataStore {
       id: `res-${Date.now()}`
     };
     this.data.resources.unshift(newResource);
-    this.saveDatabase();
+    this.persist('resources', newResource.id, newResource);
     return newResource;
   }
 
@@ -771,7 +829,7 @@ class DataStore {
     const initialLen = this.data.resources.length;
     this.data.resources = this.data.resources.filter(r => r.id !== id);
     if (this.data.resources.length !== initialLen) {
-      this.saveDatabase();
+      this.persist('resources', id, null);
       return true;
     }
     return false;
@@ -795,7 +853,7 @@ class DataStore {
       createdAt: new Date().toISOString()
     };
     this.data.contacts.unshift(newContact);
-    this.saveDatabase();
+    this.persist('contacts', newContact.id, newContact);
     return newContact;
   }
 
@@ -843,6 +901,9 @@ class DataStore {
       }
     }
     this.saveDatabase();
+    for (const rec of saved) {
+      syncDocToFirestore('attendance', rec.id, rec).catch(() => {});
+    }
     return saved;
   }
 
@@ -863,7 +924,7 @@ class DataStore {
       updatedAt: now
     };
     this.data.trials.unshift(trial);
-    this.saveDatabase();
+    this.persist('trials', trial.id, trial);
     return trial;
   }
 
@@ -871,7 +932,7 @@ class DataStore {
     const idx = this.data.trials.findIndex(t => t.id === id);
     if (idx === -1) return null;
     this.data.trials[idx] = { ...this.data.trials[idx], ...updates, updatedAt: new Date().toISOString() };
-    this.saveDatabase();
+    this.persist('trials', id, this.data.trials[idx]);
     return this.data.trials[idx];
   }
 
@@ -879,7 +940,7 @@ class DataStore {
     const idx = this.data.trials.findIndex(t => t.id === id);
     if (idx === -1) return false;
     this.data.trials.splice(idx, 1);
-    this.saveDatabase();
+    this.persist('trials', id, null);
     return true;
   }
 
@@ -899,7 +960,7 @@ class DataStore {
       sentAt: new Date().toISOString()
     };
     this.data.feeReminders.unshift(reminder);
-    this.saveDatabase();
+    this.persist('feeReminders', reminder.id, reminder);
     return reminder;
   }
 
@@ -918,12 +979,12 @@ class DataStore {
     const existing = this.data.hifzLogs.find(h => h.studentId === logData.studentId && h.date === logData.date);
     if (existing) {
       Object.assign(existing, logData, { updatedAt: now });
-      this.saveDatabase();
+      this.persist('hifzLogs', existing.id, existing);
       return existing;
     }
     const log: HifzLog = { ...logData, id: `hifz-${Date.now()}`, createdAt: now, updatedAt: now };
     this.data.hifzLogs.push(log);
-    this.saveDatabase();
+    this.persist('hifzLogs', log.id, log);
     return log;
   }
 
@@ -938,7 +999,7 @@ class DataStore {
   public addAvailability(slot: Omit<TutorAvailability, 'id' | 'createdAt'>): TutorAvailability {
     const rec: TutorAvailability = { ...slot, id: `av-${Date.now()}`, createdAt: new Date().toISOString() };
     this.data.availability.push(rec);
-    this.saveDatabase();
+    this.persist('availability', rec.id, rec);
     return rec;
   }
 
@@ -946,7 +1007,7 @@ class DataStore {
     const idx = this.data.availability.findIndex(a => a.id === id);
     if (idx === -1) return false;
     this.data.availability.splice(idx, 1);
-    this.saveDatabase();
+    this.persist('availability', id, null);
     return true;
   }
 
@@ -961,7 +1022,7 @@ class DataStore {
     const now = new Date().toISOString();
     const coupon: Coupon = { ...c, code, id: `cpn-${Date.now()}`, usedCount: 0, createdAt: now, updatedAt: now };
     this.data.coupons.unshift(coupon);
-    this.saveDatabase();
+    this.persist('coupons', coupon.id, coupon);
     return coupon;
   }
 
@@ -974,7 +1035,7 @@ class DataStore {
       updates.code = code;
     }
     this.data.coupons[idx] = { ...this.data.coupons[idx], ...updates, updatedAt: new Date().toISOString() };
-    this.saveDatabase();
+    this.persist('coupons', id, this.data.coupons[idx]);
     return this.data.coupons[idx];
   }
 
@@ -998,7 +1059,7 @@ class DataStore {
     const now = new Date().toISOString();
     const rec: Referral = { ...r, id: `ref-${Date.now()}`, status: 'pending', createdAt: now, updatedAt: now };
     this.data.referrals.unshift(rec);
-    this.saveDatabase();
+    this.persist('referrals', rec.id, rec);
     return rec;
   }
 
@@ -1006,7 +1067,7 @@ class DataStore {
     const idx = this.data.referrals.findIndex(r => r.id === id);
     if (idx === -1) return null;
     this.data.referrals[idx] = { ...this.data.referrals[idx], ...updates, updatedAt: new Date().toISOString() };
-    this.saveDatabase();
+    this.persist('referrals', id, this.data.referrals[idx]);
     return this.data.referrals[idx];
   }
 
