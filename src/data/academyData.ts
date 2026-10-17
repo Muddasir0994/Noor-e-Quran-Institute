@@ -900,7 +900,7 @@ export const INITIAL_MEDIA_ASSETS: MediaAsset[] = [
   { id: 'med-7', name: 'Nazra Quran Course Graphic', category: 'course', url: '/images/course-nazra-tajweed.webp', fileSize: '105 KB', uploadedAt: '2026-08-18' },
   { id: 'med-8', name: 'Hifz Memorization Graphic', category: 'course', url: '/images/course-hifz-memorization.webp', fileSize: '112 KB', uploadedAt: '2026-08-18' },
   { id: 'med-9', name: 'Ustadha Maryam Siddiqa Portrait', category: 'tutor', url: '/images/tutor-maryam.webp', fileSize: '65 KB', uploadedAt: '2026-08-18' },
-  { id: 'med-10', name: 'Qari Bilal Ahmed Portrait', category: 'tutor', url: '/images/tutor-bilal.webp', fileSize: '72 KB', uploadedAt: '2026-08-18' },
+  { id: 'med-10', name: 'Qari Hafiz Muhammad Bilal Portrait', category: 'tutor', url: '/images/tutor-bilal.webp', fileSize: '72 KB', uploadedAt: '2026-08-18' },
   { id: 'med-11', name: 'Ustadha Ayesha Noor Portrait', category: 'tutor', url: '/images/tutor-ayesha.webp', fileSize: '68 KB', uploadedAt: '2026-08-18' },
   { id: 'med-12', name: 'Shaykh Tariq Al-Azhari Portrait', category: 'tutor', url: '/images/tutor-tariq.webp', fileSize: '74 KB', uploadedAt: '2026-08-18' }
 ];
@@ -1071,7 +1071,7 @@ export const INITIAL_REPORT_CARDS: StudentReportCard[] = [
     studentId: 'stu-1',
     studentName: 'Zayd Al-Hashmi',
     courseName: 'Nazra Quran with Tajweed',
-    tutorName: 'Qari Bilal Ahmed',
+    tutorName: 'Qari Hafiz Muhammad Bilal',
     evaluationMonth: 'August 2026',
     currentSabaq: 'Surah Al-Baqarah (Ayah 142)',
     readingGrade: 'A+',
@@ -1111,7 +1111,7 @@ export const INITIAL_PAYROLL: TutorPayroll[] = [
   {
     id: 'pay-2',
     tutorId: 'tut-2',
-    tutorName: 'Qari Bilal Ahmed',
+    tutorName: 'Qari Hafiz Muhammad Bilal',
     billingMonth: 'August 2026',
     classesConducted: 56,
     ratePerClassPKR: 450,
