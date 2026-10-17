@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import type { User as FirebaseUser } from 'firebase/auth';
 import { UserAccount, UserRole } from '../types';
+import { getRoleForEmail } from '../lib/roleUtils';
 
 interface AuthContextType {
   currentUser: FirebaseUser | null;
@@ -71,7 +72,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                   email: user.email || '',
                   displayName: user.displayName || 'Student',
                   photoURL: user.photoURL || undefined,
-                  role: 'student',
+                  role: getRoleForEmail(user.email || ''),
                   status: 'Active',
                   createdAt: new Date().toISOString()
                 };
@@ -244,7 +245,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           uid: cred.user.uid,
           email: cleanEmail,
           displayName: cred.user.displayName || cleanEmail.split('@')[0],
-          role: 'student',
+          role: getRoleForEmail(cleanEmail),
           status: 'Active',
           createdAt: new Date().toISOString()
         };
