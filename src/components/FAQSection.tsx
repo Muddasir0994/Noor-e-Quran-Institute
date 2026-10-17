@@ -1,47 +1,41 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Question, CaretDown, CaretUp, WhatsappLogo, ArrowRight } from '@phosphor-icons/react';
+import { FAQItem } from '../types';
+import { INITIAL_FAQS } from '../data/academyData';
 
 interface FAQSectionProps {
   onOpenTrial: () => void;
 }
 
+const sortFaqs = (list: FAQItem[]) =>
+  [...list].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+
 export const FAQSection: React.FC<FAQSectionProps> = ({ onOpenTrial }) => {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
-  const faqs = [
-    {
-      q: 'Do you offer a free trial?',
-      a: 'Yes! We offer a full 3-Day Free Trial with zero payment or advance commitment. This allows parents and students to evaluate our teaching style, meet the tutor, and experience our 1-on-1 learning environment before making any decision.'
-    },
-    {
-      q: 'Are classes one-to-one?',
-      a: 'Yes, all our classes are 100% one-to-one. The teacher focuses exclusively on one student throughout the session to ensure proper articulation of Makharij, immediate correction of recitation mistakes, and personalized progress.'
-    },
-    {
-      q: 'Are male and female teachers available?',
-      a: 'Yes. We have qualified and certified Male and Female Quran tutors available. Female tutors are dedicated for sisters, young girls, and children, while male teachers are available for boys and adult male students.'
-    },
-    {
-      q: 'Do you teach children?',
-      a: 'Yes, we specialize in teaching children from 4 years and older. Our instructors are trained to be gentle, engaging, and patient, using interactive Noorani Qaida lessons and positive reinforcement.'
-    },
-    {
-      q: 'Do you teach adults?',
-      a: 'Yes, we have many adult learners—both brothers and sisters. Whether you are starting from zero Arabic or looking to polish your Tajweed, revise your Hifz, or learn Quran translation, we have tailored adult curriculum tracks.'
-    },
-    {
-      q: 'Are classes available internationally?',
-      a: 'Yes, our academy operates globally 24/7. We cater to students across the United Kingdom, United States, Canada, Australia, UAE, Saudi Arabia, Pakistan, and worldwide across all timezones.'
-    },
-    {
-      q: 'How can I enroll?',
-      a: 'Simply click "Book Free Trial" or "Enroll Now" on the website and submit the short form. Our academy coordinator will reach out to you directly on WhatsApp (+92 327 4496163) to schedule your classes and answer any questions.'
-    },
-    {
-      q: 'How will I receive my class schedule?',
-      a: 'Once your application or free trial is submitted, our coordinator will message you on WhatsApp to finalize convenient days and times that fit your family\'s routine, and provide your teacher\'s details and live classroom meeting link.'
-    }
-  ];
+  // Live CMS data: fetch FAQs from the server on mount, sorted by `order`.
+  // Bundled INITIAL_FAQS render instantly and stay as the fallback so this
+  // section never renders empty or broken.
+  const [faqs, setFaqs] = useState<FAQItem[]>(() => sortFaqs(INITIAL_FAQS));
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+    setLoading(true);
+    fetch('/api/faqs')
+      .then(res => (res.ok ? res.json() : Promise.reject(new Error(`HTTP ${res.status}`))))
+      .then(data => {
+        if (!isMounted) return;
+        const list = data?.faqs ?? data; // server wraps in {success, faqs}
+        if (Array.isArray(list) && list.length > 0) {
+          setFaqs(sortFaqs(list as FAQItem[]));
+          setOpenIndex(0);
+        }
+      })
+      .catch(() => { /* keep bundled seed data on failure */ })
+      .finally(() => { if (isMounted) setLoading(false); });
+    return () => { isMounted = false; };
+  }, []);
 
   const toggle = (idx: number) => {
     setOpenIndex(openIndex === idx ? null : idx);
@@ -110,11 +104,20 @@ export const FAQSection: React.FC<FAQSectionProps> = ({ onOpenTrial }) => {
 
           {/* Right Bento Accordion (Col 5-12) */}
           <div className="lg:col-span-8 space-y-3">
-            {faqs.map((faq, idx) => {
+            {loading && faqs.length === 0 ? (
+              <div className="space-y-3 animate-pulse" aria-hidden>
+                {[0, 1, 2, 3].map(i => (
+                  <div key={i} className="border border-gray-200/90 rounded-2xl p-5 space-y-2">
+                    <div className="h-4 w-3/4 bg-gray-200/80 rounded-xl" />
+                    <div className="h-3 w-1/2 bg-gray-200/60 rounded-xl" />
+                  </div>
+                ))}
+              </div>
+            ) : faqs.map((faq, idx) => {
               const isOpen = openIndex === idx;
               return (
                 <div
-                  key={idx}
+                  key={faq.id || idx}
                   className="border border-gray-200/90 rounded-2xl overflow-hidden transition-all duration-150 shadow-xs"
                 >
                   <button
@@ -131,7 +134,7 @@ export const FAQSection: React.FC<FAQSectionProps> = ({ onOpenTrial }) => {
                         {idx + 1}
                       </span>
                       <h3 className="text-gray-900 font-heading font-semibold text-sm sm:text-base inline">
-                        {faq.q}
+                        {faq.question}
                       </h3>
                     </span>
                     <span className="text-[#064E3B] shrink-0">
@@ -141,7 +144,7 @@ export const FAQSection: React.FC<FAQSectionProps> = ({ onOpenTrial }) => {
 
                   {isOpen && (
                     <div className="p-5 pt-3 bg-white text-xs sm:text-sm text-gray-600 leading-relaxed border-t border-emerald-100/60">
-                      <p>{faq.a}</p>
+                      <p>{faq.answer}</p>
                     </div>
                   )}
                 </div>
