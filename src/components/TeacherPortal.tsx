@@ -765,9 +765,10 @@ export const TeacherPortal: React.FC<TeacherPortalProps> = ({
                       <span>{copied ? 'Copied!' : 'Copy Class Link'}</span>
                     </button>
                     <a
-                      href={myLiveClass.meetingLink}
+                      href={/^https:\/\/(meet\.jit\.si|8x8\.vc)\//.test(myLiveClass.meetingLink || '') ? myLiveClass.meetingLink : '#'}
                       target="_blank"
                       rel="noopener noreferrer"
+                      onClick={(e) => { if (!/^https:\/\/(meet\.jit\.si|8x8\.vc)\//.test(myLiveClass.meetingLink || '')) e.preventDefault(); }}
                       className="flex-1 py-3 rounded-xl bg-[#D4A72C] text-[#064E3B] text-xs font-bold flex items-center justify-center gap-2 hover:brightness-110"
                     >
                       <VideoCamera className="w-4 h-4" weight="duotone" />
