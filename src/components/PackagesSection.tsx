@@ -26,24 +26,90 @@ export const PackagesSection: React.FC<PackagesSectionProps> = ({
 }) => {
   const [selectedCurrency, setSelectedCurrency] = useState<'PKR' | 'USD' | 'GBP' | 'EUR' | 'CAD' | 'AUD' | 'AED'>('USD');
 
-  const getPrice = (pkg: PackagePlan) => {
+  // Coupon state
+  const [couponCode, setCouponCode] = useState('');
+  const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discountPercent: number } | null>(null);
+  const [couponError, setCouponError] = useState<string | null>(null);
+  const [couponLoading, setCouponLoading] = useState(false);
+
+  const handleApplyCoupon = async () => {
+    const code = couponCode.trim();
+    if (!code || couponLoading) return;
+    setCouponLoading(true);
+    setCouponError(null);
+    try {
+      const res = await fetch('/api/coupons/validate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code })
+      });
+      const data = await res.json();
+      if (data.valid && typeof data.discountPercent === 'number') {
+        setAppliedCoupon({ code: code.toUpperCase(), discountPercent: data.discountPercent });
+        setCouponCode('');
+      } else {
+        setAppliedCoupon(null);
+        setCouponError(data.reason || 'This coupon code is not valid.');
+      }
+    } catch {
+      setCouponError('Could not validate the coupon. Please try again.');
+    } finally {
+      setCouponLoading(false);
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponCode('');
+    setCouponError(null);
+  };
+
+  const getPriceValue = (pkg: PackagePlan): number => {
     switch (selectedCurrency) {
       case 'PKR':
-        return `₨ ${pkg.monthlyFeePKR.toLocaleString()}`;
+        return pkg.monthlyFeePKR;
       case 'GBP':
-        return `£${pkg.monthlyFeeGBP}`;
+        return pkg.monthlyFeeGBP;
       case 'EUR':
-        return `€${pkg.monthlyFeeEUR}`;
+        return pkg.monthlyFeeEUR;
       case 'CAD':
-        return `C$${pkg.monthlyFeeCAD}`;
+        return pkg.monthlyFeeCAD;
       case 'AUD':
-        return `A$${pkg.monthlyFeeAUD}`;
+        return pkg.monthlyFeeAUD;
       case 'AED':
-        return `AED ${pkg.monthlyFeeAED}`;
+        return pkg.monthlyFeeAED;
       case 'USD':
       default:
-        return `$${pkg.monthlyFeeUSD}`;
+        return pkg.monthlyFeeUSD;
     }
+  };
+
+  const formatPrice = (value: number): string => {
+    switch (selectedCurrency) {
+      case 'PKR':
+        return `₨ ${value.toLocaleString()}`;
+      case 'GBP':
+        return `£${value}`;
+      case 'EUR':
+        return `€${value}`;
+      case 'CAD':
+        return `C$${value}`;
+      case 'AUD':
+        return `A$${value}`;
+      case 'AED':
+        return `AED ${value}`;
+      case 'USD':
+      default:
+        return `$${value}`;
+    }
+  };
+
+  const getPrice = (pkg: PackagePlan) => formatPrice(getPriceValue(pkg));
+
+  const getDiscountedPrice = (pkg: PackagePlan): string => {
+    if (!appliedCoupon) return getPrice(pkg);
+    const discounted = Math.round(getPriceValue(pkg) * (1 - appliedCoupon.discountPercent / 100) * 100) / 100;
+    return formatPrice(discounted);
   };
 
   return (
@@ -82,6 +148,49 @@ export const PackagesSection: React.FC<PackagesSectionProps> = ({
                 {curr}
               </button>
             ))}
+          </div>
+
+          {/* Coupon Code */}
+          <div className="mt-5 flex flex-col items-center">
+            {appliedCoupon ? (
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-emerald-50 border border-emerald-200">
+                <span className="w-4 h-4 rounded-full bg-emerald-600 text-white flex items-center justify-center shrink-0">
+                  <Check className="w-2.5 h-2.5 stroke-[3]" />
+                </span>
+                <span className="text-xs font-extrabold text-emerald-800">
+                  {appliedCoupon.discountPercent}% off applied — {appliedCoupon.code}
+                </span>
+                <button
+                  onClick={handleRemoveCoupon}
+                  className="text-[11px] font-bold text-gray-500 hover:text-red-600 underline underline-offset-2 cursor-pointer"
+                >
+                  Remove
+                </button>
+              </div>
+            ) : (
+              <>
+                <div className="inline-flex items-center gap-2 p-1.5 glass-card-light rounded-2xl">
+                  <input
+                    value={couponCode}
+                    onChange={e => setCouponCode(e.target.value)}
+                    onKeyDown={e => { if (e.key === 'Enter') handleApplyCoupon(); }}
+                    placeholder="Have a coupon code?"
+                    disabled={couponLoading}
+                    className="px-3 py-1.5 text-xs bg-transparent outline-none text-[#064E3B] font-semibold placeholder:text-gray-400 placeholder:font-medium w-44"
+                  />
+                  <button
+                    onClick={handleApplyCoupon}
+                    disabled={couponLoading || !couponCode.trim()}
+                    className="px-4 py-1.5 rounded-xl text-xs font-extrabold bg-[#064E3B] text-white hover:bg-[#032B21] disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer"
+                  >
+                    {couponLoading ? 'Checking…' : 'Apply'}
+                  </button>
+                </div>
+                {couponError && (
+                  <p className="mt-2 text-xs font-bold text-red-600">{couponError}</p>
+                )}
+              </>
+            )}
           </div>
         </div>
 
@@ -124,10 +233,16 @@ export const PackagesSection: React.FC<PackagesSectionProps> = ({
                 <div className="mt-5 mb-5 p-4 bg-[#FAF9F5] rounded-2xl border border-gray-200/80">
                   <div className="flex items-baseline gap-1">
                     <span className="text-3xl font-heading font-extrabold text-[#064E3B]">
-                      {getPrice(pkg)}
+                      {appliedCoupon ? getDiscountedPrice(pkg) : getPrice(pkg)}
                     </span>
                     <span className="text-xs text-gray-500 font-medium">/ month</span>
                   </div>
+                  {appliedCoupon && (
+                    <div className="text-xs text-gray-400 font-medium">
+                      <span className="line-through">{getPrice(pkg)} / month</span>
+                      <span className="ml-1.5 no-underline text-emerald-700 font-bold">−{appliedCoupon.discountPercent}%</span>
+                    </div>
+                  )}
                   <div className="flex items-center gap-4 mt-2 text-[11px] text-gray-600 font-medium border-t border-gray-200/60 pt-2">
                     <span className="flex items-center gap-1">
                       <Calendar className="w-3.5 h-3.5 text-[#A16207]" />
