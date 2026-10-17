@@ -72,9 +72,11 @@ const DB_FILE = path.join(DATA_DIR, 'academy_db.json');
 
 class DataStore {
   private data: DatabaseSchema;
+  private seedData: DatabaseSchema | null = null;
 
   constructor() {
     this.ensureDataDirectory();
+    this.seedData = this.buildSeedData();
     this.data = this.loadDatabase();
     // Fire-and-forget: overlay Firestore data when the service account is configured.
     this.initialize().catch(() => {});
@@ -100,6 +102,16 @@ class DataStore {
       const docs = await loadCollectionFromFirestore(coll);
       if (docs.length > 0) {
         (this.data as any)[coll] = docs;
+        // Repair: push any seed docs whose IDs are missing in Firestore
+        // (e.g. seed expanded after Firestore was first populated).
+        const existingIds = new Set(docs.map((d: any) => String(d.id)));
+        const seedDocs = this.getSeedForCollection(coll);
+        for (const doc of seedDocs) {
+          if (doc && (doc as any).id && !existingIds.has(String((doc as any).id))) {
+            syncDocToFirestore(coll, String((doc as any).id), doc).catch(() => {});
+            (this.data as any)[coll].push(doc);
+          }
+        }
       } else {
         // Firestore empty: push our current in-memory docs (JSON/seed) so
         // Firestore becomes the durable source of truth going forward.
@@ -178,7 +190,13 @@ class DataStore {
       }
     }
 
-    const initialData: DatabaseSchema = {
+    const seed = this.seedData || this.buildSeedData();
+    this.saveDatabase(seed);
+    return seed;
+  }
+
+  private buildSeedData(): DatabaseSchema {
+    return {
       courses: ALL_COURSES,
       packages: ALL_PACKAGES,
       leads: [
@@ -444,9 +462,13 @@ class DataStore {
       coupons: [],
       referrals: []
     };
+  }
 
-    this.saveDatabase(initialData);
-    return initialData;
+  // Returns the code seed docs for a collection (used for Firestore repair).
+  private getSeedForCollection(coll: keyof DatabaseSchema): any[] {
+    if (!this.seedData) return [];
+    const docs = (this.seedData as any)[coll];
+    return Array.isArray(docs) ? docs : [];
   }
 
   private saveDatabase(dataToSave?: DatabaseSchema) {
