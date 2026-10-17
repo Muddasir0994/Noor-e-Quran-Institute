@@ -11,6 +11,8 @@ import { saveProgressReportToFirebase } from '../lib/firestoreService';
 import { QuranReader } from './portal/QuranReader';
 import { Whiteboard } from './portal/Whiteboard';
 import { usePresence, usePresenceList, isOnline, lastSeenText } from './portal/usePresence';
+import { getAssignedTutor } from './portal/tutorAssignments';
+import { StudentProfileBadge } from './portal/StudentProfileBadge';
 import { useLiveClasses } from './portal/useLiveClasses';
 import { submitHomework, useMyHomework } from './portal/useHomework';
 import { useMessageThread, useUnreadCount, sendPortalMessage, markThreadRead, threadIdFor } from './portal/useMessages';
@@ -332,12 +334,18 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
         {activeTab === 'overview' && (
           <div className="space-y-6">
 
-            {/* Teachers Online presence */}
+            {/* My Teacher Online presence (only assigned teacher — privacy) */}
             <div className="bg-white p-6 rounded-3xl border border-gray-200 shadow-xs">
-              <h3 className="text-base font-bold text-[#064E3B] mb-1">Teachers Online</h3>
-              <p className="text-xs text-gray-500 mb-4">See which teachers are available right now.</p>
+              <h3 className="text-base font-bold text-[#064E3B] mb-1">My Teacher Online</h3>
+              <p className="text-xs text-gray-500 mb-4">See if your teacher is available right now.</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                {INITIAL_TUTORS.map(t => {
+                {(() => {
+                  const myTutor = getAssignedTutor(currentUser?.email);
+                  const tutorsToShow = myTutor ? [myTutor] : [];
+                  if (tutorsToShow.length === 0) {
+                    return <p className="text-xs text-gray-500 col-span-full">No teacher assigned yet. Please contact the academy.</p>;
+                  }
+                  return tutorsToShow.map(t => {
                   const entry = presenceList.find(p => p.email.toLowerCase() === t.email.toLowerCase());
                   const online = isOnline(entry);
                   return (
@@ -352,9 +360,25 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
                       </span>
                     </div>
                   );
-                })}
+                  });
+                })()}
               </div>
             </div>
+
+            {/* Student Profile Badge */}
+            <StudentProfileBadge
+              studentName={currentStudent.studentName}
+              studentId={currentStudent.id}
+              email={currentStudent.email}
+              courseName={currentStudent.courseName}
+              currentLesson={currentStudent.currentSurahOrLesson}
+              tutorName={getAssignedTutor(currentUser?.email)?.name || assignedTutor.name}
+              country={currentStudent.country}
+              status={currentStudent.status}
+              attendanceRate={currentStudent.attendanceRate}
+              completedClasses={currentStudent.completedClasses}
+              memberSince={currentStudent.createdAt}
+            />
 
             {/* Live Next Class Banner */}
             <div className="bg-gradient-to-r from-[#064E3B] via-[#085a44] to-[#064E3B] text-white p-6 rounded-3xl border-2 border-[#D4A72C]/40 shadow-md flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
