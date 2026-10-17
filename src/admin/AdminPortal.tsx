@@ -2091,7 +2091,14 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                                   <div>{lead.timeSlot}</div>
                                   <div className="text-[10px] text-gray-500">{lead.country}</div>
                                 </td>
-                                <td className="p-3.5 text-gray-600">{lead.tutorGender}</td>
+                                <td className="p-3.5 text-gray-600">
+                                  {lead.tutorGender}
+                                  {(lead as any).preferredTutorName && (
+                                    <div className="text-[10px] font-bold text-[#B79A62] mt-0.5">
+                                      👨‍🏫 {(lead as any).preferredTutorName}
+                                    </div>
+                                  )}
+                                </td>
                                 <td className="p-3.5">
                                   <select
                                     value={lead.status}
