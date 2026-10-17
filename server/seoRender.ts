@@ -493,6 +493,108 @@ export const HREFLANG_TAGS = `
     <link rel="alternate" hreflang="ur-pk" href="${ACADEMY_BASE_URL}/online-quran-classes-pakistan" />
 `;
 
+function resolveCourseRouteMetadata(normalizedPath: string): { meta: PageMeta | null; is404: boolean } | null {
+  const slug = normalizedPath.replace('/courses/', '').trim();
+  const course = dataStore.getCourseBySlug(slug) || dataStore.getCourses().find(c => c.id === slug);
+  if (course) {
+    const canonical = `${ACADEMY_BASE_URL}/courses/${course.slug || course.id}`;
+    const meta: PageMeta = {
+      title: `${course.name} Online Course with Tajweed | Noor-e-Quran Institute`,
+      description: course.shortDescription || `Learn ${course.name} online with 1-on-1 certified tutors. Flexible timings and 3-day free trial.`,
+      canonical,
+      ogType: 'article',
+      ogImage: `${ACADEMY_BASE_URL}/logo.png`,
+      breadcrumbs: [
+        { name: 'Home', item: `${ACADEMY_BASE_URL}/` },
+        { name: 'Courses', item: `${ACADEMY_BASE_URL}/online-quran-classes` },
+        { name: course.name, item: canonical }
+      ],
+      extraSchema: {
+        '@context': 'https://schema.org',
+        '@type': 'Course',
+        name: course.name,
+        description: course.description || course.shortDescription,
+        provider: {
+          '@type': 'EducationalOrganization',
+          name: 'Noor-e-Quran Institute',
+          sameAs: ACADEMY_BASE_URL
+        },
+        timeRequired: course.duration || '3-6 Months',
+        offers: {
+          '@type': 'Offer',
+          category: 'Monthly Quran Tuition',
+          priceCurrency: 'USD',
+          price: course.feeUSD || 35,
+          url: canonical
+        }
+      }
+    };
+    return { meta, is404: false };
+  }
+  return null;
+}
+
+function resolveBlogRouteMetadata(normalizedPath: string): { meta: PageMeta | null; is404: boolean } | null {
+  const slug = normalizedPath.replace(/^\/(blog|articles)\//, '').trim();
+  const article = dataStore.getArticleBySlug(slug) || dataStore.getArticles().find(a => a.id === slug);
+  if (article) {
+    const canonical = `${ACADEMY_BASE_URL}/blog/${article.slug || article.id}`;
+    const meta: PageMeta = {
+      title: `${article.title} | Noor-e-Quran Institute Blog`,
+      description: article.summary || `Read comprehensive educational guide: ${article.title}. Practical advice for Muslim learners and parents.`,
+      canonical,
+      ogType: 'article',
+      ogImage: `${ACADEMY_BASE_URL}/logo.png`,
+      breadcrumbs: [
+        { name: 'Home', item: `${ACADEMY_BASE_URL}/` },
+        { name: 'Blog', item: `${ACADEMY_BASE_URL}/blog` },
+        { name: article.title, item: canonical }
+      ],
+      extraSchema: {
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        headline: article.title,
+        description: article.summary,
+        author: {
+          '@type': article.author ? 'Person' : 'EducationalOrganization',
+          name: article.author || 'Noor-e-Quran Institute Editorial Team'
+        },
+        publisher: {
+          '@type': 'EducationalOrganization',
+          name: 'Noor-e-Quran Institute',
+          logo: {
+            '@type': 'ImageObject',
+            url: `${ACADEMY_BASE_URL}/logo.png`
+          }
+        },
+        datePublished: article.publishedAt || '2026-01-15',
+        mainEntityOfPage: {
+          '@type': 'WebPage',
+          '@id': canonical
+        }
+      }
+    };
+    return { meta, is404: false };
+  }
+
+  // Dynamic article fallback for Firestore published posts
+  const formattedTitle = slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+  const canonical = `${ACADEMY_BASE_URL}/blog/${slug}`;
+  const meta: PageMeta = {
+    title: `${formattedTitle} | Noor E Quran Institute`,
+    description: `Read educational article and Quran learning guide on ${formattedTitle}.`,
+    canonical,
+    ogType: 'article',
+    ogImage: `${ACADEMY_BASE_URL}/logo.png`,
+    breadcrumbs: [
+      { name: 'Home', item: `${ACADEMY_BASE_URL}/` },
+      { name: 'Blog', item: `${ACADEMY_BASE_URL}/blog` },
+      { name: formattedTitle, item: canonical }
+    ]
+  };
+  return { meta, is404: false };
+}
+
 /**
  * Resolve metadata for any incoming request path
  */
@@ -507,105 +609,14 @@ export function resolveRouteMetadata(rawPath: string): { meta: PageMeta | null; 
 
   // 2. Dynamic Course route: /courses/:slug
   if (normalizedPath.startsWith('/courses/')) {
-    const slug = normalizedPath.replace('/courses/', '').trim();
-    const course = dataStore.getCourseBySlug(slug) || dataStore.getCourses().find(c => c.id === slug);
-    if (course) {
-      const canonical = `${ACADEMY_BASE_URL}/courses/${course.slug || course.id}`;
-      const meta: PageMeta = {
-        title: `${course.name} Online Course with Tajweed | Noor-e-Quran Institute`,
-        description: course.shortDescription || `Learn ${course.name} online with 1-on-1 certified tutors. Flexible timings and 3-day free trial.`,
-        canonical,
-        ogType: 'article',
-        ogImage: `${ACADEMY_BASE_URL}/logo.png`,
-        breadcrumbs: [
-          { name: 'Home', item: `${ACADEMY_BASE_URL}/` },
-          { name: 'Courses', item: `${ACADEMY_BASE_URL}/online-quran-classes` },
-          { name: course.name, item: canonical }
-        ],
-        extraSchema: {
-          '@context': 'https://schema.org',
-          '@type': 'Course',
-          name: course.name,
-          description: course.description || course.shortDescription,
-          provider: {
-            '@type': 'EducationalOrganization',
-            name: 'Noor-e-Quran Institute',
-            sameAs: ACADEMY_BASE_URL
-          },
-          timeRequired: course.duration || '3-6 Months',
-          offers: {
-            '@type': 'Offer',
-            category: 'Monthly Quran Tuition',
-            priceCurrency: 'USD',
-            price: course.feeUSD || 35,
-            url: canonical
-          }
-        }
-      };
-      return { meta, is404: false };
-    }
+    const courseMeta = resolveCourseRouteMetadata(normalizedPath);
+    if (courseMeta) return courseMeta;
   }
 
   // 3. Dynamic Blog route: /blog/:slug or /articles/:slug
   if (normalizedPath.startsWith('/blog/') || normalizedPath.startsWith('/articles/')) {
-    const slug = normalizedPath.replace(/^\/(blog|articles)\//, '').trim();
-    const article = dataStore.getArticleBySlug(slug) || dataStore.getArticles().find(a => a.id === slug);
-    if (article) {
-      const canonical = `${ACADEMY_BASE_URL}/blog/${article.slug || article.id}`;
-      const meta: PageMeta = {
-        title: `${article.title} | Noor-e-Quran Institute Blog`,
-        description: article.summary || `Read comprehensive educational guide: ${article.title}. Practical advice for Muslim learners and parents.`,
-        canonical,
-        ogType: 'article',
-        ogImage: `${ACADEMY_BASE_URL}/logo.png`,
-        breadcrumbs: [
-          { name: 'Home', item: `${ACADEMY_BASE_URL}/` },
-          { name: 'Blog', item: `${ACADEMY_BASE_URL}/blog` },
-          { name: article.title, item: canonical }
-        ],
-        extraSchema: {
-          '@context': 'https://schema.org',
-          '@type': 'Article',
-          headline: article.title,
-          description: article.summary,
-          author: {
-            '@type': article.author ? 'Person' : 'EducationalOrganization',
-            name: article.author || 'Noor-e-Quran Institute Editorial Team'
-          },
-          publisher: {
-            '@type': 'EducationalOrganization',
-            name: 'Noor-e-Quran Institute',
-            logo: {
-              '@type': 'ImageObject',
-              url: `${ACADEMY_BASE_URL}/logo.png`
-            }
-          },
-          datePublished: article.publishedAt || '2026-01-15',
-          mainEntityOfPage: {
-            '@type': 'WebPage',
-            '@id': canonical
-          }
-        }
-      };
-      return { meta, is404: false };
-    }
-
-    // Dynamic article fallback for Firestore published posts
-    const formattedTitle = slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-    const canonical = `${ACADEMY_BASE_URL}/blog/${slug}`;
-    const meta: PageMeta = {
-      title: `${formattedTitle} | Noor E Quran Institute`,
-      description: `Read educational article and Quran learning guide on ${formattedTitle}.`,
-      canonical,
-      ogType: 'article',
-      ogImage: `${ACADEMY_BASE_URL}/logo.png`,
-      breadcrumbs: [
-        { name: 'Home', item: `${ACADEMY_BASE_URL}/` },
-        { name: 'Blog', item: `${ACADEMY_BASE_URL}/blog` },
-        { name: formattedTitle, item: canonical }
-      ]
-    };
-    return { meta, is404: false };
+    const blogMeta = resolveBlogRouteMetadata(normalizedPath);
+    if (blogMeta) return blogMeta;
   }
 
   // 4. Portal and Specialized paths are handled by Client SPA Router
