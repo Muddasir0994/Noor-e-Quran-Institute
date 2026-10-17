@@ -8,6 +8,10 @@ import {
 } from '../types';
 import { useAuth } from '../context/AuthContext';
 import { saveProgressReportToFirebase } from '../lib/firestoreService';
+import { QuranReader } from './portal/QuranReader';
+import { usePresence, usePresenceList, isOnline } from './portal/usePresence';
+import { useLiveClasses } from './portal/useLiveClasses';
+import { INITIAL_TUTORS } from '../data/academyData';
 import {
   BookOpen,
   Calendar,
@@ -43,7 +47,7 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
   const { currentUser, userProfile, logout } = useAuth();
 
   // Active Tab
-  const [activeTab, setActiveTab] = useState<'overview' | 'sabaq' | 'schedule' | 'homework' | 'invoices'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'sabaq' | 'schedule' | 'homework' | 'invoices' | 'quran' | 'liveclass'>('overview');
   
   // Homework recording state
   const [recordingHomework, setRecordingHomework] = useState(false);
@@ -96,6 +100,18 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
     feeAmount: '£55.00 / Month',
     invoiceNumber: 'INV-2026-0801'
   };
+
+  // Online presence: publish student online status + watch teachers & live classes
+  usePresence(currentUser?.email || undefined, currentStudent.studentName, 'student');
+  const presenceList = usePresenceList();
+  const liveClasses = useLiveClasses();
+
+  // This student's teacher (for live-class matching)
+  const myTutor = INITIAL_TUTORS.find(t => t.id === currentStudent.tutorId) || INITIAL_TUTORS[0];
+  const myTutorLiveClass = liveClasses.find(c =>
+    c.teacherId === currentStudent.tutorId ||
+    (myTutor?.email && c.teacherEmail.toLowerCase() === myTutor.email.toLowerCase())
+  ) || null;
 
   // Daily Sabaq & Progress History
   const sampleProgressList: ClassProgressReport[] = [
@@ -232,6 +248,8 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
           {[
             { id: 'overview', label: 'Dashboard Overview', icon: BookOpen },
             { id: 'sabaq', label: 'Daily Sabaq & Progress Book', icon: Certificate },
+            { id: 'quran', label: 'Quran Reader', icon: BookOpen },
+            { id: 'liveclass', label: 'Live Class', icon: VideoCamera },
             { id: 'schedule', label: 'Weekly Timetable', icon: Calendar },
             { id: 'homework', label: 'Audio Homework & Recorder', icon: Microphone },
             { id: 'invoices', label: 'Fee Invoices & Receipts', icon: FileText }
@@ -271,7 +289,31 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
         {/* ============================================================== */}
         {activeTab === 'overview' && (
           <div className="space-y-6">
-            
+
+            {/* Teachers Online presence */}
+            <div className="bg-white p-6 rounded-3xl border border-gray-200 shadow-xs">
+              <h3 className="text-base font-bold text-[#064E3B] mb-1">Teachers Online</h3>
+              <p className="text-xs text-gray-500 mb-4">See which teachers are available right now.</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {INITIAL_TUTORS.map(t => {
+                  const entry = presenceList.find(p => p.email.toLowerCase() === t.email.toLowerCase());
+                  const online = isOnline(entry);
+                  return (
+                    <div key={t.id} className="flex items-center gap-3 bg-gray-50 p-3 rounded-2xl border border-gray-200">
+                      <span className={`w-3 h-3 rounded-full shrink-0 ${online ? 'bg-emerald-500 animate-pulse' : 'bg-gray-300'}`} title={online ? 'Online' : 'Offline'} />
+                      <div className="min-w-0">
+                        <p className="text-sm font-bold text-[#064E3B] truncate">{t.name}</p>
+                        <p className="text-[11px] text-gray-500 truncate">{t.specialization}</p>
+                      </div>
+                      <span className={`ml-auto text-[10px] font-bold px-2 py-0.5 rounded-full ${online ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-200 text-gray-500'}`}>
+                        {online ? 'Online' : 'Offline'}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
             {/* Live Next Class Banner */}
             <div className="bg-gradient-to-r from-[#064E3B] via-[#085a44] to-[#064E3B] text-white p-6 rounded-3xl border-2 border-[#D4A72C]/40 shadow-md flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
               <div className="space-y-2">
@@ -733,6 +775,75 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
 
         {/* ============================================================== */}
         {/* TAB 5: FEE INVOICES & RECEIPTS */}
+        {/* ============================================================== */}
+        {/* ============================================================== */}
+        {/* TAB: QURAN READER */}
+        {/* ============================================================== */}
+        {activeTab === 'quran' && (
+          <QuranReader />
+        )}
+
+        {/* ============================================================== */}
+        {/* TAB: LIVE CLASS */}
+        {/* ============================================================== */}
+        {activeTab === 'liveclass' && (
+          <div className="space-y-6">
+            <div className="bg-white p-6 sm:p-8 rounded-3xl border border-gray-200 shadow-xs max-w-2xl mx-auto space-y-5 text-center">
+              <div className="flex items-center justify-center gap-2">
+                <VideoCamera className="w-5 h-5 text-[#D4A72C]" weight="duotone" />
+                <h3 className="text-lg font-bold text-[#064E3B]">Live Class</h3>
+              </div>
+
+              {myTutorLiveClass ? (
+                <div className="space-y-4">
+                  <div className="bg-emerald-50 border-2 border-emerald-300 p-6 rounded-3xl">
+                    <span className="inline-flex items-center gap-2 bg-emerald-500 text-white text-xs font-bold px-3 py-1 rounded-full mb-3">
+                      <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
+                      LIVE NOW
+                    </span>
+                    <p className="text-base font-bold text-[#064E3B]">
+                      {myTutorLiveClass.teacherName} is teaching live
+                    </p>
+                    <p className="text-xs text-gray-500 mt-1">Your class has started — join now!</p>
+                  </div>
+                  <a
+                    href={myTutorLiveClass.meetingLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block w-full py-4 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-base shadow-md"
+                  >
+                    Join Live Class
+                  </a>
+                  <p className="text-[11px] text-gray-400">Opens the video classroom in a new tab</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  <div className="bg-gray-50 border border-gray-200 p-6 rounded-3xl">
+                    <p className="text-base font-bold text-gray-700">No live class right now</p>
+                    <p className="text-xs text-gray-500 mt-2">
+                      Your teacher: <strong className="text-[#064E3B]">{currentStudent.tutorName}</strong>
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      Usual schedule: <strong>{currentStudent.preferredDays.join(', ')}</strong> • {currentStudent.preferredTime}
+                    </p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Next class: <strong className="text-[#D4A72C]">{currentStudent.nextClassTime}</strong>
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setActiveTab('schedule')}
+                    className="w-full py-3 rounded-xl bg-[#064E3B] hover:bg-emerald-900 text-white text-xs font-bold cursor-pointer"
+                  >
+                    View Weekly Timetable
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* ============================================================== */}
+        {/* TAB: FEE INVOICES */}
         {/* ============================================================== */}
         {activeTab === 'invoices' && (
           <div className="space-y-6">
