@@ -10,7 +10,7 @@ import { useAuth } from '../context/AuthContext';
 import { QuranReader } from './portal/QuranReader';
 import { Whiteboard } from './portal/Whiteboard';
 import { usePresence, usePresenceList, isOnline, lastSeenText, KNOWN_STUDENTS } from './portal/usePresence';
-import { getAssignedStudentEmails } from './portal/tutorAssignments';
+import { getAssignedStudentEmails, getTutorByEmail } from './portal/tutorAssignments';
 import { useLiveClasses, startLiveClass, endLiveClass, LiveClass } from './portal/useLiveClasses';
 import { useHomeworkSubmissions, reviewHomework, HomeworkSubmission } from './portal/useHomework';
 import { markAttendance, useTodayAttendance, AttendanceStatus } from './portal/useAttendance';
@@ -53,8 +53,9 @@ export const TeacherPortal: React.FC<TeacherPortalProps> = ({
 }) => {
   const { currentUser, userProfile, logout } = useAuth();
 
-  // Tutor switcher
-  const [selectedTutorId, setSelectedTutorId] = useState<string>('tut-1');
+  // Tutor switcher — defaults to the logged-in teacher's own account
+  const loggedInTutorId = getTutorByEmail(currentUser?.email || '')?.id || 'tut-1';
+  const [selectedTutorId, setSelectedTutorId] = useState<string>(loggedInTutorId);
   const [activeTab, setActiveTab] = useState<'schedule' | 'students' | 'evaluator' | 'profile' | 'quran' | 'liveclass' | 'whiteboard' | 'homework' | 'messages'>('schedule');
 
   // Evaluation form state
