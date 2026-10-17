@@ -270,6 +270,12 @@ export interface Student {
   learningPace: LearningPace;
   status: StudentStatus;
   currentSurahOrLesson?: string;
+  // Relationship links for idempotent enrollment approval.
+  // enrollmentId is the idempotency key: approving the same enrollment twice
+  // returns the existing student instead of creating a duplicate.
+  enrollmentId?: string;
+  leadId?: string;
+  trialId?: string;
   notes: Note[];
   createdAt: string;
   updatedAt: string;
