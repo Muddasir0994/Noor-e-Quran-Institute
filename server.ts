@@ -540,6 +540,8 @@ app.post('/api/book-trial', checkPublicRateLimit, (req, res) => {
       courseName,
       tutorGender,
       tutorGenderPreference,
+      preferredTutorId,
+      preferredTutorName,
       timeSlot,
       preferredTimeSlot,
       preferredDays,
@@ -567,6 +569,8 @@ app.post('/api/book-trial', checkPublicRateLimit, (req, res) => {
       courseId: courseId || 'c-1',
       courseName,
       tutorGender: selectedTutor,
+      preferredTutorId: preferredTutorId || undefined,
+      preferredTutorName: preferredTutorName || undefined,
       timeSlot: selectedSlot,
       preferredDays: preferredDays || ['Monday', 'Tuesday', 'Wednesday'],
       preferredTimeRange: preferredTimeRange || '',
@@ -579,6 +583,7 @@ app.post('/api/book-trial', checkPublicRateLimit, (req, res) => {
       `*Student Name:* ${lead.studentName}\n` +
       `*Course:* ${lead.courseName}\n` +
       `*Tutor Preference:* ${lead.tutorGender}\n` +
+      (preferredTutorName ? `*Preferred Teacher:* ${preferredTutorName}\n` : '') +
       `*Preferred Slot:* ${lead.timeSlot}\n` +
       `*Country:* ${lead.country}`
     );

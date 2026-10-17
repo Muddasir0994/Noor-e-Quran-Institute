@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ALL_COURSES, ALL_PACKAGES } from '../data/academyData';
+import { ALL_COURSES, ALL_PACKAGES, INITIAL_TUTORS } from '../data/academyData';
 import { createLeadInFirebase } from '../lib/firestoreService';
 import {
   X,
@@ -35,6 +35,7 @@ export const FreeTrialModal: React.FC<FreeTrialModalProps> = ({
   const [country, setCountry] = useState('Pakistan');
   const [courseName, setCourseName] = useState(initialCourseName || 'Noorani Qaida for Beginners');
   const [tutorGender, setTutorGender] = useState<'Male' | 'Female' | 'No Preference'>(defaultGender);
+  const [preferredTutorId, setPreferredTutorId] = useState(''); // '' = no preference, any teacher
   const [timeSlot, setTimeSlot] = useState<'Morning' | 'Afternoon' | 'Evening' | 'Night'>('Evening');
   const [selectedDays, setSelectedDays] = useState<string[]>(['Monday', 'Wednesday', 'Friday']);
   const [preferredTimeRange, setPreferredTimeRange] = useState('');
@@ -70,6 +71,7 @@ export const FreeTrialModal: React.FC<FreeTrialModalProps> = ({
     try {
       // 1. First save to Firestore Database
       const courseObj = ALL_COURSES.find(c => c.name === courseName) || ALL_COURSES[0];
+      const preferredTutor = INITIAL_TUTORS.find(t => t.id === preferredTutorId);
       await createLeadInFirebase({
         studentName,
         parentName: parentName || studentName + ' Parent',
@@ -79,6 +81,8 @@ export const FreeTrialModal: React.FC<FreeTrialModalProps> = ({
         courseId: courseObj.id,
         courseName,
         tutorGender,
+        preferredTutorId: preferredTutorId || undefined,
+        preferredTutorName: preferredTutor?.name || undefined,
         timeSlot,
         preferredDays: selectedDays,
         preferredTimeRange,
@@ -100,6 +104,8 @@ export const FreeTrialModal: React.FC<FreeTrialModalProps> = ({
             country,
             courseName,
             tutorGender,
+            preferredTutorId: preferredTutorId || undefined,
+            preferredTutorName: INITIAL_TUTORS.find(t => t.id === preferredTutorId)?.name || undefined,
             timeSlot,
             preferredDays: selectedDays,
             preferredTimeRange,
@@ -309,6 +315,24 @@ export const FreeTrialModal: React.FC<FreeTrialModalProps> = ({
 
               {/* Tutor Gender & Learning Pace */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 mb-1">
+                    Choose Your Teacher <span className="font-normal text-gray-400">(optional)</span>
+                  </label>
+                  <select
+                    value={preferredTutorId}
+                    onChange={(e) => setPreferredTutorId(e.target.value)}
+                    className="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#064E3B]/30"
+                  >
+                    <option value="">Any available teacher</option>
+                    {INITIAL_TUTORS.map(t => (
+                      <option key={t.id} value={t.id}>
+                        {t.name} — {t.specialization.split(',')[0]}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
                 <div>
                   <label className="block text-xs font-bold text-gray-700 mb-1">
                     Tutor Preference

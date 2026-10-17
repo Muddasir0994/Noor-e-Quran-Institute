@@ -211,6 +211,8 @@ export interface Lead {
   courseId: string;
   courseName: string;
   tutorGender: TutorGenderPreference;
+  preferredTutorId?: string;
+  preferredTutorName?: string;
   timeSlot: TimeSlot;
   preferredDays?: string[];
   preferredTimeRange?: string;
