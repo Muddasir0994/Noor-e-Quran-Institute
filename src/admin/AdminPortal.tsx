@@ -21,6 +21,11 @@ import {
   AttendanceRecord,
   TrialClass,
   FeeReminder,
+  HifzLog,
+  TutorAvailability,
+  Coupon,
+  Referral,
+  ScheduledClass,
   LeadStatus,
   EnrollmentStatus,
   StudentStatus,
@@ -125,7 +130,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
 
   // Active view tab in admin CMS
   const [activeTab, setActiveTab] = useState<
-    'overview' | 'leads' | 'enrollments' | 'students' | 'attendance' | 'trials' | 'tutors' | 'timetable' | 'finance' | 'reports' | 'payroll' | 'logs' | 'courses' | 'packages' | 'blog' | 'testimonials' | 'faqs' | 'media' | 'templates' | 'seo' | 'settings'
+    'overview' | 'leads' | 'enrollments' | 'students' | 'attendance' | 'trials' | 'hifz' | 'availability' | 'tutors' | 'timetable' | 'finance' | 'reports' | 'payroll' | 'logs' | 'courses' | 'packages' | 'blog' | 'testimonials' | 'faqs' | 'coupons' | 'referrals' | 'media' | 'templates' | 'seo' | 'settings'
   >('overview');
 
   // Data states
@@ -156,6 +161,42 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
 
   // Fee Reminders State
   const [feeReminders, setFeeReminders] = useState<FeeReminder[]>([]);
+
+  // Hifz Tracker State
+  const [hifzStudentId, setHifzStudentId] = useState('');
+  const [hifzDate, setHifzDate] = useState(() => new Date().toISOString().split('T')[0]);
+  const [hifzLogs, setHifzLogs] = useState<HifzLog[]>([]);
+  const [hifzForm, setHifzForm] = useState({
+    sabaqSurah: '', sabaqFrom: '', sabaqTo: '',
+    sabqiSurah: '', sabqiFrom: '', sabqiTo: '',
+    manzilJuz: '', remarks: ''
+  });
+  const [savingHifz, setSavingHifz] = useState(false);
+  const [hifzMsg, setHifzMsg] = useState('');
+
+  // Tutor Availability State
+  const [availability, setAvailability] = useState<TutorAvailability[]>([]);
+  const [availForm, setAvailForm] = useState({
+    tutorId: '', tutorName: '', dayOfWeek: 'Monday', startTime: '09:00', endTime: '12:00'
+  });
+
+  // Coupons State
+  const [coupons, setCoupons] = useState<Coupon[]>([]);
+  const [couponForm, setCouponForm] = useState({
+    code: '', discountPercent: 10, maxUses: 100, expiresAt: ''
+  });
+  const [couponMsg, setCouponMsg] = useState('');
+
+  // Referrals State
+  const [referrals, setReferrals] = useState<Referral[]>([]);
+  const [referralForm, setReferralForm] = useState({
+    referrerName: '', referrerPhone: '', referredStudentName: '', referredPhone: '', rewardNote: ''
+  });
+
+  // Scheduled Classes (meeting links) State
+  const [scheduledClasses, setScheduledClasses] = useState<ScheduledClass[]>([]);
+  const [editingLinkFor, setEditingLinkFor] = useState<string | null>(null);
+  const [meetingLinkInput, setMeetingLinkInput] = useState('');
 
   // Finance & Invoices State
   const [invoices, setInvoices] = useState<FeeInvoice[]>(() => {
@@ -648,12 +689,284 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
     }
   };
 
+  // ---- Hifz Tracker (backend API) ----
+  const fetchHifzLogs = async (studentId: string) => {
+    if (!studentId) { setHifzLogs([]); return; }
+    try {
+      const headers = { Authorization: `Bearer ${token}` };
+      const res = await fetch(`/api/admin/hifz-logs?studentId=${studentId}`, { headers });
+      if (res.status === 401) { handleLogout(); return; }
+      const data = await res.json();
+      if (data.success) {
+        setHifzLogs(data.logs || []);
+        const today = (data.logs || []).find((l: HifzLog) => l.date === hifzDate);
+        if (today) {
+          setHifzForm({
+            sabaqSurah: today.sabaqSurah || '', sabaqFrom: today.sabaqFrom || '', sabaqTo: today.sabaqTo || '',
+            sabqiSurah: today.sabqiSurah || '', sabqiFrom: today.sabqiFrom || '', sabqiTo: today.sabqiTo || '',
+            manzilJuz: today.manzilJuz || '', remarks: today.remarks || ''
+          });
+        }
+      }
+    } catch (err) {
+      console.error('Failed to fetch hifz logs:', err);
+    }
+  };
+
+  const handleSaveHifzLog = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!hifzStudentId) { setHifzMsg('Please select a student first.'); return; }
+    const stu = students.find(s => s.id === hifzStudentId);
+    setSavingHifz(true);
+    setHifzMsg('');
+    try {
+      const headers = { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' };
+      const res = await fetch('/api/admin/hifz-logs', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          studentId: hifzStudentId,
+          studentName: stu?.studentName || '',
+          date: hifzDate,
+          ...hifzForm
+        })
+      });
+      if (res.status === 401) { handleLogout(); return; }
+      const data = await res.json();
+      if (data.success) {
+        setHifzMsg(`Hifz log saved for ${hifzDate}.`);
+        fetchHifzLogs(hifzStudentId);
+      } else {
+        setHifzMsg(data.error || 'Failed to save hifz log.');
+      }
+    } catch (err) {
+      setHifzMsg('Failed to save hifz log.');
+    } finally {
+      setSavingHifz(false);
+    }
+  };
+
+  // ---- Tutor Availability (backend API) ----
+  const fetchAvailability = async () => {
+    try {
+      const headers = { Authorization: `Bearer ${token}` };
+      const res = await fetch('/api/admin/availability', { headers });
+      if (res.status === 401) { handleLogout(); return; }
+      const data = await res.json();
+      if (data.success) setAvailability(data.slots || []);
+    } catch (err) {
+      console.error('Failed to fetch availability:', err);
+    }
+  };
+
+  const handleAddAvailability = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!availForm.tutorId) return;
+    try {
+      const headers = { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' };
+      const res = await fetch('/api/admin/availability', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(availForm)
+      });
+      if (res.status === 401) { handleLogout(); return; }
+      const data = await res.json();
+      if (data.success) {
+        setAvailability(prev => [...prev, data.slot]);
+        setAvailForm({ tutorId: '', tutorName: '', dayOfWeek: 'Monday', startTime: '09:00', endTime: '12:00' });
+      }
+    } catch (err) {
+      console.error('Failed to add availability:', err);
+    }
+  };
+
+  const handleDeleteAvailability = async (id: string) => {
+    if (!window.confirm('Delete this availability slot?')) return;
+    try {
+      const headers = { Authorization: `Bearer ${token}` };
+      const res = await fetch(`/api/admin/availability/${id}`, { method: 'DELETE', headers });
+      if (res.status === 401) { handleLogout(); return; }
+      setAvailability(prev => prev.filter(s => s.id !== id));
+    } catch (err) {
+      console.error('Failed to delete availability slot:', err);
+    }
+  };
+
+  // ---- Coupons (backend API) ----
+  const fetchCoupons = async () => {
+    try {
+      const headers = { Authorization: `Bearer ${token}` };
+      const res = await fetch('/api/admin/coupons', { headers });
+      if (res.status === 401) { handleLogout(); return; }
+      const data = await res.json();
+      if (data.success) setCoupons(data.coupons || []);
+    } catch (err) {
+      console.error('Failed to fetch coupons:', err);
+    }
+  };
+
+  const handleCreateCoupon = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setCouponMsg('');
+    try {
+      const headers = { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' };
+      const res = await fetch('/api/admin/coupons', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          code: couponForm.code.trim().toUpperCase(),
+          discountPercent: Number(couponForm.discountPercent),
+          maxUses: Number(couponForm.maxUses) || 0,
+          expiresAt: couponForm.expiresAt || undefined
+        })
+      });
+      if (res.status === 401) { handleLogout(); return; }
+      const data = await res.json();
+      if (data.success) {
+        setCoupons(prev => [data.coupon, ...prev]);
+        setCouponForm({ code: '', discountPercent: 10, maxUses: 100, expiresAt: '' });
+        setCouponMsg('Coupon created.');
+      } else {
+        setCouponMsg(data.error || 'Failed to create coupon.');
+      }
+    } catch (err) {
+      setCouponMsg('Failed to create coupon.');
+    }
+  };
+
+  const handleCouponStatusToggle = async (id: string, status: 'active' | 'disabled') => {
+    try {
+      const headers = { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' };
+      const res = await fetch(`/api/admin/coupons/${id}`, {
+        method: 'PATCH',
+        headers,
+        body: JSON.stringify({ status })
+      });
+      if (res.status === 401) { handleLogout(); return; }
+      const data = await res.json();
+      if (data.success) setCoupons(prev => prev.map(c => (c.id === id ? data.coupon : c)));
+    } catch (err) {
+      console.error('Failed to update coupon:', err);
+    }
+  };
+
+  // ---- Referrals (backend API) ----
+  const fetchReferrals = async () => {
+    try {
+      const headers = { Authorization: `Bearer ${token}` };
+      const res = await fetch('/api/admin/referrals', { headers });
+      if (res.status === 401) { handleLogout(); return; }
+      const data = await res.json();
+      if (data.success) setReferrals(data.referrals || []);
+    } catch (err) {
+      console.error('Failed to fetch referrals:', err);
+    }
+  };
+
+  const handleCreateReferral = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const headers = { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' };
+      const res = await fetch('/api/admin/referrals', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(referralForm)
+      });
+      if (res.status === 401) { handleLogout(); return; }
+      const data = await res.json();
+      if (data.success) {
+        setReferrals(prev => [data.referral, ...prev]);
+        setReferralForm({ referrerName: '', referrerPhone: '', referredStudentName: '', referredPhone: '', rewardNote: '' });
+      }
+    } catch (err) {
+      console.error('Failed to add referral:', err);
+    }
+  };
+
+  const handleReferralStatusChange = async (id: string, status: Referral['status']) => {
+    try {
+      const headers = { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' };
+      const res = await fetch(`/api/admin/referrals/${id}`, {
+        method: 'PATCH',
+        headers,
+        body: JSON.stringify({ status })
+      });
+      if (res.status === 401) { handleLogout(); return; }
+      const data = await res.json();
+      if (data.success) setReferrals(prev => prev.map(r => (r.id === id ? data.referral : r)));
+    } catch (err) {
+      console.error('Failed to update referral:', err);
+    }
+  };
+
+  // ---- Scheduled Classes: meeting links (backend API) ----
+  const fetchScheduledClasses = async () => {
+    try {
+      const headers = { Authorization: `Bearer ${token}` };
+      const res = await fetch('/api/admin/classes', { headers });
+      if (res.status === 401) { handleLogout(); return; }
+      const data = await res.json();
+      if (data.success) setScheduledClasses(data.classes || []);
+    } catch (err) {
+      console.error('Failed to fetch classes:', err);
+    }
+  };
+
+  const handleSaveMeetingLink = async (stu: Student) => {
+    const link = meetingLinkInput.trim();
+    if (!link) return;
+    try {
+      const headers = { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' };
+      const existing = scheduledClasses.find(c => c.studentId === stu.id);
+      if (existing) {
+        const res = await fetch(`/api/admin/classes/${existing.id}`, {
+          method: 'PATCH',
+          headers,
+          body: JSON.stringify({ meetingLink: link })
+        });
+        if (res.status === 401) { handleLogout(); return; }
+        const data = await res.json();
+        if (data.success) setScheduledClasses(prev => prev.map(c => (c.id === existing.id ? data.class : c)));
+      } else {
+        const res = await fetch('/api/admin/classes', {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({
+            studentId: stu.id,
+            studentName: stu.studentName,
+            tutorId: '',
+            tutorName: stu.tutorName || '',
+            courseName: stu.courseName || '',
+            days: stu.preferredDays || [],
+            time: stu.preferredTime || '',
+            timeZone: '',
+            classDuration: 30,
+            status: 'Scheduled',
+            meetingLink: link
+          })
+        });
+        if (res.status === 401) { handleLogout(); return; }
+        const data = await res.json();
+        if (data.success) setScheduledClasses(prev => [data.class, ...prev]);
+      }
+      setEditingLinkFor(null);
+      setMeetingLinkInput('');
+    } catch (err) {
+      console.error('Failed to save meeting link:', err);
+    }
+  };
+
   // Refresh tab-specific data when its tab opens
   useEffect(() => {
     if (!token || !isOpen) return;
     if (activeTab === 'attendance') fetchAttendance(attendanceDate);
     else if (activeTab === 'trials') fetchTrials();
     else if (activeTab === 'finance') fetchFeeReminders();
+    else if (activeTab === 'hifz' && hifzStudentId) fetchHifzLogs(hifzStudentId);
+    else if (activeTab === 'availability') fetchAvailability();
+    else if (activeTab === 'coupons') fetchCoupons();
+    else if (activeTab === 'referrals') fetchReferrals();
+    else if (activeTab === 'timetable') fetchScheduledClasses();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, token]);
 
@@ -1554,6 +1867,8 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                       { id: 'students', label: 'Students & Timetable', icon: GraduationCap },
                       { id: 'attendance', label: 'Attendance', icon: CalendarCheck },
                       { id: 'trials', label: 'Trial Classes', icon: PhoneCall },
+                      { id: 'hifz', label: 'Hifz Tracker', icon: BookOpen },
+                      { id: 'availability', label: 'Tutor Availability', icon: Clock },
                       { id: 'tutors', label: 'Faculty & Scholars', icon: Certificate },
                       { id: 'timetable', label: 'Weekly Schedule Matrix', icon: Calendar },
                       { id: 'finance', label: 'Billing & Invoices', icon: Receipt, badge: invoices.filter(i => i.status === 'Pending').length },
@@ -1630,6 +1945,8 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                     {[
                       { id: 'media', label: 'Media & Assets', icon: ImageIcon },
                       { id: 'templates', label: 'Message Templates', icon: ChatText },
+                      { id: 'coupons', label: 'Coupons', icon: Tag },
+                      { id: 'referrals', label: 'Referrals', icon: ShareNetwork },
                       { id: 'seo', label: 'SEO & Meta Tags', icon: Globe },
                       { id: 'settings', label: 'Settings & Backups', icon: Gear }
                     ].map(item => {
@@ -2212,6 +2529,198 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                 </div>
               )}
 
+              {/* TAB: HIFZ TRACKER (Sabaq / Sabqi / Manzil) */}
+              {activeTab === 'hifz' && (
+                <div className="space-y-4">
+                  <div className="bg-[#F8F5EE] p-4 rounded-sm border border-[#E8E0D1]">
+                    <h3 className="font-editorial text-2xl text-[#0B332D] font-bold">Hifz Tracker</h3>
+                    <p className="text-xs text-gray-500 font-sans">Daily Sabaq, Sabqi and Manzil log for memorization students.</p>
+                  </div>
+
+                  <div className="bg-[#FCFBF8] rounded-sm border border-[#E8E0D1] shadow-xs p-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+                      <div>
+                        <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Student *</label>
+                        <select
+                          value={hifzStudentId}
+                          onChange={e => {
+                            setHifzStudentId(e.target.value);
+                            setHifzForm({ sabaqSurah: '', sabaqFrom: '', sabaqTo: '', sabqiSurah: '', sabqiFrom: '', sabqiTo: '', manzilJuz: '', remarks: '' });
+                            fetchHifzLogs(e.target.value);
+                          }}
+                          className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]"
+                        >
+                          <option value="">Select student</option>
+                          {students.map(s => <option key={s.id} value={s.id}>{s.studentName}</option>)}
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Date</label>
+                        <input
+                          type="date"
+                          value={hifzDate}
+                          onChange={e => { setHifzDate(e.target.value); if (hifzStudentId) fetchHifzLogs(hifzStudentId); }}
+                          className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]"
+                        />
+                      </div>
+                    </div>
+
+                    {hifzStudentId && (
+                      <form onSubmit={handleSaveHifzLog} className="space-y-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3 bg-[#F8F5EE] rounded-sm border border-[#E8E0D1]">
+                          <p className="sm:col-span-3 text-[11px] font-bold uppercase tracking-wider text-[#0B332D]">Sabaq (New Lesson)</p>
+                          <div>
+                            <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Surah</label>
+                            <input value={hifzForm.sabaqSurah} onChange={e => setHifzForm(f => ({ ...f, sabaqSurah: e.target.value }))} placeholder="e.g. Al-Baqarah" className="w-full px-3 py-2 border border-[#E8E0D1] bg-white rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]" />
+                          </div>
+                          <div>
+                            <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">From (Ayah)</label>
+                            <input value={hifzForm.sabaqFrom} onChange={e => setHifzForm(f => ({ ...f, sabaqFrom: e.target.value }))} placeholder="e.g. 1" className="w-full px-3 py-2 border border-[#E8E0D1] bg-white rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]" />
+                          </div>
+                          <div>
+                            <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">To (Ayah)</label>
+                            <input value={hifzForm.sabaqTo} onChange={e => setHifzForm(f => ({ ...f, sabaqTo: e.target.value }))} placeholder="e.g. 10" className="w-full px-3 py-2 border border-[#E8E0D1] bg-white rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]" />
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3 bg-[#F8F5EE] rounded-sm border border-[#E8E0D1]">
+                          <p className="sm:col-span-3 text-[11px] font-bold uppercase tracking-wider text-[#0B332D]">Sabqi (Recent Revision)</p>
+                          <div>
+                            <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Surah</label>
+                            <input value={hifzForm.sabqiSurah} onChange={e => setHifzForm(f => ({ ...f, sabqiSurah: e.target.value }))} placeholder="e.g. Al-Fatiha" className="w-full px-3 py-2 border border-[#E8E0D1] bg-white rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]" />
+                          </div>
+                          <div>
+                            <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">From</label>
+                            <input value={hifzForm.sabqiFrom} onChange={e => setHifzForm(f => ({ ...f, sabqiFrom: e.target.value }))} className="w-full px-3 py-2 border border-[#E8E0D1] bg-white rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]" />
+                          </div>
+                          <div>
+                            <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">To</label>
+                            <input value={hifzForm.sabqiTo} onChange={e => setHifzForm(f => ({ ...f, sabqiTo: e.target.value }))} className="w-full px-3 py-2 border border-[#E8E0D1] bg-white rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]" />
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Manzil (Juz)</label>
+                            <input value={hifzForm.manzilJuz} onChange={e => setHifzForm(f => ({ ...f, manzilJuz: e.target.value }))} placeholder="e.g. Juz 3" className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]" />
+                          </div>
+                          <div>
+                            <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Remarks</label>
+                            <input value={hifzForm.remarks} onChange={e => setHifzForm(f => ({ ...f, remarks: e.target.value }))} placeholder="Tutor remarks" className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]" />
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <button type="submit" disabled={savingHifz} className="px-4 py-2 bg-[#0B332D] text-[#F8F5EE] text-xs font-sans font-semibold uppercase tracking-wider rounded-sm hover:bg-[#07221E] shadow-xs cursor-pointer disabled:opacity-60">
+                            {savingHifz ? 'Saving...' : 'Save Hifz Log'}
+                          </button>
+                          {hifzMsg && <span className="text-xs font-sans text-emerald-800">{hifzMsg}</span>}
+                        </div>
+                      </form>
+                    )}
+                  </div>
+
+                  {hifzStudentId && hifzLogs.length > 0 && (
+                    <div className="bg-[#FCFBF8] rounded-sm border border-[#E8E0D1] shadow-xs overflow-hidden">
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-left text-xs font-sans">
+                          <thead className="bg-[#F8F5EE] text-[#0B332D] font-bold uppercase tracking-wider border-b border-[#E8E0D1] text-[10px]">
+                            <tr>
+                              <th className="p-3.5">Date</th>
+                              <th className="p-3.5">Sabaq</th>
+                              <th className="p-3.5">Sabqi</th>
+                              <th className="p-3.5">Manzil</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-[#E8E0D1]/60">
+                            {hifzLogs.map(l => (
+                              <tr key={l.id} className="hover:bg-[#F8F5EE]/50 transition-colors">
+                                <td className="p-3.5 font-bold text-[#0B332D]">{l.date}</td>
+                                <td className="p-3.5 text-gray-700">{[l.sabaqSurah, l.sabaqFrom && l.sabaqTo ? `${l.sabaqFrom}-${l.sabaqTo}` : ''].filter(Boolean).join(' ') || '—'}</td>
+                                <td className="p-3.5 text-gray-700">{[l.sabqiSurah, l.sabqiFrom && l.sabqiTo ? `${l.sabqiFrom}-${l.sabqiTo}` : ''].filter(Boolean).join(' ') || '—'}</td>
+                                <td className="p-3.5 text-gray-700">{l.manzilJuz || '—'}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* TAB: TUTOR AVAILABILITY */}
+              {activeTab === 'availability' && (
+                <div className="space-y-4">
+                  <div className="bg-[#F8F5EE] p-4 rounded-sm border border-[#E8E0D1]">
+                    <h3 className="font-editorial text-2xl text-[#0B332D] font-bold">Tutor Availability</h3>
+                    <p className="text-xs text-gray-500 font-sans">Weekly time slots when each scholar is free to take classes.</p>
+                  </div>
+
+                  <form onSubmit={handleAddAvailability} className="bg-[#FCFBF8] rounded-sm border border-[#E8E0D1] shadow-xs p-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+                      <div>
+                        <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Tutor *</label>
+                        <select
+                          required
+                          value={availForm.tutorId}
+                          onChange={e => {
+                            const t = tutors.find(t => t.id === e.target.value);
+                            setAvailForm(f => ({ ...f, tutorId: e.target.value, tutorName: t?.name || '' }));
+                          }}
+                          className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]"
+                        >
+                          <option value="">Select tutor</option>
+                          {tutors.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Day *</label>
+                        <select value={availForm.dayOfWeek} onChange={e => setAvailForm(f => ({ ...f, dayOfWeek: e.target.value }))} className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]">
+                          {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map(d => <option key={d} value={d}>{d}</option>)}
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Start *</label>
+                        <input required type="time" value={availForm.startTime} onChange={e => setAvailForm(f => ({ ...f, startTime: e.target.value }))} className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]" />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">End *</label>
+                        <input required type="time" value={availForm.endTime} onChange={e => setAvailForm(f => ({ ...f, endTime: e.target.value }))} className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]" />
+                      </div>
+                      <div className="flex items-end">
+                        <button type="submit" className="w-full px-4 py-2 bg-[#0B332D] text-[#F8F5EE] text-xs font-sans font-semibold uppercase tracking-wider rounded-sm hover:bg-[#07221E] shadow-xs cursor-pointer">
+                          <Plus className="w-3.5 h-3.5 inline mr-1 text-[#B79A62]" weight="bold" /> Add Slot
+                        </button>
+                      </div>
+                    </div>
+                  </form>
+
+                  <div className="space-y-3">
+                    {tutors.map(t => {
+                      const slots = availability.filter(s => s.tutorId === t.id);
+                      if (slots.length === 0) return null;
+                      return (
+                        <div key={t.id} className="bg-[#FCFBF8] rounded-sm border border-[#E8E0D1] shadow-xs p-4">
+                          <p className="font-bold text-[#0B332D] text-sm mb-2">{t.name}</p>
+                          <div className="flex flex-wrap gap-2">
+                            {slots.map(s => (
+                              <span key={s.id} className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#F8F5EE] border border-[#E8E0D1] rounded-xs text-[11px] font-sans text-[#0B332D]">
+                                <Clock className="w-3 h-3 text-[#B79A62]" />
+                                {s.dayOfWeek.slice(0, 3)} • {s.startTime}–{s.endTime}
+                                <button onClick={() => handleDeleteAvailability(s.id)} className="ml-1 text-gray-400 hover:text-red-700 cursor-pointer" title="Delete slot">
+                                  <X className="w-3 h-3" />
+                                </button>
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })}
+                    {availability.length === 0 && (
+                      <div className="p-6 text-center text-xs text-gray-400 font-sans bg-[#FCFBF8] border border-[#E8E0D1] rounded-sm">No availability slots added yet.</div>
+                    )}
+                  </div>
+                </div>
+              )}
+
               {/* TAB 5: TUTORS & FACULTY WITH PHOTO CROP */}
               {activeTab === 'tutors' && (
                 <div className="space-y-4">
@@ -2337,7 +2846,9 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
 
                             <div className="space-y-2">
                               {dayStudents.length > 0 ? (
-                                dayStudents.map((stu) => (
+                                dayStudents.map((stu) => {
+                                  const stuClass = scheduledClasses.find(c => c.studentId === stu.id);
+                                  return (
                                   <div
                                     key={stu.id}
                                     className="p-2 bg-[#FCFBF8] border border-[#E8E0D1] rounded-xs text-[11px] space-y-1 shadow-2xs hover:border-[#B79A62] transition-colors"
@@ -2351,8 +2862,48 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                                       <Clock className="w-2.5 h-2.5 shrink-0" />
                                       <span>{stu.preferredTime || 'Evening'}</span>
                                     </div>
+                                    <div className="flex items-center gap-1.5 pt-0.5">
+                                      {stuClass?.meetingLink ? (
+                                        <a
+                                          href={stuClass.meetingLink}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="px-2 py-0.5 bg-emerald-700 text-white text-[10px] font-bold rounded-xs hover:bg-emerald-800 transition-colors"
+                                        >
+                                          Join Class
+                                        </a>
+                                      ) : (
+                                        <span className="text-[9px] text-gray-400 italic">No link</span>
+                                      )}
+                                      <button
+                                        onClick={() => {
+                                          setEditingLinkFor(editingLinkFor === stu.id ? null : stu.id);
+                                          setMeetingLinkInput(stuClass?.meetingLink || '');
+                                        }}
+                                        className="px-2 py-0.5 bg-[#F8F5EE] text-[#0B332D] text-[10px] font-bold rounded-xs border border-[#E8E0D1] hover:border-[#B79A62] transition-colors cursor-pointer"
+                                      >
+                                        {editingLinkFor === stu.id ? 'Cancel' : 'Set Link'}
+                                      </button>
+                                    </div>
+                                    {editingLinkFor === stu.id && (
+                                      <div className="flex items-center gap-1 pt-1">
+                                        <input
+                                          value={meetingLinkInput}
+                                          onChange={e => setMeetingLinkInput(e.target.value)}
+                                          placeholder="https://meet.jit.si/..."
+                                          className="flex-1 min-w-0 px-1.5 py-1 border border-[#E8E0D1] bg-white rounded-xs text-[10px] font-sans focus:outline-none focus:border-[#0B332D]"
+                                        />
+                                        <button
+                                          onClick={() => handleSaveMeetingLink(stu)}
+                                          className="px-2 py-1 bg-[#0B332D] text-[#F8F5EE] text-[10px] font-bold rounded-xs hover:bg-[#07221E] cursor-pointer shrink-0"
+                                        >
+                                          Save
+                                        </button>
+                                      </div>
+                                    )}
                                   </div>
-                                ))
+                                  );
+                                })
                               ) : (
                                 <p className="text-[10px] text-gray-400 italic py-2 text-center">No classes</p>
                               )}
@@ -3311,6 +3862,164 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                           onChange={handleImportDatabaseJson}
                         />
                       </label>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* TAB: COUPONS */}
+              {activeTab === 'coupons' && (
+                <div className="space-y-4">
+                  <div className="bg-[#F8F5EE] p-4 rounded-sm border border-[#E8E0D1]">
+                    <h3 className="font-editorial text-2xl text-[#0B332D] font-bold">Discount Coupons</h3>
+                    <p className="text-xs text-gray-500 font-sans">Create promo codes with a percentage discount for pricing plans.</p>
+                  </div>
+
+                  <form onSubmit={handleCreateCoupon} className="bg-[#FCFBF8] rounded-sm border border-[#E8E0D1] shadow-xs p-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+                      <div>
+                        <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Code *</label>
+                        <input required value={couponForm.code} onChange={e => setCouponForm(f => ({ ...f, code: e.target.value.toUpperCase() }))} placeholder="EID10" className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm text-xs font-sans uppercase focus:outline-none focus:border-[#0B332D]" />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Discount % *</label>
+                        <input required type="number" min={1} max={100} value={couponForm.discountPercent} onChange={e => setCouponForm(f => ({ ...f, discountPercent: Number(e.target.value) }))} className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]" />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Max Uses (0 = unlimited)</label>
+                        <input type="number" min={0} value={couponForm.maxUses} onChange={e => setCouponForm(f => ({ ...f, maxUses: Number(e.target.value) }))} className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]" />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Expires On</label>
+                        <input type="date" value={couponForm.expiresAt} onChange={e => setCouponForm(f => ({ ...f, expiresAt: e.target.value }))} className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]" />
+                      </div>
+                      <div className="flex items-end">
+                        <button type="submit" className="w-full px-4 py-2 bg-[#0B332D] text-[#F8F5EE] text-xs font-sans font-semibold uppercase tracking-wider rounded-sm hover:bg-[#07221E] shadow-xs cursor-pointer">
+                          <Tag className="w-3.5 h-3.5 inline mr-1 text-[#B79A62]" /> Create
+                        </button>
+                      </div>
+                    </div>
+                    {couponMsg && <p className="mt-2 text-xs font-sans text-emerald-800">{couponMsg}</p>}
+                  </form>
+
+                  <div className="bg-[#FCFBF8] rounded-sm border border-[#E8E0D1] shadow-xs overflow-hidden">
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left text-xs font-sans">
+                        <thead className="bg-[#F8F5EE] text-[#0B332D] font-bold uppercase tracking-wider border-b border-[#E8E0D1] text-[10px]">
+                          <tr>
+                            <th className="p-3.5">Code</th>
+                            <th className="p-3.5">Discount</th>
+                            <th className="p-3.5">Used</th>
+                            <th className="p-3.5">Expires</th>
+                            <th className="p-3.5">Status</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-[#E8E0D1]/60">
+                          {coupons.map(c => (
+                            <tr key={c.id} className="hover:bg-[#F8F5EE]/50 transition-colors">
+                              <td className="p-3.5"><span className="font-mono font-bold text-[#0B332D] bg-[#F8F5EE] px-2 py-0.5 rounded-xs border border-[#E8E0D1]">{c.code}</span></td>
+                              <td className="p-3.5 font-bold text-emerald-800">{c.discountPercent}% off</td>
+                              <td className="p-3.5 text-gray-700">{c.usedCount}{c.maxUses > 0 ? ` / ${c.maxUses}` : ' / ∞'}</td>
+                              <td className="p-3.5 text-gray-700">{c.expiresAt || '—'}</td>
+                              <td className="p-3.5">
+                                <button
+                                  onClick={() => handleCouponStatusToggle(c.id, c.status === 'active' ? 'disabled' : 'active')}
+                                  className={`px-2.5 py-1 text-[10px] font-bold rounded-xs border cursor-pointer transition-colors ${c.status === 'active' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-gray-100 text-gray-500 border-gray-200'}`}
+                                >
+                                  {c.status === 'active' ? 'Active' : 'Disabled'}
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                      {coupons.length === 0 && (
+                        <div className="p-6 text-center text-xs text-gray-400 font-sans">No coupons yet.</div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* TAB: REFERRALS */}
+              {activeTab === 'referrals' && (
+                <div className="space-y-4">
+                  <div className="bg-[#F8F5EE] p-4 rounded-sm border border-[#E8E0D1]">
+                    <h3 className="font-editorial text-2xl text-[#0B332D] font-bold">Parent Referrals</h3>
+                    <p className="text-xs text-gray-500 font-sans">Track parents who refer new students and manage their rewards.</p>
+                  </div>
+
+                  <form onSubmit={handleCreateReferral} className="bg-[#FCFBF8] rounded-sm border border-[#E8E0D1] shadow-xs p-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                      <div>
+                        <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Referrer Name *</label>
+                        <input required value={referralForm.referrerName} onChange={e => setReferralForm(f => ({ ...f, referrerName: e.target.value }))} placeholder="Parent who referred" className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]" />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Referrer Phone</label>
+                        <input value={referralForm.referrerPhone} onChange={e => setReferralForm(f => ({ ...f, referrerPhone: e.target.value }))} className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]" />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Referred Student *</label>
+                        <input required value={referralForm.referredStudentName} onChange={e => setReferralForm(f => ({ ...f, referredStudentName: e.target.value }))} placeholder="New student name" className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]" />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Referred Phone</label>
+                        <input value={referralForm.referredPhone} onChange={e => setReferralForm(f => ({ ...f, referredPhone: e.target.value }))} className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]" />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Reward Note</label>
+                        <input value={referralForm.rewardNote} onChange={e => setReferralForm(f => ({ ...f, rewardNote: e.target.value }))} placeholder="e.g. 10% off next month" className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]" />
+                      </div>
+                      <div className="flex items-end">
+                        <button type="submit" className="w-full px-4 py-2 bg-[#0B332D] text-[#F8F5EE] text-xs font-sans font-semibold uppercase tracking-wider rounded-sm hover:bg-[#07221E] shadow-xs cursor-pointer">
+                          <ShareNetwork className="w-3.5 h-3.5 inline mr-1 text-[#B79A62]" /> Add Referral
+                        </button>
+                      </div>
+                    </div>
+                  </form>
+
+                  <div className="bg-[#FCFBF8] rounded-sm border border-[#E8E0D1] shadow-xs overflow-hidden">
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left text-xs font-sans">
+                        <thead className="bg-[#F8F5EE] text-[#0B332D] font-bold uppercase tracking-wider border-b border-[#E8E0D1] text-[10px]">
+                          <tr>
+                            <th className="p-3.5">Referrer</th>
+                            <th className="p-3.5">Referred Student</th>
+                            <th className="p-3.5">Reward</th>
+                            <th className="p-3.5">Status</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-[#E8E0D1]/60">
+                          {referrals.map(r => (
+                            <tr key={r.id} className="hover:bg-[#F8F5EE]/50 transition-colors">
+                              <td className="p-3.5">
+                                <p className="font-bold text-[#0B332D]">{r.referrerName}</p>
+                                {r.referrerPhone && <p className="text-[11px] text-gray-500">{r.referrerPhone}</p>}
+                              </td>
+                              <td className="p-3.5">
+                                <p className="font-semibold text-gray-700">{r.referredStudentName}</p>
+                                {r.referredPhone && <p className="text-[11px] text-gray-500">{r.referredPhone}</p>}
+                              </td>
+                              <td className="p-3.5 text-gray-700">{r.rewardNote || '—'}</td>
+                              <td className="p-3.5">
+                                <select
+                                  value={r.status}
+                                  onChange={e => handleReferralStatusChange(r.id, e.target.value as Referral['status'])}
+                                  className={`px-2 py-1 text-[11px] font-bold rounded-xs border cursor-pointer ${r.status === 'rewarded' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : r.status === 'enrolled' ? 'bg-blue-50 text-blue-800 border-blue-200' : 'bg-amber-50 text-amber-800 border-amber-200'}`}
+                                >
+                                  <option value="pending">Pending</option>
+                                  <option value="enrolled">Enrolled</option>
+                                  <option value="rewarded">Rewarded</option>
+                                </select>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                      {referrals.length === 0 && (
+                        <div className="p-6 text-center text-xs text-gray-400 font-sans">No referrals yet.</div>
+                      )}
                     </div>
                   </div>
                 </div>
