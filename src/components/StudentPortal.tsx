@@ -101,11 +101,11 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
     updatedAt: new Date().toISOString(),
     notes: [],
     assignedTutorDetails: {
-      name: 'Ustadha Maryam Siddiqa',
-      title: 'Ijazah Holder (Al-Azhar University) | Senior Tajweed Faculty',
+      name: assignedTutorInfo?.name || 'Ustadha Maryam Siddiqa',
+      title: assignedTutorInfo ? `${assignedTutorInfo.specialization}` : 'Ijazah Holder (Al-Azhar University) | Senior Tajweed Faculty',
       phone: '+92 327 4496163',
-      whatsapp: `https://wa.me/923274496163?text=Salam%20Ustadha%20Maryam,%20this%20is%20${encodeURIComponent(userProfile?.displayName || 'Student')}.`,
-      photoInitials: 'MS'
+      whatsapp: `https://wa.me/923274496163?text=${encodeURIComponent(`Salam ${assignedTutorInfo?.name || 'Ustadha Maryam Siddiqa'}, this is ${directoryStudent?.studentName || userProfile?.displayName || 'Student'}.`)}`,
+      photoInitials: (assignedTutorInfo?.name || 'Ustadha Maryam Siddiqa').split(' ').map(w => w[0]).filter(Boolean).slice(0, 2).join('').toUpperCase()
     },
     nextClassTime: 'Today at 6:00 PM (In 45 mins)',
     attendanceRate: 98,

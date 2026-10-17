@@ -4,7 +4,6 @@ import {
   YoutubeLogo,
   InstagramLogo,
   FacebookLogo,
-  LinkedinLogo,
   WhatsappLogo,
   Envelope
 } from '@phosphor-icons/react';
@@ -22,8 +21,7 @@ export const Footer: React.FC<FooterProps> = ({
     { name: 'Instagram', url: 'https://www.instagram.com/noore_quraninstitute', icon: InstagramLogo },
     { name: 'Facebook', url: 'https://www.facebook.com/share/14pNXeMTM7o/', icon: FacebookLogo },
     { name: 'YouTube', url: 'https://www.youtube.com/@NooreQuranInstitute', icon: YoutubeLogo },
-    { name: 'WhatsApp', url: 'https://wa.me/923274496163', icon: WhatsappLogo },
-    { name: 'LinkedIn', url: 'https://www.linkedin.com/in/muddasir-hameed', icon: LinkedinLogo }
+    { name: 'WhatsApp', url: 'https://wa.me/923274496163', icon: WhatsappLogo }
   ];
 
   return (

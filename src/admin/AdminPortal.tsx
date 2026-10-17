@@ -233,7 +233,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
     studentId: '',
     studentName: '',
     courseName: 'Nazra Quran with Tajweed',
-    tutorName: 'Qari Bilal Ahmed',
+    tutorName: 'Qari Hafiz Muhammad Bilal',
     evaluationMonth: 'August 2026',
     currentSabaq: 'Surah Al-Baqarah (Ayah 142)',
     readingGrade: 'A+',
@@ -1598,7 +1598,7 @@ JazakAllah Khair!`);
       studentId: reportForm.studentId || (students[0]?.id ?? 'stu-1'),
       studentName: reportForm.studentName || (students[0]?.studentName ?? 'Student'),
       courseName: reportForm.courseName || 'Nazra Quran with Tajweed',
-      tutorName: reportForm.tutorName || 'Qari Bilal Ahmed',
+      tutorName: reportForm.tutorName || 'Qari Hafiz Muhammad Bilal',
       evaluationMonth: reportForm.evaluationMonth || 'August 2026',
       currentSabaq: reportForm.currentSabaq || 'Surah Al-Baqarah',
       readingGrade: reportForm.readingGrade || 'A+',
@@ -3127,7 +3127,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                           studentId: students[0]?.id ?? 'stu-1',
                           studentName: students[0]?.studentName ?? 'Student',
                           courseName: 'Nazra Quran with Tajweed',
-                          tutorName: 'Qari Bilal Ahmed',
+                          tutorName: 'Qari Hafiz Muhammad Bilal',
                           evaluationMonth: 'August 2026',
                           currentSabaq: 'Surah Al-Baqarah (Ayah 142)',
                           readingGrade: 'A+',
@@ -5711,7 +5711,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                           studentId: stu.id,
                           studentName: stu.studentName,
                           courseName: stu.courseName,
-                          tutorName: stu.tutorName || 'Qari Bilal Ahmed',
+                          tutorName: stu.tutorName || 'Qari Hafiz Muhammad Bilal',
                           currentSabaq: stu.currentSurahOrLesson || 'Surah Al-Baqarah'
                         });
                       }
