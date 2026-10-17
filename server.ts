@@ -157,6 +157,48 @@ app.use(compression());
 app.use(express.json({ limit: '25mb' }));
 app.use(express.urlencoded({ extended: true, limit: '25mb' }));
 
+// -------------------------------------------------------------
+// Admin login brute-force protection (in-memory rate limiter)
+// Counts FAILED attempts only: 10 failures per IP within 15 min
+// triggers a 429. No new dependency required.
+// -------------------------------------------------------------
+const LOGIN_WINDOW_MS = 15 * 60 * 1000;
+const LOGIN_MAX_FAILURES = 10;
+const loginFailures = new Map<string, { count: number; resetAt: number }>();
+
+function clientIp(req: Request): string {
+  // Prefer Cloudflare's real-client header, then X-Forwarded-For, then socket.
+  const cf = (req.headers['cf-connecting-ip'] as string) || '';
+  if (cf) return cf.split(',')[0].trim();
+  const xff = (req.headers['x-forwarded-for'] as string) || '';
+  if (xff) return xff.split(',')[0].trim();
+  return req.ip || (req.socket && req.socket.remoteAddress) || 'unknown';
+}
+
+function getLoginFailureRecord(ip: string) {
+  const now = Date.now();
+  let rec = loginFailures.get(ip);
+  if (!rec || now > rec.resetAt) {
+    rec = { count: 0, resetAt: now + LOGIN_WINDOW_MS };
+    loginFailures.set(ip, rec);
+  }
+  return rec;
+}
+
+function checkAdminLoginRateLimit(req: Request, res: Response, next: NextFunction) {
+  const rec = getLoginFailureRecord(clientIp(req));
+  if (rec.count >= LOGIN_MAX_FAILURES) {
+    const retryAfter = Math.max(1, Math.ceil((rec.resetAt - Date.now()) / 1000));
+    res.setHeader('Retry-After', retryAfter.toString());
+    return res.status(429).json({ error: 'Too many failed login attempts. Please try again in a few minutes.' });
+  }
+  next();
+}
+
+function recordAdminLoginFailure(req: Request) {
+  getLoginFailureRecord(clientIp(req)).count += 1;
+}
+
 // Static uploads folder for uploaded blog media
 const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
 if (!fs.existsSync(uploadsDir)) {
@@ -688,7 +730,7 @@ app.post('/api/contact', (req, res) => {
 // ADMIN AUTHENTICATION & PORTAL ROUTES
 // -------------------------------------------------------------
 
-app.post('/api/admin/login', (req, res) => {
+app.post('/api/admin/login', checkAdminLoginRateLimit, (req, res) => {
   const { email, password } = req.body;
   const configuredEmail = (process.env.ADMIN_EMAIL || '').toLowerCase().trim();
   const configuredPassword = process.env.ADMIN_PASSWORD || '';
@@ -712,6 +754,7 @@ app.post('/api/admin/login', (req, res) => {
     });
   }
 
+  recordAdminLoginFailure(req);
   res.status(401).json({ error: 'Invalid admin email or password.' });
 });
 
@@ -1015,11 +1058,16 @@ app.post('/api/upload-image', requireAdmin, async (req: Request, res: Response) 
       }
     }
 
-    // Local disk fallback
+    // Local disk fallback — raster images only (svg rejected: scriptable when
+    // opened directly, a stored-XSS vector even for admin-only uploads)
     if (base64Data) {
       const matches = base64Data.match(/^data:image\/([a-zA-Z0-9+]+);base64,(.+)$/);
       if (matches) {
-        const ext = matches[1] === 'jpeg' ? 'jpg' : matches[1];
+        const rawExt = matches[1].toLowerCase();
+        const ext = rawExt === 'jpeg' ? 'jpg' : rawExt;
+        if (!['jpg', 'png', 'gif', 'webp'].includes(ext)) {
+          return res.status(400).json({ error: 'Only JPG, PNG, GIF or WebP images are allowed.' });
+        }
         const buffer = Buffer.from(matches[2], 'base64');
         const localFileName = `${fileName}.${ext}`;
         const filePath = path.join(process.cwd(), 'public', 'uploads', localFileName);
