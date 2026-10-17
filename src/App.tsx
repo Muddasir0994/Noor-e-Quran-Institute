@@ -7,6 +7,7 @@ import { ALL_COURSES, ALL_PACKAGES, INITIAL_TUTORS, INITIAL_TESTIMONIALS, INITIA
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { SEOHead } from './components/SEOHead';
 import { SEO_PAGE_MAP } from './lib/seoConfig';
+import { getRoleForEmail } from './lib/roleUtils';
 import type { CountryKey } from './components/InternationalLanding';
 
 import { Navbar } from './components/Navbar';
@@ -78,6 +79,76 @@ function writePublicDataCache(fresh: Record<string, unknown[]>) {
   } catch {
     // storage full or private mode — non-fatal
   }
+}
+
+// ---------------------------------------------------------------------------
+// Auth-gated route wrapper for portals (BUG 1 fix).
+// - Not logged in → redirect to homepage with login prompt
+// - Wrong role (student on /teacher, teacher on /student) → redirect to own portal
+// ---------------------------------------------------------------------------
+function ProtectedPortalRoute({
+  requiredRole,
+  children,
+}: {
+  requiredRole: 'teacher' | 'student';
+  children: React.ReactNode;
+}) {
+  const { currentUser, userProfile } = useAuth();
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+
+  const email = currentUser?.email || userProfile?.email || '';
+  const isLoggedIn = !!(currentUser || userProfile);
+  const actualRole = getRoleForEmail(email);
+  // Prefer stored profile role, fall back to email-based detection
+  const effectiveRole: 'teacher' | 'student' =
+    userProfile?.role === 'teacher' || userProfile?.role === 'admin'
+      ? 'teacher'
+      : userProfile?.role === 'student'
+        ? 'student'
+        : actualRole;
+
+  if (!isLoggedIn) {
+    return (
+      <div className="min-h-screen bg-[#F8F5EE] flex items-center justify-center px-4">
+        <div className="max-w-md w-full bg-white rounded-3xl border border-[#E8E0D1] shadow-lg p-8 text-center space-y-4">
+          <div className="w-16 h-16 mx-auto rounded-2xl bg-[#0B332D] text-[#B79A62] flex items-center justify-center text-2xl font-bold">
+            🔒
+          </div>
+          <h2 className="text-xl font-bold text-[#0B332D] font-editorial">
+            {requiredRole === 'teacher' ? 'Teacher Portal' : 'Student Portal'}
+          </h2>
+          <p className="text-sm text-gray-600">
+            Please sign in to access your portal dashboard.
+          </p>
+          <button
+            onClick={() => setShowLoginPrompt(true)}
+            className="w-full py-3 bg-[#0B332D] text-[#F8F5EE] font-bold rounded-sm hover:bg-[#07221E] transition-colors cursor-pointer"
+          >
+            Sign In
+          </button>
+          <button
+            onClick={() => window.location.href = '/'}
+            className="w-full py-2 text-sm text-gray-500 hover:text-[#0B332D] cursor-pointer"
+          >
+            ← Back to Homepage
+          </button>
+          {showLoginPrompt && (
+            <p className="text-xs text-[#B79A62]">
+              Use the "Portal Login" button in the site header to sign in.
+            </p>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  if (effectiveRole !== requiredRole) {
+    // Wrong role → redirect to their own portal
+    const correctPath = effectiveRole === 'teacher' ? '/teacher' : '/student';
+    return <Navigate to={correctPath} replace />;
+  }
+
+  return <>{children}</>;
 }
 
 function AppContent() {
@@ -477,42 +548,50 @@ function AppContent() {
               }
             />
 
-            {/* 13. Student & Teacher & Admin Portals */}
+            {/* 13. Student & Teacher & Admin Portals (auth-gated) */}
             <Route
               path="/student"
               element={
-                <StudentPortal
-                  onBackToLanding={() => navigate('/')}
-                  onOpenClassroom={(surah) => navigate(`/classroom/${surah || 1}`)}
-                />
+                <ProtectedPortalRoute requiredRole="student">
+                  <StudentPortal
+                    onBackToLanding={() => navigate('/')}
+                    onOpenClassroom={(surah) => navigate(`/classroom/${surah || 1}`)}
+                  />
+                </ProtectedPortalRoute>
               }
             />
             <Route
               path="/student-portal"
               element={
-                <StudentPortal
-                  onBackToLanding={() => navigate('/')}
-                  onOpenClassroom={(surah) => navigate(`/classroom/${surah || 1}`)}
-                />
+                <ProtectedPortalRoute requiredRole="student">
+                  <StudentPortal
+                    onBackToLanding={() => navigate('/')}
+                    onOpenClassroom={(surah) => navigate(`/classroom/${surah || 1}`)}
+                  />
+                </ProtectedPortalRoute>
               }
             />
 
             <Route
               path="/teacher"
               element={
-                <TeacherPortal
-                  onBackToLanding={() => navigate('/')}
-                  onOpenClassroom={(surah) => navigate(`/classroom/${surah || 1}`)}
-                />
+                <ProtectedPortalRoute requiredRole="teacher">
+                  <TeacherPortal
+                    onBackToLanding={() => navigate('/')}
+                    onOpenClassroom={(surah) => navigate(`/classroom/${surah || 1}`)}
+                  />
+                </ProtectedPortalRoute>
               }
             />
             <Route
               path="/teacher-portal"
               element={
-                <TeacherPortal
-                  onBackToLanding={() => navigate('/')}
-                  onOpenClassroom={(surah) => navigate(`/classroom/${surah || 1}`)}
-                />
+                <ProtectedPortalRoute requiredRole="teacher">
+                  <TeacherPortal
+                    onBackToLanding={() => navigate('/')}
+                    onOpenClassroom={(surah) => navigate(`/classroom/${surah || 1}`)}
+                  />
+                </ProtectedPortalRoute>
               }
             />
 
@@ -604,6 +683,22 @@ function AppContent() {
             onClose={() => setShowAuthModal(false)}
             initialRole={authRole}
             initialMode={authMode}
+            onSuccess={() => {
+              // BUG 2 fix: navigate to the correct portal after login.
+              // Read the freshly-saved profile from localStorage (set synchronously
+              // by AuthContext on login) to determine role by email.
+              try {
+                const raw = localStorage.getItem('alnoor_active_user_profile');
+                const email = raw ? (JSON.parse(raw).email || '') : '';
+                const role = getRoleForEmail(email);
+                setShowAuthModal(false);
+                // Small delay so the success toast in the modal is visible
+                setTimeout(() => navigate(role === 'teacher' ? '/teacher' : '/student'), 900);
+              } catch {
+                setShowAuthModal(false);
+                setTimeout(() => navigate('/student'), 900);
+              }
+            }}
           />
         )}
 
