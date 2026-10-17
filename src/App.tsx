@@ -53,6 +53,7 @@ const LegalModal = lazy(() => import('./components/LegalModals').then(m => ({ de
 // first paint, and every visit revalidates in the background.
 // ---------------------------------------------------------------------------
 const PUBLIC_DATA_CACHE_KEY = 'noor_public_data_v1';
+const PUBLIC_DATA_CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
 
 function readPublicDataCache(): Record<string, unknown[]> {
   try {
@@ -60,6 +61,11 @@ function readPublicDataCache(): Record<string, unknown[]> {
     if (!raw) return {};
     const parsed = JSON.parse(raw);
     if (!parsed || typeof parsed !== 'object') return {};
+    // Expire stale cache after TTL
+    if (parsed._ts && Date.now() - parsed._ts > PUBLIC_DATA_CACHE_TTL_MS) {
+      localStorage.removeItem(PUBLIC_DATA_CACHE_KEY);
+      return {};
+    }
     return parsed;
   } catch {
     return {};
@@ -268,19 +274,36 @@ function AppContent() {
   const SEO_PATH_KEY_MAP: Record<string, string> = {
     '/': 'home',
     '/online-quran-classes': 'courses',
-    '/noorani-qaida': 'courses',
-    '/quran-reading-nazra': 'courses',
-    '/quran-with-tajweed': 'courses',
-    '/quran-memorization-hifz': 'courses',
+    '/noorani-qaida': 'noorani-qaida',
+    '/quran-reading-nazra': 'quran-reading-nazra',
+    '/quran-with-tajweed': 'quran-with-tajweed',
+    '/quran-memorization-hifz': 'quran-memorization-hifz',
     '/islamic-studies': 'courses',
+    '/kids-program': 'kids-program',
+    '/quran-classes-for-kids': 'kids-program',
+    '/slow-learners': 'slow-learners',
+    '/female-tutor': 'female-tutor',
+    '/female-quran-teacher': 'female-tutor',
+    '/quran-classes-for-adults': 'courses',
+    '/online-quran-classes-uk': 'uk-program',
+    '/online-quran-classes-usa': 'usa-program',
+    '/online-quran-classes-canada': 'canada-program',
+    '/online-quran-classes-australia': 'australia-program',
+    '/online-quran-classes-pakistan': 'pakistan-program',
     '/pricing': 'packages',
     '/faculty': 'tutors',
     '/tutors': 'tutors',
+    '/teachers': 'tutors',
     '/about': 'about',
+    '/about-us': 'about',
     '/faq': 'faq',
     '/blog': 'blogs',
     '/blogs': 'blogs',
+    '/articles': 'blogs',
     '/contact': 'contact',
+    '/contact-us': 'contact',
+    '/how-it-works': 'about',
+    '/methodology': 'about',
   };
   const defaultSeo = {
     title: 'Learn Quran Online | 1-on-1 Online Quran Classes for Kids & Adults',
