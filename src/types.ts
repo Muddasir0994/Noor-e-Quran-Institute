@@ -485,3 +485,55 @@ export interface FeeReminder {
   sentAt: string;
   sentBy?: string;
 }
+
+export interface HifzLog {
+  id: string;
+  studentId: string;
+  studentName: string;
+  date: string; // YYYY-MM-DD
+  sabaqSurah?: string;
+  sabaqFrom?: string;
+  sabaqTo?: string;
+  sabqiSurah?: string;
+  sabqiFrom?: string;
+  sabqiTo?: string;
+  manzilJuz?: string;
+  remarks?: string;
+  markedBy?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface TutorAvailability {
+  id: string;
+  tutorId: string;
+  tutorName: string;
+  dayOfWeek: string; // Monday..Sunday
+  startTime: string; // HH:MM
+  endTime: string; // HH:MM
+  createdAt: string;
+}
+
+export interface Coupon {
+  id: string;
+  code: string; // uppercase, unique
+  discountPercent: number; // 1-100
+  maxUses: number;
+  usedCount: number;
+  expiresAt?: string; // YYYY-MM-DD
+  status: 'active' | 'disabled';
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Referral {
+  id: string;
+  referrerName: string;
+  referrerPhone?: string;
+  referredStudentName: string;
+  referredPhone?: string;
+  status: 'pending' | 'enrolled' | 'rewarded';
+  rewardNote?: string;
+  createdAt: string;
+  updatedAt: string;
+}

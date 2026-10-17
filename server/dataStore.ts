@@ -20,7 +20,11 @@ import {
   Note,
   AttendanceRecord,
   TrialClass,
-  FeeReminder
+  FeeReminder,
+  HifzLog,
+  TutorAvailability,
+  Coupon,
+  Referral
 } from '../src/types.js';
 import {
   ALL_COURSES,
@@ -50,6 +54,10 @@ interface DatabaseSchema {
   attendance: AttendanceRecord[];
   trials: TrialClass[];
   feeReminders: FeeReminder[];
+  hifzLogs: HifzLog[];
+  availability: TutorAvailability[];
+  coupons: Coupon[];
+  referrals: Referral[];
 }
 
 const DATA_DIR = path.join(process.cwd(), 'data');
@@ -101,7 +109,11 @@ class DataStore {
           adminTokens: parsed.adminTokens || [],
           attendance: parsed.attendance || [],
           trials: parsed.trials || [],
-          feeReminders: parsed.feeReminders || []
+          feeReminders: parsed.feeReminders || [],
+          hifzLogs: parsed.hifzLogs || [],
+          availability: parsed.availability || [],
+          coupons: parsed.coupons || [],
+          referrals: parsed.referrals || []
         };
       } catch (err) {
         console.error('Error reading academy_db.json, seeding initial data:', err);
@@ -302,7 +314,11 @@ class DataStore {
       adminTokens: [],
       attendance: [],
       trials: [],
-      feeReminders: []
+      feeReminders: [],
+      hifzLogs: [],
+      availability: [],
+      coupons: [],
+      referrals: []
     };
 
     this.saveDatabase(initialData);
@@ -819,6 +835,113 @@ class DataStore {
     this.data.feeReminders.unshift(reminder);
     this.saveDatabase();
     return reminder;
+  }
+
+
+  // --- HIFZ LOGS (Sabaq/Sabqi/Manzil daily tracking) ---
+  public getHifzLogsForStudent(studentId: string, limit = 90): HifzLog[] {
+    return this.data.hifzLogs
+      .filter(h => h.studentId === studentId)
+      .sort((a, b) => b.date.localeCompare(a.date))
+      .slice(0, limit);
+  }
+
+  public addHifzLog(logData: Omit<HifzLog, 'id' | 'createdAt' | 'updatedAt'>): HifzLog {
+    const now = new Date().toISOString();
+    // one log per student per day: update if exists
+    const existing = this.data.hifzLogs.find(h => h.studentId === logData.studentId && h.date === logData.date);
+    if (existing) {
+      Object.assign(existing, logData, { updatedAt: now });
+      this.saveDatabase();
+      return existing;
+    }
+    const log: HifzLog = { ...logData, id: `hifz-${Date.now()}`, createdAt: now, updatedAt: now };
+    this.data.hifzLogs.push(log);
+    this.saveDatabase();
+    return log;
+  }
+
+  // --- TUTOR AVAILABILITY ---
+  public getAvailability(): TutorAvailability[] {
+    const order = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+    return [...this.data.availability].sort((a, b) =>
+      order.indexOf(a.dayOfWeek) - order.indexOf(b.dayOfWeek) || a.startTime.localeCompare(b.startTime)
+    );
+  }
+
+  public addAvailability(slot: Omit<TutorAvailability, 'id' | 'createdAt'>): TutorAvailability {
+    const rec: TutorAvailability = { ...slot, id: `av-${Date.now()}`, createdAt: new Date().toISOString() };
+    this.data.availability.push(rec);
+    this.saveDatabase();
+    return rec;
+  }
+
+  public deleteAvailability(id: string): boolean {
+    const idx = this.data.availability.findIndex(a => a.id === id);
+    if (idx === -1) return false;
+    this.data.availability.splice(idx, 1);
+    this.saveDatabase();
+    return true;
+  }
+
+  // --- COUPONS ---
+  public getCoupons(): Coupon[] {
+    return [...this.data.coupons].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  }
+
+  public addCoupon(c: Omit<Coupon, 'id' | 'usedCount' | 'createdAt' | 'updatedAt'>): Coupon | null {
+    const code = (c.code || '').toUpperCase().trim();
+    if (!code || this.data.coupons.some(x => x.code === code)) return null;
+    const now = new Date().toISOString();
+    const coupon: Coupon = { ...c, code, id: `cpn-${Date.now()}`, usedCount: 0, createdAt: now, updatedAt: now };
+    this.data.coupons.unshift(coupon);
+    this.saveDatabase();
+    return coupon;
+  }
+
+  public updateCoupon(id: string, updates: Partial<Coupon>): Coupon | null {
+    const idx = this.data.coupons.findIndex(c => c.id === id);
+    if (idx === -1) return null;
+    if (updates.code) {
+      const code = updates.code.toUpperCase().trim();
+      if (this.data.coupons.some(x => x.code === code && x.id !== id)) return null;
+      updates.code = code;
+    }
+    this.data.coupons[idx] = { ...this.data.coupons[idx], ...updates, updatedAt: new Date().toISOString() };
+    this.saveDatabase();
+    return this.data.coupons[idx];
+  }
+
+  public validateCoupon(code: string): { valid: boolean; discountPercent?: number; reason?: string } {
+    const c = this.data.coupons.find(x => x.code === (code || '').toUpperCase().trim());
+    if (!c) return { valid: false, reason: 'Invalid coupon code.' };
+    if (c.status !== 'active') return { valid: false, reason: 'This coupon is no longer active.' };
+    if (c.expiresAt && c.expiresAt < new Date().toISOString().split('T')[0]) {
+      return { valid: false, reason: 'This coupon has expired.' };
+    }
+    if (c.usedCount >= c.maxUses) return { valid: false, reason: 'This coupon has reached its usage limit.' };
+    return { valid: true, discountPercent: c.discountPercent };
+  }
+
+  // --- REFERRALS ---
+  public getReferrals(): Referral[] {
+    return [...this.data.referrals].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  }
+
+  public addReferral(r: Omit<Referral, 'id' | 'status' | 'createdAt' | 'updatedAt'>): Referral {
+    const now = new Date().toISOString();
+    const rec: Referral = { ...r, id: `ref-${Date.now()}`, status: 'pending', createdAt: now, updatedAt: now };
+    this.data.referrals.unshift(rec);
+    this.saveDatabase();
+    return rec;
+  }
+
+  public updateReferral(id: string, updates: Partial<Referral>): Referral | null {
+    const idx = this.data.referrals.findIndex(r => r.id === id);
+    if (idx === -1) return null;
+    this.data.referrals[idx] = { ...this.data.referrals[idx], ...updates, updatedAt: new Date().toISOString() };
+    this.saveDatabase();
+    return this.data.referrals[idx];
   }
 
   public createAdminSession(): string {
