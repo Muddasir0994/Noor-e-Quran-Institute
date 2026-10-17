@@ -392,7 +392,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
             if (i >= 0) merged[i] = { ...merged[i], ...r };
             else merged.push(r);
           });
-          localStorage.setItem('alnoor_cms_seo', JSON.stringify(merged));
+          safeSetItem('alnoor_cms_seo', JSON.stringify(merged));
           return merged;
         });
       }
@@ -410,6 +410,29 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
   const [seoSaveToast, setSeoSaveToast] = useState(false);
   const [isSubmittingIndexNow, setIsSubmittingIndexNow] = useState(false);
   const [indexNowStatusMsg, setIndexNowStatusMsg] = useState<string | null>(null);
+
+  // Per-module API error messages & saving flags for the 10 server-wired
+  // admin modules (invoices, reports, payroll, logs, packages, testimonials,
+  // faqs, settings, media, templates). Banners render under each tab header.
+  const [invoiceErr, setInvoiceErr] = useState('');
+  const [savingInvoice, setSavingInvoice] = useState(false);
+  const [reportErr, setReportErr] = useState('');
+  const [savingReport, setSavingReport] = useState(false);
+  const [payrollErr, setPayrollErr] = useState('');
+  const [savingPayroll, setSavingPayroll] = useState(false);
+  const [logErr, setLogErr] = useState('');
+  const [packageErr, setPackageErr] = useState('');
+  const [savingPackage, setSavingPackage] = useState(false);
+  const [testimonialErr, setTestimonialErr] = useState('');
+  const [savingTestimonial, setSavingTestimonial] = useState(false);
+  const [faqErr, setFaqErr] = useState('');
+  const [savingFaq, setSavingFaq] = useState(false);
+  const [settingsErr, setSettingsErr] = useState('');
+  const [savingSettings, setSavingSettings] = useState(false);
+  const [mediaErr, setMediaErr] = useState('');
+  const [savingMedia, setSavingMedia] = useState(false);
+  const [templateErr, setTemplateErr] = useState('');
+  const [savingTemplate, setSavingTemplate] = useState(false);
 
   // Filter & search states
   const [searchTerm, setSearchTerm] = useState('');
@@ -511,19 +534,69 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
   // Auto-logout on inactivity is DISABLED per site owner request (2026-10-17).
   // Previously: 30-minute inactivity timeout that signed the admin out.
 
+  // Shared admin-API caller for the server-wired modules. Returns the parsed
+  // JSON on success. On 401 it signs the admin out (login screen takes over)
+  // and returns null — callers must bail out in that case. Any other failure
+  // throws an Error whose message is safe to show in an error banner.
+  const callAdminApi = async <T = any>(
+    path: string,
+    method: 'GET' | 'POST' | 'PATCH' | 'DELETE',
+    body?: unknown
+  ): Promise<T | null> => {
+    let res: Response;
+    try {
+      res = await fetch(path, {
+        method,
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: body !== undefined ? JSON.stringify(body) : undefined
+      });
+    } catch {
+      throw new Error('Could not reach the server. Check your connection and try again.');
+    }
+    if (res.status === 401) {
+      handleLogout();
+      return null;
+    }
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || !data.success) {
+      throw new Error(data.error || `Server rejected the request (HTTP ${res.status}).`);
+    }
+    return data as T;
+  };
+
+  // Write a collection to the localStorage cache; shows a warning through the
+  // module's error banner if the write fails (quota/blocked) without crashing.
+  const cacheCollection = (key: string, value: unknown, errSetter: (msg: string) => void) => {
+    if (!safeSetItem(key, JSON.stringify(value))) {
+      errSetter('Saved on the server, but the browser cache could not be updated (storage full or blocked).');
+    }
+  };
+
   const fetchAdminData = async () => {
     setLoadingData(true);
     try {
       const headers = { Authorization: `Bearer ${token}` };
 
-      const [statsRes, leadsRes, enrRes, stuRes, tutRes, coursesRes, notifRes] = await Promise.all([
+      const [statsRes, leadsRes, enrRes, stuRes, tutRes, coursesRes, notifRes,
+        invRes, repRes, payRes, logRes, pkgRes, tstRes, faqRes, setRes, medRes, tplRes] = await Promise.all([
         fetch('/api/admin/stats', { headers }),
         fetch('/api/admin/leads', { headers }),
         fetch('/api/admin/enrollments', { headers }),
         fetch('/api/admin/students', { headers }),
         fetch('/api/admin/tutors', { headers }),
         fetch('/api/admin/courses', { headers }),
-        fetch('/api/admin/notifications', { headers })
+        fetch('/api/admin/notifications', { headers }),
+        // Server-wired Phase-2 modules (localStorage kept as offline cache)
+        fetch('/api/admin/invoices', { headers }),
+        fetch('/api/admin/reports', { headers }),
+        fetch('/api/admin/payroll', { headers }),
+        fetch('/api/admin/logs', { headers }),
+        fetch('/api/admin/packages', { headers }),
+        fetch('/api/admin/testimonials', { headers }),
+        fetch('/api/admin/faqs', { headers }),
+        fetch('/api/admin/settings', { headers }),
+        fetch('/api/admin/media', { headers }),
+        fetch('/api/admin/templates', { headers })
       ]);
 
       if (statsRes.status === 401) {
@@ -538,6 +611,16 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
       const tutData = await tutRes.json();
       const coursesData = await coursesRes.json();
       const notifData = await notifRes.json();
+      const invData = await invRes.json();
+      const repData = await repRes.json();
+      const payData = await payRes.json();
+      const logData = await logRes.json();
+      const pkgData = await pkgRes.json();
+      const tstData = await tstRes.json();
+      const faqData = await faqRes.json();
+      const setData = await setRes.json();
+      const medData = await medRes.json();
+      const tplData = await tplRes.json();
 
       if (statsData.success) setStats(statsData.stats);
       if (leadsData.success) setLeads(leadsData.leads);
@@ -546,6 +629,18 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
       if (tutData.success) setTutors(tutData.tutors);
       if (coursesData.success && coursesData.courses?.length > 0) setAdminCourses(coursesData.courses);
       if (notifData.success) setNotifications(notifData.notifications);
+      // Server-wired modules: update state AND refresh the localStorage cache.
+      // On any fetch failure the cached data loaded at init is kept as-is.
+      if (invData.success && Array.isArray(invData.invoices)) { setInvoices(invData.invoices); safeSetItem('alnoor_admin_invoices', JSON.stringify(invData.invoices)); }
+      if (repData.success && Array.isArray(repData.reports)) { setReportCards(repData.reports); safeSetItem('alnoor_admin_reports', JSON.stringify(repData.reports)); }
+      if (payData.success && Array.isArray(payData.payroll)) { setPayrollList(payData.payroll); safeSetItem('alnoor_admin_payroll', JSON.stringify(payData.payroll)); }
+      if (logData.success && Array.isArray(logData.logs)) { setActivityLogs(logData.logs); safeSetItem('alnoor_admin_logs', JSON.stringify(logData.logs)); }
+      if (pkgData.success && Array.isArray(pkgData.packages)) { setPackages(pkgData.packages); safeSetItem('alnoor_cms_packages', JSON.stringify(pkgData.packages)); }
+      if (tstData.success && Array.isArray(tstData.testimonials)) { setTestimonials(tstData.testimonials); safeSetItem('alnoor_cms_testimonials', JSON.stringify(tstData.testimonials)); }
+      if (faqData.success && Array.isArray(faqData.faqs)) { setFaqs(faqData.faqs); safeSetItem('alnoor_cms_faqs', JSON.stringify(faqData.faqs)); }
+      if (setData.success && setData.settings) { setSiteSettings(setData.settings); safeSetItem('alnoor_cms_settings', JSON.stringify(setData.settings)); }
+      if (medData.success && Array.isArray(medData.media)) { setMediaAssets(medData.media); safeSetItem('alnoor_cms_media', JSON.stringify(medData.media)); }
+      if (tplData.success && Array.isArray(tplData.templates)) { setTemplates(tplData.templates); safeSetItem('alnoor_cms_templates', JSON.stringify(tplData.templates)); }
     } catch (err) {
       console.error('Failed to fetch admin data:', err);
     } finally {
@@ -1016,7 +1111,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
 
       setToken(data.token);
       if (rememberMe) {
-        localStorage.setItem('alnoor_admin_token', data.token);
+        safeSetItem('alnoor_admin_token', data.token);
         sessionStorage.removeItem('alnoor_admin_token');
       } else {
         sessionStorage.setItem('alnoor_admin_token', data.token);
@@ -1252,125 +1347,222 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
     onRefreshCourses();
   };
 
-  // --- Packages CMS Handlers ---
-  const handleSavePackage = (e: React.FormEvent) => {
+  // --- Packages CMS Handlers (API-first; localStorage is only a cache) ---
+  const handleSavePackage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (editingPackage) {
-      const updated = packages.map(p => p.id === editingPackage.id ? { ...editingPackage, ...packageForm } as PackagePlan : p);
-      setPackages(updated);
-      localStorage.setItem('alnoor_cms_packages', JSON.stringify(updated));
-    } else {
-      const newPkg: PackagePlan = {
-        id: `pkg-${Date.now()}`,
-        name: packageForm.name || 'Custom Plan',
-        code: (packageForm.code as any) || 'pkg-3days',
-        daysPerWeek: packageForm.daysPerWeek || '3 Days / Week',
-        classesPerMonth: packageForm.classesPerMonth || 12,
-        classDurationMinutes: packageForm.classDurationMinutes || 30,
-        monthlyFeePKR: packageForm.monthlyFeePKR || 3500,
-        monthlyFeeUSD: packageForm.monthlyFeeUSD || 35,
-        monthlyFeeGBP: packageForm.monthlyFeeGBP || 28,
-        monthlyFeeEUR: packageForm.monthlyFeeEUR || 32,
-        monthlyFeeAED: packageForm.monthlyFeeAED || 130,
-        monthlyFeeCAD: packageForm.monthlyFeeCAD || 45,
-        monthlyFeeAUD: packageForm.monthlyFeeAUD || 50,
-        isPopular: !!packageForm.isPopular,
-        badge: packageForm.badge || 'Popular Plan',
-        features: packageForm.features || ['1-on-1 Dedicated Tutor', '30 Mins Live Lessons', 'Weekly Makharij Check'],
-        description: packageForm.description || 'Flexible Quran learning program tailored to your timetable.'
-      };
-      const updated = [...packages, newPkg];
-      setPackages(updated);
-      localStorage.setItem('alnoor_cms_packages', JSON.stringify(updated));
+    setPackageErr('');
+    setSavingPackage(true);
+    try {
+      if (editingPackage) {
+        const payload = { ...editingPackage, ...packageForm } as PackagePlan;
+        const data = await callAdminApi<{ package: PackagePlan }>(`/api/admin/packages/${editingPackage.id}`, 'PATCH', payload);
+        if (!data) return; // 401 → logged out
+        setPackages(prev => {
+          const next = prev.map(p => p.id === editingPackage.id ? data.package : p);
+          cacheCollection('alnoor_cms_packages', next, setPackageErr);
+          return next;
+        });
+      } else {
+        const payload = {
+          name: packageForm.name || 'Custom Plan',
+          code: (packageForm.code as any) || 'pkg-3days',
+          daysPerWeek: packageForm.daysPerWeek || '3 Days / Week',
+          classesPerMonth: packageForm.classesPerMonth || 12,
+          classDurationMinutes: packageForm.classDurationMinutes || 30,
+          monthlyFeePKR: packageForm.monthlyFeePKR || 3500,
+          monthlyFeeUSD: packageForm.monthlyFeeUSD || 35,
+          monthlyFeeGBP: packageForm.monthlyFeeGBP || 28,
+          monthlyFeeEUR: packageForm.monthlyFeeEUR || 32,
+          monthlyFeeAED: packageForm.monthlyFeeAED || 130,
+          monthlyFeeCAD: packageForm.monthlyFeeCAD || 45,
+          monthlyFeeAUD: packageForm.monthlyFeeAUD || 50,
+          isPopular: !!packageForm.isPopular,
+          badge: packageForm.badge || 'Popular Plan',
+          features: packageForm.features || ['1-on-1 Dedicated Tutor', '30 Mins Live Lessons', 'Weekly Makharij Check'],
+          description: packageForm.description || 'Flexible Quran learning program tailored to your timetable.'
+        };
+        const data = await callAdminApi<{ package: PackagePlan }>('/api/admin/packages', 'POST', payload);
+        if (!data) return; // 401 → logged out
+        setPackages(prev => {
+          const next = [...prev, data.package];
+          cacheCollection('alnoor_cms_packages', next, setPackageErr);
+          return next;
+        });
+      }
+      setIsAddingPackage(false);
+      setEditingPackage(null);
+    } catch (err: any) {
+      setPackageErr(err?.message || 'Failed to save package. Nothing was changed.');
+    } finally {
+      setSavingPackage(false);
     }
-    setIsAddingPackage(false);
-    setEditingPackage(null);
   };
 
-  const handleDeletePackage = (id: string, name: string) => {
+  const handleDeletePackage = async (id: string, name: string) => {
     if (!window.confirm(`Delete package plan "${name}"?`)) return;
-    const updated = packages.filter(p => p.id !== id);
-    setPackages(updated);
-    localStorage.setItem('alnoor_cms_packages', JSON.stringify(updated));
-  };
-
-  // --- Testimonials CMS Handlers ---
-  const handleSaveTestimonial = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (editingTestimonial) {
-      const updated = testimonials.map(t => t.id === editingTestimonial.id ? { ...editingTestimonial, ...testimonialForm } as Testimonial : t);
-      setTestimonials(updated);
-      localStorage.setItem('alnoor_cms_testimonials', JSON.stringify(updated));
-    } else {
-      const newTestimonial: Testimonial = {
-        id: `t-${Date.now()}`,
-        name: testimonialForm.name || 'Anonymous Parent',
-        studentOrParent: testimonialForm.studentOrParent || 'Parent',
-        location: testimonialForm.location || 'United Kingdom',
-        countryFlag: testimonialForm.countryFlag || '🇬🇧',
-        courseName: testimonialForm.courseName || 'Quran Reading & Tajweed',
-        rating: testimonialForm.rating || 5,
-        comment: testimonialForm.comment || '',
-        date: new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
-        status: testimonialForm.status || 'published'
-      };
-      const updated = [newTestimonial, ...testimonials];
-      setTestimonials(updated);
-      localStorage.setItem('alnoor_cms_testimonials', JSON.stringify(updated));
+    setPackageErr('');
+    try {
+      const data = await callAdminApi(`/api/admin/packages/${id}`, 'DELETE');
+      if (!data) return; // 401 → logged out
+      setPackages(prev => {
+        const next = prev.filter(p => p.id !== id);
+        cacheCollection('alnoor_cms_packages', next, setPackageErr);
+        return next;
+      });
+    } catch (err: any) {
+      setPackageErr(err?.message || 'Failed to delete package. Nothing was changed.');
     }
-    setIsAddingTestimonial(false);
-    setEditingTestimonial(null);
   };
 
-  const handleToggleTestimonialStatus = (id: string) => {
-    const updated = testimonials.map(t => t.id === id ? { ...t, status: (t.status === 'published' ? 'pending' : 'published') as any } : t);
-    setTestimonials(updated);
-    localStorage.setItem('alnoor_cms_testimonials', JSON.stringify(updated));
+  // --- Testimonials CMS Handlers (API-first; localStorage is only a cache) ---
+  const handleSaveTestimonial = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setTestimonialErr('');
+    setSavingTestimonial(true);
+    try {
+      if (editingTestimonial) {
+        const payload = { ...editingTestimonial, ...testimonialForm } as Testimonial;
+        const data = await callAdminApi<{ testimonial: Testimonial }>(`/api/admin/testimonials/${editingTestimonial.id}`, 'PATCH', payload);
+        if (!data) return; // 401 → logged out
+        setTestimonials(prev => {
+          const next = prev.map(t => t.id === editingTestimonial.id ? data.testimonial : t);
+          cacheCollection('alnoor_cms_testimonials', next, setTestimonialErr);
+          return next;
+        });
+      } else {
+        const payload = {
+          name: testimonialForm.name || 'Anonymous Parent',
+          studentOrParent: testimonialForm.studentOrParent || 'Parent',
+          location: testimonialForm.location || 'United Kingdom',
+          countryFlag: testimonialForm.countryFlag || '🇬🇧',
+          courseName: testimonialForm.courseName || 'Quran Reading & Tajweed',
+          rating: testimonialForm.rating || 5,
+          comment: testimonialForm.comment || '',
+          status: testimonialForm.status || 'published'
+        };
+        const data = await callAdminApi<{ testimonial: Testimonial }>('/api/admin/testimonials', 'POST', payload);
+        if (!data) return; // 401 → logged out
+        setTestimonials(prev => {
+          const next = [data.testimonial, ...prev];
+          cacheCollection('alnoor_cms_testimonials', next, setTestimonialErr);
+          return next;
+        });
+      }
+      setIsAddingTestimonial(false);
+      setEditingTestimonial(null);
+    } catch (err: any) {
+      setTestimonialErr(err?.message || 'Failed to save testimonial. Nothing was changed.');
+    } finally {
+      setSavingTestimonial(false);
+    }
   };
 
-  const handleDeleteTestimonial = (id: string, name: string) => {
+  const handleToggleTestimonialStatus = async (id: string) => {
+    setTestimonialErr('');
+    try {
+      const current = testimonials.find(t => t.id === id);
+      if (!current) return;
+      const nextStatus = current.status === 'published' ? 'pending' : 'published';
+      const data = await callAdminApi<{ testimonial: Testimonial }>(`/api/admin/testimonials/${id}`, 'PATCH', { status: nextStatus });
+      if (!data) return; // 401 → logged out
+      setTestimonials(prev => {
+        const next = prev.map(t => t.id === id ? data.testimonial : t);
+        cacheCollection('alnoor_cms_testimonials', next, setTestimonialErr);
+        return next;
+      });
+    } catch (err: any) {
+      setTestimonialErr(err?.message || 'Failed to update testimonial status. Nothing was changed.');
+    }
+  };
+
+  const handleDeleteTestimonial = async (id: string, name: string) => {
     if (!window.confirm(`Delete testimonial from "${name}"?`)) return;
-    const updated = testimonials.filter(t => t.id !== id);
-    setTestimonials(updated);
-    localStorage.setItem('alnoor_cms_testimonials', JSON.stringify(updated));
-  };
-
-  // --- FAQs CMS Handlers ---
-  const handleSaveFaq = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (editingFaq) {
-      const updated = faqs.map(f => f.id === editingFaq.id ? { ...editingFaq, ...faqForm } as FAQItem : f);
-      setFaqs(updated);
-      localStorage.setItem('alnoor_cms_faqs', JSON.stringify(updated));
-    } else {
-      const newFaq: FAQItem = {
-        id: `faq-${Date.now()}`,
-        question: faqForm.question || 'New Question?',
-        answer: faqForm.answer || 'Answer here...',
-        category: faqForm.category || 'Admissions',
-        order: faqs.length + 1
-      };
-      const updated = [...faqs, newFaq];
-      setFaqs(updated);
-      localStorage.setItem('alnoor_cms_faqs', JSON.stringify(updated));
+    setTestimonialErr('');
+    try {
+      const data = await callAdminApi(`/api/admin/testimonials/${id}`, 'DELETE');
+      if (!data) return; // 401 → logged out
+      setTestimonials(prev => {
+        const next = prev.filter(t => t.id !== id);
+        cacheCollection('alnoor_cms_testimonials', next, setTestimonialErr);
+        return next;
+      });
+    } catch (err: any) {
+      setTestimonialErr(err?.message || 'Failed to delete testimonial. Nothing was changed.');
     }
-    setIsAddingFaq(false);
-    setEditingFaq(null);
   };
 
-  const handleDeleteFaq = (id: string, question: string) => {
-    if (!window.confirm(`Delete FAQ: "${question}"?`)) return;
-    const updated = faqs.filter(f => f.id !== id);
-    setFaqs(updated);
-    localStorage.setItem('alnoor_cms_faqs', JSON.stringify(updated));
-  };
-
-  // --- Site Settings CMS Handler ---
-  const handleSaveSiteSettings = (e: React.FormEvent) => {
+  // --- FAQs CMS Handlers (API-first; localStorage is only a cache) ---
+  const handleSaveFaq = async (e: React.FormEvent) => {
     e.preventDefault();
-    localStorage.setItem('alnoor_cms_settings', JSON.stringify(siteSettings));
-    setSettingsSavedToast(true);
-    setTimeout(() => setSettingsSavedToast(false), 3000);
+    setFaqErr('');
+    setSavingFaq(true);
+    try {
+      if (editingFaq) {
+        const payload = { ...editingFaq, ...faqForm } as FAQItem;
+        const data = await callAdminApi<{ faq: FAQItem }>(`/api/admin/faqs/${editingFaq.id}`, 'PATCH', payload);
+        if (!data) return; // 401 → logged out
+        setFaqs(prev => {
+          const next = prev.map(f => f.id === editingFaq.id ? data.faq : f);
+          cacheCollection('alnoor_cms_faqs', next, setFaqErr);
+          return next;
+        });
+      } else {
+        const payload = {
+          question: faqForm.question || 'New Question?',
+          answer: faqForm.answer || 'Answer here...',
+          category: faqForm.category || 'Admissions',
+          order: faqs.length + 1
+        };
+        const data = await callAdminApi<{ faq: FAQItem }>('/api/admin/faqs', 'POST', payload);
+        if (!data) return; // 401 → logged out
+        setFaqs(prev => {
+          const next = [...prev, data.faq];
+          cacheCollection('alnoor_cms_faqs', next, setFaqErr);
+          return next;
+        });
+      }
+      setIsAddingFaq(false);
+      setEditingFaq(null);
+    } catch (err: any) {
+      setFaqErr(err?.message || 'Failed to save FAQ. Nothing was changed.');
+    } finally {
+      setSavingFaq(false);
+    }
+  };
+
+  const handleDeleteFaq = async (id: string, question: string) => {
+    if (!window.confirm(`Delete FAQ: "${question}"?`)) return;
+    setFaqErr('');
+    try {
+      const data = await callAdminApi(`/api/admin/faqs/${id}`, 'DELETE');
+      if (!data) return; // 401 → logged out
+      setFaqs(prev => {
+        const next = prev.filter(f => f.id !== id);
+        cacheCollection('alnoor_cms_faqs', next, setFaqErr);
+        return next;
+      });
+    } catch (err: any) {
+      setFaqErr(err?.message || 'Failed to delete FAQ. Nothing was changed.');
+    }
+  };
+
+  // --- Site Settings CMS Handler (API-first; localStorage is only a cache) ---
+  const handleSaveSiteSettings = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSettingsErr('');
+    setSavingSettings(true);
+    try {
+      const data = await callAdminApi<{ settings: SiteSettings }>('/api/admin/settings', 'POST', siteSettings);
+      if (!data) return; // 401 → logged out
+      setSiteSettings(data.settings);
+      cacheCollection('alnoor_cms_settings', data.settings, setSettingsErr);
+      setSettingsSavedToast(true);
+      setTimeout(() => setSettingsSavedToast(false), 3000);
+    } catch (err: any) {
+      setSettingsErr(err?.message || 'Failed to save settings. Nothing was changed.');
+    } finally {
+      setSavingSettings(false);
+    }
   };
 
   // --- Media Library CMS Handlers ---
@@ -1380,40 +1572,73 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
     setTimeout(() => setCopiedUrl(null), 2500);
   };
 
-  const handleSaveMedia = (e: React.FormEvent) => {
+  // --- Media Library CMS Handlers (API-first; localStorage is only a cache) ---
+  const handleSaveMedia = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!mediaForm.url || !mediaForm.name) return;
-    const newAsset: MediaAsset = {
-      id: `med-${Date.now()}`,
-      name: mediaForm.name,
-      category: mediaForm.category,
-      url: mediaForm.url,
-      fileSize: mediaForm.fileSize || '150 KB',
-      uploadedAt: new Date().toISOString().split('T')[0]
-    };
-    const updated = [newAsset, ...mediaAssets];
-    setMediaAssets(updated);
-    localStorage.setItem('alnoor_cms_media', JSON.stringify(updated));
-    setIsAddingMedia(false);
-    setMediaForm({ name: '', category: 'banner', url: '', fileSize: '120 KB' });
+    setMediaErr('');
+    setSavingMedia(true);
+    try {
+      const payload = {
+        name: mediaForm.name,
+        category: mediaForm.category,
+        url: mediaForm.url,
+        fileSize: mediaForm.fileSize || '150 KB'
+      };
+      const data = await callAdminApi<{ asset: MediaAsset }>('/api/admin/media', 'POST', payload);
+      if (!data) return; // 401 → logged out
+      setMediaAssets(prev => {
+        const next = [data.asset, ...prev];
+        cacheCollection('alnoor_cms_media', next, setMediaErr);
+        return next;
+      });
+      setIsAddingMedia(false);
+      setMediaForm({ name: '', category: 'banner', url: '', fileSize: '120 KB' });
+    } catch (err: any) {
+      setMediaErr(err?.message || 'Failed to save media asset. Nothing was changed.');
+    } finally {
+      setSavingMedia(false);
+    }
   };
 
-  const handleDeleteMedia = (id: string, name: string) => {
+  const handleDeleteMedia = async (id: string, name: string) => {
     if (!window.confirm(`Delete media asset "${name}"?`)) return;
-    const updated = mediaAssets.filter(m => m.id !== id);
-    setMediaAssets(updated);
-    localStorage.setItem('alnoor_cms_media', JSON.stringify(updated));
+    setMediaErr('');
+    try {
+      const data = await callAdminApi(`/api/admin/media/${id}`, 'DELETE');
+      if (!data) return; // 401 → logged out
+      setMediaAssets(prev => {
+        const next = prev.filter(m => m.id !== id);
+        cacheCollection('alnoor_cms_media', next, setMediaErr);
+        return next;
+      });
+    } catch (err: any) {
+      setMediaErr(err?.message || 'Failed to delete media asset. Nothing was changed.');
+    }
   };
 
-  // --- Notification Templates CMS Handlers ---
-  const handleSaveTemplate = (e: React.FormEvent) => {
+  // --- Notification Templates CMS Handlers (API-first; localStorage is only a cache) ---
+  const handleSaveTemplate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedTemplate) return;
-    const updated = templates.map(t => t.id === selectedTemplate.id ? { ...selectedTemplate, ...templateForm } as MessageTemplate : t);
-    setTemplates(updated);
-    localStorage.setItem('alnoor_cms_templates', JSON.stringify(updated));
-    setTemplateSaveToast(true);
-    setTimeout(() => setTemplateSaveToast(false), 3000);
+    setTemplateErr('');
+    setSavingTemplate(true);
+    try {
+      const payload = { ...selectedTemplate, ...templateForm } as MessageTemplate;
+      const data = await callAdminApi<{ template: MessageTemplate }>(`/api/admin/templates/${selectedTemplate.id}`, 'PATCH', payload);
+      if (!data) return; // 401 → logged out
+      setTemplates(prev => {
+        const next = prev.map(t => t.id === selectedTemplate.id ? data.template : t);
+        cacheCollection('alnoor_cms_templates', next, setTemplateErr);
+        return next;
+      });
+      setTemplateSaveToast(true);
+      setTimeout(() => setTemplateSaveToast(false), 3000);
+    } catch (err: any) {
+      setTemplateErr(err?.message || 'Failed to save template. Nothing was changed.');
+    } finally {
+      setSavingTemplate(false);
+    }
   };
 
   // --- SEO & Schema CMS Handlers (writes through to Firestore `siteSeo` so the live site applies them) ---
@@ -1423,7 +1648,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
     const next = { ...selectedSeoPage, ...seoForm } as PageSeoConfig;
     const updated = seoConfigs.map(s => s.pagePath === selectedSeoPage.pagePath ? next : s);
     setSeoConfigs(updated);
-    localStorage.setItem('alnoor_cms_seo', JSON.stringify(updated));
+    safeSetItem('alnoor_cms_seo', JSON.stringify(updated));
     try {
       await saveSiteSeoConfig(next);
       setSeoSaveToast(true);
@@ -1519,10 +1744,10 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
     reader.onload = (event) => {
       try {
         const parsed = JSON.parse(event.target?.result as string);
-        if (parsed.packages) { setPackages(parsed.packages); localStorage.setItem('alnoor_cms_packages', JSON.stringify(parsed.packages)); }
-        if (parsed.testimonials) { setTestimonials(parsed.testimonials); localStorage.setItem('alnoor_cms_testimonials', JSON.stringify(parsed.testimonials)); }
-        if (parsed.faqs) { setFaqs(parsed.faqs); localStorage.setItem('alnoor_cms_faqs', JSON.stringify(parsed.faqs)); }
-        if (parsed.siteSettings) { setSiteSettings(parsed.siteSettings); localStorage.setItem('alnoor_cms_settings', JSON.stringify(parsed.siteSettings)); }
+        if (parsed.packages) { setPackages(parsed.packages); safeSetItem('alnoor_cms_packages', JSON.stringify(parsed.packages)); }
+        if (parsed.testimonials) { setTestimonials(parsed.testimonials); safeSetItem('alnoor_cms_testimonials', JSON.stringify(parsed.testimonials)); }
+        if (parsed.faqs) { setFaqs(parsed.faqs); safeSetItem('alnoor_cms_faqs', JSON.stringify(parsed.faqs)); }
+        if (parsed.siteSettings) { setSiteSettings(parsed.siteSettings); safeSetItem('alnoor_cms_settings', JSON.stringify(parsed.siteSettings)); }
         alert('Database restored successfully from backup!');
       } catch (err) {
         alert('Invalid JSON backup file format.');
@@ -1555,46 +1780,62 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
     }
   };
 
-  // --- Finance & Invoicing Handlers ---
-  const handleSaveInvoice = (e: React.FormEvent) => {
+  // --- Finance & Invoicing Handlers (API-first; localStorage is only a cache) ---
+  const handleSaveInvoice = async (e: React.FormEvent) => {
     e.preventDefault();
-    const newInv: FeeInvoice = {
-      id: `inv-${Date.now()}`,
-      invoiceNumber: `NQ-${new Date().getFullYear()}-${Math.floor(100 + Math.random() * 900)}`,
-      studentId: invoiceForm.studentId || (students[0]?.id ?? 'stu-1'),
-      studentName: invoiceForm.studentName || (students[0]?.studentName ?? 'Student'),
-      parentName: invoiceForm.parentName || (students[0]?.parentName ?? 'Parent'),
-      phone: invoiceForm.phone || (students[0]?.phone ?? '+923274496163'),
-      courseName: invoiceForm.courseName || 'Nazra Quran with Tajweed',
-      packageName: invoiceForm.packageName || 'Standard Plan',
-      amount: invoiceForm.amount || 35,
-      currency: invoiceForm.currency || 'USD',
-      billingMonth: invoiceForm.billingMonth || 'Current Month',
-      dueDate: invoiceForm.dueDate || new Date().toISOString().split('T')[0],
-      status: invoiceForm.status || 'Pending',
-      paymentMethod: invoiceForm.paymentMethod || 'Bank Transfer'
-    };
-    const updated = [newInv, ...invoices];
-    setInvoices(updated);
-    localStorage.setItem('alnoor_admin_invoices', JSON.stringify(updated));
-    logActivity(`Generated Fee Invoice #${newInv.invoiceNumber} for ${newInv.studentName}`, 'Finance');
-    setIsAddingInvoice(false);
+    setInvoiceErr('');
+    setSavingInvoice(true);
+    try {
+      const payload = {
+        studentId: invoiceForm.studentId || (students[0]?.id ?? 'stu-1'),
+        studentName: invoiceForm.studentName || (students[0]?.studentName ?? 'Student'),
+        parentName: invoiceForm.parentName || (students[0]?.parentName ?? 'Parent'),
+        phone: invoiceForm.phone || (students[0]?.phone ?? '+923274496163'),
+        courseName: invoiceForm.courseName || 'Nazra Quran with Tajweed',
+        packageName: invoiceForm.packageName || 'Standard Plan',
+        amount: invoiceForm.amount || 35,
+        currency: invoiceForm.currency || 'USD',
+        billingMonth: invoiceForm.billingMonth || 'Current Month',
+        dueDate: invoiceForm.dueDate || new Date().toISOString().split('T')[0],
+        status: invoiceForm.status || 'Pending',
+        paymentMethod: invoiceForm.paymentMethod || 'Bank Transfer'
+      };
+      const data = await callAdminApi<{ invoice: FeeInvoice }>('/api/admin/invoices', 'POST', payload);
+      if (!data) return; // 401 → logged out
+      setInvoices(prev => {
+        const next = [data.invoice, ...prev];
+        cacheCollection('alnoor_admin_invoices', next, setInvoiceErr);
+        return next;
+      });
+      await logActivity(`Generated Fee Invoice #${data.invoice.invoiceNumber} for ${data.invoice.studentName}`, 'Finance');
+      setIsAddingInvoice(false);
+    } catch (err: any) {
+      setInvoiceErr(err?.message || 'Failed to generate invoice. Nothing was saved.');
+    } finally {
+      setSavingInvoice(false);
+    }
   };
 
-  const handleToggleInvoiceStatus = (id: string) => {
-    const updated = invoices.map(inv => {
-      if (inv.id === id) {
-        const nextStatus: FeeInvoice['status'] = inv.status === 'Paid' ? 'Pending' : 'Paid';
-        return {
-          ...inv,
-          status: nextStatus,
-          paidDate: nextStatus === 'Paid' ? new Date().toISOString().split('T')[0] : undefined
-        };
-      }
-      return inv;
-    });
-    setInvoices(updated);
-    localStorage.setItem('alnoor_admin_invoices', JSON.stringify(updated));
+  const handleToggleInvoiceStatus = async (id: string) => {
+    setInvoiceErr('');
+    try {
+      const current = invoices.find(inv => inv.id === id);
+      if (!current) return;
+      const nextStatus: FeeInvoice['status'] = current.status === 'Paid' ? 'Pending' : 'Paid';
+      const payload = {
+        status: nextStatus,
+        paidDate: nextStatus === 'Paid' ? new Date().toISOString().split('T')[0] : undefined
+      };
+      const data = await callAdminApi<{ invoice: FeeInvoice }>(`/api/admin/invoices/${id}`, 'PATCH', payload);
+      if (!data) return; // 401 → logged out
+      setInvoices(prev => {
+        const next = prev.map(inv => inv.id === id ? data.invoice : inv);
+        cacheCollection('alnoor_admin_invoices', next, setInvoiceErr);
+        return next;
+      });
+    } catch (err: any) {
+      setInvoiceErr(err?.message || 'Failed to update invoice status. Nothing was changed.');
+    }
   };
 
   const handleSendInvoiceWhatsApp = (inv: FeeInvoice) => {
@@ -1613,28 +1854,38 @@ JazakAllah Khair!`);
     window.open(`https://wa.me/${cleanPhone}?text=${text}`, '_blank');
   };
 
-  // --- Student Progress Report Handlers ---
-  const handleSaveReportCard = (e: React.FormEvent) => {
+  // --- Student Progress Report Handlers (API-first; localStorage is only a cache) ---
+  const handleSaveReportCard = async (e: React.FormEvent) => {
     e.preventDefault();
-    const newRep: StudentReportCard = {
-      id: `rep-${Date.now()}`,
-      studentId: reportForm.studentId || (students[0]?.id ?? 'stu-1'),
-      studentName: reportForm.studentName || (students[0]?.studentName ?? 'Student'),
-      courseName: reportForm.courseName || 'Nazra Quran with Tajweed',
-      tutorName: reportForm.tutorName || 'Qari Hafiz Muhammad Bilal',
-      evaluationMonth: reportForm.evaluationMonth || 'August 2026',
-      currentSabaq: reportForm.currentSabaq || 'Surah Al-Baqarah',
-      readingGrade: reportForm.readingGrade || 'A+',
-      tajweedGrade: reportForm.tajweedGrade || 'A',
-      attendancePercentage: reportForm.attendancePercentage || 95,
-      teacherRemarks: reportForm.teacherRemarks || 'MashaAllah, dedicated student!',
-      generatedDate: new Date().toISOString().split('T')[0]
-    };
-    const updated = [newRep, ...reportCards];
-    setReportCards(updated);
-    localStorage.setItem('alnoor_admin_reports', JSON.stringify(updated));
-    logActivity(`Generated Progress Evaluation Card for ${newRep.studentName}`, 'Student');
-    setIsGeneratingReport(false);
+    setReportErr('');
+    setSavingReport(true);
+    try {
+      const payload = {
+        studentId: reportForm.studentId || (students[0]?.id ?? 'stu-1'),
+        studentName: reportForm.studentName || (students[0]?.studentName ?? 'Student'),
+        courseName: reportForm.courseName || 'Nazra Quran with Tajweed',
+        tutorName: reportForm.tutorName || 'Qari Hafiz Muhammad Bilal',
+        evaluationMonth: reportForm.evaluationMonth || 'August 2026',
+        currentSabaq: reportForm.currentSabaq || 'Surah Al-Baqarah',
+        readingGrade: reportForm.readingGrade || 'A+',
+        tajweedGrade: reportForm.tajweedGrade || 'A',
+        attendancePercentage: reportForm.attendancePercentage || 95,
+        teacherRemarks: reportForm.teacherRemarks || 'MashaAllah, dedicated student!'
+      };
+      const data = await callAdminApi<{ report: StudentReportCard }>('/api/admin/reports', 'POST', payload);
+      if (!data) return; // 401 → logged out
+      setReportCards(prev => {
+        const next = [data.report, ...prev];
+        cacheCollection('alnoor_admin_reports', next, setReportErr);
+        return next;
+      });
+      await logActivity(`Generated Progress Evaluation Card for ${data.report.studentName}`, 'Student');
+      setIsGeneratingReport(false);
+    } catch (err: any) {
+      setReportErr(err?.message || 'Failed to generate report card. Nothing was saved.');
+    } finally {
+      setSavingReport(false);
+    }
   };
 
   const handleSendReportWhatsApp = (rep: StudentReportCard) => {
@@ -1658,34 +1909,52 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
     window.open(`https://wa.me/${phone}?text=${text}`, '_blank');
   };
 
-  // --- Payroll & Compensation Handler ---
-  const handleTogglePayrollStatus = (id: string) => {
-    const updated = payrollList.map(p => {
-      if (p.id === id) {
-        const next: TutorPayroll['status'] = p.status === 'Paid' ? 'Pending' : 'Paid';
-        return {
-          ...p,
-          status: next,
-          paidDate: next === 'Paid' ? new Date().toISOString().split('T')[0] : undefined
-        };
-      }
-      return p;
-    });
-    setPayrollList(updated);
-    localStorage.setItem('alnoor_admin_payroll', JSON.stringify(updated));
+  // --- Payroll & Compensation Handler (API-first; localStorage is only a cache) ---
+  const handleTogglePayrollStatus = async (id: string) => {
+    setPayrollErr('');
+    setSavingPayroll(true);
+    try {
+      const current = payrollList.find(p => p.id === id);
+      if (!current) return;
+      const next: TutorPayroll['status'] = current.status === 'Paid' ? 'Pending' : 'Paid';
+      const payload = {
+        status: next,
+        paidDate: next === 'Paid' ? new Date().toISOString().split('T')[0] : undefined
+      };
+      const data = await callAdminApi<{ payroll: TutorPayroll }>(`/api/admin/payroll/${id}`, 'PATCH', payload);
+      if (!data) return; // 401 → logged out
+      setPayrollList(prev => {
+        const nextList = prev.map(p => p.id === id ? data.payroll : p);
+        cacheCollection('alnoor_admin_payroll', nextList, setPayrollErr);
+        return nextList;
+      });
+    } catch (err: any) {
+      setPayrollErr(err?.message || 'Failed to update payroll status. Nothing was changed.');
+    } finally {
+      setSavingPayroll(false);
+    }
   };
 
-  // --- Helper to log system activity ---
-  const logActivity = (action: string, category: ActivityLog['category']) => {
-    const newLog: ActivityLog = {
-      id: `log-${Date.now()}`,
-      timestamp: new Date().toLocaleString(),
-      action,
-      category,
-      user: 'Admin'
-    };
-    setActivityLogs(prev => [newLog, ...prev.slice(0, 49)]);
-    localStorage.setItem('alnoor_admin_logs', JSON.stringify([newLog, ...activityLogs.slice(0, 49)]));
+  // --- Helper to log system activity (API-first; localStorage is only a cache) ---
+  const logActivity = async (action: string, category: ActivityLog['category']) => {
+    try {
+      const data = await callAdminApi<{ log: ActivityLog }>('/api/admin/logs', 'POST', {
+        action,
+        category,
+        user: 'Admin'
+      });
+      if (!data) return; // 401 → logged out
+      setActivityLogs(prev => {
+        const next = [data.log, ...prev.slice(0, 49)];
+        if (!safeSetItem('alnoor_admin_logs', JSON.stringify(next))) {
+          setLogErr('Log saved on the server, but the browser cache could not be updated (storage full or blocked).');
+        }
+        return next;
+      });
+    } catch (err) {
+      console.error('Failed to save activity log:', err);
+      setLogErr('Could not save the activity log to the server. Check your connection.');
+    }
   };
 
   const handleOpenAssignModal = (student: Student) => {
@@ -3015,6 +3284,10 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                     </button>
                   </div>
 
+                  {invoiceErr && (
+                    <div className="px-4 py-2.5 bg-red-50 border border-red-300 text-red-800 text-xs font-sans rounded-sm">{invoiceErr}</div>
+                  )}
+
                   {/* Summary Metric Cards */}
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div className="p-4 bg-[#FCFBF8] border border-[#E8E0D1] rounded-sm flex items-center justify-between">
@@ -3167,6 +3440,10 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                     </button>
                   </div>
 
+                  {reportErr && (
+                    <div className="px-4 py-2.5 bg-red-50 border border-red-300 text-red-800 text-xs font-sans rounded-sm">{reportErr}</div>
+                  )}
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     {reportCards.map((rep) => (
                       <div
@@ -3244,6 +3521,10 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                     </span>
                   </div>
 
+                  {payrollErr && (
+                    <div className="px-4 py-2.5 bg-red-50 border border-red-300 text-red-800 text-xs font-sans rounded-sm">{payrollErr}</div>
+                  )}
+
                   <div className="bg-[#FCFBF8] rounded-sm border border-[#E8E0D1] shadow-xs overflow-hidden">
                     <div className="overflow-x-auto">
                       <table className="w-full text-left text-xs font-sans">
@@ -3296,6 +3577,10 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                     <h3 className="font-editorial text-2xl text-[#0B332D] font-bold">System Activity Audit Log</h3>
                     <p className="text-xs text-gray-500 font-sans">Live traceable audit trail of administrative events, admissions, tutor allocations, and fee management.</p>
                   </div>
+
+                  {logErr && (
+                    <div className="px-4 py-2.5 bg-red-50 border border-red-300 text-red-800 text-xs font-sans rounded-sm">{logErr}</div>
+                  )}
 
                   <div className="bg-[#FCFBF8] rounded-sm border border-[#E8E0D1] p-4 divide-y divide-[#E8E0D1]/60 text-xs font-sans">
                     {activityLogs.map((log) => (
@@ -3454,6 +3739,10 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                     </button>
                   </div>
 
+                  {packageErr && (
+                    <div className="px-4 py-2.5 bg-red-50 border border-red-300 text-red-800 text-xs font-sans rounded-sm">{packageErr}</div>
+                  )}
+
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                     {packages.map((pkg) => (
                       <div
@@ -3558,6 +3847,10 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                     </button>
                   </div>
 
+                  {testimonialErr && (
+                    <div className="px-4 py-2.5 bg-red-50 border border-red-300 text-red-800 text-xs font-sans rounded-sm">{testimonialErr}</div>
+                  )}
+
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                     {testimonials.map((t) => (
                       <div
@@ -3655,6 +3948,10 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                     </button>
                   </div>
 
+                  {faqErr && (
+                    <div className="px-4 py-2.5 bg-red-50 border border-red-300 text-red-800 text-xs font-sans rounded-sm">{faqErr}</div>
+                  )}
+
                   <div className="space-y-3">
                     {faqs.map((faq, idx) => (
                       <div
@@ -3722,6 +4019,10 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                       </div>
                     )}
                   </div>
+
+                  {settingsErr && (
+                    <div className="px-4 py-2.5 bg-red-50 border border-red-300 text-red-800 text-xs font-sans rounded-sm">{settingsErr}</div>
+                  )}
 
                   <form onSubmit={handleSaveSiteSettings} className="space-y-6 bg-[#FCFBF8] p-6 border border-[#E8E0D1] rounded-sm text-xs font-sans">
 
@@ -3836,10 +4137,11 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                     <div className="flex justify-end pt-2">
                       <button
                         type="submit"
-                        className="px-6 py-2.5 bg-[#0B332D] text-[#F8F5EE] font-semibold uppercase tracking-wider rounded-sm hover:bg-[#07221E] shadow-sm flex items-center gap-2 cursor-pointer"
+                        disabled={savingSettings}
+                        className="px-6 py-2.5 bg-[#0B332D] text-[#F8F5EE] font-semibold uppercase tracking-wider rounded-sm hover:bg-[#07221E] shadow-sm flex items-center gap-2 cursor-pointer disabled:opacity-60"
                       >
                         <FloppyDisk className="w-4 h-4 text-[#B79A62]" />
-                        <span>Save Site Settings</span>
+                        <span>{savingSettings ? 'Saving…' : 'Save Site Settings'}</span>
                       </button>
                     </div>
                   </form>
@@ -4107,6 +4409,10 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                     </button>
                   </div>
 
+                  {mediaErr && (
+                    <div className="px-4 py-2.5 bg-red-50 border border-red-300 text-red-800 text-xs font-sans rounded-sm">{mediaErr}</div>
+                  )}
+
                   {/* Filter tabs */}
                   <div className="flex items-center gap-2 border-b border-[#E8E0D1] pb-2 text-xs font-sans">
                     {['all', 'banner', 'course', 'tutor', 'icon'].map((cat) => (
@@ -4198,6 +4504,11 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                       <div className="px-3 py-1.5 bg-emerald-100 border border-emerald-300 text-emerald-800 text-xs font-bold rounded-sm flex items-center gap-1.5">
                         <CheckCircle className="w-4 h-4" weight="fill" />
                         <span>Template Saved!</span>
+                      </div>
+                    )}
+                    {templateErr && (
+                      <div className="px-3 py-1.5 bg-red-50 border border-red-300 text-red-800 text-xs font-bold rounded-sm flex items-center gap-1.5">
+                        <span>{templateErr}</span>
                       </div>
                     )}
                   </div>
@@ -4296,10 +4607,11 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                           <div className="flex justify-end">
                             <button
                               type="submit"
-                              className="px-6 py-2 bg-[#0B332D] text-[#F8F5EE] font-semibold uppercase tracking-wider rounded-sm hover:bg-[#07221E] flex items-center gap-1.5 cursor-pointer shadow-xs"
+                              disabled={savingTemplate}
+                              className="px-6 py-2 bg-[#0B332D] text-[#F8F5EE] font-semibold uppercase tracking-wider rounded-sm hover:bg-[#07221E] flex items-center gap-1.5 cursor-pointer shadow-xs disabled:opacity-60"
                             >
                               <FloppyDisk className="w-4 h-4 text-[#B79A62]" />
-                              <span>Save Template Changes</span>
+                              <span>{savingTemplate ? 'Saving…' : 'Save Template Changes'}</span>
                             </button>
                           </div>
                         </form>
@@ -5271,6 +5583,9 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                   )}
                 </div>
 
+                {packageErr && (
+                  <p className="text-xs font-sans text-red-700 px-1">{packageErr}</p>
+                )}
                 <div className="pt-4 border-t border-[#E8E0D1] flex justify-end gap-2">
                   <button
                     type="button"
@@ -5281,9 +5596,10 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                   </button>
                   <button
                     type="submit"
-                    className="px-6 py-2 bg-[#0B332D] text-[#F8F5EE] font-semibold uppercase tracking-wider rounded-sm hover:bg-[#07221E] cursor-pointer"
+                    disabled={savingPackage}
+                    className="px-6 py-2 bg-[#0B332D] text-[#F8F5EE] font-semibold uppercase tracking-wider rounded-sm hover:bg-[#07221E] cursor-pointer disabled:opacity-60"
                   >
-                    Save Package
+                    {savingPackage ? 'Saving…' : 'Save Package'}
                   </button>
                 </div>
               </form>
@@ -5401,6 +5717,9 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                   </select>
                 </div>
 
+                {testimonialErr && (
+                  <p className="text-xs font-sans text-red-700 px-1">{testimonialErr}</p>
+                )}
                 <div className="pt-4 border-t border-[#E8E0D1] flex justify-end gap-2">
                   <button
                     type="button"
@@ -5411,9 +5730,10 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                   </button>
                   <button
                     type="submit"
-                    className="px-6 py-2 bg-[#0B332D] text-[#F8F5EE] font-semibold uppercase tracking-wider rounded-sm hover:bg-[#07221E] cursor-pointer"
+                    disabled={savingTestimonial}
+                    className="px-6 py-2 bg-[#0B332D] text-[#F8F5EE] font-semibold uppercase tracking-wider rounded-sm hover:bg-[#07221E] cursor-pointer disabled:opacity-60"
                   >
-                    Save Review
+                    {savingTestimonial ? 'Saving…' : 'Save Review'}
                   </button>
                 </div>
               </form>
@@ -5487,6 +5807,9 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                   </div>
                 </div>
 
+                {faqErr && (
+                  <p className="text-xs font-sans text-red-700 px-1">{faqErr}</p>
+                )}
                 <div className="pt-4 border-t border-[#E8E0D1] flex justify-end gap-2">
                   <button
                     type="button"
@@ -5497,9 +5820,10 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                   </button>
                   <button
                     type="submit"
-                    className="px-6 py-2 bg-[#0B332D] text-[#F8F5EE] font-semibold uppercase tracking-wider rounded-sm hover:bg-[#07221E] cursor-pointer"
+                    disabled={savingFaq}
+                    className="px-6 py-2 bg-[#0B332D] text-[#F8F5EE] font-semibold uppercase tracking-wider rounded-sm hover:bg-[#07221E] cursor-pointer disabled:opacity-60"
                   >
-                    Save FAQ
+                    {savingFaq ? 'Saving…' : 'Save FAQ'}
                   </button>
                 </div>
               </form>
@@ -5597,6 +5921,9 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                   </div>
                 )}
 
+                {mediaErr && (
+                  <p className="text-xs font-sans text-red-700 px-1">{mediaErr}</p>
+                )}
                 <div className="pt-4 border-t border-[#E8E0D1] flex justify-end gap-2">
                   <button
                     type="button"
@@ -5607,9 +5934,10 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                   </button>
                   <button
                     type="submit"
-                    className="px-6 py-2 bg-[#0B332D] text-[#F8F5EE] font-semibold uppercase tracking-wider rounded-sm hover:bg-[#07221E] cursor-pointer"
+                    disabled={savingMedia}
+                    className="px-6 py-2 bg-[#0B332D] text-[#F8F5EE] font-semibold uppercase tracking-wider rounded-sm hover:bg-[#07221E] cursor-pointer disabled:opacity-60"
                   >
-                    Save Asset
+                    {savingMedia ? 'Saving…' : 'Save Asset'}
                   </button>
                 </div>
               </form>
@@ -5708,6 +6036,9 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                   </div>
                 </div>
 
+                {invoiceErr && (
+                  <p className="text-xs font-sans text-red-700 px-1">{invoiceErr}</p>
+                )}
                 <div className="pt-4 border-t border-[#E8E0D1] flex justify-end gap-2">
                   <button
                     type="button"
@@ -5718,9 +6049,10 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                   </button>
                   <button
                     type="submit"
-                    className="px-6 py-2 bg-[#0B332D] text-[#F8F5EE] font-semibold uppercase tracking-wider rounded-sm hover:bg-[#07221E] cursor-pointer"
+                    disabled={savingInvoice}
+                    className="px-6 py-2 bg-[#0B332D] text-[#F8F5EE] font-semibold uppercase tracking-wider rounded-sm hover:bg-[#07221E] cursor-pointer disabled:opacity-60"
                   >
-                    Generate Invoice
+                    {savingInvoice ? 'Saving…' : 'Generate Invoice'}
                   </button>
                 </div>
               </form>
@@ -5826,6 +6158,9 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                   />
                 </div>
 
+                {reportErr && (
+                  <p className="text-xs font-sans text-red-700 px-1">{reportErr}</p>
+                )}
                 <div className="pt-4 border-t border-[#E8E0D1] flex justify-end gap-2">
                   <button
                     type="button"
@@ -5836,9 +6171,10 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                   </button>
                   <button
                     type="submit"
-                    className="px-6 py-2 bg-[#0B332D] text-[#F8F5EE] font-semibold uppercase tracking-wider rounded-sm hover:bg-[#07221E] cursor-pointer"
+                    disabled={savingReport}
+                    className="px-6 py-2 bg-[#0B332D] text-[#F8F5EE] font-semibold uppercase tracking-wider rounded-sm hover:bg-[#07221E] cursor-pointer disabled:opacity-60"
                   >
-                    Issue Report Card
+                    {savingReport ? 'Saving…' : 'Issue Report Card'}
                   </button>
                 </div>
               </form>
