@@ -1011,9 +1011,10 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
                     <p className="text-xs text-gray-500 mt-1">Your class has started — join now!</p>
                   </div>
                   <a
-                    href={myTutorLiveClass.meetingLink}
+                    href={/^https:\/\/(meet\.jit\.si|8x8\.vc)\//.test(myTutorLiveClass.meetingLink || '') ? myTutorLiveClass.meetingLink : '#'}
                     target="_blank"
                     rel="noopener noreferrer"
+                    onClick={(e) => { if (!/^https:\/\/(meet\.jit\.si|8x8\.vc)\//.test(myTutorLiveClass.meetingLink || '')) { e.preventDefault(); alert('Invalid class link. Please contact your teacher.'); } }}
                     className="block w-full py-4 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-base shadow-md"
                   >
                     Join Live Class
