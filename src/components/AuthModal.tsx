@@ -127,9 +127,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     try {
       setLoading(true);
       setErrorMsg('');
-      await signInWithGoogle('student');
+      const account = await signInWithGoogle();
+      // Detect role from email (teachers go to /teacher, students to /student)
+      const { getRoleForEmail } = await import('../lib/roleUtils');
+      const role = getRoleForEmail(account.email);
       setSuccessMsg('Signed in successfully with Google!');
-      if (onSuccess) onSuccess('student');
+      if (onSuccess) onSuccess(role);
       setTimeout(() => onClose(), 800);
     } catch (err: any) {
       setErrorMsg(err.message || 'Google sign-in failed. Please try again.');

@@ -112,6 +112,10 @@ export const EnrollmentModal: React.FC<EnrollmentModalProps> = ({
           })
         });
         const data = await res.json();
+        if (!res.ok) {
+          setErrorMsg(data.error || 'Submission failed. Please check your details and try again.');
+          return;
+        }
         setSuccessApp(data);
       } catch {
         const waText = encodeURIComponent(
