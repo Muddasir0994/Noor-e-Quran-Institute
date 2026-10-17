@@ -97,6 +97,24 @@ service cloud.firestore {
       allow write: if isAuthenticated();
     }
 
+    // Homework submissions — students submit, teachers review
+    match /homeworkSubmissions/{subId} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+
+    // Portal messages (teacher-student chat)
+    match /portalMessages/{msgId} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+
+    // Attendance marked by teachers from the portal
+    match /attendance/{attId} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+
     // Default catch-all: deny everything not explicitly matched above
     match /{document=**} {
       allow read, write: if false;
