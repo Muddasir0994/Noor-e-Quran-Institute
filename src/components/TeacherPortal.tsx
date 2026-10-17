@@ -981,7 +981,7 @@ export const TeacherPortal: React.FC<TeacherPortalProps> = ({
                 <table className="w-full text-xs">
                   <thead>
                     <tr className="text-left">
-                      <th className="p-2.5 font-bold text-gray-500 uppercase tracking-wide">Time (PKT)</th>
+                      <th className="p-2.5 font-bold text-gray-500 uppercase tracking-wide">Time <span className="normal-case font-normal">(your local time)</span></th>
                       {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(d => (
                         <th key={d} className="p-2.5 font-bold text-[#064E3B] text-center">{d}</th>
                       ))}

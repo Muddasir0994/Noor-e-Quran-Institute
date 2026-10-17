@@ -214,13 +214,14 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({ onOpenTrial }) => {
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:title" content={post.title} />
         <meta property="og:description" content={post.metaDescription} />
-        {post.featuredImage && <meta property="og:image" content={post.featuredImage} />}
+        {/* Use logo for og:image — base64 data URIs don't work for social crawlers */}
+        <meta property="og:image" content="https://noorequraninstitute.me/branding/logo.webp" />
         <meta property="og:site_name" content="Noor E Quran Institute" />
 
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={post.title} />
         <meta name="twitter:description" content={post.metaDescription} />
-        {post.featuredImage && <meta name="twitter:image" content={post.featuredImage} />}
+        <meta name="twitter:image" content="https://noorequraninstitute.me/branding/logo.webp" />
 
         <script type="application/ld+json">
           {JSON.stringify(articleSchema)}
