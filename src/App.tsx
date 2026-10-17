@@ -4,7 +4,6 @@ import { HelmetProvider } from 'react-helmet-async';
 import { IconContext } from '@phosphor-icons/react';
 import { Course, PackagePlan, Tutor, Testimonial, Article, PageSeoConfig } from './types';
 import { ALL_COURSES, ALL_PACKAGES, INITIAL_TUTORS, INITIAL_TESTIMONIALS, INITIAL_ARTICLES } from './data/academyData';
-import { getSiteSeoConfigs } from './lib/firestoreService';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { SEOHead } from './components/SEOHead';
 import { SEO_PAGE_MAP } from './lib/seoConfig';
@@ -222,12 +221,15 @@ function AppContent() {
 
   // Admin "SEO & Meta Tags" overrides from Firestore (`siteSeo` collection).
   // Falls back to the coded values above when unreachable.
+  // Dynamically imported so the Firebase chunk doesn't block initial page load.
   const [seoOverrides, setSeoOverrides] = useState<Record<string, PageSeoConfig>>({});
   useEffect(() => {
-    getSiteSeoConfigs().then(list => {
-      const map: Record<string, PageSeoConfig> = {};
-      list.forEach(c => { if (c.pagePath) map[c.pagePath] = c; });
-      setSeoOverrides(map);
+    import('./lib/firestoreService').then(({ getSiteSeoConfigs }) => {
+      getSiteSeoConfigs().then(list => {
+        const map: Record<string, PageSeoConfig> = {};
+        list.forEach(c => { if (c.pagePath) map[c.pagePath] = c; });
+        setSeoOverrides(map);
+      }).catch(() => {});
     }).catch(() => {});
   }, []);
   const ADMIN_PATH_ALIASES: Record<string, string> = {
