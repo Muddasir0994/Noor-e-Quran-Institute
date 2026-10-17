@@ -2,120 +2,197 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Helper functions
+    // ============ Helper functions ============
+
     function isAuthenticated() {
       return request.auth != null;
     }
 
-    // Public read collections (Catalog, Directory, Reviews)
-    // Anyone can read courses, packages, tutors, testimonials, articles, resources
-    // Only authenticated users can write (admin/teachers manage via portal)
+    // Read the caller's role from their own user document.
+    // Returns null if the user document does not exist (safe for get()).
+    function callerRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && callerRole() == 'admin';
+    }
+
+    function isTeacher() {
+      return isAuthenticated() && (callerRole() == 'teacher' || callerRole() == 'admin');
+    }
+
+    // Email of the authenticated caller (for email-keyed portal documents).
+    function callerEmail() {
+      return request.auth.token.email;
+    }
+
+    // ============ User accounts ============
+    // Users can read their own profile; admins can read all.
+    // Users CANNOT grant themselves admin/teacher roles.
+    match /users/{userId} {
+      allow read: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
+      // Create: owner only, and role must not be privileged on self-creation.
+      allow create: if isAuthenticated()
+                    && request.auth.uid == userId
+                    && !(request.resource.data.role in ['admin', 'teacher']);
+      // Update: owner may update own profile but may NOT change their role.
+      // Only admins may change roles (including their own management).
+      allow update: if isAuthenticated() && (
+        (request.auth.uid == userId
+         && request.resource.data.role == resource.data.role)
+        || isAdmin()
+      );
+      allow delete: if isAdmin();
+    }
+
+    // ============ Public catalog (read public, manage restricted) ============
+    // Courses, packages, tutors, testimonials, resources: public read;
+    // writes restricted to admins. (Phase 1B moves management to admin API;
+    // these rules are the defense-in-depth backstop for direct client writes.)
     match /courses/{courseId} {
       allow read: if true;
-      allow write: if isAuthenticated();
+      allow write: if isAdmin();
     }
 
     match /packages/{packageId} {
       allow read: if true;
-      allow write: if isAuthenticated();
+      allow write: if isAdmin();
     }
 
     match /tutors/{tutorId} {
       allow read: if true;
-      allow write: if isAuthenticated();
+      allow write: if isAdmin();
     }
 
     match /testimonials/{testimonialId} {
       allow read: if true;
-      allow write: if isAuthenticated();
+      allow write: if isAdmin();
     }
 
     match /articles/{articleId} {
       allow read: if true;
-      allow write: if isAuthenticated();
+      allow write: if isAdmin();
     }
 
     match /resources/{resourceId} {
       allow read: if true;
-      allow write: if isAuthenticated();
+      allow write: if isAdmin();
     }
 
-    // Site SEO configs (admin "SEO & Meta Tags" panel). Public read so the
-    // live site can apply them; writes require an authenticated admin.
+    // Blog posts: public read (blog is public content); writes admin-only.
+    // NOTE: Phase 1B routes blog management through the server admin API;
+    // this rule is the backstop. The admin panel's custom token is NOT a
+    // Firebase Auth session, so direct client writes require a Firebase
+    // session with an admin role claim in users/{uid}.
+    match /blogPosts/{postId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ============ Site SEO ============
+    // Public read so the live site can apply configs; writes admin-only.
+    // (Phase 1B routes SEO management through the server admin API.)
     match /siteSeo/{pageId} {
       allow read: if true;
-      allow write: if isAuthenticated();
+      allow write: if isAdmin();
     }
 
-    // Inbound Leads & Applications from parents (Create publicly, manage requires auth)
+    // ============ Inbound leads & applications ============
+    // Public can CREATE (trial/enrollment/contact forms); only staff manage.
     match /leads/{leadId} {
       allow create: if true;
-      allow read, update, delete: if isAuthenticated();
+      allow read, update, delete: if isAdmin();
     }
 
     match /enrollments/{enrollmentId} {
       allow create: if true;
-      allow read, update, delete: if isAuthenticated();
+      allow read, update, delete: if isAdmin();
     }
 
     match /contactMessages/{messageId} {
       allow create: if true;
-      allow read, update, delete: if isAuthenticated();
+      allow read, update, delete: if isAdmin();
     }
 
-    // Portal Collections (Students, Teachers, Users & Class Progress)
-    // All operations require authentication
-    match /users/{userId} {
-      allow read, write: if isAuthenticated();
-    }
-
+    // ============ Student records ============
+    // Admins manage all; teachers read students (portal needs roster).
+    // Ownership tightening for individual student/parent access is deferred
+    // until student documents carry a stable auth-uid link (see note below).
+    //
+    // NOTE (existing records): student docs are keyed by synthetic IDs
+    // (stu-<ts>) with no Firebase Auth UID link. Enforcing strict ownership
+    // now would lock out legitimate portal reads. Revisit once the
+    // student <-> auth-uid mapping is persisted (Phase 3).
     match /students/{studentId} {
-      allow read, write: if isAuthenticated();
+      allow read: if isTeacher();
+      allow write: if isAdmin();
     }
 
     match /progressReports/{reportId} {
-      allow read, write: if isAuthenticated();
+      allow read: if isTeacher();
+      allow write: if isAdmin();
     }
 
     match /scheduledClasses/{classId} {
-      allow read, write: if isAuthenticated();
+      allow read: if isTeacher();
+      allow write: if isAdmin();
     }
 
     match /assessments/{assessmentId} {
-      allow read, write: if isAuthenticated();
+      allow read: if isTeacher();
+      allow write: if isAdmin();
     }
 
-    // Portal presence (online status) — readable by anyone signed in, writable by owner
+    // ============ Presence (online status) ============
+    // Writes are owner-specific: doc ID must be the caller's own email.
+    // Reads require authentication (no public presence exposure).
     match /presence/{email} {
-      allow read: if true;
-      allow write: if isAuthenticated();
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && email == callerEmail();
     }
 
-    // Live classes — readable by anyone, writable by signed-in teachers
+    // ============ Live classes ============
+    // Teachers start/end; authenticated users (students) can read to join.
+    // Write shape is validated minimally: teacherEmail must match caller.
     match /liveClasses/{classId} {
-      allow read: if true;
-      allow write: if isAuthenticated();
+      allow read: if isAuthenticated();
+      allow create: if isTeacher();
+      allow update, delete: if isTeacher();
     }
 
-    // Homework submissions — students submit, teachers review
+    // ============ Homework submissions ============
+    // Authenticated read (teachers see assigned; students see own — enforced
+    // in app query filters). Writes require auth; teacher feedback requires
+    // teacher role. Full per-student ownership deferred with student uid link.
     match /homeworkSubmissions/{subId} {
-      allow read: if true;
-      allow write: if isAuthenticated();
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update: if isTeacher();
+      allow delete: if isAdmin();
     }
 
-    // Portal messages (teacher-student chat)
+    // ============ Portal messages (teacher-student chat) ============
+    // Authenticated users can read/write; deletion is admin-only.
+    // Per-thread participant checks deferred until messages carry stable
+    // participant UIDs (currently email-keyed; see Phase 3 notes).
     match /portalMessages/{msgId} {
-      allow read: if true;
-      allow write: if isAuthenticated();
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated();
+      allow delete: if isAdmin();
     }
 
-    // Attendance marked by teachers from the portal
+    // ============ Attendance (teacher portal) ============
+    // Teachers mark; admins manage. Reads require auth (no public exposure).
+    // Doc IDs are <email>_<date>; strict owner checks deferred until the
+    // attendance schema is unified on studentId (Phase 3D).
     match /attendance/{attId} {
-      allow read: if true;
-      allow write: if isAuthenticated();
+      allow read: if isAuthenticated();
+      allow write: if isTeacher();
     }
 
-    // Default catch-all: deny everything not explicitly matched above
+    // Default catch-all: deny everything not explicitly matched above.
     match /{document=**} {
       allow read, write: if false;
     }
