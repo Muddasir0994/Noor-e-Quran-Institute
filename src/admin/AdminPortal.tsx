@@ -5814,40 +5814,92 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
 
         {/* Printable Formal Progress Certificate Modal */}
         {selectedReportForPrint && (
-          <div className="fixed inset-0 z-60 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
-            <div className="w-full max-w-xl bg-[#FCFBF8] border-4 border-[#B79A62] rounded-sm shadow-2xl p-8 space-y-5 text-center font-sans">
-              <div className="space-y-1">
-                <p className="text-[#B79A62] font-bold text-xs tracking-widest uppercase">Noor E Quran Institute</p>
-                <h2 className="font-editorial text-3xl text-[#0B332D] font-bold">Certificate of Quranic Evaluation</h2>
-                <p className="text-xs text-gray-500">{selectedReportForPrint.evaluationMonth} Progress Report</p>
+          <div className="fixed inset-0 z-60 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+            <div className="w-full max-w-2xl my-8 relative">
+              {/* Certificate paper with ornate double border */}
+              <div className="bg-[#FDFBF5] border-[6px] border-[#B79A62] shadow-2xl relative">
+                <div className="border border-[#B79A62]/60 m-2 px-8 py-10 text-center space-y-5">
+                  {/* Logo seal */}
+                  <div className="flex justify-center">
+                    <img
+                      src="/branding/logo.webp?v=2"
+                      onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/branding/logo.png?v=2'; }}
+                      alt="Noor E Quran Institute Official Seal"
+                      className="w-20 h-20 object-contain"
+                    />
+                  </div>
+
+                  {/* Header */}
+                  <div className="space-y-1">
+                    <p className="text-[#B79A62] font-bold text-sm tracking-[0.3em] uppercase">Noor E Quran Institute</p>
+                    <p className="text-[10px] text-gray-500 tracking-widest uppercase">Online Quran Academy • 1-on-1 Classes</p>
+                  </div>
+
+                  {/* Title with flourishes */}
+                  <div className="flex items-center justify-center gap-4">
+                    <span className="h-px w-16 bg-[#B79A62]" />
+                    <span className="text-[#B79A62] text-lg">✦</span>
+                    <span className="h-px w-16 bg-[#B79A62]" />
+                  </div>
+                  <div className="space-y-1">
+                    <h2 className="font-editorial text-4xl text-[#0B332D] font-bold">Certificate</h2>
+                    <p className="text-sm text-[#0B332D]/70 tracking-[0.2em] uppercase">of Quranic Evaluation</p>
+                    <p className="text-xs text-gray-500">{selectedReportForPrint.evaluationMonth} Progress Report</p>
+                  </div>
+
+                  {/* Recipient */}
+                  <div className="py-2 space-y-2">
+                    <p className="text-xs text-gray-500 italic tracking-wide">This certificate is proudly presented to</p>
+                    <h3 className="font-editorial text-3xl text-[#0B332D] font-bold tracking-wide border-b-2 border-[#B79A62]/40 inline-block px-8 pb-1">
+                      {selectedReportForPrint.studentName}
+                    </h3>
+                    <p className="text-sm text-gray-700">for dedicated studies in <strong className="text-[#0B332D]">{selectedReportForPrint.courseName}</strong></p>
+                  </div>
+
+                  {/* Grades */}
+                  <div className="flex justify-center gap-8 py-2">
+                    {[
+                      { label: 'Tajweed', value: selectedReportForPrint.tajweedGrade },
+                      { label: 'Fluency', value: selectedReportForPrint.readingGrade },
+                      { label: 'Attendance', value: `${selectedReportForPrint.attendancePercentage}%` },
+                    ].map((g) => (
+                      <div key={g.label} className="text-center">
+                        <div className="w-20 h-20 mx-auto rounded-full border-2 border-[#B79A62] bg-[#F8F5EE] flex items-center justify-center">
+                          <strong className="text-[#0B332D] text-lg font-editorial">{g.value}</strong>
+                        </div>
+                        <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-1">{g.label}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Remarks */}
+                  <p className="text-xs text-gray-600 italic px-6 leading-relaxed">
+                    "{selectedReportForPrint.teacherRemarks}"
+                  </p>
+
+                  {/* Signatures */}
+                  <div className="flex justify-between items-end pt-6 px-4">
+                    <div className="text-center">
+                      <div className="w-40 border-t border-[#0B332D]/40 pt-1">
+                        <p className="text-[10px] font-bold text-[#0B332D] uppercase tracking-widest">Administrator</p>
+                        <p className="text-[9px] text-gray-500">Noor E Quran Institute</p>
+                      </div>
+                    </div>
+                    <div className="w-16 h-16 rounded-full border-2 border-[#B79A62] flex items-center justify-center bg-[#F8F5EE] rotate-[-8deg]">
+                      <span className="text-[8px] font-bold text-[#B79A62] uppercase tracking-wider text-center leading-tight">Official<br />Seal</span>
+                    </div>
+                    <div className="text-center">
+                      <div className="w-40 border-t border-[#0B332D]/40 pt-1">
+                        <p className="text-[10px] font-bold text-[#0B332D] uppercase tracking-widest">Date Issued</p>
+                        <p className="text-[9px] text-gray-500">{selectedReportForPrint.evaluationMonth}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              <div className="py-4 border-y border-[#B79A62]/30 space-y-2">
-                <p className="text-xs text-gray-600 italic">This is formally presented to</p>
-                <h3 className="font-editorial text-2xl text-[#0B332D] font-bold tracking-wide">{selectedReportForPrint.studentName}</h3>
-                <p className="text-xs text-gray-700 font-semibold">for dedicated studies in {selectedReportForPrint.courseName}</p>
-              </div>
-
-              <div className="grid grid-cols-3 gap-3 bg-[#F8F5EE] p-4 rounded-sm border border-[#E8E0D1] text-xs">
-                <div>
-                  <span className="text-[10px] text-gray-400 font-bold uppercase block">Tajweed</span>
-                  <strong className="text-emerald-800 text-base">{selectedReportForPrint.tajweedGrade}</strong>
-                </div>
-                <div>
-                  <span className="text-[10px] text-gray-400 font-bold uppercase block">Fluency</span>
-                  <strong className="text-emerald-800 text-base">{selectedReportForPrint.readingGrade}</strong>
-                </div>
-                <div>
-                  <span className="text-[10px] text-gray-400 font-bold uppercase block">Attendance</span>
-                  <strong className="text-emerald-800 text-base">{selectedReportForPrint.attendancePercentage}%</strong>
-                </div>
-              </div>
-
-              <p className="text-xs text-gray-700 italic px-4">
-                "{selectedReportForPrint.teacherRemarks}"
-              </p>
-
-              <div className="flex justify-between items-center pt-4 border-t border-[#E8E0D1]">
+              {/* Modal actions (not part of the certificate) */}
+              <div className="flex justify-between items-center pt-4">
                 <button
                   onClick={() => window.print()}
                   className="px-5 py-2 bg-[#0B332D] text-[#F8F5EE] font-bold rounded-sm inline-flex items-center gap-1.5 cursor-pointer"
@@ -5857,7 +5909,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                 </button>
                 <button
                   onClick={() => setSelectedReportForPrint(null)}
-                  className="px-4 py-2 text-gray-600 hover:text-gray-900 cursor-pointer"
+                  className="px-4 py-2 text-gray-300 hover:text-white cursor-pointer"
                 >
                   Close
                 </button>
