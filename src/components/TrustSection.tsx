@@ -1,13 +1,41 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Testimonial } from '../types';
+import { INITIAL_TESTIMONIALS } from '../data/academyData';
 import { Quotes, Users, GraduationCap, Clock, CaretLeft, CaretRight } from '@phosphor-icons/react';
 
 interface TrustSectionProps {
   testimonials?: Testimonial[];
 }
 
-export const TrustSection: React.FC<TrustSectionProps> = ({ testimonials = [] }) => {
+export const TrustSection: React.FC<TrustSectionProps> = ({ testimonials: initialTestimonials = [] }) => {
+  // Live CMS data: fetch testimonials from the server on mount, keep only
+  // published ones. The incoming prop (already fetched by App, or its
+  // bundled seed) renders instantly; bundled seed data is the final
+  // fallback so this section never renders empty or broken.
+  const onlyPublished = (list: Testimonial[]) => list.filter(t => t.status === 'published');
+  const [items, setItems] = useState<Testimonial[]>(() => {
+    const published = onlyPublished(initialTestimonials);
+    return published.length > 0 ? published : INITIAL_TESTIMONIALS;
+  });
+  const [loading, setLoading] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    let isMounted = true;
+    setLoading(true);
+    fetch('/api/testimonials')
+      .then(res => (res.ok ? res.json() : Promise.reject(new Error(`HTTP ${res.status}`))))
+      .then(data => {
+        if (!isMounted) return;
+        const list = data?.testimonials ?? data; // server wraps in {success, testimonials}
+        const published = Array.isArray(list) ? onlyPublished(list as Testimonial[]) : [];
+        setItems(published.length > 0 ? published : INITIAL_TESTIMONIALS);
+        setCurrentIndex(0);
+      })
+      .catch(() => { /* keep prop / bundled seed data on failure */ })
+      .finally(() => { if (isMounted) setLoading(false); });
+    return () => { isMounted = false; };
+  }, []);
 
   // Institutional standards (authentic qualitative metrics, not fabricated counts)
   const academicPrinciples = [
@@ -16,8 +44,8 @@ export const TrustSection: React.FC<TrustSectionProps> = ({ testimonials = [] })
     { label: 'Flexible Scheduling', value: '24/7', icon: Clock }
   ];
 
-  const currentTestimonial = testimonials && testimonials.length > 0
-    ? testimonials[currentIndex % testimonials.length]
+  const currentTestimonial = items && items.length > 0
+    ? items[currentIndex % items.length]
     : {
         name: 'Dr. Tariq Mahmood',
         studentOrParent: 'Father of Ayaan (7 yrs) & Zoya (9 yrs)',
@@ -26,14 +54,14 @@ export const TrustSection: React.FC<TrustSectionProps> = ({ testimonials = [] })
       };
 
   const handleNext = () => {
-    if (testimonials.length > 1) {
-      setCurrentIndex((prev) => (prev + 1) % testimonials.length);
+    if (items.length > 1) {
+      setCurrentIndex((prev) => (prev + 1) % items.length);
     }
   };
 
   const handlePrev = () => {
-    if (testimonials.length > 1) {
-      setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
+    if (items.length > 1) {
+      setCurrentIndex((prev) => (prev - 1 + items.length) % items.length);
     }
   };
 
@@ -46,12 +74,30 @@ export const TrustSection: React.FC<TrustSectionProps> = ({ testimonials = [] })
           
           {/* Left Column: Featured Real Quote */}
           <div className="lg:col-span-8 space-y-6">
+            {loading && items.length === 0 ? (
+              <div className="animate-pulse space-y-6" aria-hidden>
+                <div className="w-10 h-10 rounded-xl bg-[#B79A62]/20" />
+                <div className="space-y-3">
+                  <div className="h-8 w-full bg-gray-200/70 rounded-xl" />
+                  <div className="h-8 w-11/12 bg-gray-200/70 rounded-xl" />
+                  <div className="h-8 w-2/3 bg-gray-200/70 rounded-xl" />
+                </div>
+                <div className="flex items-center gap-4 pt-2">
+                  <div className="w-10 h-10 rounded-full bg-gray-200/80" />
+                  <div className="space-y-2">
+                    <div className="h-3.5 w-40 bg-gray-200/80 rounded-xl" />
+                    <div className="h-3 w-56 bg-gray-200/60 rounded-xl" />
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <>
             <div className="flex items-center justify-between">
               <div className="text-[#B79A62]">
                 <Quotes className="w-10 h-10" weight="fill" />
               </div>
 
-              {testimonials.length > 1 && (
+              {items.length > 1 && (
                 <div className="flex items-center gap-2">
                   <button
                     onClick={handlePrev}
@@ -88,6 +134,8 @@ export const TrustSection: React.FC<TrustSectionProps> = ({ testimonials = [] })
                 </p>
               </div>
             </div>
+              </>
+            )}
           </div>
 
           {/* Right Column: Academic Standards Panel */}
