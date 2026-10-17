@@ -9,8 +9,11 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { saveProgressReportToFirebase } from '../lib/firestoreService';
 import { QuranReader } from './portal/QuranReader';
+import { Whiteboard } from './portal/Whiteboard';
 import { usePresence, usePresenceList, isOnline } from './portal/usePresence';
 import { useLiveClasses } from './portal/useLiveClasses';
+import { submitHomework, useMyHomework } from './portal/useHomework';
+import { useMessageThread, useUnreadCount, sendPortalMessage, markThreadRead, threadIdFor } from './portal/useMessages';
 import { INITIAL_TUTORS } from '../data/academyData';
 import {
   BookOpen,
@@ -32,7 +35,12 @@ import {
   PhoneCall,
   Envelope,
   ArrowRight,
-  GraduationCap
+  GraduationCap,
+  ChalkboardTeacher,
+  ChatCircleText,
+  PaperPlaneTilt,
+  ClipboardText,
+  Checks
 } from '@phosphor-icons/react';
 
 interface StudentPortalProps {
@@ -47,7 +55,7 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
   const { currentUser, userProfile, logout } = useAuth();
 
   // Active Tab
-  const [activeTab, setActiveTab] = useState<'overview' | 'sabaq' | 'schedule' | 'homework' | 'invoices' | 'quran' | 'liveclass'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'sabaq' | 'schedule' | 'homework' | 'invoices' | 'quran' | 'liveclass' | 'whiteboard' | 'messages'>('overview');
   
   // Homework recording state
   const [recordingHomework, setRecordingHomework] = useState(false);
@@ -105,6 +113,33 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
   usePresence(currentUser?.email || undefined, currentStudent.studentName, 'student');
   const presenceList = usePresenceList();
   const liveClasses = useLiveClasses();
+
+  // Identity for Firestore features
+  const studentEmail = (currentUser?.email || currentStudent.email || '').toLowerCase();
+  const studentName = currentStudent.studentName;
+  const assignedTutor = INITIAL_TUTORS.find(t => t.id === currentStudent.tutorId) || INITIAL_TUTORS[0];
+  const teacherEmail = (assignedTutor?.email || '').toLowerCase();
+  const teacherName = assignedTutor?.name || currentStudent.tutorName;
+
+  // Written homework submit (Firestore) + my history
+  const myHomework = useMyHomework(studentEmail || undefined);
+  const [hwTitle, setHwTitle] = useState('');
+  const [hwText, setHwText] = useState('');
+  const [hwSaving, setHwSaving] = useState(false);
+  const [hwDone, setHwDone] = useState(false);
+
+  // Messages with teacher
+  const unreadCount = useUnreadCount(studentEmail || undefined);
+  const thread = useMessageThread(studentEmail || undefined, teacherEmail || undefined);
+  const [msgDraft, setMsgDraft] = useState('');
+  const [msgSending, setMsgSending] = useState(false);
+
+  // Mark thread read when viewing messages.
+  useEffect(() => {
+    if (activeTab === 'messages' && studentEmail && teacherEmail && thread.length > 0) {
+      markThreadRead(threadIdFor(studentEmail, teacherEmail), studentEmail).catch(() => {});
+    }
+  }, [activeTab, thread.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // This student's teacher (for live-class matching)
   const myTutor = INITIAL_TUTORS.find(t => t.id === currentStudent.tutorId) || INITIAL_TUTORS[0];
@@ -249,9 +284,11 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
             { id: 'overview', label: 'Dashboard Overview', icon: BookOpen },
             { id: 'sabaq', label: 'Daily Sabaq & Progress Book', icon: Certificate },
             { id: 'quran', label: 'Quran Reader', icon: BookOpen },
+            { id: 'whiteboard', label: 'Whiteboard', icon: ChalkboardTeacher },
             { id: 'liveclass', label: 'Live Class', icon: VideoCamera },
-            { id: 'schedule', label: 'Weekly Timetable', icon: Calendar },
             { id: 'homework', label: 'Audio Homework & Recorder', icon: Microphone },
+            { id: 'messages', label: 'Messages', icon: ChatCircleText, badge: unreadCount },
+            { id: 'schedule', label: 'Weekly Timetable', icon: Calendar },
             { id: 'invoices', label: 'Fee Invoices & Receipts', icon: FileText }
           ].map(tab => {
             const Icon = tab.icon;
@@ -259,7 +296,7 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
-                className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer ${
+                className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer relative ${
                   activeTab === tab.id
                     ? 'bg-[#064E3B] text-white shadow-xs'
                     : 'text-gray-600 hover:bg-gray-100'
@@ -267,6 +304,11 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
               >
                 <Icon className="w-4 h-4 text-[#D4A72C]" weight="duotone" />
                 <span>{tab.label}</span>
+                {!!(tab as any).badge && (tab as any).badge > 0 && (
+                  <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-rose-600 text-white text-[10px] font-bold flex items-center justify-center">
+                    {(tab as any).badge}
+                  </span>
+                )}
               </button>
             );
           })}
@@ -770,6 +812,94 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
                 </form>
               )}
             </div>
+
+            {/* Written homework → teacher review (Firestore) */}
+            <div className="bg-white p-6 rounded-3xl border border-gray-200 shadow-xs max-w-2xl mx-auto space-y-4">
+              <div>
+                <h3 className="text-lg font-bold text-[#064E3B] flex items-center gap-2">
+                  <ClipboardText className="w-5 h-5 text-[#D4A72C]" weight="duotone" />
+                  Written Homework
+                </h3>
+                <p className="text-xs text-gray-500">
+                  Write your homework here (e.g. Tajweed rule definitions, memorized verses). Your teacher will review and send feedback.
+                </p>
+              </div>
+              {hwDone ? (
+                <div className="bg-emerald-50 border border-emerald-200 p-5 rounded-2xl text-center">
+                  <CheckCircle className="w-10 h-10 text-emerald-600 mx-auto mb-2" weight="fill" />
+                  <p className="text-sm font-bold text-emerald-900">Submitted! Your teacher will review it soon.</p>
+                </div>
+              ) : (
+                <form
+                  onSubmit={async (e) => {
+                    e.preventDefault();
+                    if (!hwText.trim() || !studentEmail) return;
+                    setHwSaving(true);
+                    try {
+                      await submitHomework({
+                        studentEmail,
+                        studentName,
+                        teacherEmail: teacherEmail || 'maryam.tutor@alnoor.edu',
+                        title: hwTitle.trim() || `Homework — ${currentStudent.currentSurahOrLesson}`,
+                        textAnswer: hwText.trim()
+                      });
+                      setHwDone(true);
+                      setHwTitle(''); setHwText('');
+                      setTimeout(() => setHwDone(false), 4000);
+                    } catch {}
+                    setHwSaving(false);
+                  }}
+                  className="space-y-3"
+                >
+                  <input
+                    value={hwTitle}
+                    onChange={e => setHwTitle(e.target.value)}
+                    placeholder="Homework title (optional)"
+                    className="w-full text-sm border border-gray-300 rounded-xl px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#064E3B]/30"
+                  />
+                  <textarea
+                    value={hwText}
+                    onChange={e => setHwText(e.target.value)}
+                    placeholder="Write your homework answer here…"
+                    rows={5}
+                    className="w-full text-sm border border-gray-300 rounded-xl px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#064E3B]/30"
+                  />
+                  <button
+                    type="submit"
+                    disabled={hwSaving || !hwText.trim()}
+                    className="w-full py-3 rounded-2xl bg-[#064E3B] hover:bg-emerald-900 text-white font-bold text-sm shadow-sm transition-all cursor-pointer disabled:opacity-50"
+                  >
+                    {hwSaving ? 'Submitting…' : `Submit Written Homework to ${teacherName}`}
+                  </button>
+                </form>
+              )}
+
+              {/* My submissions + teacher feedback */}
+              {myHomework.length > 0 && (
+                <div className="pt-2 space-y-3">
+                  <h4 className="text-sm font-bold text-[#064E3B]">My Submissions & Teacher Feedback</h4>
+                  {myHomework.map(h => (
+                    <div key={h.id} className="bg-gray-50 border border-gray-200 rounded-2xl p-4 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <p className="text-sm font-bold text-[#064E3B]">{h.title}</p>
+                        <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full ${h.status === 'reviewed' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}`}>
+                          {h.status === 'reviewed' ? 'Reviewed' : 'Pending'}
+                        </span>
+                      </div>
+                      <p className="text-xs text-gray-600 whitespace-pre-wrap line-clamp-3">{h.textAnswer}</p>
+                      {h.status === 'reviewed' && h.feedback && (
+                        <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3">
+                          <p className="text-[11px] font-bold text-emerald-800 uppercase tracking-wide mb-1 flex items-center gap-1">
+                            <Checks className="w-3 h-3" weight="bold" /> Teacher Feedback
+                          </p>
+                          <p className="text-sm text-gray-700 whitespace-pre-wrap">{h.feedback}</p>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         )}
 
@@ -781,6 +911,80 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
         {/* ============================================================== */}
         {activeTab === 'quran' && (
           <QuranReader />
+        )}
+
+        {/* ============================================================== */}
+        {/* TAB: WHITEBOARD */}
+        {/* ============================================================== */}
+        {activeTab === 'whiteboard' && (
+          <Whiteboard
+            title="Practice Whiteboard"
+            subtitle="Practice writing Arabic letters and Tajweed markings. Your teacher can see your screen during live class."
+          />
+        )}
+
+        {/* ============================================================== */}
+        {/* TAB: MESSAGES */}
+        {/* ============================================================== */}
+        {activeTab === 'messages' && (
+          <div className="bg-white p-4 sm:p-6 rounded-3xl border border-gray-200 shadow-xs max-w-3xl mx-auto">
+            <h3 className="text-base font-bold text-[#064E3B] flex items-center gap-2 mb-1">
+              <ChatCircleText className="w-4 h-4 text-[#D4A72C]" weight="duotone" />
+              Messages with {teacherName}
+              {unreadCount > 0 && (
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-600 text-white">{unreadCount} new</span>
+              )}
+            </h3>
+            <p className="text-xs text-gray-500 mb-4">Ask your teacher about lessons, homework or schedule.</p>
+            <div className="flex flex-col border border-gray-200 rounded-2xl overflow-hidden" style={{ minHeight: 380 }}>
+              <div className="flex-1 overflow-y-auto p-4 space-y-2.5 bg-[#F8F5EE]" style={{ maxHeight: 340 }}>
+                {thread.length === 0 ? (
+                  <p className="text-center text-gray-400 text-sm py-8">No messages yet. Say Salam to your teacher to start.</p>
+                ) : thread.map(m => {
+                  const mine = m.fromEmail.toLowerCase() === studentEmail;
+                  return (
+                    <div key={m.id} className={`flex ${mine ? 'justify-end' : 'justify-start'}`}>
+                      <div className={`max-w-[80%] px-3.5 py-2 rounded-2xl text-sm ${mine ? 'bg-[#064E3B] text-white rounded-br-md' : 'bg-white text-gray-800 border border-gray-200 rounded-bl-md'}`}>
+                        <p className="whitespace-pre-wrap">{m.text}</p>
+                        <p className={`text-[10px] mt-1 ${mine ? 'text-white/60' : 'text-gray-400'}`}>
+                          {m.createdAt?.toDate ? m.createdAt.toDate().toLocaleString() : ''}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              <form
+                onSubmit={async (e) => {
+                  e.preventDefault();
+                  const text = msgDraft.trim();
+                  if (!text || !studentEmail || !teacherEmail) return;
+                  setMsgSending(true);
+                  try {
+                    await sendPortalMessage({ fromEmail: studentEmail, fromName: studentName, fromRole: 'student', toEmail: teacherEmail, text });
+                    setMsgDraft('');
+                  } catch {}
+                  setMsgSending(false);
+                }}
+                className="flex gap-2 p-3 border-t border-gray-200 bg-white"
+              >
+                <input
+                  value={msgDraft}
+                  onChange={e => setMsgDraft(e.target.value)}
+                  placeholder={`Message ${teacherName}…`}
+                  className="flex-1 text-sm border border-gray-300 rounded-xl px-3.5 py-2 focus:outline-none focus:ring-2 focus:ring-[#064E3B]/30"
+                />
+                <button
+                  type="submit"
+                  disabled={msgSending || !msgDraft.trim()}
+                  className="px-4 py-2 bg-[#064E3B] text-white text-xs font-bold rounded-xl hover:bg-emerald-900 transition-colors cursor-pointer disabled:opacity-50 flex items-center gap-1.5"
+                >
+                  <PaperPlaneTilt className="w-3.5 h-3.5" weight="fill" />
+                  Send
+                </button>
+              </form>
+            </div>
+          </div>
         )}
 
         {/* ============================================================== */}
