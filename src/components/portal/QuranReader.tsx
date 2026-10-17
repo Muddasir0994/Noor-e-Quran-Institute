@@ -134,14 +134,34 @@ export const QuranReader: React.FC = () => {
   // Stop audio on unmount
   useEffect(() => () => { if (audioRef.current) audioRef.current.pause(); }, []);
 
-  const playAudio = () => {
-    const ayah = ayahs[ayahIdx];
+  const [continuousPlay, setContinuousPlay] = useState(true);
+
+  const playAudio = (idx?: number) => {
+    const targetIdx = idx ?? ayahIdx;
+    const ayah = ayahs[targetIdx];
     if (!ayah) return;
     stopAudio();
+    setAyahIdx(targetIdx);
     const audio = new Audio(`https://cdn.islamic.network/quran/audio/128/ar.alafasy/${ayah.globalNumber}.mp3`);
     audioRef.current = audio;
     setPlaying(true);
-    audio.onended = () => setPlaying(false);
+    // Auto-advance to next ayah when current finishes (keeps audio + text in sync)
+    audio.onended = () => {
+      if (continuousPlay) {
+        if (targetIdx < ayahs.length - 1) {
+          playAudio(targetIdx + 1);
+        } else if (surahNum < 114) {
+          // Move to next surah, first ayah
+          setSurahNum(surahNum + 1);
+          // loadSurah will set ayahs; play first ayah once loaded
+          setTimeout(() => playAudio(0), 1500);
+        } else {
+          setPlaying(false);
+        }
+      } else {
+        setPlaying(false);
+      }
+    };
     audio.onerror = () => setPlaying(false);
     audio.play().catch(() => setPlaying(false));
   };
@@ -215,6 +235,18 @@ export const QuranReader: React.FC = () => {
                 <SpeakerHigh className="w-4 h-4 text-[#D4A72C]" weight="duotone" />
                 <span>{playing ? 'Stop Recitation' : 'Play Recitation (Alafasy)'}</span>
               </button>
+            </div>
+            {/* Continuous play toggle */}
+            <div className="flex justify-center">
+              <label className="flex items-center gap-2 text-xs text-gray-600 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={continuousPlay}
+                  onChange={(e) => setContinuousPlay(e.target.checked)}
+                  className="w-4 h-4 accent-[#064E3B]"
+                />
+                <span>🔄 Auto-play next ayah (continuous Tilawat)</span>
+              </label>
             </div>
 
             {/* Ayah navigation */}
