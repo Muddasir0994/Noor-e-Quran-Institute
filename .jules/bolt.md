@@ -1,0 +1,3 @@
+## 2025-03-09 - Remove synchronous I/O bottleneck in backend singletons
+**Learning:** In Node.js applications with high concurrency potential, using `fs.writeFileSync` inside frequently updated singletons (like `DataStore`) blocks the main event loop, severely degrading API response times and preventing concurrent operations. Synchronous file writes are a critical performance anti-pattern.
+**Action:** Replace `fs.writeFileSync` with `fs.promises.writeFile` and implement an asynchronous concurrency lock/queue (using flags like `isWriting` and `pendingWrite` alongside a dynamic promise queue that can be awaited during graceful shutdown).
