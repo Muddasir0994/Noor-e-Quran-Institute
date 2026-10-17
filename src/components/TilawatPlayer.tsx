@@ -5,10 +5,7 @@ import { Play, Pause, X, MusicNote, SpeakerHigh, SpeakerX } from '@phosphor-icon
 // Browsers block autoplay with sound, so we attempt autoplay on load and
 // fall back to starting on the user's first interaction (click/tap/scroll).
 const PLAYLIST = [
-  { surah: 55, name: 'Surah Ar-Rahman', nameAr: 'سورة الرحمن' },
   { surah: 36, name: 'Surah Ya-Sin', nameAr: 'سورة يس' },
-  { surah: 67, name: 'Surah Al-Mulk', nameAr: 'سورة الملك' },
-  { surah: 18, name: 'Surah Al-Kahf', nameAr: 'سورة الكهف' },
 ];
 
 // Reciter: Mishary Rashid Alafasy (128kbps)
@@ -20,7 +17,7 @@ export function TilawatPlayer() {
   const [playing, setPlaying] = useState(false);
   const [trackIdx, setTrackIdx] = useState(0);
   const [muted, setMuted] = useState(false);
-  const [volume, setVolume] = useState(0.35); // soft by default ("dheemi awaaz")
+  const [volume, setVolume] = useState(0.2); // soft by default ("dheemi awaaz")
   const [dismissed, setDismissed] = useState(false);
   const [showPrompt, setShowPrompt] = useState(false);
   const startedRef = useRef(false);
@@ -162,12 +159,14 @@ export function TilawatPlayer() {
               className="flex-1 accent-[#B79A62] h-1"
               aria-label="Volume"
             />
-            <button
-              onClick={() => setTrackIdx((i) => (i + 1) % PLAYLIST.length)}
-              className="text-[10px] text-[#B79A62] hover:text-white font-semibold px-1"
-            >
-              Next →
-            </button>
+            {PLAYLIST.length > 1 && (
+              <button
+                onClick={() => setTrackIdx((i) => (i + 1) % PLAYLIST.length)}
+                className="text-[10px] text-[#B79A62] hover:text-white font-semibold px-1"
+              >
+                Next →
+              </button>
+            )}
           </div>
         </div>
       )}
