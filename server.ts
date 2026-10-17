@@ -982,6 +982,105 @@ app.post('/api/admin/fee-reminders', requireAdmin, (req, res) => {
   res.status(201).json({ success: true, reminder });
 });
 
+// -------------------------------------------------------------
+// Hifz Logs (Sabaq/Sabqi/Manzil daily tracking)
+// -------------------------------------------------------------
+app.get('/api/admin/hifz-logs', requireAdmin, (req, res) => {
+  const { studentId } = req.query;
+  if (!studentId) return res.status(400).json({ error: 'studentId query param is required.' });
+  res.json({ success: true, logs: dataStore.getHifzLogsForStudent(studentId as string) });
+});
+
+app.post('/api/admin/hifz-logs', requireAdmin, (req, res) => {
+  const { studentId, studentName, date } = req.body;
+  if (!studentId || !date) {
+    return res.status(400).json({ error: 'studentId and date are required.' });
+  }
+  const log = dataStore.addHifzLog({ ...req.body, studentName: studentName || '', markedBy: 'Admin' });
+  res.status(201).json({ success: true, log });
+});
+
+// -------------------------------------------------------------
+// Tutor Availability (weekly slots)
+// -------------------------------------------------------------
+app.get('/api/admin/availability', requireAdmin, (req, res) => {
+  res.json({ success: true, slots: dataStore.getAvailability() });
+});
+
+app.post('/api/admin/availability', requireAdmin, (req, res) => {
+  const { tutorId, tutorName, dayOfWeek, startTime, endTime } = req.body;
+  if (!tutorId || !dayOfWeek || !startTime || !endTime) {
+    return res.status(400).json({ error: 'tutorId, dayOfWeek, startTime and endTime are required.' });
+  }
+  const slot = dataStore.addAvailability({ tutorId, tutorName: tutorName || '', dayOfWeek, startTime, endTime });
+  res.status(201).json({ success: true, slot });
+});
+
+app.delete('/api/admin/availability/:id', requireAdmin, (req, res) => {
+  const deleted = dataStore.deleteAvailability(req.params.id);
+  if (!deleted) return res.status(404).json({ error: 'Slot not found' });
+  res.json({ success: true, message: 'Availability slot deleted' });
+});
+
+// -------------------------------------------------------------
+// Coupons (discount codes)
+// -------------------------------------------------------------
+app.get('/api/admin/coupons', requireAdmin, (req, res) => {
+  res.json({ success: true, coupons: dataStore.getCoupons() });
+});
+
+app.post('/api/admin/coupons', requireAdmin, (req, res) => {
+  const { code, discountPercent, maxUses } = req.body;
+  if (!code || !discountPercent || discountPercent < 1 || discountPercent > 100) {
+    return res.status(400).json({ error: 'code and discountPercent (1-100) are required.' });
+  }
+  const coupon = dataStore.addCoupon({
+    code,
+    discountPercent: Number(discountPercent),
+    maxUses: Number(maxUses) || 100,
+    expiresAt: req.body.expiresAt || undefined,
+    status: 'active'
+  });
+  if (!coupon) return res.status(409).json({ error: 'Coupon code already exists.' });
+  res.status(201).json({ success: true, coupon });
+});
+
+app.patch('/api/admin/coupons/:id', requireAdmin, (req, res) => {
+  const coupon = dataStore.updateCoupon(req.params.id, req.body);
+  if (!coupon) return res.status(404).json({ error: 'Coupon not found or code already exists.' });
+  res.json({ success: true, coupon });
+});
+
+// Public coupon validation (for the pricing page)
+app.post('/api/coupons/validate', (req, res) => {
+  const { code } = req.body;
+  if (!code) return res.status(400).json({ valid: false, reason: 'Coupon code is required.' });
+  const result = dataStore.validateCoupon(code);
+  res.json(result);
+});
+
+// -------------------------------------------------------------
+// Referrals (parent referral tracking)
+// -------------------------------------------------------------
+app.get('/api/admin/referrals', requireAdmin, (req, res) => {
+  res.json({ success: true, referrals: dataStore.getReferrals() });
+});
+
+app.post('/api/admin/referrals', requireAdmin, (req, res) => {
+  const { referrerName, referredStudentName } = req.body;
+  if (!referrerName || !referredStudentName) {
+    return res.status(400).json({ error: 'referrerName and referredStudentName are required.' });
+  }
+  const referral = dataStore.addReferral(req.body);
+  res.status(201).json({ success: true, referral });
+});
+
+app.patch('/api/admin/referrals/:id', requireAdmin, (req, res) => {
+  const referral = dataStore.updateReferral(req.params.id, req.body);
+  if (!referral) return res.status(404).json({ error: 'Referral not found' });
+  res.json({ success: true, referral });
+});
+
 // IndexNow Instant Search Engine Indexing Endpoint
 app.post('/api/indexnow/submit', async (req, res) => {
   const DEFAULT_URL_LIST = [
