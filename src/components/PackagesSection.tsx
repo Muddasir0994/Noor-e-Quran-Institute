@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PackagePlan } from '../types';
+import { ALL_PACKAGES } from '../data/academyData';
 import { 
   Check, 
   CreditCard, 
@@ -20,10 +21,36 @@ interface PackagesSectionProps {
 }
 
 export const PackagesSection: React.FC<PackagesSectionProps> = ({
-  packages,
+  packages: initialPackages,
   onSelectPackage,
   onOpenTrial
 }) => {
+  // Live CMS data: fetch plans from the server on mount. The incoming prop
+  // (already fetched by App, or its bundled seed) renders instantly; the
+  // server response updates the grid when it arrives. Bundled seed data is
+  // the final fallback so this section never renders empty or broken.
+  const [plans, setPlans] = useState<PackagePlan[]>(
+    initialPackages && initialPackages.length > 0 ? initialPackages : ALL_PACKAGES
+  );
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+    setLoading(true);
+    fetch('/api/packages')
+      .then(res => (res.ok ? res.json() : Promise.reject(new Error(`HTTP ${res.status}`))))
+      .then(data => {
+        if (!isMounted) return;
+        const list = data?.packages ?? data; // server wraps in {success, packages}
+        if (Array.isArray(list) && list.length > 0) {
+          setPlans(list as PackagePlan[]);
+        }
+      })
+      .catch(() => { /* keep prop / bundled seed data on failure */ })
+      .finally(() => { if (isMounted) setLoading(false); });
+    return () => { isMounted = false; };
+  }, []);
+
   const [selectedCurrency, setSelectedCurrency] = useState<'PKR' | 'USD' | 'GBP' | 'EUR' | 'CAD' | 'AUD' | 'AED'>('USD');
 
   // Coupon state
@@ -194,9 +221,27 @@ export const PackagesSection: React.FC<PackagesSectionProps> = ({
           </div>
         </div>
 
-        {/* Packages Grid */}
+        {/* Packages Grid — skeleton while loading with no data yet */}
+        {loading && plans.length === 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" aria-hidden>
+            {[0, 1, 2, 3].map(i => (
+              <div key={i} className="rounded-3xl p-6 glass-card-light animate-pulse">
+                <div className="h-4 w-24 bg-gray-200/80 rounded-xl mb-3" />
+                <div className="h-6 w-3/4 bg-gray-200/80 rounded-xl mb-2" />
+                <div className="h-3 w-full bg-gray-200/60 rounded-xl mb-6" />
+                <div className="h-24 bg-gray-200/60 rounded-2xl mb-6" />
+                <div className="space-y-2.5 mb-6">
+                  {[0, 1, 2].map(j => (
+                    <div key={j} className="h-3 w-5/6 bg-gray-200/60 rounded-xl" />
+                  ))}
+                </div>
+                <div className="h-11 bg-gray-200/80 rounded-xl" />
+              </div>
+            ))}
+          </div>
+        ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {packages.map(pkg => (
+          {plans.map(pkg => (
             <div
               key={pkg.id}
               className={`rounded-3xl p-6 transition-all duration-300 flex flex-col justify-between relative ${
@@ -288,6 +333,7 @@ export const PackagesSection: React.FC<PackagesSectionProps> = ({
             </div>
           ))}
         </div>
+        )}
 
         {/* Sibling & Family Discount Callout */}
         <div className="mt-8 p-5 rounded-2xl bg-gradient-to-r from-emerald-900/10 via-[#D4A72C]/10 to-emerald-900/10 border border-[#D4A72C]/40 flex flex-col sm:flex-row items-center justify-between gap-4">
