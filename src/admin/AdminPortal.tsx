@@ -121,8 +121,41 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
 }) => {
   // Auth state
   const [token, setToken] = useState<string>(() => {
-    return localStorage.getItem('alnoor_admin_token') || sessionStorage.getItem('alnoor_admin_token') || '';
+    try {
+      return localStorage.getItem('alnoor_admin_token') || sessionStorage.getItem('alnoor_admin_token') || '';
+    } catch {
+      return '';
+    }
   });
+
+  // Safe JSON parse for localStorage: returns fallback on corrupt/missing data
+  // instead of crashing the entire admin panel.
+  const safeParse = <T,>(key: string, fallback: T): T => {
+    try {
+      const saved = localStorage.getItem(key);
+      if (!saved) return fallback;
+      const parsed = JSON.parse(saved);
+      // Basic shape validation: arrays must be arrays, objects must be objects.
+      if (Array.isArray(fallback) && !Array.isArray(parsed)) return fallback;
+      if (!Array.isArray(fallback) && typeof fallback === 'object' && (typeof parsed !== 'object' || parsed === null)) return fallback;
+      return parsed as T;
+    } catch {
+      console.warn(`[admin] Corrupt localStorage key "${key}" — using fallback.`);
+      return fallback;
+    }
+  };
+
+  // Safe localStorage write: logs quota/blocked-storage errors instead of
+  // crashing; returns false on failure so callers can warn the user.
+  const safeSetItem = (key: string, value: string): boolean => {
+    try {
+      localStorage.setItem(key, value);
+      return true;
+    } catch (err: any) {
+      console.error(`[admin] Failed to write localStorage key "${key}":`, err?.message || err);
+      return false;
+    }
+  };
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(true);
@@ -203,8 +236,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
 
   // Finance & Invoices State
   const [invoices, setInvoices] = useState<FeeInvoice[]>(() => {
-    const saved = localStorage.getItem('alnoor_admin_invoices');
-    return saved ? JSON.parse(saved) : INITIAL_INVOICES;
+    return safeParse('alnoor_admin_invoices', INITIAL_INVOICES);
   });
   const [isAddingInvoice, setIsAddingInvoice] = useState(false);
   const [invoiceForm, setInvoiceForm] = useState<Partial<FeeInvoice>>({
@@ -225,8 +257,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
 
   // Student Report Cards State
   const [reportCards, setReportCards] = useState<StudentReportCard[]>(() => {
-    const saved = localStorage.getItem('alnoor_admin_reports');
-    return saved ? JSON.parse(saved) : INITIAL_REPORT_CARDS;
+    return safeParse('alnoor_admin_reports', INITIAL_REPORT_CARDS);
   });
   const [isGeneratingReport, setIsGeneratingReport] = useState(false);
   const [reportForm, setReportForm] = useState<Partial<StudentReportCard>>({
@@ -245,20 +276,17 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
 
   // Tutor Payroll State
   const [payrollList, setPayrollList] = useState<TutorPayroll[]>(() => {
-    const saved = localStorage.getItem('alnoor_admin_payroll');
-    return saved ? JSON.parse(saved) : INITIAL_PAYROLL;
+    return safeParse('alnoor_admin_payroll', INITIAL_PAYROLL);
   });
 
   // System Activity Logs State
   const [activityLogs, setActivityLogs] = useState<ActivityLog[]>(() => {
-    const saved = localStorage.getItem('alnoor_admin_logs');
-    return saved ? JSON.parse(saved) : INITIAL_LOGS;
+    return safeParse('alnoor_admin_logs', INITIAL_LOGS);
   });
 
   // Packages CMS state
   const [packages, setPackages] = useState<PackagePlan[]>(() => {
-    const saved = localStorage.getItem('alnoor_cms_packages');
-    return saved ? JSON.parse(saved) : ALL_PACKAGES;
+    return safeParse('alnoor_cms_packages', ALL_PACKAGES);
   });
   const [editingPackage, setEditingPackage] = useState<PackagePlan | null>(null);
   const [isAddingPackage, setIsAddingPackage] = useState(false);
@@ -283,8 +311,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
 
   // Testimonials CMS state
   const [testimonials, setTestimonials] = useState<Testimonial[]>(() => {
-    const saved = localStorage.getItem('alnoor_cms_testimonials');
-    return saved ? JSON.parse(saved) : INITIAL_TESTIMONIALS;
+    return safeParse('alnoor_cms_testimonials', INITIAL_TESTIMONIALS);
   });
   const [editingTestimonial, setEditingTestimonial] = useState<Testimonial | null>(null);
   const [isAddingTestimonial, setIsAddingTestimonial] = useState(false);
@@ -301,8 +328,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
 
   // FAQs CMS state
   const [faqs, setFaqs] = useState<FAQItem[]>(() => {
-    const saved = localStorage.getItem('alnoor_cms_faqs');
-    return saved ? JSON.parse(saved) : INITIAL_FAQS;
+    return safeParse('alnoor_cms_faqs', INITIAL_FAQS);
   });
   const [editingFaq, setEditingFaq] = useState<FAQItem | null>(null);
   const [isAddingFaq, setIsAddingFaq] = useState(false);
@@ -315,15 +341,13 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
 
   // Site Settings CMS state
   const [siteSettings, setSiteSettings] = useState<SiteSettings>(() => {
-    const saved = localStorage.getItem('alnoor_cms_settings');
-    return saved ? JSON.parse(saved) : DEFAULT_SITE_SETTINGS;
+    return safeParse('alnoor_cms_settings', DEFAULT_SITE_SETTINGS);
   });
   const [settingsSavedToast, setSettingsSavedToast] = useState(false);
 
   // Media Library CMS state
   const [mediaAssets, setMediaAssets] = useState<MediaAsset[]>(() => {
-    const saved = localStorage.getItem('alnoor_cms_media');
-    return saved ? JSON.parse(saved) : INITIAL_MEDIA_ASSETS;
+    return safeParse('alnoor_cms_media', INITIAL_MEDIA_ASSETS);
   });
   const [mediaCategoryFilter, setMediaCategoryFilter] = useState<string>('all');
   const [copiedUrl, setCopiedUrl] = useState<string | null>(null);
@@ -342,8 +366,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
 
   // Notification Templates CMS state
   const [templates, setTemplates] = useState<MessageTemplate[]>(() => {
-    const saved = localStorage.getItem('alnoor_cms_templates');
-    return saved ? JSON.parse(saved) : INITIAL_MESSAGE_TEMPLATES;
+    return safeParse('alnoor_cms_templates', INITIAL_MESSAGE_TEMPLATES);
   });
   const [selectedTemplate, setSelectedTemplate] = useState<MessageTemplate | null>(() => INITIAL_MESSAGE_TEMPLATES[0] || null);
   const [templateForm, setTemplateForm] = useState<Partial<MessageTemplate>>({
@@ -357,8 +380,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
 
   // SEO & Schema CMS state (synced with Firestore `siteSeo` collection; localStorage as cache)
   const [seoConfigs, setSeoConfigs] = useState<PageSeoConfig[]>(() => {
-    const saved = localStorage.getItem('alnoor_cms_seo');
-    return saved ? JSON.parse(saved) : INITIAL_SEO_CONFIGS;
+    return safeParse('alnoor_cms_seo', INITIAL_SEO_CONFIGS);
   });
   useEffect(() => {
     getSiteSeoConfigs().then(remote => {
@@ -398,6 +420,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
   // Selected item modal/drawer
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [selectedEnrollment, setSelectedEnrollment] = useState<EnrollmentApplication | null>(null);
+  const [approvingEnrollment, setApprovingEnrollment] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [newNoteText, setNewNoteText] = useState('');
 
@@ -4957,7 +4980,15 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
 
                   <button
                     type="button"
+                    disabled={approvingEnrollment}
                     onClick={async () => {
+                      // Idempotency guard: don't re-approve an already-active enrollment.
+                      if (selectedEnrollment.status === 'Active') {
+                        setSelectedEnrollment(null);
+                        setActiveTab('students');
+                        return;
+                      }
+                      setApprovingEnrollment(true);
                       const newStu: Student = {
                         id: `stu-${Date.now()}`,
                         studentName: selectedEnrollment.studentName,
@@ -4976,33 +5007,45 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                         learningPace: selectedEnrollment.learningPace || 'Normal',
                         status: 'Active',
                         currentSurahOrLesson: 'Noorani Qaida / Tajweed Primer',
+                        // Idempotency key: server returns existing student if this
+                        // enrollment was already approved (prevents duplicates).
+                        enrollmentId: selectedEnrollment.id,
                         notes: [],
                         createdAt: new Date().toISOString(),
                         updatedAt: new Date().toISOString()
                       };
-                      // Persist to database (was local-state only — bug fix)
                       try {
                         const res = await fetch('/api/admin/students', {
                           method: 'POST',
                           headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
                           body: JSON.stringify(newStu)
                         });
-                        if (res.ok) {
-                          const saved = await res.json();
-                          setStudents(prev => [...prev, saved.student || newStu]);
-                        } else {
-                          setStudents(prev => [...prev, newStu]);
+                        const saved = await res.json();
+                        if (!res.ok || !saved.success) {
+                          throw new Error(saved.error || `Server returned ${res.status}`);
                         }
-                      } catch {
-                        setStudents(prev => [...prev, newStu]);
+                        const student = saved.student || newStu;
+                        // Avoid duplicate rows: replace if already in list (idempotent).
+                        setStudents(prev => {
+                          const exists = prev.some(s => s.id === student.id);
+                          return exists ? prev.map(s => s.id === student.id ? student : s) : [...prev, student];
+                        });
+                        if (saved.deduplicated) {
+                          alert('This enrollment was already approved. Showing the existing student record.');
+                        }
+                        updateEnrollment(selectedEnrollment.id, { status: 'Active' });
+                        setSelectedEnrollment(null);
+                        setActiveTab('students');
+                      } catch (err: any) {
+                        // Do NOT add phantom rows on failure. Show the error.
+                        alert(`Failed to approve enrollment: ${err.message || 'unknown error'}. Please try again.`);
+                      } finally {
+                        setApprovingEnrollment(false);
                       }
-                      updateEnrollment(selectedEnrollment.id, { status: 'Active' });
-                      setSelectedEnrollment(null);
-                      setActiveTab('students');
                     }}
-                    className="px-4 py-2 bg-[#0B332D] text-[#F8F5EE] font-semibold uppercase tracking-wider rounded-sm hover:bg-[#07221E] cursor-pointer"
+                    className="px-4 py-2 bg-[#0B332D] text-[#F8F5EE] font-semibold uppercase tracking-wider rounded-sm hover:bg-[#07221E] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Approve &amp; Add to Students
+                    {approvingEnrollment ? 'Approving…' : 'Approve & Add to Students'}
                   </button>
                 </div>
               </div>
