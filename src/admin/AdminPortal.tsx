@@ -417,30 +417,8 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
     }
   }, [token, isOpen]);
 
-  // Auto-logout after 30 minutes of inactivity
-  useEffect(() => {
-    if (!token) return;
-
-    let timeoutId: NodeJS.Timeout;
-    const INACTIVITY_LIMIT_MS = 30 * 60 * 1000;
-
-    const resetTimer = () => {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => {
-        handleLogout();
-        setLoginError('Your session has expired due to 30 minutes of inactivity. Please sign in again.');
-      }, INACTIVITY_LIMIT_MS);
-    };
-
-    const activityEvents = ['mousedown', 'keydown', 'scroll', 'touchstart'];
-    activityEvents.forEach(evt => window.addEventListener(evt, resetTimer, { passive: true }));
-    resetTimer();
-
-    return () => {
-      clearTimeout(timeoutId);
-      activityEvents.forEach(evt => window.removeEventListener(evt, resetTimer));
-    };
-  }, [token]);
+  // Auto-logout on inactivity is DISABLED per site owner request (2026-10-17).
+  // Previously: 30-minute inactivity timeout that signed the admin out.
 
   const fetchAdminData = async () => {
     setLoadingData(true);
