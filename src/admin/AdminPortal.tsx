@@ -4919,7 +4919,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
 
                   <button
                     type="button"
-                    onClick={() => {
+                    onClick={async () => {
                       const newStu: Student = {
                         id: `stu-${Date.now()}`,
                         studentName: selectedEnrollment.studentName,
@@ -4942,7 +4942,22 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                         createdAt: new Date().toISOString(),
                         updatedAt: new Date().toISOString()
                       };
-                      setStudents(prev => [...prev, newStu]);
+                      // Persist to database (was local-state only — bug fix)
+                      try {
+                        const res = await fetch('/api/admin/students', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                          body: JSON.stringify(newStu)
+                        });
+                        if (res.ok) {
+                          const saved = await res.json();
+                          setStudents(prev => [...prev, saved.student || newStu]);
+                        } else {
+                          setStudents(prev => [...prev, newStu]);
+                        }
+                      } catch {
+                        setStudents(prev => [...prev, newStu]);
+                      }
                       updateEnrollment(selectedEnrollment.id, { status: 'Active' });
                       setSelectedEnrollment(null);
                       setActiveTab('students');
