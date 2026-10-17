@@ -8,6 +8,7 @@ import {
   onSnapshot,
   query,
   where,
+  getDocs,
   serverTimestamp
 } from '../../lib/firebase';
 
@@ -38,11 +39,25 @@ export function useLiveClasses(): LiveClass[] {
 }
 
 // Start a live class: creates a Jitsi meeting and registers it in Firestore.
+// Each teacher gets their OWN isolated room — multiple teachers can teach
+// simultaneously without any conflict. Any previous live class by the same
+// teacher is auto-ended first (prevents stale "live" entries).
 export async function startLiveClass(
   teacherId: string,
   teacherEmail: string,
   teacherName: string
 ): Promise<{ id: string; meetingLink: string }> {
+  // Auto-end this teacher's previous live classes
+  try {
+    const prev = query(
+      collection(db, 'liveClasses'),
+      where('teacherEmail', '==', teacherEmail),
+      where('status', '==', 'live')
+    );
+    const snap = await getDocs(prev);
+    await Promise.all(snap.docs.map(d => updateDoc(doc(db, 'liveClasses', d.id), { status: 'ended' })));
+  } catch {}
+
   const meetingLink = `https://meet.jit.si/noor-quran-${teacherId}-${Date.now()}`;
   const ref = await addDoc(collection(db, 'liveClasses'), {
     teacherId,
