@@ -262,7 +262,7 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
           </div>
 
           <button
-            onClick={() => logout()}
+            onClick={async () => { await logout(); onBackToLanding(); }}
             className="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-red-950/80 hover:bg-red-900 text-red-200 border border-red-800 transition-colors cursor-pointer"
           >
             Log Out

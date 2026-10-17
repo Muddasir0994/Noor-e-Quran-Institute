@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { getRoleForEmail } from '../lib/roleUtils';
 import {
   List,
   X,
@@ -96,6 +97,14 @@ export const Navbar: React.FC<NavbarProps> = ({
     }
   };
 
+  // BUG 4 fix: determine portal by email (teacher list) with profile role as fallback
+  const getPortalView = (): 'student' | 'teacher' | 'admin' => {
+    if (userProfile?.role === 'admin') return 'admin';
+    if (userProfile?.role === 'teacher') return 'teacher';
+    const email = currentUser?.email || userProfile?.email || '';
+    return getRoleForEmail(email) === 'teacher' ? 'teacher' : 'student';
+  };
+
   return (
     <header ref={navRef} className="sticky top-0 z-40 w-full transition-all duration-200">
       
@@ -128,7 +137,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           <span className="text-[#B79A62]/40">|</span>
           {currentUser ? (
             <button
-              onClick={() => handlePortalNavigation(userProfile?.role === 'teacher' ? 'teacher' : userProfile?.role === 'admin' ? 'admin' : 'student')}
+              onClick={() => handlePortalNavigation(getPortalView())}
               className="text-[#B79A62] font-medium hover:underline cursor-pointer"
             >
               My Portal
@@ -304,7 +313,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               {currentUser ? (
                 <button
                   onClick={() => {
-                    handlePortalNavigation(userProfile?.role === 'teacher' ? 'teacher' : userProfile?.role === 'admin' ? 'admin' : 'student');
+                    handlePortalNavigation(getPortalView());
                     setMobileMenuOpen(false);
                   }}
                   className="py-2 px-3 bg-[#B79A62] text-[#07221E] font-bold rounded-sm"
