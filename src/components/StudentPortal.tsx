@@ -143,11 +143,14 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
     }
   }, [activeTab, thread.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // This student's teacher (for live-class matching)
+  // This student's teacher (for live-class matching) — privacy-aware assignment
   const myTutor = INITIAL_TUTORS.find(t => t.id === currentStudent.tutorId) || INITIAL_TUTORS[0];
+  const assignedTutorForLive = getAssignedTutor(currentUser?.email);
+  const liveTutorId = assignedTutorForLive?.id || currentStudent.tutorId;
+  const liveTutorEmail = assignedTutorForLive?.email || myTutor?.email;
   const myTutorLiveClass = liveClasses.find(c =>
-    c.teacherId === currentStudent.tutorId ||
-    (myTutor?.email && c.teacherEmail.toLowerCase() === myTutor.email.toLowerCase())
+    c.teacherId === liveTutorId ||
+    (liveTutorEmail && c.teacherEmail.toLowerCase() === liveTutorEmail.toLowerCase())
   ) || null;
 
   // Daily Sabaq & Progress History
