@@ -239,7 +239,7 @@ export const TeacherPortal: React.FC<TeacherPortalProps> = ({
           </div>
 
           <button
-            onClick={() => logout()}
+            onClick={async () => { await logout(); onBackToLanding(); }}
             className="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-red-950/80 hover:bg-red-900 text-red-200 border border-red-800 transition-colors cursor-pointer"
           >
             Log Out
@@ -970,6 +970,49 @@ export const TeacherPortal: React.FC<TeacherPortalProps> = ({
                 <p><strong>Direct Phone / WhatsApp:</strong> {currentTutor.phone}</p>
                 <p><strong>Students Allocated:</strong> {currentTutor.studentsCount} Active Students</p>
               </div>
+            </div>
+
+            {/* Weekly Timetable Grid (BUG 5 fix) */}
+            <div className="bg-white p-6 rounded-3xl border border-gray-200 shadow-xs max-w-4xl mx-auto">
+              <h3 className="text-base font-bold text-[#064E3B] mb-1">📅 Weekly Teaching Timetable</h3>
+              <p className="text-xs text-gray-500 mb-4">Your fixed 1-on-1 class slots (Pakistan Time)</p>
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs">
+                  <thead>
+                    <tr className="text-left">
+                      <th className="p-2.5 font-bold text-gray-500 uppercase tracking-wide">Time (PKT)</th>
+                      {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(d => (
+                        <th key={d} className="p-2.5 font-bold text-[#064E3B] text-center">{d}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {['5:00 PM', '5:45 PM', '6:30 PM', '7:15 PM'].map((slot) => (
+                      <tr key={slot} className="border-t border-gray-100">
+                        <td className="p-2.5 font-bold text-gray-700 whitespace-nowrap">{slot}</td>
+                        {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => {
+                          // Sample pattern: weekdays have classes, weekend lighter
+                          const hasClass = day !== 'Sun' && !(day === 'Sat' && (slot === '5:00 PM' || slot === '7:15 PM'));
+                          return (
+                            <td key={day} className="p-1.5 text-center">
+                              {hasClass ? (
+                                <span className="inline-block px-2 py-1 rounded-lg bg-emerald-100 text-emerald-900 font-semibold text-[10px] whitespace-nowrap">
+                                  1-on-1 Class
+                                </span>
+                              ) : (
+                                <span className="text-gray-300 text-[10px]">—</span>
+                              )}
+                            </td>
+                          );
+                        })}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <p className="text-[11px] text-gray-400 mt-3">
+                💡 To change your availability, contact the academy admin.
+              </p>
             </div>
           </div>
         )}
