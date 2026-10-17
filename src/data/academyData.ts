@@ -380,6 +380,25 @@ export const INITIAL_TUTORS: Tutor[] = [
     bio: 'Simplifies complex Quranic themes and Arabic grammar for youth and converts seeking deeper connection.',
     status: 'Available',
     createdAt: '2025-01-20'
+  },
+  {
+    id: 'tut-5',
+    name: 'Qari Abdul Rehman Farooqi',
+    gender: 'Male',
+    qualification: 'Hafiz-e-Quran, Dars-e-Nizami Graduate, Certified Tajweed Trainer',
+    specialization: 'Noorani Qaida, Nazra Fluency, Kids Hifz Foundation',
+    languages: ['English', 'Urdu', 'Arabic'],
+    experienceYears: 6,
+    availableTimings: 'Morning & Evening (Gulf / UK / USA slots)',
+    studentsCapacity: 15,
+    activeStudentsCount: 9,
+    phone: '+92 300 1234567',
+    email: 'abdulrehman.tutor@alnoor.edu',
+    photoUrl: '/images/tutor-placeholder.webp',
+    rating: 4.8,
+    bio: 'Patient and encouraging teacher loved by young beginners; specializes in building strong Qaida foundations.',
+    status: 'Available',
+    createdAt: '2025-02-01'
   }
 ];
 
@@ -430,6 +449,18 @@ export const INITIAL_TESTIMONIALS: Testimonial[] = [
     rating: 5,
     comment: 'Daniyal used to get anxious during group Islamic classes. Noor E Quran\'s gentle, slow-learner approach gave him real confidence. He loves his lessons now!',
     date: 'December 2025',
+    status: 'published'
+  },
+  {
+    id: 't-5',
+    name: 'Brother Usman Tariq',
+    studentOrParent: 'Father of Ibrahim (8 yrs)',
+    location: 'Dubai, UAE',
+    countryFlag: '🇦🇪',
+    courseName: 'Noorani Qaida & Nazra',
+    rating: 5,
+    comment: 'The trial class convinced us immediately. Ibrahim reads his daily Sabaq with joy and his Tajweed has improved remarkably in just two months.',
+    date: 'February 2026',
     status: 'published'
   }
 ];
