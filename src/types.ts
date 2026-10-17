@@ -443,3 +443,45 @@ export interface ActivityLog {
   category: 'Student' | 'Enrollment' | 'Faculty' | 'Course' | 'Finance' | 'Settings' | 'System';
   user: string;
 }
+
+export interface AttendanceRecord {
+  id: string;
+  date: string; // YYYY-MM-DD
+  studentId: string;
+  studentName: string;
+  status: 'present' | 'absent' | 'leave';
+  markedBy?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface TrialClass {
+  id: string;
+  leadId?: string;
+  studentName: string;
+  phone: string;
+  email?: string;
+  courseId?: string;
+  courseName?: string;
+  tutorId?: string;
+  tutorName?: string;
+  date: string; // YYYY-MM-DD
+  time: string; // HH:MM
+  meetingLink?: string;
+  status: 'scheduled' | 'completed' | 'converted' | 'cancelled' | 'no-show';
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface FeeReminder {
+  id: string;
+  invoiceId: string;
+  studentName: string;
+  phone: string;
+  amount: number;
+  currency: string;
+  channel: 'whatsapp' | 'email';
+  sentAt: string;
+  sentBy?: string;
+}
