@@ -47,16 +47,52 @@ const EnrollmentModal = lazy(() => import('./components/EnrollmentModal').then(m
 const CourseDetailModal = lazy(() => import('./components/CourseDetailModal').then(m => ({ default: m.CourseDetailModal })));
 const LegalModal = lazy(() => import('./components/LegalModals').then(m => ({ default: m.LegalModal })));
 
+// ---------------------------------------------------------------------------
+// Public data browser cache (stale-while-revalidate).
+// The database (/api/*) is the source of truth; localStorage gives instant
+// first paint, and every visit revalidates in the background.
+// ---------------------------------------------------------------------------
+const PUBLIC_DATA_CACHE_KEY = 'noor_public_data_v1';
+
+function readPublicDataCache(): Record<string, unknown[]> {
+  try {
+    const raw = localStorage.getItem(PUBLIC_DATA_CACHE_KEY);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== 'object') return {};
+    return parsed;
+  } catch {
+    return {};
+  }
+}
+
+function getCachedPublicData<T>(key: string, fallback: T[]): T[] {
+  const cached = readPublicDataCache()[key];
+  if (Array.isArray(cached) && cached.length > 0) return cached as T[];
+  return fallback;
+}
+
+function writePublicDataCache(fresh: Record<string, unknown[]>) {
+  try {
+    const merged = { ...readPublicDataCache(), ...fresh, _ts: Date.now() };
+    localStorage.setItem(PUBLIC_DATA_CACHE_KEY, JSON.stringify(merged));
+  } catch {
+    // storage full or private mode — non-fatal
+  }
+}
+
 function AppContent() {
   const location = useLocation();
   const navigate = useNavigate();
   const { currentUser, userProfile } = useAuth();
 
-  // Dynamic Content Data State (fetched from backend/database with fallbacks)
-  const [courses, setCourses] = useState<Course[]>(ALL_COURSES);
-  const [packages, setPackages] = useState<PackagePlan[]>(ALL_PACKAGES);
-  const [tutors, setTutors] = useState<Tutor[]>(INITIAL_TUTORS);
-  const [testimonials, setTestimonials] = useState<Testimonial[]>(INITIAL_TESTIMONIALS);
+  // Dynamic Content Data State: database is the source of truth, browser
+  // localStorage acts as an instant cache, and fresh data is revalidated
+  // in the background on every visit (stale-while-revalidate).
+  const [courses, setCourses] = useState<Course[]>(() => getCachedPublicData('courses', ALL_COURSES));
+  const [packages, setPackages] = useState<PackagePlan[]>(() => getCachedPublicData('packages', ALL_PACKAGES));
+  const [tutors, setTutors] = useState<Tutor[]>(() => getCachedPublicData('tutors', INITIAL_TUTORS));
+  const [testimonials, setTestimonials] = useState<Testimonial[]>(() => getCachedPublicData('testimonials', INITIAL_TESTIMONIALS));
 
   // Modals & Interactive Overlays
   const [showTrialModal, setShowTrialModal] = useState<boolean>(false);
@@ -79,6 +115,8 @@ function AppContent() {
   }, [location.pathname]);
 
   // Fetch real data on mount (Deferred to prevent render delay)
+  // Stale-while-revalidate: instant render from browser cache, then background
+  // refresh from the database; cache is updated whenever fresh data arrives.
   useEffect(() => {
     let isMounted = true;
     const fetchData = async () => {
@@ -90,24 +128,26 @@ function AppContent() {
           fetch('/api/testimonials')
         ]);
         if (!isMounted) return;
+        const fresh: Record<string, unknown[]> = {};
         if (cRes.ok) {
           const data = await cRes.json();
-          if (Array.isArray(data) && data.length > 0) setCourses(data);
+          if (Array.isArray(data) && data.length > 0) { setCourses(data); fresh.courses = data; }
         }
         if (pRes.ok) {
           const data = await pRes.json();
-          if (Array.isArray(data) && data.length > 0) setPackages(data);
+          if (Array.isArray(data) && data.length > 0) { setPackages(data); fresh.packages = data; }
         }
         if (tRes.ok) {
           const data = await tRes.json();
-          if (Array.isArray(data) && data.length > 0) setTutors(data);
+          if (Array.isArray(data) && data.length > 0) { setTutors(data); fresh.tutors = data; }
         }
         if (testRes.ok) {
           const data = await testRes.json();
-          if (Array.isArray(data) && data.length > 0) setTestimonials(data);
+          if (Array.isArray(data) && data.length > 0) { setTestimonials(data); fresh.testimonials = data; }
         }
+        if (Object.keys(fresh).length > 0) writePublicDataCache(fresh);
       } catch (err) {
-        console.warn('Using baseline academy data:', err);
+        console.warn('Using cached academy data:', err);
       }
     };
 
