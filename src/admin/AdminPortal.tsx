@@ -104,6 +104,7 @@ import {
 import { BlogEditor } from './BlogEditor';
 import { ImageCropModal } from '../components/ImageCropModal';
 import { saveSiteSeoConfig, getSiteSeoConfigs } from '../lib/firestoreService';
+import { usePresenceList, isOnline, lastSeenText } from '../components/portal/usePresence';
 
 interface AdminPortalProps {
   isOpen?: boolean;
@@ -127,6 +128,8 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
   const [rememberMe, setRememberMe] = useState(true);
   const [loginError, setLoginError] = useState('');
   const [loggingIn, setLoggingIn] = useState(false);
+  // Live online/offline presence of teachers & students
+  const presenceList = usePresenceList();
 
   // Active view tab in admin CMS
   const [activeTab, setActiveTab] = useState<
@@ -2205,6 +2208,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                             <th className="p-3.5">Assigned Scholar</th>
                             <th className="p-3.5">Timetable Schedule</th>
                             <th className="p-3.5">Status</th>
+                            <th className="p-3.5">Live</th>
                             <th className="p-3.5 text-right">Actions</th>
                           </tr>
                         </thead>
@@ -2235,6 +2239,19 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                                 <span className="px-2 py-0.5 text-[10px] font-bold rounded-xs bg-emerald-50 text-emerald-800 border border-emerald-200">
                                   {stu.status}
                                 </span>
+                              </td>
+                              <td className="p-3.5">
+                                {(() => {
+                                  const email = (stu.email || '').toLowerCase();
+                                  const entry = presenceList.find(p => (p.email || '').toLowerCase() === email);
+                                  const online = isOnline(entry);
+                                  return (
+                                    <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 text-[10px] font-bold rounded-full ${online ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-100 text-gray-500'}`} title={online ? 'Online now' : lastSeenText(entry)}>
+                                      <span className={`w-2 h-2 rounded-full ${online ? 'bg-emerald-500 animate-pulse' : 'bg-gray-300'}`} />
+                                      {online ? 'Online' : lastSeenText(entry)}
+                                    </span>
+                                  );
+                                })()}
                               </td>
                               <td className="p-3.5 text-right">
                                 <button
@@ -2781,6 +2798,20 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                         <div className="pt-2 border-t border-[#E8E0D1] text-[11px] font-sans text-gray-500 space-y-1">
                           <p>Availability: <strong>{tutor.availability || tutor.availableTimings}</strong></p>
                           <p>Contact: <strong>{tutor.phone}</strong></p>
+                          <p className="flex items-center gap-1.5">
+                            Status:{' '}
+                            {(() => {
+                              const email = (tutor.email || '').toLowerCase();
+                              const entry = presenceList.find(p => (p.email || '').toLowerCase() === email);
+                              const online = isOnline(entry);
+                              return (
+                                <span className={`inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold rounded-full ${online ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-100 text-gray-500'}`}>
+                                  <span className={`w-2 h-2 rounded-full ${online ? 'bg-emerald-500 animate-pulse' : 'bg-gray-300'}`} />
+                                  {online ? 'Online' : lastSeenText(entry)}
+                                </span>
+                              );
+                            })()}
+                          </p>
                         </div>
 
                         <div className="pt-2 flex justify-end">
