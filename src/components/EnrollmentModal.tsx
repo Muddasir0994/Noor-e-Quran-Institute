@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { ALL_COURSES, ALL_PACKAGES } from '../data/academyData';
 import { PackagePlan } from '../types';
-import { createEnrollmentInFirebase } from '../lib/firestoreService';
 import { X, CheckCircle, Calendar, Clock, ShieldCheck, User, Phone, Envelope, Globe, ArrowRight } from '@phosphor-icons/react';
 
 interface EnrollmentModalProps {
@@ -61,73 +60,43 @@ export const EnrollmentModal: React.FC<EnrollmentModalProps> = ({
     setLoading(true);
     setErrorMsg('');
 
+    // Backend /api/enroll is the single source of truth (write-throughs to Firestore server-side)
     try {
-      // 1. Create in Firestore
-      const courseObj = ALL_COURSES.find(c => c.name === courseName) || ALL_COURSES[0];
-      await createEnrollmentInFirebase({
-        studentName,
-        studentEmail: studentEmail || `${studentName.toLowerCase().replace(/\s+/g, '')}@student.alnoor`,
-        phone,
-        country,
-        parentName: parentName || studentName + ' Guardian',
-        parentPhone: parentPhone || phone,
-        parentEmail: parentEmail || studentEmail,
-        courseId: courseObj.id,
-        courseName,
-        packageId: currentPkg.id,
-        packageName: currentPkg.name,
-        monthlyFee: country === 'Pakistan' ? currentPkg.monthlyFeePKR : currentPkg.monthlyFeeUSD,
-        tutorPreference,
-        timeSlot,
-        preferredDays: selectedDays,
-        preferredTimeRange,
-        learningPace,
-        additionalNotes: additionalNotes || '',
-        notes: additionalNotes ? [{ id: 'n-' + Date.now(), text: additionalNotes, author: 'Student/Parent', createdAt: new Date().toISOString() }] : [],
-        paymentStatus: 'Pending',
-        status: 'Active'
+      const res = await fetch('/api/enroll', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          studentName,
+          studentEmail,
+          phone,
+          country,
+          parentName,
+          parentPhone,
+          parentEmail,
+          courseName,
+          packageName: currentPkg.name,
+          tutorPreference,
+          timeSlot,
+          preferredDays: selectedDays,
+          preferredTimeRange,
+          learningPace,
+          additionalNotes
+        })
       });
-
-      // 2. Also forward to Express backend
-      try {
-        const res = await fetch('/api/enroll', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            studentName,
-            studentEmail,
-            phone,
-            country,
-            parentName,
-            parentPhone,
-            parentEmail,
-            courseName,
-            packageName: currentPkg.name,
-            tutorPreference,
-            timeSlot,
-            preferredDays: selectedDays,
-            preferredTimeRange,
-            learningPace,
-            additionalNotes
-          })
-        });
-        const data = await res.json();
-        if (!res.ok) {
-          setErrorMsg(data.error || 'Submission failed. Please check your details and try again.');
-          return;
-        }
-        setSuccessApp(data);
-      } catch {
-        const waText = encodeURIComponent(
-          `Salam! I submitted an enrollment application at Noor E Quran Institute.\nStudent: ${studentName}\nCourse: ${courseName}\nPackage: ${currentPkg.name}\nPhone: ${phone}`
-        );
-        setSuccessApp({
-          success: true,
-          whatsappUrl: `https://wa.me/923274496163?text=${waText}`
-        });
+      const data = await res.json();
+      if (!res.ok) {
+        setErrorMsg(data.error || 'Submission failed. Please check your details and try again.');
+        return;
       }
-    } catch (err: any) {
-      setErrorMsg(err.message || 'Enrollment failed. Please try again or reach out on WhatsApp.');
+      setSuccessApp(data);
+    } catch {
+      const waText = encodeURIComponent(
+        `Salam! I submitted an enrollment application at Noor E Quran Institute.\nStudent: ${studentName}\nCourse: ${courseName}\nPackage: ${currentPkg.name}\nPhone: ${phone}`
+      );
+      setSuccessApp({
+        success: true,
+        whatsappUrl: `https://wa.me/923274496163?text=${waText}`
+      });
     } finally {
       setLoading(false);
     }

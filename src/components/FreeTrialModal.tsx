@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ALL_COURSES, ALL_PACKAGES, INITIAL_TUTORS } from '../data/academyData';
-import { createLeadInFirebase } from '../lib/firestoreService';
 import {
   X,
   CheckCircle,
@@ -32,7 +31,7 @@ export const FreeTrialModal: React.FC<FreeTrialModalProps> = ({
   const [parentName, setParentName] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
-  const [country, setCountry] = useState('Pakistan');
+  const [country, setCountry] = useState('Asia/Karachi');
   const [courseName, setCourseName] = useState(initialCourseName || 'Noorani Qaida for Beginners');
   const [tutorGender, setTutorGender] = useState<'Male' | 'Female' | 'No Preference'>(defaultGender);
   const [preferredTutorId, setPreferredTutorId] = useState(''); // '' = no preference, any teacher
@@ -45,6 +44,19 @@ export const FreeTrialModal: React.FC<FreeTrialModalProps> = ({
   const [loading, setLoading] = useState(false);
   const [successLead, setSuccessLead] = useState<any | null>(null);
   const [errorMsg, setErrorMsg] = useState('');
+
+  // Escape-key closes the modal (accessibility; PROMPT-2)
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setSuccessLead(null);
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -68,68 +80,42 @@ export const FreeTrialModal: React.FC<FreeTrialModalProps> = ({
     setLoading(true);
     setErrorMsg('');
 
+    // Backend /api/book-trial is the single source of truth (write-throughs to Firestore server-side)
     try {
-      // 1. First save to Firestore Database
-      const courseObj = ALL_COURSES.find(c => c.name === courseName) || ALL_COURSES[0];
-      const preferredTutor = INITIAL_TUTORS.find(t => t.id === preferredTutorId);
-      await createLeadInFirebase({
-        studentName,
-        parentName: parentName || studentName + ' Parent',
-        email: email || `${studentName.toLowerCase().replace(/\s+/g, '')}@student.trial`,
-        phone,
-        country,
-        courseId: courseObj.id,
-        courseName,
-        tutorGender,
-        preferredTutorId: preferredTutorId || undefined,
-        preferredTutorName: preferredTutor?.name || undefined,
-        timeSlot,
-        preferredDays: selectedDays,
-        preferredTimeRange,
-        learningPace,
-        notes: notes ? [{ id: 'n-' + Date.now(), text: notes, author: 'Student/Parent', createdAt: new Date().toISOString() }] : [],
-        status: 'New Lead'
+      const res = await fetch('/api/book-trial', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          studentName,
+          parentName,
+          email,
+          phone,
+          country,
+          courseName,
+          tutorGender,
+          preferredTutorId: preferredTutorId || undefined,
+          preferredTutorName: INITIAL_TUTORS.find(t => t.id === preferredTutorId)?.name || undefined,
+          timeSlot,
+          preferredDays: selectedDays,
+          preferredTimeRange,
+          learningPace,
+          notes
+        })
       });
-
-      // 2. Also send to Express backend / WhatsApp trigger
-      try {
-        const res = await fetch('/api/book-trial', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            studentName,
-            parentName,
-            email,
-            phone,
-            country,
-            courseName,
-            tutorGender,
-            preferredTutorId: preferredTutorId || undefined,
-            preferredTutorName: INITIAL_TUTORS.find(t => t.id === preferredTutorId)?.name || undefined,
-            timeSlot,
-            preferredDays: selectedDays,
-            preferredTimeRange,
-            learningPace,
-            notes
-          })
-        });
-        const data = await res.json();
-        if (!res.ok) {
-          setErrorMsg(data.error || 'Submission failed. Please check your details and try again.');
-          return;
-        }
-        setSuccessLead(data);
-      } catch {
-        const waText = encodeURIComponent(
-          `Salam! I just booked a 3-Day Free Trial at Noor E Quran Institute for ${studentName}.\nCourse: ${courseName}\nCountry: ${country}\nPhone: ${phone}`
-        );
-        setSuccessLead({
-          success: true,
-          whatsappUrl: `https://wa.me/923274496163?text=${waText}`
-        });
+      const data = await res.json();
+      if (!res.ok) {
+        setErrorMsg(data.error || 'Submission failed. Please check your details and try again.');
+        return;
       }
-    } catch (err: any) {
-      setErrorMsg(err.message || 'Submission failed. Please try again or contact via WhatsApp.');
+      setSuccessLead(data);
+    } catch {
+      const waText = encodeURIComponent(
+        `Salam! I just booked a 3-Day Free Trial at Noor E Quran Institute for ${studentName}.\nCourse: ${courseName}\nCountry: ${country}\nPhone: ${phone}`
+      );
+      setSuccessLead({
+        success: true,
+        whatsappUrl: `https://wa.me/923274496163?text=${waText}`
+      });
     } finally {
       setLoading(false);
     }
@@ -281,14 +267,24 @@ export const FreeTrialModal: React.FC<FreeTrialModalProps> = ({
                     onChange={e => setCountry(e.target.value)}
                     className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-[#064E3B] focus:border-transparent outline-hidden bg-[#FAFAF7]"
                   >
-                    <option value="Pakistan">Pakistan (PKT)</option>
-                    <option value="United Kingdom">United Kingdom (GMT / BST)</option>
-                    <option value="United States">United States (EST / CST / PST)</option>
-                    <option value="Canada">Canada (EST / MST)</option>
-                    <option value="Australia">Australia (AEST)</option>
-                    <option value="UAE / Saudi Arabia">UAE / Saudi Arabia (GST / AST)</option>
-                    <option value="Europe">Europe (CET)</option>
-                    <option value="Other Country">Other Country</option>
+                    <option value="Asia/Karachi">Pakistan (PKT) — Asia/Karachi</option>
+                    <option value="Asia/Dubai">UAE (GST) — Asia/Dubai</option>
+                    <option value="Asia/Riyadh">Saudi Arabia (AST) — Asia/Riyadh</option>
+                    <option value="Asia/Doha">Qatar (AST) — Asia/Doha</option>
+                    <option value="Europe/London">United Kingdom (GMT / BST) — Europe/London</option>
+                    <option value="Europe/Dublin">Ireland (GMT / IST) — Europe/Dublin</option>
+                    <option value="Europe/Paris">Europe — Central (CET) — Europe/Paris</option>
+                    <option value="America/New_York">USA — Eastern (ET) — America/New_York</option>
+                    <option value="America/Chicago">USA — Central (CT) — America/Chicago</option>
+                    <option value="America/Denver">USA — Mountain (MT) — America/Denver</option>
+                    <option value="America/Los_Angeles">USA — Pacific (PT) — America/Los_Angeles</option>
+                    <option value="America/Toronto">Canada — Eastern (ET) — America/Toronto</option>
+                    <option value="America/Edmonton">Canada — Mountain (MT) — America/Edmonton</option>
+                    <option value="America/Vancouver">Canada — Pacific (PT) — America/Vancouver</option>
+                    <option value="Australia/Sydney">Australia — Eastern (AET) — Australia/Sydney</option>
+                    <option value="Australia/Perth">Australia — Western (AWST) — Australia/Perth</option>
+                    <option value="Asia/Kuala_Lumpur">Malaysia (MYT) — Asia/Kuala_Lumpur</option>
+                    <option value="Asia/Singapore">Singapore (SGT) — Asia/Singapore</option>
                   </select>
                 </div>
               </div>

@@ -33,51 +33,30 @@ export const ContactSection: React.FC = () => {
 
     setLoading(true);
 
+    // Backend /api/contact is the single source of truth (write-throughs to Firestore server-side)
+    let saved = false;
     try {
-      // 1. Dynamic import & save to Firestore on submit only
-      let saved = false;
-      try {
-        const { createContactMessageInFirebase } = await import('../lib/firestoreService');
-        await createContactMessageInFirebase({
-          name,
-          email,
-          phone,
-          subject: subject || 'General Inbound Inquiry',
-          message
-        });
-        saved = true;
-      } catch (fErr) {
-        console.warn('Firestore message save note:', fErr);
-      }
-
-      // 2. Also forward to API endpoint
-      try {
-        const res = await fetch('/api/contact', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, email, phone, subject, message })
-        });
-        if (res.ok) saved = true;
-      } catch (err) {
-        console.warn('API forward error:', err);
-      }
-
-      if (saved) {
-        setSuccess(true);
-      } else {
-        setError('Could not send your message. Please try again or contact us on WhatsApp.');
-      }
-      setName('');
-      setEmail('');
-      setPhone('');
-      setSubject('');
-      setMessage('');
-    } catch (err: any) {
-      console.error('Contact submission error:', err);
-      setError(err?.message || 'Failed to send message. Please message us directly on WhatsApp.');
-    } finally {
-      setLoading(false);
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, phone, subject, message })
+      });
+      if (res.ok) saved = true;
+    } catch (err) {
+      console.warn('Contact API error:', err);
     }
+
+    if (saved) {
+      setSuccess(true);
+    } else {
+      setError('Could not send your message. Please try again or contact us on WhatsApp.');
+    }
+    setName('');
+    setEmail('');
+    setPhone('');
+    setSubject('');
+    setMessage('');
+    setLoading(false);
   };
 
   return (
