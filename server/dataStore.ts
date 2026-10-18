@@ -58,11 +58,27 @@ import {
 // creation; expired tokens are rejected and pruned on validation.
 export interface AdminSession {
   token: string;
+  email: string; // admin email the session was created for ('' for legacy sessions)
   createdAt: string; // ISO timestamp
   expiresAt: string; // ISO timestamp
 }
 
 export const ADMIN_SESSION_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
+
+/** One entry in an attendance record's correction history (PROMPT-4 A3). */
+export interface AttendanceStatusChange {
+  status: 'present' | 'absent' | 'leave';
+  changedBy: string;
+  at: string; // ISO timestamp
+}
+
+/** One entry in an invoice's status history (PROMPT-5 INV-3). */
+export interface InvoiceStatusChange {
+  from: string;
+  to: string;
+  changedBy: string;
+  at: string; // ISO timestamp
+}
 
 interface DatabaseSchema {
   courses: Course[];
@@ -773,7 +789,9 @@ class DataStore {
   public updateStudent(id: string, updates: Partial<Student>): Student | null {
     const idx = this.data.students.findIndex(s => s.id === id);
     if (idx === -1) return null;
-    this.data.students[idx] = { ...this.data.students[idx], ...updates, updatedAt: new Date().toISOString() };
+    // The record id is immutable; strip it from updates like updateInvoice does.
+    const { id: _idIgnored, ...safeUpdates } = updates as any;
+    this.data.students[idx] = { ...this.data.students[idx], ...safeUpdates, updatedAt: new Date().toISOString() };
     this.persist('students', id, this.data.students[idx]);
     return this.data.students[idx];
   }
@@ -998,24 +1016,37 @@ class DataStore {
     const now = new Date().toISOString();
     const saved: AttendanceRecord[] = [];
     for (const r of records) {
-      const existing = this.data.attendance.find(a => a.date === date && a.studentId === r.studentId);
+      // PROMPT-4 A2: unified attendance IDs — one record per student per day.
+      // Legacy random IDs are normalized to att-<date>-<studentId> on write.
+      const unifiedId = `att-${date}-${r.studentId}`;
+      const existing = this.data.attendance.find(
+        a => a.id === unifiedId || (a.date === date && a.studentId === r.studentId)
+      );
       if (existing) {
+        // PROMPT-4 A3: corrections append to statusHistory instead of overwriting.
+        const recAny = existing as AttendanceRecord & { statusHistory?: AttendanceStatusChange[] };
+        if (!Array.isArray(recAny.statusHistory)) recAny.statusHistory = [];
+        recAny.statusHistory.push({ status: r.status, changedBy: markedBy, at: now });
+        existing.id = unifiedId;
         existing.status = r.status;
         existing.studentName = r.studentName;
         existing.markedBy = markedBy;
         existing.updatedAt = now;
         saved.push(existing);
       } else {
-        const rec: AttendanceRecord = {
-          id: `att-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+        // statusHistory is carried at runtime; the imported AttendanceRecord
+        // type gains the field via the parallel types.ts update.
+        const rec = {
+          id: unifiedId,
           date,
           studentId: r.studentId,
           studentName: r.studentName,
           status: r.status,
           markedBy,
+          statusHistory: [{ status: r.status, changedBy: markedBy, at: now }] as AttendanceStatusChange[],
           createdAt: now,
           updatedAt: now
-        };
+        } as AttendanceRecord;
         this.data.attendance.push(rec);
         saved.push(rec);
       }
@@ -1073,12 +1104,12 @@ class DataStore {
     return this.data.feeReminders.filter(r => r.invoiceId === invoiceId);
   }
 
-  public addFeeReminder(remData: Omit<FeeReminder, 'id' | 'sentAt'>): FeeReminder {
-    const reminder: FeeReminder = {
+  public addFeeReminder(remData: Omit<FeeReminder, 'id' | 'sentAt'> & { status?: string }): FeeReminder {
+    const reminder = {
       ...remData,
       id: `rem-${Date.now()}`,
       sentAt: new Date().toISOString()
-    };
+    } as FeeReminder;
     this.data.feeReminders.unshift(reminder);
     this.persist('feeReminders', reminder.id, reminder);
     return reminder;
@@ -1154,6 +1185,12 @@ class DataStore {
       if (this.data.coupons.some(x => x.code === code && x.id !== id)) return null;
       updates.code = code;
     }
+    // PROMPT-5 C4: discountPercent must stay within 1-100.
+    if (updates.discountPercent !== undefined) {
+      const dp = Number(updates.discountPercent);
+      if (!Number.isFinite(dp) || dp < 1 || dp > 100) return null;
+      updates.discountPercent = dp;
+    }
     this.data.coupons[idx] = { ...this.data.coupons[idx], ...updates, updatedAt: new Date().toISOString() };
     this.persist('coupons', id, this.data.coupons[idx]);
     return this.data.coupons[idx];
@@ -1166,7 +1203,10 @@ class DataStore {
     if (c.expiresAt && c.expiresAt < new Date().toISOString().split('T')[0]) {
       return { valid: false, reason: 'This coupon has expired.' };
     }
-    if (c.usedCount >= c.maxUses) return { valid: false, reason: 'This coupon has reached its usage limit.' };
+    // PROMPT-5 C2: maxUses <= 0 means unlimited (the admin UI renders 0 as '∞').
+    if (c.maxUses > 0 && c.usedCount >= c.maxUses) {
+      return { valid: false, reason: 'This coupon has reached its usage limit.' };
+    }
     return { valid: true, discountPercent: c.discountPercent };
   }
 
@@ -1194,8 +1234,9 @@ class DataStore {
   // --- INVOICES (Phase 2: moved from browser localStorage to server) ---
   // Invoice numbers are server-generated sequences: NQ-<year>-<seq> where seq
   // is a per-year monotonic counter, guaranteeing uniqueness.
+  // Soft-deleted invoices carry archived: true and are hidden by default.
   public getInvoices(): FeeInvoice[] {
-    return this.data.invoices;
+    return this.data.invoices.filter(i => !(i as FeeInvoice & { archived?: boolean }).archived);
   }
 
   private nextInvoiceNumber(): string {
@@ -1223,21 +1264,36 @@ class DataStore {
     return newInvoice;
   }
 
-  public updateInvoice(id: string, updates: Partial<FeeInvoice>): FeeInvoice | null {
+  public updateInvoice(id: string, updates: Partial<FeeInvoice>, changedBy = 'Admin'): FeeInvoice | null {
     const idx = this.data.invoices.findIndex(i => i.id === id);
     if (idx === -1) return null;
-    // invoiceNumber is immutable once assigned.
-    const { invoiceNumber: _ignored, id: _idIgnored, ...safeUpdates } = updates as any;
-    this.data.invoices[idx] = { ...this.data.invoices[idx], ...safeUpdates };
+    // invoiceNumber is immutable once assigned; id and statusHistory are
+    // server-managed and cannot be forged by the client.
+    const { invoiceNumber: _ignored, id: _idIgnored, statusHistory: _histIgnored, ...safeUpdates } = updates as any;
+    const inv = this.data.invoices[idx];
+    // PROMPT-5 INV-3: record status transitions with who made them and when.
+    const invAny = inv as FeeInvoice & { statusHistory?: InvoiceStatusChange[] };
+    if (!Array.isArray(invAny.statusHistory)) invAny.statusHistory = [];
+    if (safeUpdates.status && safeUpdates.status !== inv.status) {
+      invAny.statusHistory.push({
+        from: inv.status,
+        to: safeUpdates.status,
+        changedBy,
+        at: new Date().toISOString()
+      });
+    }
+    this.data.invoices[idx] = { ...inv, ...safeUpdates } as FeeInvoice;
     this.persist('invoices', id, this.data.invoices[idx]);
     return this.data.invoices[idx];
   }
 
+  // PROMPT-5 INV-4: soft-delete — the financial record is kept with an
+  // archived flag instead of being destroyed permanently.
   public deleteInvoice(id: string): boolean {
     const idx = this.data.invoices.findIndex(i => i.id === id);
     if (idx === -1) return false;
-    this.data.invoices.splice(idx, 1);
-    this.persist('invoices', id, null);
+    (this.data.invoices[idx] as FeeInvoice & { archived?: boolean }).archived = true;
+    this.persist('invoices', id, this.data.invoices[idx]);
     return true;
   }
 
@@ -1430,11 +1486,12 @@ class DataStore {
     return true;
   }
 
-  public createAdminSession(): string {
+  public createAdminSession(email: string): string {
     const token = crypto.randomBytes(32).toString('hex');
     const now = new Date();
     const session: AdminSession = {
       token,
+      email: (email || '').toLowerCase().trim(),
       createdAt: now.toISOString(),
       expiresAt: new Date(now.getTime() + ADMIN_SESSION_TTL_MS).toISOString(),
     };
@@ -1464,6 +1521,15 @@ class DataStore {
   public revokeToken(token: string) {
     this.data.adminTokens = this.data.adminTokens.filter(s => s.token !== token);
     this.saveDatabase();
+  }
+
+  /** Email the admin session was created for, or null when the token is invalid/expired. */
+  public getTokenEmail(token: string): string | null {
+    if (!token) return null;
+    const session = this.data.adminTokens.find(s => s.token === token);
+    if (!session) return null;
+    if (new Date(session.expiresAt).getTime() <= Date.now()) return null;
+    return session.email || null;
   }
 
   /** Remaining milliseconds before the token expires, or 0 if invalid/expired. */

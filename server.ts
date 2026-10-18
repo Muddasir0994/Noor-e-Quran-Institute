@@ -14,10 +14,21 @@ import {
 import { 
   resolveRouteMetadata, 
   injectSeoTagsIntoHtml, 
+  injectNoindexIntoHtml,
   generate404Html,
   generateDynamicSitemapXml,
   generateRobotsTxt
 } from './server/seoRender.js';
+
+// PROMPT-3: requireAdmin attaches the session's admin email here so audit
+// trails (invoice history, fee reminders) record the real admin.
+declare global {
+  namespace Express {
+    interface Request {
+      adminEmail?: string;
+    }
+  }
+}
 
 dotenv.config();
 
@@ -363,7 +374,17 @@ function requireAdmin(req: Request, res: Response, next: NextFunction) {
     return res.status(401).json({ error: 'Invalid or expired session. Please log in again.' });
   }
 
+  // PROMPT-3: attach the real admin email from the session for audit trails.
+  req.adminEmail = getTokenEmail(req);
+
   next();
+}
+
+/** Email stored on the admin session for this request's bearer token. */
+function getTokenEmail(req: Request): string | undefined {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) return undefined;
+  return dataStore.getTokenEmail(authHeader.substring(7)) || undefined;
 }
 
 // -------------------------------------------------------------
@@ -813,7 +834,7 @@ app.post('/api/admin/login', checkAdminLoginRateLimit, (req, res) => {
   const isAuthorizedPassword = inputPassword === configuredPassword;
 
   if (isAuthorizedEmail && isAuthorizedPassword) {
-    const token = dataStore.createAdminSession();
+    const token = dataStore.createAdminSession(inputEmail);
     return res.json({
       success: true,
       token,
@@ -866,6 +887,46 @@ app.post('/api/admin/leads/:id/note', requireAdmin, (req, res) => {
   const lead = dataStore.addLeadNote(req.params.id, text, author || 'Admin');
   if (!lead) return res.status(404).json({ error: 'Lead not found' });
   res.json({ success: true, lead });
+});
+
+// PROMPT-4 D1: Convert a lead into an enrollment application in one click.
+// Copies the lead's fields into a new enrollment and marks the lead Converted.
+// Idempotent on leadId: if an enrollment already exists for this lead, it is
+// returned instead of creating a duplicate.
+app.post('/api/admin/leads/:id/convert-to-enrollment', requireAdmin, (req, res) => {
+  const lead = dataStore.getLeads().find(l => l.id === req.params.id);
+  if (!lead) return res.status(404).json({ error: 'Lead not found' });
+
+  type EnrollmentWithLead = Parameters<typeof dataStore.addEnrollment>[0] & { leadId?: string };
+  const existing = dataStore.getEnrollments()
+    .find(e => (e as EnrollmentWithLead).leadId === lead.id);
+  if (existing) {
+    return res.json({ success: true, enrollment: existing, deduplicated: true });
+  }
+
+  const appData = {
+    studentName: lead.studentName,
+    studentEmail: lead.email || undefined,
+    phone: lead.phone,
+    country: lead.country,
+    parentName: lead.parentName,
+    parentPhone: lead.phone,
+    parentEmail: lead.email || '',
+    courseId: lead.courseId,
+    courseName: lead.courseName,
+    tutorPreference: lead.tutorGender,
+    timeSlot: lead.timeSlot,
+    preferredDays: lead.preferredDays,
+    preferredTimeRange: lead.preferredTimeRange,
+    learningPace: lead.learningPace,
+    assignedTutorId: lead.preferredTutorId,
+    assignedTutorName: lead.preferredTutorName,
+    additionalNotes: `Converted from lead ${lead.id} by ${req.adminEmail || 'Admin'}`,
+    leadId: lead.id,
+  } as EnrollmentWithLead;
+  const enrollment = dataStore.addEnrollment(appData);
+  dataStore.updateLead(lead.id, { status: 'Converted' });
+  res.status(201).json({ success: true, enrollment, deduplicated: false });
 });
 
 // Enrollments
@@ -941,14 +1002,62 @@ app.get('/api/admin/classes', requireAdmin, (req, res) => {
   res.json({ success: true, classes: dataStore.getClasses() });
 });
 
+// PROMPT-4 D5 + group H: strict validation for class scheduling.
+const TIME_24H_RE = /^([01]\d|2[0-3]):[0-5]\d$/;
+function isValidTime24h(t: unknown): t is string {
+  return typeof t === 'string' && TIME_24H_RE.test(t.trim());
+}
+/** Find a tutor's existing class on an overlapping day at the same time (409 on conflict). */
+function findClassConflict(tutorId: string, days: string[], time: string, excludeId?: string) {
+  return dataStore.getClasses().find(c =>
+    c.id !== excludeId &&
+    c.status !== 'Cancelled' &&
+    c.tutorId === tutorId &&
+    c.time === time &&
+    Array.isArray(c.days) && c.days.some(d => days.includes(d))
+  );
+}
+
 app.post('/api/admin/classes', requireAdmin, (req, res) => {
+  const { tutorId, studentId, days, time } = req.body || {};
+  if (!tutorId || !studentId || !Array.isArray(days) || days.length === 0 || !time) {
+    return res.status(400).json({ error: 'tutorId, studentId, days and time are required.' });
+  }
+  if (!isValidTime24h(time)) {
+    return res.status(400).json({ error: 'time must be in HH:MM 24-hour format (e.g. 14:30).' });
+  }
+  const conflict = findClassConflict(tutorId, days, time);
+  if (conflict) {
+    return res.status(409).json({
+      error: 'This tutor already has a class scheduled on an overlapping day at this time.',
+      conflict: { id: conflict.id, days: conflict.days, time: conflict.time }
+    });
+  }
   const newClass = dataStore.addClass(req.body);
   res.status(201).json({ success: true, class: newClass });
 });
 
 app.patch('/api/admin/classes/:id', requireAdmin, (req, res) => {
-  const updated = dataStore.updateClass(req.params.id, req.body);
-  if (!updated) return res.status(404).json({ error: 'Class not found' });
+  const body = req.body || {};
+  if (body.time !== undefined && !isValidTime24h(body.time)) {
+    return res.status(400).json({ error: 'time must be in HH:MM 24-hour format (e.g. 14:30).' });
+  }
+  const existing = dataStore.getClasses().find(c => c.id === req.params.id);
+  if (!existing) return res.status(404).json({ error: 'Class not found' });
+  // Re-check for scheduling conflicts against the merged schedule.
+  const tutorId = body.tutorId !== undefined ? body.tutorId : existing.tutorId;
+  const days = body.days !== undefined ? body.days : existing.days;
+  const time = body.time !== undefined ? body.time : existing.time;
+  if (Array.isArray(days) && days.length > 0 && typeof time === 'string') {
+    const conflict = findClassConflict(tutorId, days, time, existing.id);
+    if (conflict) {
+      return res.status(409).json({
+        error: 'This tutor already has a class scheduled on an overlapping day at this time.',
+        conflict: { id: conflict.id, days: conflict.days, time: conflict.time }
+      });
+    }
+  }
+  const updated = dataStore.updateClass(req.params.id, body);
   res.json({ success: true, class: updated });
 });
 
@@ -988,6 +1097,14 @@ app.post('/api/admin/attendance', requireAdmin, (req, res) => {
   const { date, records, markedBy } = req.body;
   if (!date || !Array.isArray(records) || records.length === 0) {
     return res.status(400).json({ error: 'date and a non-empty records array are required.' });
+  }
+  // PROMPT-4 D6: strict YYYY-MM-DD format, and future dates are rejected.
+  if (typeof date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(date) || isNaN(new Date(`${date}T00:00:00Z`).getTime())) {
+    return res.status(400).json({ error: 'date must be a valid calendar date in YYYY-MM-DD format.' });
+  }
+  const today = new Date().toISOString().split('T')[0];
+  if (date > today) {
+    return res.status(400).json({ error: 'Attendance cannot be marked for a future date.' });
   }
   const validStatuses = ['present', 'absent', 'leave'];
   for (const r of records) {
@@ -1047,7 +1164,10 @@ app.post('/api/admin/fee-reminders', requireAdmin, (req, res) => {
     invoiceId, studentName, phone, amount,
     currency: currency || 'USD',
     channel: channel === 'email' ? 'email' : 'whatsapp',
-    sentBy: 'Admin'
+    // PROMPT-5 W2: record the real admin, and log (not "send") — the reminder
+    // itself is opened in the admin's WhatsApp; the server only logs the click.
+    sentBy: req.adminEmail || 'Admin',
+    status: 'logged'
   });
   res.status(201).json({ success: true, reminder });
 });
@@ -1062,11 +1182,51 @@ app.get('/api/admin/hifz-logs', requireAdmin, (req, res) => {
 });
 
 app.post('/api/admin/hifz-logs', requireAdmin, (req, res) => {
-  const { studentId, studentName, date } = req.body;
+  const { studentId, studentName, date, surahNumber, fromAyah, toAyah, juzNumber } = req.body;
   if (!studentId || !date) {
     return res.status(400).json({ error: 'studentId and date are required.' });
   }
-  const log = dataStore.addHifzLog({ ...req.body, studentName: studentName || '', markedBy: 'Admin' });
+  // PROMPT-4 H2: the student must exist and be Active or On Trial.
+  const student = dataStore.getStudents().find(s => s.id === studentId);
+  if (!student) return res.status(404).json({ error: 'Student not found.' });
+  if (student.status !== 'Active' && student.status !== 'On Trial') {
+    return res.status(400).json({ error: 'Hifz logs can only be recorded for Active or On Trial students.' });
+  }
+  // PROMPT-4 D7: validate ayah/surah/juz ranges when numeric fields are sent.
+  const toPositiveInt = (v: unknown): number | null => {
+    if (typeof v === 'number') return Number.isInteger(v) && v > 0 ? v : null;
+    if (typeof v === 'string' && /^\d+$/.test(v.trim())) {
+      const n = parseInt(v.trim(), 10);
+      return n > 0 ? n : null;
+    }
+    return null;
+  };
+  if (surahNumber !== undefined && surahNumber !== null && surahNumber !== '') {
+    const n = toPositiveInt(surahNumber);
+    if (n === null || n > 114) {
+      return res.status(400).json({ error: 'surahNumber must be an integer between 1 and 114.' });
+    }
+  }
+  let from: number | null = null;
+  let to: number | null = null;
+  if (fromAyah !== undefined && fromAyah !== null && fromAyah !== '') {
+    from = toPositiveInt(fromAyah);
+    if (from === null) return res.status(400).json({ error: 'fromAyah must be a positive integer.' });
+  }
+  if (toAyah !== undefined && toAyah !== null && toAyah !== '') {
+    to = toPositiveInt(toAyah);
+    if (to === null) return res.status(400).json({ error: 'toAyah must be a positive integer.' });
+  }
+  if (from !== null && to !== null && from > to) {
+    return res.status(400).json({ error: 'fromAyah must be less than or equal to toAyah.' });
+  }
+  if (juzNumber !== undefined && juzNumber !== null && juzNumber !== '') {
+    const n = toPositiveInt(juzNumber);
+    if (n === null || n > 30) {
+      return res.status(400).json({ error: 'juzNumber must be an integer between 1 and 30.' });
+    }
+  }
+  const log = dataStore.addHifzLog({ ...req.body, studentName: studentName || '', markedBy: req.adminEmail || 'Admin' });
   res.status(201).json({ success: true, log });
 });
 
@@ -1116,13 +1276,21 @@ app.post('/api/admin/coupons', requireAdmin, (req, res) => {
 });
 
 app.patch('/api/admin/coupons/:id', requireAdmin, (req, res) => {
+  // PROMPT-5 C4: surface discount validation as 400 (updateCoupon also guards).
+  const dp = req.body?.discountPercent;
+  if (dp !== undefined) {
+    const n = Number(dp);
+    if (!Number.isFinite(n) || n < 1 || n > 100) {
+      return res.status(400).json({ error: 'discountPercent must be between 1 and 100.' });
+    }
+  }
   const coupon = dataStore.updateCoupon(req.params.id, req.body);
   if (!coupon) return res.status(404).json({ error: 'Coupon not found or code already exists.' });
   res.json({ success: true, coupon });
 });
 
-// Public coupon validation (for the pricing page)
-app.post('/api/coupons/validate', (req, res) => {
+// Public coupon validation (for the pricing page) — rate-limited (PROMPT-3).
+app.post('/api/coupons/validate', checkPublicRateLimit, (req, res) => {
   const { code } = req.body;
   if (!code) return res.status(400).json({ valid: false, reason: 'Coupon code is required.' });
   const result = dataStore.validateCoupon(code);
@@ -1138,7 +1306,7 @@ app.post('/api/coupons/validate', (req, res) => {
 const QURAN_API_BASE = 'https://api.alquran.cloud/v1';
 const quranCache = new Map<string, { data: any; expires: number }>();
 
-app.get('/api/quran/*', async (req, res) => {
+app.get('/api/quran/*', checkPublicRateLimit, async (req, res) => {
   const path = (req.params as any)[0] || '';
   if (!/^(surah\/\d{1,3}\/[a-z.\-]+|juz\/\d{1,2}\/[a-z.\-]+|ayah\/\d{1,4}\/[a-z.\-]+|search\/[^/]{1,60}\/all\/en)$/.test(path)) {
     return res.status(400).json({ error: 'Invalid Quran API path.' });
@@ -1507,6 +1675,11 @@ app.post('/api/admin/invoices', requireAdmin, (req, res) => {
   if (!v.studentName || typeof v.studentName !== 'string' || !v.studentName.trim()) {
     return res.status(400).json({ error: 'Student name is required' });
   }
+  // PROMPT-5 INV-1: ?? semantics — an explicit 0 is a valid zero-fee invoice,
+  // but a missing/blank amount is rejected instead of silently becoming 0.
+  if (v.amount === undefined || v.amount === null || String(v.amount).trim() === '') {
+    return res.status(400).json({ error: 'Amount is required' });
+  }
   const amount = Number(v.amount);
   // Explicit handling: amount must be a finite non-negative number. Zero is
   // allowed (explicitly a zero-fee invoice); NaN/negative are rejected.
@@ -1547,6 +1720,9 @@ app.patch('/api/admin/invoices/:id', requireAdmin, (req, res) => {
   const body = req.body || {};
   // Validate fields that are being changed.
   if (body.amount !== undefined) {
+    if (body.amount === null || String(body.amount).trim() === '') {
+      return res.status(400).json({ error: 'Amount is required' });
+    }
     const amount = Number(body.amount);
     if (!isFinite(amount) || amount < 0) {
       return res.status(400).json({ error: 'Amount must be a non-negative number' });
@@ -1559,7 +1735,8 @@ app.patch('/api/admin/invoices/:id', requireAdmin, (req, res) => {
   if (body.status !== undefined && !['Paid', 'Pending', 'Overdue', 'Waived'].includes(body.status)) {
     return res.status(400).json({ error: 'Invalid status' });
   }
-  const updated = dataStore.updateInvoice(req.params.id, body);
+  // PROMPT-5 INV-3: pass the real admin email so the status history records who changed it.
+  const updated = dataStore.updateInvoice(req.params.id, body, req.adminEmail || 'Admin');
   if (!updated) return res.status(404).json({ error: 'Invoice not found' });
   res.json({ success: true, invoice: updated });
 });
@@ -1834,22 +2011,41 @@ app.get('/api/admin/site-seo', requireAdmin, async (req, res) => {
 app.post('/api/admin/site-seo', requireAdmin, async (req, res) => {
   const db = blogPostsDb();
   if (!db) return res.status(503).json({ error: 'SEO database not available' });
-  const { pageId, config } = req.body;
-  if (!pageId || typeof pageId !== 'string') {
-    return res.status(400).json({ error: 'pageId is required' });
+  const body = req.body || {};
+  // PROMPT-5 regression fix: accept BOTH API contracts —
+  //   A) { pageId, config: { title, description, keywords, ... } }
+  //   B) PageSeoConfig { pagePath, pageName, metaTitle, metaDescription, keywords, canonicalUrl, ogImage, ... }
+  // (the admin panel's SEO tab sends format B).
+  let pageId: string | undefined;
+  let cfg: Record<string, any> = {};
+  if (typeof body.pageId === 'string' && body.config && typeof body.config === 'object') {
+    pageId = body.pageId;
+    cfg = body.config;
+  } else if (typeof body.pagePath === 'string') {
+    pageId = body.pagePath;
+    cfg = body;
+  } else {
+    return res.status(400).json({ error: 'pageId+config or pagePath is required' });
   }
-  if (!config || typeof config !== 'object') {
-    return res.status(400).json({ error: 'config is required' });
-  }
-  const clean: Record<string, any> = {
-    title: typeof config.title === 'string' ? config.title.slice(0, 200) : '',
-    description: typeof config.description === 'string' ? config.description.slice(0, 300) : '',
-    keywords: typeof config.keywords === 'string' ? config.keywords.slice(0, 300) : '',
-    updatedAt: new Date().toISOString(),
+  const clean: Record<string, any> = { updatedAt: new Date().toISOString() };
+  const setIf = (key: string, v: any, max: number) => {
+    // keywords may arrive as a string[] (PageSeoConfig) — join to a string.
+    const val = Array.isArray(v) ? v.filter(x => typeof x === 'string').join(', ') : v;
+    if (typeof val === 'string' && val.trim()) clean[key] = val.slice(0, max);
   };
+  setIf('title', cfg.title ?? cfg.metaTitle, 200);
+  setIf('description', cfg.description ?? cfg.metaDescription, 300);
+  setIf('keywords', cfg.keywords ?? cfg.metaKeywords, 300);
+  // Preserve the extended SEO fields instead of silently dropping them.
+  setIf('canonicalUrl', cfg.canonicalUrl, 500);
+  setIf('ogTitle', cfg.ogTitle, 200);
+  setIf('ogDescription', cfg.ogDescription, 300);
+  setIf('ogImage', cfg.ogImage, 500);
+  setIf('pageName', cfg.pageName, 200);
+  setIf('pagePath', cfg.pagePath ?? pageId, 200);
   try {
     await db.collection(SITE_SEO_COL).doc(pageId.slice(0, 100)).set(clean, { merge: true });
-    res.json({ success: true, config: clean });
+    res.json({ success: true, pageId, config: clean });
   } catch (err: any) {
     console.error('[api] POST /api/admin/site-seo failed:', err.message);
     res.status(500).json({ error: 'Failed to save SEO config' });
@@ -2052,7 +2248,12 @@ async function startServer() {
     let cachedBaseHtml: string | null = null;
 
     app.get('*', async (req, res) => {
-      const { meta, is404 } = resolveRouteMetadata(req.path);
+      const { meta, is404, redirect, spaFallback404 } = resolveRouteMetadata(req.path);
+
+      // Canonical 301 redirects for legacy / duplicate URLs.
+      if (redirect) {
+        return res.redirect(301, redirect);
+      }
 
       if (is404) {
         res.status(404).setHeader('Content-Type', 'text/html; charset=utf-8');
@@ -2068,12 +2269,18 @@ async function startServer() {
         }
       }
 
+      const userAgent = (req.headers['user-agent'] as string) || '';
       let html = cachedBaseHtml;
       if (meta) {
-        html = injectSeoTagsIntoHtml(html, meta, req.path, (req.headers['user-agent'] as string) || '');
+        html = injectSeoTagsIntoHtml(html, meta, req.path, userAgent);
+      }
+      // Unknown blog slugs get the SPA shell with 404 status + noindex so
+      // crawlers don't index the fallback page.
+      if (spaFallback404) {
+        html = injectNoindexIntoHtml(html);
       }
 
-      res.status(200).setHeader('Content-Type', 'text/html; charset=utf-8');
+      res.status(spaFallback404 ? 404 : 200).setHeader('Content-Type', 'text/html; charset=utf-8');
       res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
       res.send(html);
     });
