@@ -513,13 +513,15 @@ export async function getAllBlogPosts(): Promise<BlogPost[]> {
 
 export async function getPublishedBlogPosts(): Promise<BlogPost[]> {
   try {
-    const q = query(
-      collection(db, BLOG_COL),
-      where('published', '==', true),
-      orderBy('createdAt', 'desc')
-    );
-    const snap = await getDocs(q);
-    return snap.docs.map(d => ({ id: d.id, ...d.data() } as BlogPost));
+    // NOTE: the previous where('published','==',true) + orderBy('createdAt','desc')
+    // needs a Firestore composite index that was never created, so the query threw
+    // and the UI silently fell back to the 6 local articles. The collection is tiny,
+    // so fetch it whole and filter/sort client-side instead.
+    const snap = await getDocs(collection(db, BLOG_COL));
+    const posts = snap.docs.map(d => ({ id: d.id, ...d.data() } as BlogPost));
+    return posts
+      .filter(p => p.published !== false)
+      .sort((a, b) => String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
   } catch (err) {
     console.warn('Error fetching published blog posts:', err);
     return [];
