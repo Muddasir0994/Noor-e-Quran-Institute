@@ -556,12 +556,31 @@ class DataStore {
     return Array.isArray(docs) ? docs : [];
   }
 
+  private pendingData: DatabaseSchema | null = null;
+  private writePromise: Promise<void> | null = null;
+
   private saveDatabase(dataToSave?: DatabaseSchema) {
-    try {
-      const payload = dataToSave || this.data;
-      fs.writeFileSync(DB_FILE, JSON.stringify(payload, null, 2), 'utf-8');
-    } catch (err) {
-      console.error('Failed to write academy_db.json:', err);
+    this.pendingData = dataToSave || this.data;
+
+    if (this.writePromise) return; // Already writing, the loop will pick up pendingData
+
+    this.writePromise = (async () => {
+      while (this.pendingData) {
+        const payload = this.pendingData;
+        this.pendingData = null; // Clear pending data before writing
+        try {
+          await fs.promises.writeFile(DB_FILE, JSON.stringify(payload, null, 2), 'utf-8');
+        } catch (err) {
+          console.error('Failed to write academy_db.json:', err);
+        }
+      }
+      this.writePromise = null;
+    })();
+  }
+
+  public async flush(): Promise<void> {
+    while (this.writePromise) {
+      await this.writePromise;
     }
   }
 
