@@ -27,15 +27,30 @@ service cloud.firestore {
       return request.auth.token.email;
     }
 
+    // True when the caller's email is on the admin-managed teacher allowlist.
+    // (reads inside rules are privileged: get()/exists() do not require the
+    // allow read permission on the referenced document.)
+    function isAllowlistedTeacherEmail(email) {
+      return email != null
+        && exists(/databases/$(database)/documents/teacherAllowlist/$(email));
+    }
+
     // ============ User accounts ============
     // Users can read their own profile; admins can read all.
-    // Users CANNOT grant themselves admin/teacher roles.
+    // Users CANNOT grant themselves admin/teacher roles, except that an
+    // email on the admin-managed teacherAllowlist may self-register with
+    // role 'teacher'. 'admin' can never be self-granted.
     match /users/{userId} {
       allow read: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
-      // Create: owner only, and role must not be privileged on self-creation.
+      // Create: owner only. Either no privileged role, or role == 'teacher'
+      // with the caller's email on the teacher allowlist.
       allow create: if isAuthenticated()
                     && request.auth.uid == userId
-                    && !(request.resource.data.role in ['admin', 'teacher']);
+                    && (
+                      !(request.resource.data.role in ['admin', 'teacher'])
+                      || (request.resource.data.role == 'teacher'
+                          && isAllowlistedTeacherEmail(callerEmail()))
+                    );
       // Update: owner may update own profile but may NOT change their role.
       // Only admins may change roles (including their own management).
       allow update: if isAuthenticated() && (
@@ -129,9 +144,22 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // ============ Teacher allowlist (teacher self-registration) ============
+    // Admin-managed list of emails permitted to self-register with the
+    // 'teacher' role. Documents are keyed by email address (e.g.
+    // teacherAllowlist/someone@example.com). Referenced from the users/{userId}
+    // create rule via exists(); public/client reads are admin-only.
+    match /teacherAllowlist/{email} {
+      allow read: if isAdmin();
+      allow write: if isAdmin();
+    }
+
     match /progressReports/{reportId} {
       allow read: if isTeacher();
-      allow write: if isAdmin();
+      // Teachers create and update their own progress reports; only admins
+      // may delete. (Previously admin-only, which denied teacher writes.)
+      allow create, update: if isTeacher();
+      allow delete: if isAdmin();
     }
 
     match /scheduledClasses/{classId} {
@@ -185,8 +213,9 @@ service cloud.firestore {
 
     // ============ Attendance (teacher portal) ============
     // Teachers mark; admins manage. Reads require auth (no public exposure).
-    // Doc IDs are <email>_<date>; strict owner checks deferred until the
-    // attendance schema is unified on studentId (Phase 3D).
+    // Doc IDs are the unified att-<date>-<studentId> format shared with the
+    // server dataStore; the legacy <email>_<date> format is used only when
+    // the portal does not know the studentId.
     match /attendance/{attId} {
       allow read: if isAuthenticated();
       allow write: if isTeacher();

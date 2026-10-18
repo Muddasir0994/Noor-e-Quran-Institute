@@ -181,6 +181,8 @@ export const TeacherPortal: React.FC<TeacherPortalProps> = ({
       });
     } catch (err) {
       console.error('Error logging report:', err);
+      alert('The evaluation could not be saved. Please check your connection and try again — nothing was saved yet.');
+      return;
     }
 
     setEvalSavedSuccess(true);
@@ -418,7 +420,7 @@ export const TeacherPortal: React.FC<TeacherPortalProps> = ({
                     if (!teacherEmail) return;
                     setAttSaving(s.email);
                     try {
-                      await markAttendance({ studentEmail: s.email, studentName: s.name, status, markedBy: teacherEmail });
+                      await markAttendance({ studentId: s.id, studentEmail: s.email, studentName: s.name, status, markedBy: teacherEmail });
                     } catch {}
                     setAttSaving(null);
                   };

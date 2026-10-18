@@ -350,6 +350,9 @@ export async function saveProgressReportToFirebase(
     console.log('✓ Sabaq Evaluation saved to Firestore:', newReport.id);
   } catch (err) {
     console.error('Error saving progress report to Firebase:', err);
+    // Re-throw so callers can show the failure to the user instead of
+    // reporting a false success.
+    throw err;
   }
 
   return newReport;

@@ -15,6 +15,7 @@ export type AttendanceStatus = 'present' | 'absent' | 'leave';
 
 export interface AttendanceRecord {
   id: string;
+  studentId?: string;
   studentEmail: string;
   studentName: string;
   date: string; // YYYY-MM-DD
@@ -29,18 +30,29 @@ export function todayKey(): string {
 }
 
 export async function markAttendance(input: {
+  studentId?: string;
   studentEmail: string;
   studentName: string;
   status: AttendanceStatus;
   markedBy: string;
 }): Promise<void> {
-  // One doc per student per day: id = email_date
-  const id = `${input.studentEmail.toLowerCase()}_${todayKey()}`;
-  await setDoc(doc(db, 'attendance', id), {
-    ...input,
-    date: todayKey(),
+  const date = todayKey();
+  // One doc per student per day. Unified ID with the server dataStore:
+  // att-<date>-<studentId>. Fall back to the legacy email-based ID only
+  // when the portal does not know the studentId.
+  const id = input.studentId
+    ? `att-${date}-${input.studentId}`
+    : `${input.studentEmail.toLowerCase()}_${date}`;
+  const payload: Record<string, any> = {
+    studentEmail: input.studentEmail,
+    studentName: input.studentName,
+    status: input.status,
+    markedBy: input.markedBy,
+    date,
     markedAt: serverTimestamp()
-  }, { merge: true });
+  };
+  if (input.studentId) payload.studentId = input.studentId;
+  await setDoc(doc(db, 'attendance', id), payload, { merge: true });
 }
 
 // Realtime map of today's attendance: email -> status.
