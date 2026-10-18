@@ -513,15 +513,15 @@ export async function getAllBlogPosts(): Promise<BlogPost[]> {
 
 export async function getPublishedBlogPosts(): Promise<BlogPost[]> {
   try {
-    // NOTE: the previous where('published','==',true) + orderBy('createdAt','desc')
-    // needs a Firestore composite index that was never created, so the query threw
-    // and the UI silently fell back to the 6 local articles. The collection is tiny,
-    // so fetch it whole and filter/sort client-side instead.
-    const snap = await getDocs(collection(db, BLOG_COL));
-    const posts = snap.docs.map(d => ({ id: d.id, ...d.data() } as BlogPost));
-    return posts
-      .filter(p => p.published !== false)
-      .sort((a, b) => String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
+    // Public reads go through the server (/api/blog-posts): the Firestore
+    // security rules on the named database deny unauthenticated client reads
+    // (403), so the server's Admin SDK serves the public listing instead.
+    const res = await fetch('/api/blog-posts');
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    const posts = Array.isArray(data.posts) ? (data.posts as BlogPost[]) : [];
+    return posts.sort((a, b) =>
+      String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
   } catch (err) {
     console.warn('Error fetching published blog posts:', err);
     return [];
@@ -530,11 +530,11 @@ export async function getPublishedBlogPosts(): Promise<BlogPost[]> {
 
 export async function getBlogPostBySlug(slug: string): Promise<BlogPost | null> {
   try {
-    const q = query(collection(db, BLOG_COL), where('slug', '==', slug), limit(1));
-    const snap = await getDocs(q);
-    if (!snap.empty) {
-      return { id: snap.docs[0].id, ...snap.docs[0].data() } as BlogPost;
-    }
+    const res = await fetch(`/api/blog-posts?slug=${encodeURIComponent(slug)}`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    const posts = Array.isArray(data.posts) ? (data.posts as BlogPost[]) : [];
+    return posts.length > 0 ? posts[0] : null;
   } catch (err) {
     console.warn('Error fetching blog post by slug:', err);
   }

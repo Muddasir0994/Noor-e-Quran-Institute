@@ -10,6 +10,7 @@ import { dataStore } from './server/dataStore.js';
 import {
   isFirestoreEnabled,
   getFirestoreDb,
+  loadCollectionFromFirestore,
 } from './server/firestore.js';
 import { startArticleSeoCache } from './server/seoCache.js';
 import { 
@@ -572,6 +573,23 @@ app.get('/api/articles', (req, res) => {
     res.json({ success: true, articles });
   } catch (err: any) {
     res.status(500).json({ error: 'Failed to fetch articles' });
+  }
+});
+
+// Public blog posts — served via the Admin SDK because the Firestore security
+// rules on the named database deny unauthenticated client reads (403), which
+// used to make the public /blog page silently fall back to 6 local articles.
+app.get('/api/blog-posts', async (req, res) => {
+  try {
+    const docs = await loadCollectionFromFirestore('blogPosts');
+    const slug = typeof req.query.slug === 'string' ? req.query.slug.trim() : '';
+    let posts = docs.filter((d: any) => d.published !== false && d.status !== 'draft');
+    if (slug) posts = posts.filter((d: any) => d.slug === slug);
+    posts = posts.sort((a: any, b: any) =>
+      String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
+    res.json({ success: true, posts });
+  } catch (err: any) {
+    res.status(500).json({ error: 'Failed to fetch blog posts' });
   }
 });
 
