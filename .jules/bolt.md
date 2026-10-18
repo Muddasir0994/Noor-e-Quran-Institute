@@ -1,0 +1,3 @@
+## 2025-03-08 - Fixed Event Loop Blocking in DataStore I/O
+**Learning:** Using synchronous `fs.writeFileSync` in singletons like `DataStore` blocks the Event Loop and degrades concurrent connection performance, leading to ECONNREFUSED under load. Replacing it with `fs.promises.writeFile` requires a concurrency loop (e.g. `while (this.pendingData)`) to prevent overlapping writes and data loss.
+**Action:** When migrating synchronous file writes to asynchronous writes in high-throughput singletons, always implement a queue/lock mechanism and hook into Node's graceful shutdown events (`SIGTERM`/`SIGINT`) to flush pending data before exiting.
