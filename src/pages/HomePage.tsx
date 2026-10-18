@@ -9,6 +9,7 @@ import { MethodologySection } from '../components/MethodologySection';
 import { TrustSection } from '../components/TrustSection';
 import { StorySection } from '../components/StorySection';
 import { FinalCTASection } from '../components/FinalCTASection';
+import { DailyQuotePopup } from '../components/DailyQuotePopup';
 
 interface HomePageProps {
   courses: Course[];
@@ -29,6 +30,8 @@ export const HomePage: React.FC<HomePageProps> = ({
 
   return (
     <div className="space-y-0 bg-[#F8F5EE]">
+      {/* Daily Islamic quote popup — public homepage only, every load */}
+      <DailyQuotePopup />
       {/* 1. Hero Section */}
       <Hero
         onOpenTrial={() => onOpenTrial()}
