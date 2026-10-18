@@ -86,7 +86,6 @@ export async function saveUserAccountToFirebase(user: UserAccount): Promise<void
       ...user,
       updatedAt: new Date().toISOString()
     }, { merge: true });
-    console.log('✓ User profile saved to Firestore:', user.uid, user.role);
   } catch (err) {
     console.error('Error saving user to Firestore:', err);
     throw err;
@@ -167,7 +166,6 @@ export async function updateTeacherAccountByAdmin(uid: string, updates: Partial<
       ...updates,
       updatedAt: new Date().toISOString()
     });
-    console.log('✓ Teacher configured by Admin in Firestore:', uid);
   } catch (err) {
     console.error('Error updating teacher account:', err);
     throw err;
@@ -177,7 +175,6 @@ export async function updateTeacherAccountByAdmin(uid: string, updates: Partial<
 export async function deleteTeacherAccountByAdmin(uid: string): Promise<void> {
   try {
     await deleteDoc(doc(db, USERS_COL, uid));
-    console.log('✓ Teacher account removed from Firestore:', uid);
   } catch (err) {
     console.error('Error deleting teacher account:', err);
     throw err;
@@ -199,7 +196,6 @@ export async function createLeadInFirebase(leadData: Omit<Lead, 'id' | 'createdA
   try {
     const docRef = doc(db, LEADS_COL, newLead.id);
     await setDoc(docRef, newLead);
-    console.log('✓ Lead saved to Firebase Firestore:', newLead.id);
   } catch (err) {
     console.error('Error saving lead to Firestore:', err);
   }
@@ -253,7 +249,6 @@ export async function createEnrollmentInFirebase(
   try {
     const docRef = doc(db, ENROLLMENTS_COL, newEnrollment.id);
     await setDoc(docRef, newEnrollment);
-    console.log('✓ Enrollment saved to Firebase Firestore:', newEnrollment.id);
   } catch (err) {
     console.error('Error saving enrollment to Firestore:', err);
   }
@@ -295,7 +290,6 @@ export async function createContactMessageInFirebase(
   try {
     const docRef = doc(db, CONTACT_COL, newMsg.id);
     await setDoc(docRef, newMsg);
-    console.log('✓ Contact message saved to Firestore:', newMsg.id);
   } catch (err) {
     console.error('Error saving contact message to Firestore:', err);
   }
@@ -347,7 +341,6 @@ export async function saveProgressReportToFirebase(
   try {
     const docRef = doc(db, PROGRESS_COL, newReport.id);
     await setDoc(docRef, newReport);
-    console.log('✓ Sabaq Evaluation saved to Firestore:', newReport.id);
   } catch (err) {
     console.error('Error saving progress report to Firebase:', err);
     // Re-throw so callers can show the failure to the user instead of
@@ -433,7 +426,6 @@ export async function seedInitialDataIfEmpty(): Promise<void> {
       for (const st of demoStudents) {
         await setDoc(doc(db, STUDENTS_COL, st.id), st);
       }
-      console.log('✓ Seeded demo students into Firestore.');
     }
 
     // Seed initial teacher users into users collection if empty
@@ -488,7 +480,6 @@ export async function seedInitialDataIfEmpty(): Promise<void> {
       for (const u of initialUsers) {
         await setDoc(doc(db, USERS_COL, u.uid), u);
       }
-      console.log('✓ Seeded initial teachers and admin accounts into Firestore.');
     }
   } catch (err) {
     console.warn('Seeding check note:', err);
