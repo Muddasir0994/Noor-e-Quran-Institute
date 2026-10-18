@@ -3,7 +3,7 @@ import { X, Quotes } from '@phosphor-icons/react';
 import { getRandomQuote, type DailyQuote } from '../data/dailyQuotes';
 
 /**
- * DailyQuotePopup — elegant modal shown on every public homepage load.
+ * DailyQuotePopup — premium modal shown on every public homepage load.
  * Displays one random quote from today's 10 date-seeded quotes
  * (Arabic + Urdu + reference). A fresh page load picks a new random quote.
  * Pure modal overlay — never a new window/tab or a separate route.
@@ -12,8 +12,15 @@ export const DailyQuotePopup: React.FC = () => {
   // Picked once per mount: every page load / refresh shows a (random) quote.
   const [quote] = useState<DailyQuote>(() => getRandomQuote());
   const [isOpen, setIsOpen] = useState(true);
+  const [mounted, setMounted] = useState(false);
 
   const onClose = () => setIsOpen(false);
+
+  // Gentle entrance animation: fade + scale once mounted.
+  useEffect(() => {
+    const raf = requestAnimationFrame(() => setMounted(true));
+    return () => cancelAnimationFrame(raf);
+  }, []);
 
   // Escape key closes the modal (accessibility).
   useEffect(() => {
@@ -29,72 +36,88 @@ export const DailyQuotePopup: React.FC = () => {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md overflow-y-auto"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/10 backdrop-blur-[2px] overflow-y-auto"
       onClick={onClose}
       role="dialog"
       aria-modal="true"
       aria-label="Daily Islamic quote"
     >
       <div
-        className="bg-[#FDFBF7] w-full max-w-lg rounded-3xl shadow-2xl border border-[#B79A62]/40 overflow-hidden relative my-8"
+        className={`relative w-full max-w-lg my-8 transition-all duration-300 ease-out ${
+          mounted ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 translate-y-3'
+        }`}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Gold top accent bar */}
-        <div className="h-1.5 bg-gradient-to-r from-[#B79A62] via-[#F3C64D] to-[#B79A62]" />
-
-        {/* Close button */}
-        <button
-          onClick={onClose}
-          aria-label="Close quote"
-          className="absolute top-3 right-3 w-9 h-9 rounded-full bg-[#0B332D]/5 hover:bg-[#0B332D]/10 text-[#0B332D] flex items-center justify-center transition-colors cursor-pointer"
-        >
-          <X size={18} weight="bold" />
-        </button>
-
-        <div className="px-6 sm:px-10 py-8 text-center">
-          {/* Eyebrow */}
-          <div className="flex items-center justify-center gap-2 mb-5">
-            <span className="h-px w-8 bg-[#B79A62]/60" />
-            <Quotes size={20} className="text-[#B79A62]" weight="fill" />
-            <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#B79A62]">
-              Daily Inspiration
-            </span>
-            <Quotes size={20} className="text-[#B79A62] rotate-180" weight="fill" />
-            <span className="h-px w-8 bg-[#B79A62]/60" />
+        {/* Ornamental gold medallion overlapping the top edge */}
+        <div className="absolute -top-5 left-1/2 -translate-x-1/2 z-10">
+          <div className="w-10 h-10 rotate-45 bg-gradient-to-br from-[#D8C7A3] via-[#B79A62] to-[#8f7440] shadow-lg flex items-center justify-center">
+            <span className="-rotate-45 text-[#0B332D] text-lg leading-none select-none">✦</span>
           </div>
-
-          {/* Arabic quote */}
-          <p
-            dir="rtl"
-            lang="ar"
-            className="font-arabic text-2xl sm:text-[1.7rem] leading-[2.2] text-[#0B332D] mb-5"
-          >
-            {quote.arabic}
-          </p>
-
-          {/* Gold divider */}
-          <div className="flex items-center justify-center gap-2 mb-5">
-            <span className="h-px w-16 bg-[#B79A62]/50" />
-            <span className="w-1.5 h-1.5 rotate-45 bg-[#B79A62]" />
-            <span className="h-px w-16 bg-[#B79A62]/50" />
-          </div>
-
-          {/* Urdu translation */}
-          <p dir="rtl" lang="ur" className="font-urdu text-lg leading-[2.1] text-[#3d4a45] mb-4">
-            {quote.urdu}
-          </p>
-
-          {/* Reference */}
-          <p className="text-xs font-semibold tracking-wide text-[#B79A62] uppercase">
-            — {quote.reference}
-          </p>
         </div>
 
-        {/* Footer strip */}
-        <div className="bg-[#064E3B] px-6 py-3 text-center">
-          <p className="text-[11px] text-white/80 tracking-wide">
-            A new quote every day · Refresh for another
-          </p>
+        {/* Card */}
+        <div className="relative bg-[#FDFBF7] rounded-[1.75rem] shadow-[0_30px_80px_-20px_rgba(11,51,45,0.45)] ring-1 ring-[#B79A62]/50 overflow-hidden">
+          {/* Inner hairline gold frame (double-frame effect) */}
+          <div className="pointer-events-none absolute inset-2.5 rounded-[1.35rem] border border-[#B79A62]/40" />
+
+          {/* Gold top accent bar */}
+          <div className="h-1.5 bg-gradient-to-r from-[#8f7440] via-[#F3C64D] to-[#8f7440]" />
+
+          {/* Close button */}
+          <button
+            onClick={onClose}
+            aria-label="Close quote"
+            className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-[#0B332D]/5 hover:bg-[#0B332D]/15 text-[#0B332D] flex items-center justify-center transition-colors cursor-pointer"
+          >
+            <X size={18} weight="bold" />
+          </button>
+
+          <div className="px-6 sm:px-10 pt-9 pb-8 text-center">
+            {/* Eyebrow */}
+            <div className="flex items-center justify-center gap-2.5 mb-6">
+              <span className="h-px w-10 bg-gradient-to-r from-transparent to-[#B79A62]/70" />
+              <Quotes size={18} className="text-[#B79A62]" weight="fill" />
+              <span className="text-[11px] font-bold uppercase tracking-[0.25em] text-[#8f7440]">
+                Daily Inspiration
+              </span>
+              <Quotes size={18} className="text-[#B79A62] rotate-180" weight="fill" />
+              <span className="h-px w-10 bg-gradient-to-l from-transparent to-[#B79A62]/70" />
+            </div>
+
+            {/* Arabic quote */}
+            <p
+              dir="rtl"
+              lang="ar"
+              className="font-arabic text-3xl sm:text-[2rem] leading-[2.1] text-[#0B332D] mb-6"
+            >
+              {quote.arabic}
+            </p>
+
+            {/* Gold diamond divider */}
+            <div className="flex items-center justify-center gap-3 mb-6">
+              <span className="h-px w-20 bg-gradient-to-r from-transparent to-[#B79A62]/60" />
+              <span className="w-2 h-2 rotate-45 bg-gradient-to-br from-[#D8C7A3] to-[#8f7440] shadow-sm" />
+              <span className="h-px w-20 bg-gradient-to-l from-transparent to-[#B79A62]/60" />
+            </div>
+
+            {/* Urdu translation — Jameel Noori Nastaleeq (self-hosted) */}
+            <p dir="rtl" lang="ur" className="font-urdu text-xl leading-[2.6] text-[#2c3a35] mb-5">
+              {quote.urdu}
+            </p>
+
+            {/* Reference */}
+            <p className="text-xs font-bold tracking-[0.18em] text-[#8f7440] uppercase">
+              — {quote.reference}
+            </p>
+          </div>
+
+          {/* Footer strip */}
+          <div className="relative bg-gradient-to-r from-[#07221E] via-[#0B332D] to-[#07221E] px-6 py-3.5 text-center">
+            <div className="absolute top-0 inset-x-8 h-px bg-[#B79A62]/40" />
+            <p className="text-[11px] text-white/85 tracking-[0.14em] uppercase">
+              A new quote every day <span className="text-[#B79A62] mx-1">✦</span> Refresh for another
+            </p>
+          </div>
         </div>
       </div>
     </div>
