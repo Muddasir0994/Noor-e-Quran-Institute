@@ -69,6 +69,7 @@ import {
   FloppyDisk,
   ArrowsClockwise,
   PhoneCall,
+  List,
   CalendarCheck,
   VideoCamera,
   Calendar,
@@ -103,7 +104,7 @@ import {
 } from '@phosphor-icons/react';
 import { BlogEditor } from './BlogEditor';
 import { ImageCropModal } from '../components/ImageCropModal';
-import { saveSiteSeoConfig, getSiteSeoConfigs } from '../lib/firestoreService';
+import { getSiteSeoConfigs } from '../lib/firestoreService';
 import { usePresenceList, isOnline, lastSeenText } from '../components/portal/usePresence';
 
 interface AdminPortalProps {
@@ -168,6 +169,8 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
   const [activeTab, setActiveTab] = useState<
     'overview' | 'leads' | 'enrollments' | 'students' | 'attendance' | 'trials' | 'hifz' | 'availability' | 'tutors' | 'timetable' | 'finance' | 'reports' | 'payroll' | 'logs' | 'courses' | 'packages' | 'blog' | 'testimonials' | 'faqs' | 'coupons' | 'referrals' | 'media' | 'templates' | 'seo' | 'settings'
   >('overview');
+  // Mobile sidebar drawer state (desktop sidebar is always visible)
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Data states
   const [stats, setStats] = useState<DashboardStats | null>(null);
@@ -185,6 +188,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
   const [attendanceStatus, setAttendanceStatus] = useState<Record<string, 'present' | 'absent' | 'leave'>>({});
   const [savingAttendance, setSavingAttendance] = useState(false);
   const [attendanceMsg, setAttendanceMsg] = useState('');
+  const [attendanceMsgIsError, setAttendanceMsgIsError] = useState(false);
 
   // Trial Classes State
   const [trials, setTrials] = useState<TrialClass[]>([]);
@@ -244,11 +248,11 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
     studentName: '',
     parentName: '',
     phone: '',
-    courseName: 'Nazra Quran with Tajweed',
-    packageName: 'Standard (3 Days / Wk)',
-    amount: 35,
+    courseName: '',
+    packageName: '',
+    amount: undefined,
     currency: 'USD',
-    billingMonth: 'August 2026',
+    billingMonth: '',
     dueDate: new Date().toISOString().split('T')[0],
     status: 'Pending',
     paymentMethod: 'Bank Transfer'
@@ -263,14 +267,14 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
   const [reportForm, setReportForm] = useState<Partial<StudentReportCard>>({
     studentId: '',
     studentName: '',
-    courseName: 'Nazra Quran with Tajweed',
-    tutorName: 'Qari Hafiz Muhammad Bilal',
-    evaluationMonth: 'August 2026',
-    currentSabaq: 'Surah Al-Baqarah (Ayah 142)',
-    readingGrade: 'A+',
-    tajweedGrade: 'A',
-    attendancePercentage: 95,
-    teacherRemarks: 'MashaAllah, outstanding improvement in pronunciation and Tajweed rules this month.'
+    courseName: '',
+    tutorName: '',
+    evaluationMonth: '',
+    currentSabaq: '',
+    readingGrade: undefined,
+    tajweedGrade: undefined,
+    attendancePercentage: undefined,
+    teacherRemarks: ''
   });
   const [selectedReportForPrint, setSelectedReportForPrint] = useState<StudentReportCard | null>(null);
 
@@ -670,12 +674,22 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
   const handleSaveAttendance = async () => {
     setSavingAttendance(true);
     setAttendanceMsg('');
+    setAttendanceMsgIsError(false);
+    // Only explicitly marked students are submitted; untouched students are
+    // excluded as 'unmarked' (never auto-assumed present).
+    const markedStudents = students.filter(s => attendanceStatus[s.id]);
+    if (markedStudents.length === 0) {
+      setAttendanceMsgIsError(true);
+      setAttendanceMsg('Please mark at least one student before saving.');
+      setSavingAttendance(false);
+      return;
+    }
     try {
       const headers = { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' };
-      const records = students.map(s => ({
+      const records = markedStudents.map(s => ({
         studentId: s.id,
         studentName: s.studentName,
-        status: attendanceStatus[s.id] || 'present'
+        status: attendanceStatus[s.id] as 'present' | 'absent' | 'leave'
       }));
       const res = await fetch('/api/admin/attendance', {
         method: 'POST',
@@ -690,11 +704,14 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
         const map: Record<string, 'present' | 'absent' | 'leave'> = {};
         recs.forEach(r => { map[r.studentId] = r.status; });
         setAttendanceStatus(map);
+        setAttendanceMsgIsError(false);
         setAttendanceMsg(`Attendance saved for ${attendanceDate}.`);
       } else {
+        setAttendanceMsgIsError(true);
         setAttendanceMsg(data.error || 'Failed to save attendance.');
       }
     } catch (err) {
+      setAttendanceMsgIsError(true);
       setAttendanceMsg('Failed to save attendance.');
     } finally {
       setSavingAttendance(false);
@@ -1641,25 +1658,58 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
     }
   };
 
-  // --- SEO & Schema CMS Handlers (writes through to Firestore `siteSeo` so the live site applies them) ---
+  // --- SEO & Schema CMS Handlers (persisted via backend POST /api/admin/site-seo; localStorage is only a cache) ---
   const handleSaveSeo = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedSeoPage) return;
     const next = { ...selectedSeoPage, ...seoForm } as PageSeoConfig;
-    const updated = seoConfigs.map(s => s.pagePath === selectedSeoPage.pagePath ? next : s);
-    setSeoConfigs(updated);
-    safeSetItem('alnoor_cms_seo', JSON.stringify(updated));
     try {
-      await saveSiteSeoConfig(next);
+      // Body carries BOTH the server's {pageId, config:{title,description,keywords}}
+      // contract AND the full PageSeoConfig fields, so it works with either
+      // server-side parsing shape.
+      const res = await fetch('/api/admin/site-seo', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          pageId: next.pagePath,
+          config: {
+            title: next.metaTitle,
+            description: next.metaDescription,
+            keywords: (next.keywords || []).join(', ')
+          },
+          pagePath: next.pagePath,
+          pageName: next.pageName,
+          metaTitle: next.metaTitle,
+          metaDescription: next.metaDescription,
+          keywords: next.keywords,
+          canonicalUrl: next.canonicalUrl,
+          ogImage: next.ogImage
+        })
+      });
+      if (res.status === 401) { handleLogout(); return; }
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || `Server rejected the SEO save (HTTP ${res.status}).`);
+      }
+      const updated = seoConfigs.map(s => s.pagePath === selectedSeoPage.pagePath ? next : s);
+      setSeoConfigs(updated);
+      safeSetItem('alnoor_cms_seo', JSON.stringify(updated));
       setSeoSaveToast(true);
       setTimeout(() => setSeoSaveToast(false), 3000);
-    } catch {
-      setIndexNowStatusMsg('Saved locally, but could not reach the live site database. Check connection/Firestore rules.');
-      setTimeout(() => setIndexNowStatusMsg(null), 5000);
+    } catch (err: any) {
+      setIndexNowStatusMsg(`SEO save failed: ${err?.message || 'could not reach the server'}. Nothing was persisted.`);
+      setTimeout(() => setIndexNowStatusMsg(null), 6000);
     }
   };
 
   // --- Data Backup & CSV Export Handlers ---
+  // CSV formula-injection guard: prefix cell values starting with =, +, -, @
+  // with a single quote so spreadsheet apps never evaluate them as formulas.
+  const csvSafe = (val: unknown): string => {
+    const s = String(val ?? '');
+    return /^[=+\-@]/.test(s) ? `'${s}` : s;
+  };
+
   const handleExportDatabaseJson = () => {
     const fullDb = {
       exportedAt: new Date().toISOString(),
@@ -1675,7 +1725,17 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
       faqs,
       siteSettings,
       templates,
-      seoConfigs
+      seoConfigs,
+      invoices,
+      payroll: payrollList,
+      reportCards,
+      attendance: attendanceRecords,
+      hifzLogs,
+      scheduledClasses,
+      coupons,
+      referrals,
+      trials,
+      activityLogs: activityLogs.slice(0, 1000)
     };
     const blob = new Blob([JSON.stringify(fullDb, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -1689,18 +1749,18 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
   const handleExportStudentsCsv = () => {
     const headers = ['Student ID', 'Student Name', 'Parent Name', 'Phone', 'Email', 'Country', 'Course', 'Assigned Tutor', 'Timetable Days', 'Time Slot', 'Current Sabaq', 'Status'];
     const rows = students.map(s => [
-      s.id,
-      `"${s.studentName}"`,
-      `"${s.parentName || ''}"`,
-      `"${s.phone}"`,
-      `"${s.email}"`,
-      `"${s.country}"`,
-      `"${s.courseName}"`,
-      `"${s.tutorName || 'Unassigned'}"`,
-      `"${(s.preferredDays || []).join(', ')}"`,
-      `"${s.preferredTime || ''}"`,
-      `"${s.currentSurahOrLesson || ''}"`,
-      `"${s.status}"`
+      csvSafe(s.id),
+      `"${csvSafe(s.studentName)}"`,
+      `"${csvSafe(s.parentName || '')}"`,
+      `"${csvSafe(s.phone)}"`,
+      `"${csvSafe(s.email)}"`,
+      `"${csvSafe(s.country)}"`,
+      `"${csvSafe(s.courseName)}"`,
+      `"${csvSafe(s.tutorName || 'Unassigned')}"`,
+      `"${csvSafe((s.preferredDays || []).join(', '))}"`,
+      `"${csvSafe(s.preferredTime || '')}"`,
+      `"${csvSafe(s.currentSurahOrLesson || '')}"`,
+      `"${csvSafe(s.status)}"`
     ]);
     const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -1715,17 +1775,17 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
   const handleExportLeadsCsv = () => {
     const headers = ['Lead ID', 'Student Name', 'Parent Name', 'Phone', 'Email', 'Country', 'Course', 'Time Slot', 'Tutor Pref', 'Status', 'Date'];
     const rows = leads.map(l => [
-      l.id,
-      `"${l.studentName}"`,
-      `"${l.parentName || ''}"`,
-      `"${l.phone}"`,
-      `"${l.email}"`,
-      `"${l.country}"`,
-      `"${l.courseName}"`,
-      `"${l.timeSlot}"`,
-      `"${l.tutorGender}"`,
-      `"${l.status}"`,
-      `"${new Date(l.createdAt).toLocaleDateString()}"`
+      csvSafe(l.id),
+      `"${csvSafe(l.studentName)}"`,
+      `"${csvSafe(l.parentName || '')}"`,
+      `"${csvSafe(l.phone)}"`,
+      `"${csvSafe(l.email)}"`,
+      `"${csvSafe(l.country)}"`,
+      `"${csvSafe(l.courseName)}"`,
+      `"${csvSafe(l.timeSlot)}"`,
+      `"${csvSafe(l.tutorGender)}"`,
+      `"${csvSafe(l.status)}"`,
+      `"${csvSafe(new Date(l.createdAt).toLocaleDateString())}"`
     ]);
     const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -1767,14 +1827,13 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
       });
       const data = await res.json();
       if (data.success) {
-        setIndexNowStatusMsg(`✅ Successfully queued ${data.submittedUrlsCount || 31} URLs to IndexNow.org!`);
+        setIndexNowStatusMsg(`✅ IndexNow submission received for ${data.submittedUrlsCount || 31} URLs (submission ≠ indexing — the search engine decides when to crawl).`);
+        logActivity('Dispatched 31 Sitemap URLs to IndexNow Search Engine Protocol', 'System');
       } else {
-        setIndexNowStatusMsg(`ℹ️ IndexNow status: ${data.message || 'Queued'}`);
+        setIndexNowStatusMsg(`⚠️ IndexNow submission was NOT accepted: ${data.message || 'server rejected the request'}. No audit-log entry written.`);
       }
-      logActivity('Dispatched 31 Sitemap URLs to IndexNow Search Engine Protocol', 'System');
     } catch (err: any) {
-      setIndexNowStatusMsg('✅ 31 URLs successfully dispatched to IndexNow!');
-      logActivity('Dispatched 31 Sitemap URLs to IndexNow Search Engine Protocol', 'System');
+      setIndexNowStatusMsg(`❌ IndexNow dispatch failed: ${err?.message || 'could not reach the server'}. No URLs were dispatched and nothing was logged.`);
     } finally {
       setIsSubmittingIndexNow(false);
     }
@@ -1786,16 +1845,25 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
     setInvoiceErr('');
     setSavingInvoice(true);
     try {
+      // An explicit student selection is mandatory — never fall back to students[0].
+      if (!invoiceForm.studentId) {
+        setInvoiceErr('Please select a student for this invoice.');
+        return;
+      }
+      if (invoiceForm.amount === undefined || invoiceForm.amount === null || Number.isNaN(invoiceForm.amount)) {
+        setInvoiceErr('Please enter a fee amount.');
+        return;
+      }
       const payload = {
-        studentId: invoiceForm.studentId || (students[0]?.id ?? 'stu-1'),
-        studentName: invoiceForm.studentName || (students[0]?.studentName ?? 'Student'),
-        parentName: invoiceForm.parentName || (students[0]?.parentName ?? 'Parent'),
-        phone: invoiceForm.phone || (students[0]?.phone ?? '+923274496163'),
-        courseName: invoiceForm.courseName || 'Nazra Quran with Tajweed',
-        packageName: invoiceForm.packageName || 'Standard Plan',
-        amount: invoiceForm.amount || 35,
+        studentId: invoiceForm.studentId,
+        studentName: invoiceForm.studentName || 'Student',
+        parentName: invoiceForm.parentName || 'Parent',
+        phone: invoiceForm.phone || '',
+        courseName: invoiceForm.courseName || '',
+        packageName: invoiceForm.packageName || '',
+        amount: Number(invoiceForm.amount),
         currency: invoiceForm.currency || 'USD',
-        billingMonth: invoiceForm.billingMonth || 'Current Month',
+        billingMonth: invoiceForm.billingMonth || '',
         dueDate: invoiceForm.dueDate || new Date().toISOString().split('T')[0],
         status: invoiceForm.status || 'Pending',
         paymentMethod: invoiceForm.paymentMethod || 'Bank Transfer'
@@ -1855,22 +1923,65 @@ JazakAllah Khair!`);
   };
 
   // --- Student Progress Report Handlers (API-first; localStorage is only a cache) ---
+  // Never render a fake "undefined%" — show a dash when no attendance was recorded.
+  const fmtAttendance = (v: number | undefined): string =>
+    (typeof v === 'number' && !isNaN(v)) ? `${v}%` : '—';
+  // Calculates a student's attendance % from recorded attendance for the given
+  // evaluation month ("August 2026" style). Returns 0 when there are no records
+  // — never a faked default.
+  const computeMonthlyAttendancePct = async (studentId: string, evaluationMonth: string): Promise<number> => {
+    try {
+      const headers = { Authorization: `Bearer ${token}` };
+      const res = await fetch(`/api/admin/attendance/student/${studentId}`, { headers });
+      if (!res.ok) return 0;
+      const data = await res.json();
+      const recs: AttendanceRecord[] = data.records || [];
+      const parsed = new Date(`${evaluationMonth} 1`);
+      if (isNaN(parsed.getTime())) return 0;
+      const y = parsed.getFullYear();
+      const m = parsed.getMonth();
+      const monthRecs = recs.filter(r => {
+        const d = new Date(`${r.date}T00:00:00`);
+        return d.getFullYear() === y && d.getMonth() === m;
+      });
+      if (monthRecs.length === 0) return 0;
+      const present = monthRecs.filter(r => r.status === 'present').length;
+      return Math.round((present / monthRecs.length) * 100);
+    } catch {
+      return 0;
+    }
+  };
+
   const handleSaveReportCard = async (e: React.FormEvent) => {
     e.preventDefault();
     setReportErr('');
     setSavingReport(true);
     try {
+      // Validation: student, course, tutor and month are all mandatory.
+      const studentId = reportForm.studentId;
+      const courseName = (reportForm.courseName || '').trim();
+      const tutorName = (reportForm.tutorName || '').trim();
+      const evaluationMonth = (reportForm.evaluationMonth || '').trim();
+      if (!studentId || !courseName || !tutorName || !evaluationMonth) {
+        setReportErr('Please select a student and fill in the course, tutor, and evaluation month before generating.');
+        return;
+      }
+      if (!reportForm.readingGrade || !reportForm.tajweedGrade) {
+        setReportErr('Please select both a Tajweed grade and a Reading grade.');
+        return;
+      }
+      const attendancePercentage = await computeMonthlyAttendancePct(studentId, evaluationMonth);
       const payload = {
-        studentId: reportForm.studentId || (students[0]?.id ?? 'stu-1'),
-        studentName: reportForm.studentName || (students[0]?.studentName ?? 'Student'),
-        courseName: reportForm.courseName || 'Nazra Quran with Tajweed',
-        tutorName: reportForm.tutorName || 'Qari Hafiz Muhammad Bilal',
-        evaluationMonth: reportForm.evaluationMonth || 'August 2026',
-        currentSabaq: reportForm.currentSabaq || 'Surah Al-Baqarah',
-        readingGrade: reportForm.readingGrade || 'A+',
-        tajweedGrade: reportForm.tajweedGrade || 'A',
-        attendancePercentage: reportForm.attendancePercentage || 95,
-        teacherRemarks: reportForm.teacherRemarks || 'MashaAllah, dedicated student!'
+        studentId,
+        studentName: reportForm.studentName || students.find(s => s.id === studentId)?.studentName || 'Student',
+        courseName,
+        tutorName,
+        evaluationMonth,
+        currentSabaq: reportForm.currentSabaq || '',
+        readingGrade: reportForm.readingGrade,
+        tajweedGrade: reportForm.tajweedGrade,
+        attendancePercentage,
+        teacherRemarks: reportForm.teacherRemarks || ''
       };
       const data = await callAdminApi<{ report: StudentReportCard }>('/api/admin/reports', 'POST', payload);
       if (!data) return; // 401 → logged out
@@ -1901,7 +2012,7 @@ Here is the Monthly Quran Performance Report for *${rep.studentName}*:
 📍 Current Sabaq Milestone: ${rep.currentSabaq}
 🌟 Tajweed Accuracy: ${rep.tajweedGrade}
 🗣️ Reading Fluency: ${rep.readingGrade}
-📊 Attendance: ${rep.attendancePercentage}%
+📊 Attendance: ${fmtAttendance(rep.attendancePercentage)}
 
 💬 Tutor's Remarks: "${rep.teacherRemarks}"
 
@@ -1973,6 +2084,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
     e.preventDefault();
     if (!assigningStudent) return;
 
+    const originalStudent = assigningStudent; // kept for UI rollback on API failure
     const matchedTutor = tutors.find(t => t.id === assignmentForm.tutorId);
     const tutorName = matchedTutor ? matchedTutor.name : assignmentForm.tutorName;
 
@@ -1990,7 +2102,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
     setStudents(prev => prev.map(s => s.id === assigningStudent.id ? updatedStudent : s));
 
     try {
-      await fetch(`/api/admin/students/${assigningStudent.id}`, {
+      const res = await fetch(`/api/admin/students/${assigningStudent.id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -2005,8 +2117,14 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
           status: assignmentForm.status
         })
       });
-    } catch (err) {
-      console.warn('Persist to backend notice:', err);
+      if (!res.ok) {
+        throw new Error(`Server rejected the assignment (HTTP ${res.status}).`);
+      }
+    } catch (err: any) {
+      // Roll back the optimistic UI update so the panel never shows an unsaved assignment.
+      setStudents(prev => prev.map(s => s.id === originalStudent.id ? originalStudent : s));
+      alert(`Failed to save tutor assignment: ${err?.message || 'unknown error'}. The change was reverted — please try again.`);
+      return;
     }
 
     setAssigningStudent(null);
@@ -2143,11 +2261,46 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
           </div>
         ) : (
           /* AUTHENTICATED ADMIN DASHBOARD */
-          <div className="flex-1 flex overflow-hidden">
+          <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
 
-            {/* Sidebar Navigation */}
-            <aside className="w-60 bg-[#F8F5EE] border-r border-[#E8E0D1] p-3.5 flex flex-col justify-between shrink-0 overflow-y-auto">
+            {/* Mobile-only top bar with hamburger */}
+            <div className="md:hidden flex items-center justify-between px-4 py-3 bg-[#F8F5EE] border-b border-[#E8E0D1] shrink-0">
+              <span className="font-editorial text-lg font-bold text-[#0B332D]">Noor E Quran Command Studio</span>
+              <button
+                type="button"
+                onClick={() => setSidebarOpen(true)}
+                aria-label="Open navigation menu"
+                className="p-2 text-[#0B332D] hover:bg-[#E8E0D1]/60 rounded-sm cursor-pointer"
+              >
+                <List className="w-6 h-6" weight="bold" />
+              </button>
+            </div>
+
+            {/* Mobile drawer backdrop */}
+            {sidebarOpen && (
+              <div
+                className="fixed inset-0 z-40 bg-black/50 md:hidden"
+                onClick={() => setSidebarOpen(false)}
+                aria-hidden="true"
+              />
+            )}
+
+            {/* Sidebar Navigation — slide-in drawer below md, static sidebar on desktop */}
+            <aside className={`w-60 bg-[#F8F5EE] border-r border-[#E8E0D1] p-3.5 flex flex-col justify-between shrink-0 overflow-y-auto fixed md:static inset-y-0 left-0 z-50 transition-transform duration-200 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
               <div className="space-y-4">
+
+                {/* Mobile-only close button */}
+                <div className="md:hidden flex items-center justify-between px-1 pb-1">
+                  <span className="font-editorial text-base font-bold text-[#0B332D]">Menu</span>
+                  <button
+                    type="button"
+                    onClick={() => setSidebarOpen(false)}
+                    aria-label="Close navigation menu"
+                    className="p-1.5 text-gray-600 hover:text-[#0B332D] cursor-pointer"
+                  >
+                    <X className="w-5 h-5" weight="bold" />
+                  </button>
+                </div>
 
                 {/* Operations Section */}
                 <div>
@@ -2176,7 +2329,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                       return (
                         <button
                           key={item.id}
-                          onClick={() => setActiveTab(item.id as any)}
+                          onClick={() => { setActiveTab(item.id as any); setSidebarOpen(false); }}
                           className={`w-full flex items-center justify-between px-3 py-2 text-xs font-sans rounded-sm transition-all cursor-pointer ${active
                             ? 'bg-[#0B332D] text-[#F8F5EE] font-bold shadow-xs'
                             : 'text-gray-700 hover:bg-[#E8E0D1]/50'
@@ -2215,7 +2368,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                       return (
                         <button
                           key={item.id}
-                          onClick={() => setActiveTab(item.id as any)}
+                          onClick={() => { setActiveTab(item.id as any); setSidebarOpen(false); }}
                           className={`w-full flex items-center justify-between px-3 py-2 text-xs font-sans rounded-sm transition-all cursor-pointer ${active
                             ? 'bg-[#0B332D] text-[#F8F5EE] font-bold shadow-xs'
                             : 'text-gray-700 hover:bg-[#E8E0D1]/50'
@@ -2250,7 +2403,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                       return (
                         <button
                           key={item.id}
-                          onClick={() => setActiveTab(item.id as any)}
+                          onClick={() => { setActiveTab(item.id as any); setSidebarOpen(false); }}
                           className={`w-full flex items-center justify-between px-3 py-2 text-xs font-sans rounded-sm transition-all cursor-pointer ${active
                             ? 'bg-[#0B332D] text-[#F8F5EE] font-bold shadow-xs'
                             : 'text-gray-700 hover:bg-[#E8E0D1]/50'
@@ -2601,7 +2754,9 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                   </div>
 
                   {attendanceMsg && (
-                    <div className="text-xs font-sans font-semibold text-emerald-800 bg-emerald-50 border border-emerald-200 rounded-sm px-3 py-2">{attendanceMsg}</div>
+                    <div className={`text-xs font-sans font-semibold rounded-sm px-3 py-2 ${attendanceMsgIsError
+                      ? 'text-red-800 bg-red-50 border border-red-300'
+                      : 'text-emerald-800 bg-emerald-50 border border-emerald-200'}`}>{attendanceMsg}</div>
                   )}
 
                   <div className="bg-[#FCFBF8] rounded-sm border border-[#E8E0D1] shadow-xs overflow-hidden">
@@ -2615,8 +2770,10 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-[#E8E0D1]/60">
-                          {students.map(stu => {
-                            const st = attendanceStatus[stu.id] || 'present';
+                          {students
+                            .filter(stu => stu.status === 'Active' || stu.status === 'On Trial')
+                            .map(stu => {
+                            const st = attendanceStatus[stu.id];
                             const opts: { val: 'present' | 'absent' | 'leave'; label: string; activeCls: string }[] = [
                               { val: 'present', label: 'Present', activeCls: 'bg-emerald-600 text-white border-emerald-600' },
                               { val: 'absent', label: 'Absent', activeCls: 'bg-red-600 text-white border-red-600' },
@@ -2654,12 +2811,23 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                   </div>
 
                   <div className="text-xs font-sans text-gray-600 bg-[#F8F5EE] border border-[#E8E0D1] rounded-sm px-4 py-2.5">
-                    <span className="font-bold text-emerald-700">{students.filter(s => (attendanceStatus[s.id] || 'present') === 'present').length} present</span>
-                    {' • '}
-                    <span className="font-bold text-red-700">{students.filter(s => attendanceStatus[s.id] === 'absent').length} absent</span>
-                    {' • '}
-                    <span className="font-bold text-amber-700">{students.filter(s => attendanceStatus[s.id] === 'leave').length} on leave</span>
-                    <span className="text-gray-400"> — {attendanceDate}</span>
+                    {(() => {
+                      const roster = students.filter(s => s.status === 'Active' || s.status === 'On Trial');
+                      const marked = roster.filter(s => attendanceStatus[s.id]);
+                      return (
+                        <>
+                          <span className="font-bold text-emerald-700">{marked.filter(s => attendanceStatus[s.id] === 'present').length} present</span>
+                          {' • '}
+                          <span className="font-bold text-red-700">{marked.filter(s => attendanceStatus[s.id] === 'absent').length} absent</span>
+                          {' • '}
+                          <span className="font-bold text-amber-700">{marked.filter(s => attendanceStatus[s.id] === 'leave').length} on leave</span>
+                          {marked.length < roster.length && (
+                            <span className="text-gray-400"> • {roster.length - marked.length} unmarked</span>
+                          )}
+                          <span className="text-gray-400"> — {attendanceDate}</span>
+                        </>
+                      );
+                    })()}
                   </div>
                 </div>
               )}
@@ -3261,16 +3429,17 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
 
                     <button
                       onClick={() => {
+                        setInvoiceErr('');
                         setInvoiceForm({
-                          studentId: students[0]?.id ?? 'stu-1',
-                          studentName: students[0]?.studentName ?? 'Student',
-                          parentName: students[0]?.parentName ?? 'Parent',
-                          phone: students[0]?.phone ?? '+923274496163',
-                          courseName: 'Nazra Quran with Tajweed',
-                          packageName: 'Standard (3 Days / Wk)',
-                          amount: 35,
+                          studentId: '',
+                          studentName: '',
+                          parentName: '',
+                          phone: '',
+                          courseName: '',
+                          packageName: '',
+                          amount: undefined,
                           currency: 'USD',
-                          billingMonth: 'August 2026',
+                          billingMonth: '',
                           dueDate: new Date().toISOString().split('T')[0],
                           status: 'Pending',
                           paymentMethod: 'Bank Transfer'
@@ -3383,7 +3552,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                                     <button
                                       onClick={() => handleFeeReminder(inv)}
                                       className="px-2.5 py-1 bg-[#B79A62] text-white text-[10px] font-sans font-bold rounded-xs hover:bg-[#a3874f] cursor-pointer inline-flex items-center gap-1 shadow-xs"
-                                      title="Send fee reminder on WhatsApp and log it"
+                                      title="Opens a WhatsApp chat with a pre-filled fee reminder — you must press Send in WhatsApp yourself; nothing is sent automatically"
                                     >
                                       <WhatsappLogo className="w-3.5 h-3.5" weight="fill" />
                                       <span>Remind</span>
@@ -3419,17 +3588,18 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
 
                     <button
                       onClick={() => {
+                        setReportErr('');
                         setReportForm({
-                          studentId: students[0]?.id ?? 'stu-1',
-                          studentName: students[0]?.studentName ?? 'Student',
-                          courseName: 'Nazra Quran with Tajweed',
-                          tutorName: 'Qari Hafiz Muhammad Bilal',
-                          evaluationMonth: 'August 2026',
-                          currentSabaq: 'Surah Al-Baqarah (Ayah 142)',
-                          readingGrade: 'A+',
-                          tajweedGrade: 'A',
-                          attendancePercentage: 95,
-                          teacherRemarks: 'MashaAllah, dedicated student with exemplary Tajweed improvement!'
+                          studentId: '',
+                          studentName: '',
+                          courseName: '',
+                          tutorName: '',
+                          evaluationMonth: '',
+                          currentSabaq: '',
+                          readingGrade: undefined,
+                          tajweedGrade: undefined,
+                          attendancePercentage: undefined,
+                          teacherRemarks: ''
                         });
                         setIsGeneratingReport(true);
                       }}
@@ -3460,7 +3630,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                               <p className="text-[11px] text-gray-600 font-sans">{rep.courseName} • Tutor: {rep.tutorName}</p>
                             </div>
                             <span className="px-2 py-0.5 text-xs font-bold rounded-xs bg-[#0B332D] text-[#F8F5EE]">
-                              {rep.attendancePercentage}% Attendance
+                              {fmtAttendance(rep.attendancePercentage)} Attendance
                             </span>
                           </div>
 
@@ -4168,8 +4338,8 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                           <div className="w-7 h-7 rounded-sm bg-[#0B332D] text-[#B79A62] flex items-center justify-center mb-2">
                             <FloppyDisk className="w-4 h-4" />
                           </div>
-                          <span className="font-bold text-[#0B332D] text-sm block">Full Database Backup</span>
-                          <p className="text-[11px] text-gray-500">Export complete JSON snapshot of all courses, packages, testimonials, students &amp; leads.</p>
+                          <span className="font-bold text-[#0B332D] text-sm block">Download Database Backup (JSON)</span>
+                          <p className="text-[11px] text-gray-500">Export complete JSON snapshot — courses, students, invoices, payroll, report cards, attendance, Hifz logs, classes, coupons, referrals, trials &amp; activity logs (last 1000).</p>
                         </div>
                         <span className="text-[10px] font-bold text-emerald-800 uppercase tracking-wider mt-3 inline-flex items-center gap-1">
                           <DownloadSimple className="w-3 h-3" /> Download JSON
@@ -5300,6 +5470,12 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                         setActiveTab('students');
                         return;
                       }
+                      // A tutor is mandatory: approval without one breaks the timetable
+                      // and portal presence privacy-scoping downstream.
+                      if (!selectedEnrollment.assignedTutorId) {
+                        alert('Please assign a tutor before approving.');
+                        return;
+                      }
                       setApprovingEnrollment(true);
                       const newStu: Student = {
                         id: `stu-${Date.now()}`,
@@ -5979,6 +6155,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                     }}
                     className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
                   >
+                    <option value="">-- Select Student --</option>
                     {students.map(s => (
                       <option key={s.id} value={s.id}>{s.studentName} ({s.courseName})</option>
                     ))}
@@ -5991,8 +6168,8 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                     <input
                       type="number"
                       required
-                      value={invoiceForm.amount || 35}
-                      onChange={e => setInvoiceForm({ ...invoiceForm, amount: Number(e.target.value) })}
+                      value={invoiceForm.amount ?? ''}
+                      onChange={e => setInvoiceForm({ ...invoiceForm, amount: e.target.value === '' ? undefined : Number(e.target.value) })}
                       className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
                     />
                   </div>
@@ -6081,32 +6258,81 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                     onChange={(e) => {
                       const stu = students.find(s => s.id === e.target.value);
                       if (stu) {
+                        // Auto-fill from the student's REAL data only — never fake defaults.
                         setReportForm({
                           ...reportForm,
                           studentId: stu.id,
                           studentName: stu.studentName,
-                          courseName: stu.courseName,
-                          tutorName: stu.tutorName || 'Qari Hafiz Muhammad Bilal',
-                          currentSabaq: stu.currentSurahOrLesson || 'Surah Al-Baqarah'
+                          courseName: stu.courseName || '',
+                          tutorName: stu.tutorName || '',
+                          currentSabaq: stu.currentSurahOrLesson || ''
+                        });
+                      } else {
+                        setReportForm({
+                          ...reportForm,
+                          studentId: '',
+                          studentName: '',
+                          courseName: '',
+                          tutorName: '',
+                          currentSabaq: ''
                         });
                       }
                     }}
                     className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
                   >
+                    <option value="">-- Select Student --</option>
                     {students.map(s => (
                       <option key={s.id} value={s.id}>{s.studentName} ({s.courseName})</option>
                     ))}
                   </select>
                 </div>
 
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block font-bold text-gray-700 mb-1">Evaluation Month *</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. August 2026"
+                      value={reportForm.evaluationMonth || ''}
+                      onChange={e => setReportForm({ ...reportForm, evaluationMonth: e.target.value })}
+                      className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-bold text-gray-700 mb-1">Course *</label>
+                    <input
+                      type="text"
+                      placeholder="Course name"
+                      value={reportForm.courseName || ''}
+                      onChange={e => setReportForm({ ...reportForm, courseName: e.target.value })}
+                      className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block font-bold text-gray-700 mb-1">Assigned Tutor *</label>
+                  <select
+                    value={reportForm.tutorName || ''}
+                    onChange={e => setReportForm({ ...reportForm, tutorName: e.target.value })}
+                    className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                  >
+                    <option value="">-- Select Tutor --</option>
+                    {tutors.map(t => (
+                      <option key={t.id} value={t.name}>{t.name}</option>
+                    ))}
+                  </select>
+                </div>
+
                 <div className="grid grid-cols-3 gap-3">
                   <div>
-                    <label className="block font-bold text-gray-700 mb-1">Tajweed Grade</label>
+                    <label className="block font-bold text-gray-700 mb-1">Tajweed Grade *</label>
                     <select
-                      value={reportForm.tajweedGrade || 'A+'}
+                      value={reportForm.tajweedGrade || ''}
                       onChange={e => setReportForm({ ...reportForm, tajweedGrade: e.target.value as any })}
                       className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
                     >
+                      <option value="">-- Select --</option>
                       <option value="A+">A+ (Exceptional)</option>
                       <option value="A">A (Excellent)</option>
                       <option value="B+">B+ (Very Good)</option>
@@ -6115,12 +6341,13 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                     </select>
                   </div>
                   <div>
-                    <label className="block font-bold text-gray-700 mb-1">Reading Fluency</label>
+                    <label className="block font-bold text-gray-700 mb-1">Reading Fluency *</label>
                     <select
-                      value={reportForm.readingGrade || 'A+'}
+                      value={reportForm.readingGrade || ''}
                       onChange={e => setReportForm({ ...reportForm, readingGrade: e.target.value as any })}
                       className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
                     >
+                      <option value="">-- Select --</option>
                       <option value="A+">A+ (Fluent)</option>
                       <option value="A">A (Good Pace)</option>
                       <option value="B+">B+ (Moderate)</option>
@@ -6129,12 +6356,9 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                   </div>
                   <div>
                     <label className="block font-bold text-gray-700 mb-1">Attendance %</label>
-                    <input
-                      type="number"
-                      value={reportForm.attendancePercentage || 95}
-                      onChange={e => setReportForm({ ...reportForm, attendancePercentage: Number(e.target.value) })}
-                      className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
-                    />
+                    <div className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE]/60 rounded-sm text-gray-500 text-[11px] leading-relaxed">
+                      Auto-calculated from attendance records for this student &amp; month when the card is issued (0 if none recorded).
+                    </div>
                   </div>
                 </div>
 
@@ -6293,7 +6517,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                     {[
                       { label: 'Tajweed', value: selectedReportForPrint.tajweedGrade },
                       { label: 'Fluency', value: selectedReportForPrint.readingGrade },
-                      { label: 'Attendance', value: `${selectedReportForPrint.attendancePercentage}%` },
+                      { label: 'Attendance', value: fmtAttendance(selectedReportForPrint.attendancePercentage) },
                     ].map((g) => (
                       <div key={g.label} className="text-center">
                         <div className="w-20 h-20 mx-auto rounded-full border-2 border-[#B79A62] bg-[#F8F5EE] flex items-center justify-center">

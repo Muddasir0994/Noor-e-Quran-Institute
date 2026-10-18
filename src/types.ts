@@ -398,6 +398,13 @@ export interface PageSeoConfig {
   ogImage?: string;
 }
 
+export interface InvoiceStatusChange {
+  from: string;
+  to: string;
+  changedBy: string;
+  at: string; // ISO timestamp
+}
+
 export interface FeeInvoice {
   id: string;
   invoiceNumber: string;
@@ -414,6 +421,8 @@ export interface FeeInvoice {
   paidDate?: string;
   status: 'Paid' | 'Pending' | 'Overdue' | 'Waived';
   paymentMethod?: 'Bank Transfer' | 'JazzCash' | 'Easypaisa' | 'Stripe / Card' | 'PayPal';
+  statusHistory?: InvoiceStatusChange[];
+  archived?: boolean; // soft-delete flag
 }
 
 export interface StudentReportCard {
@@ -452,6 +461,12 @@ export interface ActivityLog {
   user: string;
 }
 
+export interface AttendanceStatusChange {
+  status: 'present' | 'absent' | 'leave';
+  changedBy: string;
+  at: string; // ISO timestamp
+}
+
 export interface AttendanceRecord {
   id: string;
   date: string; // YYYY-MM-DD
@@ -461,6 +476,7 @@ export interface AttendanceRecord {
   markedBy?: string;
   createdAt: string;
   updatedAt: string;
+  statusHistory?: AttendanceStatusChange[];
 }
 
 export interface TrialClass {
@@ -492,6 +508,7 @@ export interface FeeReminder {
   channel: 'whatsapp' | 'email';
   sentAt: string;
   sentBy?: string;
+  status?: 'logged' | 'sent';
 }
 
 export interface HifzLog {
