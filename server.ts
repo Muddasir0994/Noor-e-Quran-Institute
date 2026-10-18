@@ -2287,7 +2287,7 @@ async function startServer() {
     });
   }
 
-  app.listen(PORT, '0.0.0.0', () => {
+  const server = app.listen(PORT, '0.0.0.0', () => {
     console.log(`Noor-e-Quran Institute Server running on http://0.0.0.0:${PORT}`);
 
     // Article SEO synced cache (BUG-1/BUG-5): warm from disk, refresh from
@@ -2316,6 +2316,38 @@ async function startServer() {
       }
     }, PING_INTERVAL_MS);
   });
+
+  // Graceful shutdown handling
+  const shutdown = () => {
+    console.log('\n[SERVER] SIGTERM/SIGINT received. Starting graceful shutdown...');
+
+    // Fallback force exit
+    setTimeout(() => {
+      console.error('[SERVER] Forcefully shutting down after timeout.');
+      process.exit(1);
+    }, 10000).unref();
+
+    // 1. Reject new connections
+    if (typeof server.closeAllConnections === 'function') {
+      server.closeAllConnections();
+    }
+    server.close(async () => {
+      console.log('[SERVER] Express server closed. Waiting for background processes to finish...');
+
+      try {
+        // 2. Await asynchronous cleanups (like DataStore disk writes)
+        await dataStore.flush();
+        console.log('[SERVER] DataStore flushed successfully. Graceful shutdown complete.');
+        process.exit(0);
+      } catch (err) {
+        console.error('[SERVER] Error during shutdown cleanup:', err);
+        process.exit(1);
+      }
+    });
+  };
+
+  process.on('SIGTERM', shutdown);
+  process.on('SIGINT', shutdown);
 }
 
 startServer();
