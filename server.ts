@@ -1948,12 +1948,19 @@ app.post('/api/admin/blog-posts', requireAdmin, async (req, res) => {
     return res.status(400).json({ error: 'Post slug is required' });
   }
   // Sanitize: only allow known fields, enforce types.
+  // NOTE: keeps the full BlogPost shape the admin BlogEditor sends and the
+  // public BlogPostPage reads (category, featuredImage, readTime) — dropping
+  // them silently broke new articles' category badge + featured image.
+  const VALID_CATEGORIES = ['Tajweed', 'Quran Learning', 'Parenting', 'Kids', 'Hifz', 'Duas & Salah', 'Islamic Studies'];
   const clean: Record<string, any> = {
     title: String(post.title).slice(0, 200),
     slug: String(post.slug).toLowerCase().replace(/[^a-z0-9-]/g, '-').slice(0, 100),
     excerpt: typeof post.excerpt === 'string' ? post.excerpt.slice(0, 500) : '',
     content: typeof post.content === 'string' ? post.content : '',
     coverImage: typeof post.coverImage === 'string' ? post.coverImage.slice(0, 500) : '',
+    featuredImage: typeof post.featuredImage === 'string' ? post.featuredImage.slice(0, 1000000) : '',
+    category: VALID_CATEGORIES.includes(post.category) ? post.category : 'Quran Learning',
+    readTime: typeof post.readTime === 'string' ? post.readTime.slice(0, 50) : '5 min read',
     tags: Array.isArray(post.tags) ? post.tags.map(String).slice(0, 10) : [],
     published: post.published === true,
     featured: post.featured === true,
