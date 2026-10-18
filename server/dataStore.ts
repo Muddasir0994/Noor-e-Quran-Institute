@@ -121,6 +121,12 @@ class DataStore {
   private data: DatabaseSchema;
   private seedData: DatabaseSchema | null = null;
 
+  // Async write queue state
+  private isWriting = false;
+  private pendingWrite = false;
+  private pendingData: DatabaseSchema | null = null;
+  private writePromise: Promise<void> | null = null;
+
   constructor() {
     this.ensureDataDirectory();
     this.seedData = this.buildSeedData();
@@ -557,11 +563,45 @@ class DataStore {
   }
 
   private saveDatabase(dataToSave?: DatabaseSchema) {
-    try {
-      const payload = dataToSave || this.data;
-      fs.writeFileSync(DB_FILE, JSON.stringify(payload, null, 2), 'utf-8');
-    } catch (err) {
-      console.error('Failed to write academy_db.json:', err);
+    this.pendingData = dataToSave || this.data;
+
+    if (this.isWriting) {
+      this.pendingWrite = true;
+      return;
+    }
+
+    this.processWriteQueue();
+  }
+
+  private processWriteQueue() {
+    this.isWriting = true;
+    const payload = this.pendingData;
+    this.pendingWrite = false;
+    this.pendingData = null;
+
+    this.writePromise = fs.promises.writeFile(DB_FILE, JSON.stringify(payload, null, 2), 'utf-8')
+      .then(() => {
+        this.isWriting = false;
+        if (this.pendingWrite) {
+          this.processWriteQueue();
+        } else {
+          this.writePromise = null;
+        }
+      })
+      .catch(err => {
+        console.error('Failed to write academy_db.json:', err);
+        this.isWriting = false;
+        if (this.pendingWrite) {
+          this.processWriteQueue();
+        } else {
+          this.writePromise = null;
+        }
+      });
+  }
+
+  public async flush(): Promise<void> {
+    while (this.writePromise) {
+      await this.writePromise;
     }
   }
 
