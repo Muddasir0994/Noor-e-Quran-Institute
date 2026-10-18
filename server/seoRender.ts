@@ -1,4 +1,5 @@
 import { dataStore } from './dataStore.js';
+import { getArticleSeo, getAllArticleSeo } from './seoCache.js';
 
 export const ACADEMY_BASE_URL = 'https://noorequraninstitute.me';
 
@@ -11,6 +12,8 @@ export interface PageMeta {
   ogImage: string;
   breadcrumbs: { name: string; item: string }[];
   extraSchema?: any;
+  /** Additional JSON-LD blocks (e.g. Article + FAQPage for cached blog posts). */
+  extraSchemas?: any[];
 }
 
 export const KNOWN_STATIC_ROUTES: Record<string, PageMeta> = {
@@ -522,6 +525,67 @@ export function resolveRouteMetadata(rawPath: string): RouteResolution {
       return { meta, is404: false };
     }
 
+    // Synced Firestore article cache (BUG-1 fix): articles published to the
+    // `blogPosts` collection are mirrored locally by server/seoCache.ts, so
+    // crawlers get the real title, description, and Article + FAQPage JSON-LD
+    // instead of the generic slug-derived fallback below.
+    const cached = getArticleSeo(slug);
+    if (cached) {
+      const canonical = `${ACADEMY_BASE_URL}/blog/${cached.slug}`;
+      const articleSchema = {
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        headline: cached.title,
+        description: cached.description,
+        image: cached.featuredImage || `${ACADEMY_BASE_URL}/branding/logo.png`,
+        author: {
+          '@type': 'Person',
+          name: cached.author || 'Noor E Quran Institute Scholar'
+        },
+        publisher: {
+          '@type': 'EducationalOrganization',
+          name: 'Noor E Quran Institute',
+          logo: {
+            '@type': 'ImageObject',
+            url: `${ACADEMY_BASE_URL}/branding/logo.webp`
+          }
+        },
+        datePublished: cached.createdAt,
+        dateModified: cached.updatedAt || cached.createdAt,
+        mainEntityOfPage: {
+          '@type': 'WebPage',
+          '@id': canonical
+        }
+      };
+      const faqSchema = cached.faqs.length > 0 ? {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: cached.faqs.map(f => ({
+          '@type': 'Question',
+          name: f.question,
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: f.answer
+          }
+        }))
+      } : undefined;
+      const meta: PageMeta = {
+        // Matches the client title format in src/pages/BlogPostPage.tsx.
+        title: `${cached.title} | Noor E Quran Institute`,
+        description: cached.description || `Read educational article and Quran learning guide: ${cached.title}.`,
+        canonical,
+        ogType: 'article',
+        ogImage: `${ACADEMY_BASE_URL}/logo.webp`,
+        breadcrumbs: [
+          { name: 'Home', item: `${ACADEMY_BASE_URL}/` },
+          { name: 'Blog', item: `${ACADEMY_BASE_URL}/blog` },
+          { name: cached.title, item: canonical }
+        ],
+        extraSchemas: faqSchema ? [articleSchema, faqSchema] : [articleSchema]
+      };
+      return { meta, is404: false };
+    }
+
     // Dynamic article fallback for Firestore published posts.
     // Real 404 status + SPA fallback + noindex: the client SPA still loads and
     // renders the post from Firestore, but crawlers see a genuine 404 (not a soft-404).
@@ -620,13 +684,29 @@ export function generateDynamicSitemapXml(): string {
   </url>\n`;
   }
 
-  // 3. Dynamic Blog Articles
+  // 3. Dynamic Blog Articles — local store merged with the synced Firestore
+  // article SEO cache (BUG-5 fix). Cache entries win on slug conflicts because
+  // they carry the accurate updatedAt from the `blogPosts` source of truth.
+  const toDateOnly = (v: string | undefined): string | undefined => {
+    if (!v) return undefined;
+    const d = v.split('T')[0];
+    return /^\d{4}-\d{2}-\d{2}$/.test(d) ? d : undefined;
+  };
+  const articleEntries = new Map<string, { slug: string; lastmod: string }>();
   for (const article of articles) {
     const slug = article.slug || article.id;
-    const pubDate = article.publishedAt || today;
+    articleEntries.set(slug, { slug, lastmod: article.publishedAt || today });
+  }
+  for (const cached of getAllArticleSeo()) {
+    articleEntries.set(cached.slug, {
+      slug: cached.slug,
+      lastmod: toDateOnly(cached.updatedAt) || toDateOnly(cached.createdAt) || today
+    });
+  }
+  for (const { slug, lastmod } of articleEntries.values()) {
     xml += `  <url>
     <loc>${ACADEMY_BASE_URL}/blog/${slug}</loc>
-    <lastmod>${pubDate}</lastmod>
+    <lastmod>${lastmod}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>\n`;
@@ -1077,16 +1157,21 @@ export function injectSeoTagsIntoHtml(html: string, meta: PageMeta, routePath: s
     }))
   };
 
+  const extraSchemaBlocks = [
+    ...(meta.extraSchema ? [meta.extraSchema] : []),
+    ...(meta.extraSchemas || [])
+  ];
   const dynamicHeadInjection = `
   ${HREFLANG_TAGS}
   <script type="application/ld+json" id="ssr-breadcrumb-schema">
   ${JSON.stringify(breadcrumbSchema)}
   </script>
-  ${
-    meta.extraSchema
-      ? `<script type="application/ld+json" id="ssr-extra-schema">\n  ${JSON.stringify(meta.extraSchema)}\n  </script>`
-      : ''
-  }
+  ${extraSchemaBlocks
+    .map(
+      (schema, i) =>
+        `<script type="application/ld+json" id="ssr-extra-schema-${i}">\n  ${JSON.stringify(schema)}\n  </script>`
+    )
+    .join('\n  ')}
 </head>`;
 
   output = output.replace('</head>', dynamicHeadInjection);

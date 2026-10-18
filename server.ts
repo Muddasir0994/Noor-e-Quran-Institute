@@ -11,6 +11,7 @@ import {
   isFirestoreEnabled,
   getFirestoreDb,
 } from './server/firestore.js';
+import { startArticleSeoCache } from './server/seoCache.js';
 import { 
   resolveRouteMetadata, 
   injectSeoTagsIntoHtml, 
@@ -2288,6 +2289,10 @@ async function startServer() {
 
   app.listen(PORT, '0.0.0.0', () => {
     console.log(`Noor-e-Quran Institute Server running on http://0.0.0.0:${PORT}`);
+
+    // Article SEO synced cache (BUG-1/BUG-5): warm from disk, refresh from
+    // Firestore in the background, then re-refresh on the configured interval.
+    startArticleSeoCache();
 
     // Background Keep-Alive Worker (Every 4.5 minutes)
     // Pings live custom domain to keep Render instance awake and ensure 24/7 warm routing
