@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Course } from '../types';
 import {
   BookOpen,
@@ -37,29 +37,34 @@ export const CoursesPage: React.FC<CoursesPageProps> = ({
     { id: 'islamic', label: 'Islamic Studies' }
   ];
 
-  const filteredCourses = courses.filter(course => {
-    const matchesSearch =
-      course.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      course.shortDescription.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (course.arabicName && course.arabicName.includes(searchQuery));
+  // ⚡ Bolt Performance Optimization
+  // Memoize filtered courses to prevent O(N) string operations on every render
+  // (e.g. when user interacts with other parts of the UI)
+  const filteredCourses = useMemo(() => {
+    return courses.filter(course => {
+      const matchesSearch =
+        course.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        course.shortDescription.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (course.arabicName && course.arabicName.includes(searchQuery));
 
-    if (!matchesSearch) return false;
+      if (!matchesSearch) return false;
 
-    if (selectedCategory === 'all') return true;
-    if (selectedCategory === 'foundation') {
-      return course.slug.includes('qaida') || course.audience.toLowerCase().includes('kids') || course.audience.toLowerCase().includes('beginner');
-    }
-    if (selectedCategory === 'tajweed') {
-      return course.slug.includes('tajweed') || course.slug.includes('nazra') || course.name.toLowerCase().includes('tajweed');
-    }
-    if (selectedCategory === 'hifz') {
-      return course.slug.includes('hifz') || course.name.toLowerCase().includes('memorization');
-    }
-    if (selectedCategory === 'islamic') {
-      return course.slug.includes('islamic') || course.slug.includes('arabic') || course.name.toLowerCase().includes('islamic');
-    }
-    return true;
-  });
+      if (selectedCategory === 'all') return true;
+      if (selectedCategory === 'foundation') {
+        return course.slug.includes('qaida') || course.audience.toLowerCase().includes('kids') || course.audience.toLowerCase().includes('beginner');
+      }
+      if (selectedCategory === 'tajweed') {
+        return course.slug.includes('tajweed') || course.slug.includes('nazra') || course.name.toLowerCase().includes('tajweed');
+      }
+      if (selectedCategory === 'hifz') {
+        return course.slug.includes('hifz') || course.name.toLowerCase().includes('memorization');
+      }
+      if (selectedCategory === 'islamic') {
+        return course.slug.includes('islamic') || course.slug.includes('arabic') || course.name.toLowerCase().includes('islamic');
+      }
+      return true;
+    });
+  }, [courses, searchQuery, selectedCategory]);
 
   return (
     <div className="bg-[#FCFBF8] min-h-screen">
