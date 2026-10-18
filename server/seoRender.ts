@@ -27,7 +27,7 @@ export const KNOWN_STATIC_ROUTES: Record<string, PageMeta> = {
     description: 'Explore comprehensive online Quran courses: Noorani Qaida for beginners, Nazra Quran reading, Tajweed rules, and Hifz memorization with live 1-on-1 instruction.',
     canonical: `${ACADEMY_BASE_URL}/online-quran-classes`,
     ogType: 'website',
-    ogImage: `${ACADEMY_BASE_URL}/logo.png`,
+    ogImage: `${ACADEMY_BASE_URL}/logo.webp`,
     breadcrumbs: [
       { name: 'Home', item: `${ACADEMY_BASE_URL}/` },
       { name: 'Courses', item: `${ACADEMY_BASE_URL}/online-quran-classes` }
@@ -38,7 +38,7 @@ export const KNOWN_STATIC_ROUTES: Record<string, PageMeta> = {
     description: 'Master Arabic alphabet recognition, Makharij articulation points, and phonetic rules with certified 1-on-1 tutors. Ideal for children and beginner adults.',
     canonical: `${ACADEMY_BASE_URL}/noorani-qaida`,
     ogType: 'website',
-    ogImage: `${ACADEMY_BASE_URL}/logo.png`,
+    ogImage: `${ACADEMY_BASE_URL}/logo.webp`,
     breadcrumbs: [
       { name: 'Home', item: `${ACADEMY_BASE_URL}/` },
       { name: 'Courses', item: `${ACADEMY_BASE_URL}/online-quran-classes` },
@@ -50,7 +50,7 @@ export const KNOWN_STATIC_ROUTES: Record<string, PageMeta> = {
     description: 'Learn to read the complete 30 Juz of the Holy Quran fluently. Real-time pronunciation corrections, breath control, and daily progress tracking.',
     canonical: `${ACADEMY_BASE_URL}/quran-reading-nazra`,
     ogType: 'website',
-    ogImage: `${ACADEMY_BASE_URL}/logo.png`,
+    ogImage: `${ACADEMY_BASE_URL}/logo.webp`,
     breadcrumbs: [
       { name: 'Home', item: `${ACADEMY_BASE_URL}/` },
       { name: 'Courses', item: `${ACADEMY_BASE_URL}/online-quran-classes` },
@@ -62,7 +62,7 @@ export const KNOWN_STATIC_ROUTES: Record<string, PageMeta> = {
     description: 'Master the sacred rules of Tajweed: Noon Sakin, Meem Sakin, Madd, and Stopping Signs (Waqf) taught 1-on-1 by certified Islamic scholars.',
     canonical: `${ACADEMY_BASE_URL}/quran-with-tajweed`,
     ogType: 'website',
-    ogImage: `${ACADEMY_BASE_URL}/logo.png`,
+    ogImage: `${ACADEMY_BASE_URL}/logo.webp`,
     breadcrumbs: [
       { name: 'Home', item: `${ACADEMY_BASE_URL}/` },
       { name: 'Courses', item: `${ACADEMY_BASE_URL}/online-quran-classes` },
@@ -74,7 +74,7 @@ export const KNOWN_STATIC_ROUTES: Record<string, PageMeta> = {
     description: 'Memorize the Holy Quran at home with structured daily Sabaq, Sabqi revision, and Manzil consolidation under certified male and female Huffaz.',
     canonical: `${ACADEMY_BASE_URL}/quran-memorization-hifz`,
     ogType: 'website',
-    ogImage: `${ACADEMY_BASE_URL}/logo.png`,
+    ogImage: `${ACADEMY_BASE_URL}/logo.webp`,
     breadcrumbs: [
       { name: 'Home', item: `${ACADEMY_BASE_URL}/` },
       { name: 'Courses', item: `${ACADEMY_BASE_URL}/online-quran-classes` },
@@ -86,7 +86,7 @@ export const KNOWN_STATIC_ROUTES: Record<string, PageMeta> = {
     description: 'Learn essential Islamic fundamentals: Daily Masnoon Duas, 6 Kalmas, Step-by-Step Salah (Prayer), Seerah, and Hadith stories.',
     canonical: `${ACADEMY_BASE_URL}/islamic-studies`,
     ogType: 'website',
-    ogImage: `${ACADEMY_BASE_URL}/logo.png`,
+    ogImage: `${ACADEMY_BASE_URL}/logo.webp`,
     breadcrumbs: [
       { name: 'Home', item: `${ACADEMY_BASE_URL}/` },
       { name: 'Islamic Studies', item: `${ACADEMY_BASE_URL}/islamic-studies` }
@@ -97,7 +97,7 @@ export const KNOWN_STATIC_ROUTES: Record<string, PageMeta> = {
     description: 'Engaging, interactive 1-on-1 Quran classes for children ages 4 and up. Noorani Qaida basics, fun Islamic manners, and daily progress feedback for parents.',
     canonical: `${ACADEMY_BASE_URL}/quran-classes-for-kids`,
     ogType: 'website',
-    ogImage: `${ACADEMY_BASE_URL}/logo.png`,
+    ogImage: `${ACADEMY_BASE_URL}/logo.webp`,
     breadcrumbs: [
       { name: 'Home', item: `${ACADEMY_BASE_URL}/` },
       { name: 'Kids Program', item: `${ACADEMY_BASE_URL}/quran-classes-for-kids` }
@@ -108,7 +108,7 @@ export const KNOWN_STATIC_ROUTES: Record<string, PageMeta> = {
     description: 'Specialized 1-on-1 Quran learning tailored for busy working adults and slow learners. Supportive pace, private atmosphere, and flexible evening/weekend slots.',
     canonical: `${ACADEMY_BASE_URL}/quran-classes-for-adults`,
     ogType: 'website',
-    ogImage: `${ACADEMY_BASE_URL}/logo.png`,
+    ogImage: `${ACADEMY_BASE_URL}/logo.webp`,
     breadcrumbs: [
       { name: 'Home', item: `${ACADEMY_BASE_URL}/` },
       { name: 'Adults Program', item: `${ACADEMY_BASE_URL}/quran-classes-for-adults` }
@@ -119,10 +119,43 @@ export const KNOWN_STATIC_ROUTES: Record<string, PageMeta> = {
     description: 'Learn Quran with certified female Quran tutors in complete privacy and comfort. Tailored 1-on-1 lessons in Noorani Qaida, Tajweed, and Hifz.',
     canonical: `${ACADEMY_BASE_URL}/female-quran-teacher`,
     ogType: 'website',
-    ogImage: `${ACADEMY_BASE_URL}/logo.png`,
+    ogImage: `${ACADEMY_BASE_URL}/logo.webp`,
     breadcrumbs: [
       { name: 'Home', item: `${ACADEMY_BASE_URL}/` },
       { name: 'Female Faculty', item: `${ACADEMY_BASE_URL}/female-quran-teacher` }
+    ]
+  },
+  '/kids-program': {
+    title: 'Kids Quran Program Online | Fun 1-on-1 Quran Classes for Children',
+    description: 'Engaging 1-on-1 Quran program for kids ages 4+. Noorani Qaida, Nazra and Hifz with patient, child-friendly certified tutors.',
+    canonical: `${ACADEMY_BASE_URL}/kids-program`,
+    ogType: 'website',
+    ogImage: `${ACADEMY_BASE_URL}/logo.webp`,
+    breadcrumbs: [
+      { name: 'Home', item: `${ACADEMY_BASE_URL}/` },
+      { name: 'Kids Program', item: `${ACADEMY_BASE_URL}/kids-program` }
+    ]
+  },
+  '/female-tutor': {
+    title: 'Female Quran Tutor Online | Certified Sisters Teaching 1-on-1',
+    description: 'Learn Quran with a certified female tutor in complete privacy. 1-on-1 Noorani Qaida, Tajweed and Hifz lessons for sisters and daughters.',
+    canonical: `${ACADEMY_BASE_URL}/female-tutor`,
+    ogType: 'website',
+    ogImage: `${ACADEMY_BASE_URL}/logo.webp`,
+    breadcrumbs: [
+      { name: 'Home', item: `${ACADEMY_BASE_URL}/` },
+      { name: 'Female Tutor', item: `${ACADEMY_BASE_URL}/female-tutor` }
+    ]
+  },
+  '/slow-learners': {
+    title: 'Quran Classes for Slow Learners & Adults | Patient 1-on-1 Guidance',
+    description: 'Specialized 1-on-1 Quran learning at a comfortable pace for slow learners and busy adults. Patient tutors, flexible evening and weekend slots.',
+    canonical: `${ACADEMY_BASE_URL}/slow-learners`,
+    ogType: 'website',
+    ogImage: `${ACADEMY_BASE_URL}/logo.webp`,
+    breadcrumbs: [
+      { name: 'Home', item: `${ACADEMY_BASE_URL}/` },
+      { name: 'Slow Learners', item: `${ACADEMY_BASE_URL}/slow-learners` }
     ]
   },
   // International Program Pages
@@ -131,7 +164,7 @@ export const KNOWN_STATIC_ROUTES: Record<string, PageMeta> = {
     description: 'Dedicated 1-on-1 online Quran classes for UK Muslim students. Certified male and female tutors aligned with UK GMT/BST evening and weekend times.',
     canonical: `${ACADEMY_BASE_URL}/online-quran-classes-uk`,
     ogType: 'website',
-    ogImage: `${ACADEMY_BASE_URL}/logo.png`,
+    ogImage: `${ACADEMY_BASE_URL}/logo.webp`,
     breadcrumbs: [
       { name: 'Home', item: `${ACADEMY_BASE_URL}/` },
       { name: 'UK Program', item: `${ACADEMY_BASE_URL}/online-quran-classes-uk` }
@@ -142,7 +175,7 @@ export const KNOWN_STATIC_ROUTES: Record<string, PageMeta> = {
     description: 'Learn Quran online across the United States. Personalized 1-on-1 classes for kids & adults with flexible after-school and weekend timings in all US timezones.',
     canonical: `${ACADEMY_BASE_URL}/online-quran-classes-usa`,
     ogType: 'website',
-    ogImage: `${ACADEMY_BASE_URL}/logo.png`,
+    ogImage: `${ACADEMY_BASE_URL}/logo.webp`,
     breadcrumbs: [
       { name: 'Home', item: `${ACADEMY_BASE_URL}/` },
       { name: 'USA Program', item: `${ACADEMY_BASE_URL}/online-quran-classes-usa` }
@@ -153,7 +186,7 @@ export const KNOWN_STATIC_ROUTES: Record<string, PageMeta> = {
     description: 'Dedicated 1-on-1 online Quran classes for Muslim students across Canada. Personalized lessons for children and adults with patient, qualified tutors and flexible schedules.',
     canonical: `${ACADEMY_BASE_URL}/online-quran-classes-canada`,
     ogType: 'website',
-    ogImage: `${ACADEMY_BASE_URL}/logo.png`,
+    ogImage: `${ACADEMY_BASE_URL}/logo.webp`,
     breadcrumbs: [
       { name: 'Home', item: `${ACADEMY_BASE_URL}/` },
       { name: 'Canada Program', item: `${ACADEMY_BASE_URL}/online-quran-classes-canada` }
@@ -164,7 +197,7 @@ export const KNOWN_STATIC_ROUTES: Record<string, PageMeta> = {
     description: 'Live 1-on-1 online Quran classes tailored for students in Australia (AEST/AWST). Certified male and female tutors with 3-day free trial.',
     canonical: `${ACADEMY_BASE_URL}/online-quran-classes-australia`,
     ogType: 'website',
-    ogImage: `${ACADEMY_BASE_URL}/logo.png`,
+    ogImage: `${ACADEMY_BASE_URL}/logo.webp`,
     breadcrumbs: [
       { name: 'Home', item: `${ACADEMY_BASE_URL}/` },
       { name: 'Australia Program', item: `${ACADEMY_BASE_URL}/online-quran-classes-australia` }
@@ -175,7 +208,7 @@ export const KNOWN_STATIC_ROUTES: Record<string, PageMeta> = {
     description: 'Affordable online Quran classes in Pakistan. Flexible scheduling in PKT timezone with certified Qaris and Alim/Alimah faculty.',
     canonical: `${ACADEMY_BASE_URL}/online-quran-classes-pakistan`,
     ogType: 'website',
-    ogImage: `${ACADEMY_BASE_URL}/logo.png`,
+    ogImage: `${ACADEMY_BASE_URL}/logo.webp`,
     breadcrumbs: [
       { name: 'Home', item: `${ACADEMY_BASE_URL}/` },
       { name: 'Pakistan Program', item: `${ACADEMY_BASE_URL}/online-quran-classes-pakistan` }
@@ -203,40 +236,7 @@ export const KNOWN_STATIC_ROUTES: Record<string, PageMeta> = {
       { name: 'Teachers', item: `${ACADEMY_BASE_URL}/teachers` }
     ]
   },
-  '/faculty': {
-    title: 'Certified Male & Female Quran Teachers | Noor E Quran Institute',
-    description: 'Verified Ijazah holders and Islamic university graduates dedicated to patient, interactive 1-on-1 Quran education.',
-    canonical: `${ACADEMY_BASE_URL}/teachers`,
-    ogType: 'website',
-    ogImage: `${ACADEMY_BASE_URL}/logo.webp`,
-    breadcrumbs: [
-      { name: 'Home', item: `${ACADEMY_BASE_URL}/` },
-      { name: 'Teachers', item: `${ACADEMY_BASE_URL}/teachers` }
-    ]
-  },
-  '/tutors': {
-    title: 'Certified Male & Female Quran Teachers | Noor E Quran Institute',
-    description: 'Verified Ijazah holders and Islamic university graduates dedicated to patient, interactive 1-on-1 Quran education.',
-    canonical: `${ACADEMY_BASE_URL}/teachers`,
-    ogType: 'website',
-    ogImage: `${ACADEMY_BASE_URL}/logo.webp`,
-    breadcrumbs: [
-      { name: 'Home', item: `${ACADEMY_BASE_URL}/` },
-      { name: 'Teachers', item: `${ACADEMY_BASE_URL}/teachers` }
-    ]
-  },
   '/packages': {
-    title: 'Affordable 1-on-1 Quran Tuition Plans | Noor E Quran Institute',
-    description: 'Transparent monthly plans with family discounts and a 3-day free trial. Choose classes 2 to 5 days per week.',
-    canonical: `${ACADEMY_BASE_URL}/packages`,
-    ogType: 'website',
-    ogImage: `${ACADEMY_BASE_URL}/logo.webp`,
-    breadcrumbs: [
-      { name: 'Home', item: `${ACADEMY_BASE_URL}/` },
-      { name: 'Tuition & Plans', item: `${ACADEMY_BASE_URL}/packages` }
-    ]
-  },
-  '/pricing': {
     title: 'Affordable 1-on-1 Quran Tuition Plans | Noor E Quran Institute',
     description: 'Transparent monthly plans with family discounts and a 3-day free trial. Choose classes 2 to 5 days per week.',
     canonical: `${ACADEMY_BASE_URL}/packages`,
@@ -258,29 +258,7 @@ export const KNOWN_STATIC_ROUTES: Record<string, PageMeta> = {
       { name: 'How It Works', item: `${ACADEMY_BASE_URL}/how-it-works` }
     ]
   },
-  '/methodology': {
-    title: 'How Online Quran Learning Works | Noor E Quran Institute',
-    description: 'A simple, transparent 4-step path from initial trial to fluent Quran recitation.',
-    canonical: `${ACADEMY_BASE_URL}/how-it-works`,
-    ogType: 'website',
-    ogImage: `${ACADEMY_BASE_URL}/logo.webp`,
-    breadcrumbs: [
-      { name: 'Home', item: `${ACADEMY_BASE_URL}/` },
-      { name: 'How It Works', item: `${ACADEMY_BASE_URL}/how-it-works` }
-    ]
-  },
   '/about': {
-    title: 'About Noor E Quran Institute | Certified International Quran Academy',
-    description: 'Dedicated to providing authentic, certified, and deeply respectful Quranic education to families across the globe.',
-    canonical: `${ACADEMY_BASE_URL}/about`,
-    ogType: 'website',
-    ogImage: `${ACADEMY_BASE_URL}/logo.webp`,
-    breadcrumbs: [
-      { name: 'Home', item: `${ACADEMY_BASE_URL}/` },
-      { name: 'About Us', item: `${ACADEMY_BASE_URL}/about` }
-    ]
-  },
-  '/about-us': {
     title: 'About Noor E Quran Institute | Certified International Quran Academy',
     description: 'Dedicated to providing authentic, certified, and deeply respectful Quranic education to families across the globe.',
     canonical: `${ACADEMY_BASE_URL}/about`,
@@ -302,40 +280,7 @@ export const KNOWN_STATIC_ROUTES: Record<string, PageMeta> = {
       { name: 'Blog', item: `${ACADEMY_BASE_URL}/blog` }
     ]
   },
-  '/blogs': {
-    title: 'Islamic Knowledge & Insights Blog | Noor E Quran Institute',
-    description: 'Read expert articles on Tajweed rules, Quran memorization methods, kids Islamic education, and online Quran learning guides.',
-    canonical: `${ACADEMY_BASE_URL}/blog`,
-    ogType: 'website',
-    ogImage: `${ACADEMY_BASE_URL}/logo.webp`,
-    breadcrumbs: [
-      { name: 'Home', item: `${ACADEMY_BASE_URL}/` },
-      { name: 'Blog', item: `${ACADEMY_BASE_URL}/blog` }
-    ]
-  },
-  '/articles': {
-    title: 'Islamic Knowledge & Insights Blog | Noor E Quran Institute',
-    description: 'Read expert articles on Tajweed rules, Quran memorization methods, kids Islamic education, and online Quran learning guides.',
-    canonical: `${ACADEMY_BASE_URL}/blog`,
-    ogType: 'website',
-    ogImage: `${ACADEMY_BASE_URL}/logo.webp`,
-    breadcrumbs: [
-      { name: 'Home', item: `${ACADEMY_BASE_URL}/` },
-      { name: 'Blog', item: `${ACADEMY_BASE_URL}/blog` }
-    ]
-  },
   '/contact': {
-    title: 'Contact Academic Support | Noor E Quran Institute',
-    description: 'Reach out via WhatsApp, email, or direct inquiry form for curriculum consultation and trial scheduling.',
-    canonical: `${ACADEMY_BASE_URL}/contact`,
-    ogType: 'website',
-    ogImage: `${ACADEMY_BASE_URL}/logo.webp`,
-    breadcrumbs: [
-      { name: 'Home', item: `${ACADEMY_BASE_URL}/` },
-      { name: 'Contact Us', item: `${ACADEMY_BASE_URL}/contact` }
-    ]
-  },
-  '/contact-us': {
     title: 'Contact Academic Support | Noor E Quran Institute',
     description: 'Reach out via WhatsApp, email, or direct inquiry form for curriculum consultation and trial scheduling.',
     canonical: `${ACADEMY_BASE_URL}/contact`,
@@ -413,45 +358,12 @@ export const KNOWN_STATIC_ROUTES: Record<string, PageMeta> = {
     ]
   },
   // Application and Portal Pages
-  '/portal': {
-    title: 'Student & Tutor Portal | Noor E Quran Institute',
-    description: 'Access your online Quran classroom, view class schedules, attendance, assignments, and monthly teacher progress assessments.',
-    canonical: `${ACADEMY_BASE_URL}/portal`,
-    ogType: 'website',
-    ogImage: `${ACADEMY_BASE_URL}/logo.webp`,
-    breadcrumbs: [
-      { name: 'Home', item: `${ACADEMY_BASE_URL}/` },
-      { name: 'Portal', item: `${ACADEMY_BASE_URL}/portal` }
-    ]
-  },
-  '/login': {
-    title: 'Sign In | Noor E Quran Institute Portal',
-    description: 'Log into your student or teacher account at Noor E Quran Institute.',
-    canonical: `${ACADEMY_BASE_URL}/login`,
-    ogType: 'website',
-    ogImage: `${ACADEMY_BASE_URL}/logo.webp`,
-    breadcrumbs: [
-      { name: 'Home', item: `${ACADEMY_BASE_URL}/` },
-      { name: 'Login', item: `${ACADEMY_BASE_URL}/login` }
-    ]
-  },
-  '/register': {
-    title: 'Student Registration & Enrollment | Noor E Quran Institute',
-    description: 'Register for 1-on-1 online Quran classes with certified male or female tutors. Fast verification and flexible scheduling.',
-    canonical: `${ACADEMY_BASE_URL}/register`,
-    ogType: 'website',
-    ogImage: `${ACADEMY_BASE_URL}/logo.webp`,
-    breadcrumbs: [
-      { name: 'Home', item: `${ACADEMY_BASE_URL}/` },
-      { name: 'Register', item: `${ACADEMY_BASE_URL}/register` }
-    ]
-  },
   '/admin': {
     title: 'Academy Admin Dashboard | Noor E Quran Institute',
     description: 'Secure administration portal for Noor-e-Quran Institute management.',
     canonical: `${ACADEMY_BASE_URL}/admin`,
     ogType: 'website',
-    ogImage: `${ACADEMY_BASE_URL}/logo.png`,
+    ogImage: `${ACADEMY_BASE_URL}/logo.webp`,
     breadcrumbs: [
       { name: 'Home', item: `${ACADEMY_BASE_URL}/` },
       { name: 'Admin', item: `${ACADEMY_BASE_URL}/admin` }
@@ -462,18 +374,7 @@ export const KNOWN_STATIC_ROUTES: Record<string, PageMeta> = {
     description: 'Secure administration portal for Noor-e-Quran Institute management.',
     canonical: `${ACADEMY_BASE_URL}/admin`,
     ogType: 'website',
-    ogImage: `${ACADEMY_BASE_URL}/logo.png`,
-    breadcrumbs: [
-      { name: 'Home', item: `${ACADEMY_BASE_URL}/` },
-      { name: 'Admin', item: `${ACADEMY_BASE_URL}/admin` }
-    ]
-  },
-  '/staff-portal': {
-    title: 'Academy Admin Dashboard | Noor-e-Quran Institute',
-    description: 'Secure administration portal for Noor-e-Quran Institute management.',
-    canonical: `${ACADEMY_BASE_URL}/admin`,
-    ogType: 'website',
-    ogImage: `${ACADEMY_BASE_URL}/logo.png`,
+    ogImage: `${ACADEMY_BASE_URL}/logo.webp`,
     breadcrumbs: [
       { name: 'Home', item: `${ACADEMY_BASE_URL}/` },
       { name: 'Admin', item: `${ACADEMY_BASE_URL}/admin` }
@@ -496,9 +397,40 @@ export const HREFLANG_TAGS = `
 /**
  * Resolve metadata for any incoming request path
  */
-export function resolveRouteMetadata(rawPath: string): { meta: PageMeta | null; is404: boolean } {
+export interface RouteResolution {
+  meta: PageMeta | null;
+  is404: boolean;
+  /** 301 redirect target path (e.g. '/packages'). When set, server issues a 301. */
+  redirect?: string;
+  /**
+   * For unknown blog slugs: serve the SPA with a real 404 status + noindex,
+   * so posts published to Firestore (absent from the local store) still render client-side.
+   */
+  spaFallback404?: boolean;
+}
+
+/** Canonical 301 redirects for legacy / duplicate URLs. */
+export const CANONICAL_REDIRECTS: Record<string, string> = {
+  '/pricing': '/packages',
+  '/contact-us': '/contact',
+  '/faculty': '/teachers',
+  '/tutors': '/teachers',
+  '/methodology': '/how-it-works',
+  '/about-us': '/about',
+  '/blogs': '/blog',
+  '/articles': '/blog',
+  '/blog/the6kalimas': '/blog/6-kalimas',
+  '/articles/the6kalimas': '/blog/6-kalimas',
+};
+
+export function resolveRouteMetadata(rawPath: string): RouteResolution {
   // Normalize path
   const normalizedPath = rawPath.split('?')[0].replace(/\/+$/, '') || '/';
+
+  // 0. Canonical 301 redirects for legacy / duplicate URLs
+  if (CANONICAL_REDIRECTS[normalizedPath]) {
+    return { meta: null, is404: false, redirect: CANONICAL_REDIRECTS[normalizedPath] };
+  }
 
   // 1. Check known static routes
   if (KNOWN_STATIC_ROUTES[normalizedPath]) {
@@ -516,7 +448,7 @@ export function resolveRouteMetadata(rawPath: string): { meta: PageMeta | null; 
         description: course.shortDescription || `Learn ${course.name} online with 1-on-1 certified tutors. Flexible timings and 3-day free trial.`,
         canonical,
         ogType: 'article',
-        ogImage: `${ACADEMY_BASE_URL}/logo.png`,
+        ogImage: `${ACADEMY_BASE_URL}/logo.webp`,
         breadcrumbs: [
           { name: 'Home', item: `${ACADEMY_BASE_URL}/` },
           { name: 'Courses', item: `${ACADEMY_BASE_URL}/online-quran-classes` },
@@ -557,7 +489,7 @@ export function resolveRouteMetadata(rawPath: string): { meta: PageMeta | null; 
         description: article.summary || `Read comprehensive educational guide: ${article.title}. Practical advice for Muslim learners and parents.`,
         canonical,
         ogType: 'article',
-        ogImage: `${ACADEMY_BASE_URL}/logo.png`,
+        ogImage: `${ACADEMY_BASE_URL}/logo.webp`,
         breadcrumbs: [
           { name: 'Home', item: `${ACADEMY_BASE_URL}/` },
           { name: 'Blog', item: `${ACADEMY_BASE_URL}/blog` },
@@ -590,7 +522,9 @@ export function resolveRouteMetadata(rawPath: string): { meta: PageMeta | null; 
       return { meta, is404: false };
     }
 
-    // Dynamic article fallback for Firestore published posts
+    // Dynamic article fallback for Firestore published posts.
+    // Real 404 status + SPA fallback + noindex: the client SPA still loads and
+    // renders the post from Firestore, but crawlers see a genuine 404 (not a soft-404).
     const formattedTitle = slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
     const canonical = `${ACADEMY_BASE_URL}/blog/${slug}`;
     const meta: PageMeta = {
@@ -598,14 +532,14 @@ export function resolveRouteMetadata(rawPath: string): { meta: PageMeta | null; 
       description: `Read educational article and Quran learning guide on ${formattedTitle}.`,
       canonical,
       ogType: 'article',
-      ogImage: `${ACADEMY_BASE_URL}/logo.png`,
+      ogImage: `${ACADEMY_BASE_URL}/logo.webp`,
       breadcrumbs: [
         { name: 'Home', item: `${ACADEMY_BASE_URL}/` },
         { name: 'Blog', item: `${ACADEMY_BASE_URL}/blog` },
         { name: formattedTitle, item: canonical }
       ]
     };
-    return { meta, is404: false };
+    return { meta, is404: false, spaFallback404: true };
   }
 
   // 4. Portal and Specialized paths are handled by Client SPA Router
@@ -641,12 +575,15 @@ export function generateDynamicSitemapXml(): string {
     { loc: `${ACADEMY_BASE_URL}/quran-classes-for-kids`, priority: '0.9', changefreq: 'weekly' },
     { loc: `${ACADEMY_BASE_URL}/quran-classes-for-adults`, priority: '0.85', changefreq: 'weekly' },
     { loc: `${ACADEMY_BASE_URL}/female-quran-teacher`, priority: '0.9', changefreq: 'weekly' },
-    { loc: `${ACADEMY_BASE_URL}/pricing`, priority: '0.9', changefreq: 'weekly' },
-    { loc: `${ACADEMY_BASE_URL}/free-trial`, priority: '0.95', changefreq: 'weekly' },
-    { loc: `${ACADEMY_BASE_URL}/faculty`, priority: '0.8', changefreq: 'monthly' },
-    { loc: `${ACADEMY_BASE_URL}/about-us`, priority: '0.75', changefreq: 'monthly' },
+    { loc: `${ACADEMY_BASE_URL}/kids-program`, priority: '0.9', changefreq: 'weekly' },
+    { loc: `${ACADEMY_BASE_URL}/female-tutor`, priority: '0.9', changefreq: 'weekly' },
+    { loc: `${ACADEMY_BASE_URL}/slow-learners`, priority: '0.85', changefreq: 'weekly' },
+    { loc: `${ACADEMY_BASE_URL}/packages`, priority: '0.9', changefreq: 'weekly' },
+    { loc: `${ACADEMY_BASE_URL}/how-it-works`, priority: '0.8', changefreq: 'monthly' },
+    { loc: `${ACADEMY_BASE_URL}/teachers`, priority: '0.8', changefreq: 'monthly' },
+    { loc: `${ACADEMY_BASE_URL}/about`, priority: '0.75', changefreq: 'monthly' },
     { loc: `${ACADEMY_BASE_URL}/faq`, priority: '0.8', changefreq: 'monthly' },
-    { loc: `${ACADEMY_BASE_URL}/contact-us`, priority: '0.8', changefreq: 'monthly' },
+    { loc: `${ACADEMY_BASE_URL}/contact`, priority: '0.8', changefreq: 'monthly' },
     { loc: `${ACADEMY_BASE_URL}/blog`, priority: '0.85', changefreq: 'daily' },
     // International GEO Landing Pages
     { loc: `${ACADEMY_BASE_URL}/online-quran-classes-uk`, priority: '0.9', changefreq: 'weekly' },
@@ -715,12 +652,15 @@ Allow: /islamic-studies
 Allow: /quran-classes-for-kids
 Allow: /quran-classes-for-adults
 Allow: /female-quran-teacher
-Allow: /pricing
-Allow: /free-trial
-Allow: /faculty
-Allow: /about-us
+Allow: /kids-program
+Allow: /female-tutor
+Allow: /slow-learners
+Allow: /packages
+Allow: /how-it-works
+Allow: /teachers
+Allow: /about
 Allow: /faq
-Allow: /contact-us
+Allow: /contact
 Allow: /blog
 Allow: /courses/
 Allow: /blog/
@@ -777,7 +717,7 @@ export function generateRoutePrerenderHtml(routePath: string, meta: PageMeta): s
               <a href="/quran-with-tajweed" style="color:#ffffff;text-decoration:none;">Tajweed</a>
               <a href="/quran-memorization-hifz" style="color:#ffffff;text-decoration:none;">Hifz</a>
               <a href="/pricing" style="color:#ffffff;text-decoration:none;">Pricing</a>
-              <a href="/free-trial" style="background:#D4A72C;color:#064E3B;padding:6px 14px;border-radius:6px;font-weight:700;text-decoration:none;">Free Trial</a>
+              <a href="/#trial" style="background:#D4A72C;color:#064E3B;padding:6px 14px;border-radius:6px;font-weight:700;text-decoration:none;">Free Trial</a>
             </div>
           </nav>
         </header>
@@ -809,7 +749,7 @@ export function generateRoutePrerenderHtml(routePath: string, meta: PageMeta): s
             <section style="background:#064E3B;color:#ffffff;border-radius:12px;padding:24px;text-align:center;">
               <h2 style="font-size:22px;color:#ffffff;margin-top:0;">Start with a 3-Day 100% Free Trial</h2>
               <p style="color:#E6F4EA;margin-bottom:18px;">No credit card required. Experience our personalized teaching quality firsthand.</p>
-              <a href="/free-trial" style="display:inline-block;background:#D4A72C;color:#064E3B;font-weight:800;padding:12px 24px;border-radius:8px;text-decoration:none;">Book Free Trial Class</a>
+              <a href="/#trial" style="display:inline-block;background:#D4A72C;color:#064E3B;font-weight:800;padding:12px 24px;border-radius:8px;text-decoration:none;">Book Free Trial Class</a>
             </section>
           </article>
         </main>
@@ -830,7 +770,7 @@ export function generateRoutePrerenderHtml(routePath: string, meta: PageMeta): s
             <div style="display:flex;gap:16px;flex-wrap:wrap;">
               <a href="/blog" style="color:#ffffff;text-decoration:none;">Blog Index</a>
               <a href="/online-quran-classes" style="color:#ffffff;text-decoration:none;">Courses</a>
-              <a href="/free-trial" style="background:#D4A72C;color:#064E3B;padding:6px 14px;border-radius:6px;font-weight:700;text-decoration:none;">Free Trial</a>
+              <a href="/#trial" style="background:#D4A72C;color:#064E3B;padding:6px 14px;border-radius:6px;font-weight:700;text-decoration:none;">Free Trial</a>
             </div>
           </nav>
         </header>
@@ -847,7 +787,7 @@ export function generateRoutePrerenderHtml(routePath: string, meta: PageMeta): s
             <section style="background:#F3F4F6;border-radius:12px;padding:24px;margin-top:36px;text-align:center;">
               <h2 style="font-size:20px;color:#064E3B;margin-top:0;">Learn Quran Online with Certified Scholars</h2>
               <p style="color:#4B5563;margin-bottom:16px;">Register for a 3-day free trial class for kids or adults with flexible timings.</p>
-              <a href="/free-trial" style="display:inline-block;background:#064E3B;color:#ffffff;font-weight:700;padding:10px 20px;border-radius:8px;text-decoration:none;">Get Started Free</a>
+              <a href="/#trial" style="display:inline-block;background:#064E3B;color:#ffffff;font-weight:700;padding:10px 20px;border-radius:8px;text-decoration:none;">Get Started Free</a>
             </section>
           </article>
         </main>
@@ -876,7 +816,7 @@ export function generateRoutePrerenderHtml(routePath: string, meta: PageMeta): s
           <a href="/faculty" style="color:#ffffff;text-decoration:none;">Scholars</a>
           <a href="/blog" style="color:#ffffff;text-decoration:none;">Blog</a>
           <a href="/contact-us" style="color:#ffffff;text-decoration:none;">Contact</a>
-          <a href="/free-trial" style="background:#D4A72C;color:#064E3B;padding:8px 16px;border-radius:6px;font-weight:700;text-decoration:none;">3-Day Free Trial</a>
+          <a href="/#trial" style="background:#D4A72C;color:#064E3B;padding:8px 16px;border-radius:6px;font-weight:700;text-decoration:none;">3-Day Free Trial</a>
         </nav>
       </div>
     </header>
@@ -893,7 +833,7 @@ export function generateRoutePrerenderHtml(routePath: string, meta: PageMeta): s
             ${meta.description}
           </p>
           <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:center;">
-            <a href="/free-trial" style="background:#D4A72C;color:#064E3B;font-weight:800;font-size:16px;padding:14px 28px;border-radius:8px;text-decoration:none;">Book 3-Day Free Trial</a>
+            <a href="/#trial" style="background:#D4A72C;color:#064E3B;font-weight:800;font-size:16px;padding:14px 28px;border-radius:8px;text-decoration:none;">Book 3-Day Free Trial</a>
             <a href="/online-quran-classes" style="background:rgba(255,255,255,0.1);color:#ffffff;border:1px solid rgba(255,255,255,0.3);font-weight:600;font-size:16px;padding:14px 24px;border-radius:8px;text-decoration:none;">Explore All Courses</a>
             <a href="https://wa.me/923274496163" style="color:#D4A72C;font-weight:600;text-decoration:none;margin-left:8px;">WhatsApp: +92 327 4496163</a>
           </div>
@@ -1077,7 +1017,7 @@ export function generateRoutePrerenderHtml(routePath: string, meta: PageMeta): s
             <li><a href="/faq" style="color:#9CA3AF;text-decoration:none;">FAQs & Support</a></li>
             <li><a href="/blog" style="color:#9CA3AF;text-decoration:none;">Islamic Articles & Blog</a></li>
             <li><a href="/contact-us" style="color:#9CA3AF;text-decoration:none;">Contact & Admissions</a></li>
-            <li><a href="/free-trial" style="color:#D4A72C;font-weight:700;text-decoration:none;">Book Free Trial Class</a></li>
+            <li><a href="/#trial" style="color:#D4A72C;font-weight:700;text-decoration:none;">Book Free Trial Class</a></li>
           </ul>
         </div>
       </div>
@@ -1162,6 +1102,20 @@ export function injectSeoTagsIntoHtml(html: string, meta: PageMeta, routePath: s
   }
 
   return output;
+}
+
+/**
+ * Injects (or replaces) a robots noindex meta tag so crawlers do not index
+ * SPA-fallback 404 pages (e.g. unknown blog slugs that may still render from Firestore).
+ */
+export function injectNoindexIntoHtml(html: string): string {
+  if (/<meta\s+name="robots"/i.test(html)) {
+    return html.replace(
+      /<meta\s+name="robots"\s+content=".*?"\s*\/?>/i,
+      '<meta name="robots" content="noindex, follow" />'
+    );
+  }
+  return html.replace('</head>', '  <meta name="robots" content="noindex, follow" />\n</head>');
 }
 
 /**
