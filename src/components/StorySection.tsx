@@ -16,8 +16,8 @@ export const StorySection: React.FC<StorySectionProps> = ({ onOpenTrial }) => {
           <div className="lg:col-span-6 relative">
             <div className="relative rounded-sm overflow-hidden border border-[#E7DBC2] bg-[#F5F0E6] shadow-xs">
               <img
-                src="/images/kids-program-banner.webp"
-                alt="Muslim family Quran study atmosphere"
+                src="/images/unsplash/child-reading-quran.webp"
+                alt="Young student reading the Holy Quran"
                 className="w-full h-[380px] sm:h-[440px] object-cover filter brightness-[0.98]"
                 loading="lazy"
               />

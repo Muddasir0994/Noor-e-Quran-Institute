@@ -84,7 +84,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenTrial, onViewCourses }) => {
           <div className="lg:col-span-6 relative">
             <div className="relative rounded-sm overflow-hidden border border-[#A9C4D3]/20 shadow-[0_20px_80px_rgba(0,0,0,0.45)]">
               <img
-                src="/images/banners/hero-banner.webp"
+                src="/images/unsplash/hero-quran-dark.webp"
                 alt="Open Holy Quran on a carved wooden rehal, illuminated in soft light"
                 className="w-full h-[380px] sm:h-[440px] object-cover"
                 loading="eager"
