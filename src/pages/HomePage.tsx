@@ -30,8 +30,8 @@ export const HomePage: React.FC<HomePageProps> = ({
 
   return (
     <div className="space-y-0 bg-[#F5F0E6]">
-      {/* Daily Islamic quote popup — public homepage only, every load */}
-      <DailyQuotePopup />
+      {/* TEMP-DISABLED 2026-10-19: Daily Islamic quote popup — uncomment to re-enable */}
+      {/* <DailyQuotePopup /> */}
       {/* 1. Hero Section */}
       <Hero
         onOpenTrial={() => onOpenTrial()}

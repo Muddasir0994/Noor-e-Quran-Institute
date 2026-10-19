@@ -745,8 +745,8 @@ function AppContent() {
         )}
       </Suspense>
 
-      {/* Soft background Quran recitation (Tilawat) */}
-      <TilawatPlayer />
+      {/* TEMP-DISABLED 2026-10-19: Soft background Quran recitation (Tilawat) — uncomment to re-enable */}
+      {/* <TilawatPlayer /> */}
     </div>
   );
 }
