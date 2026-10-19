@@ -18,27 +18,37 @@ const CARDS = [
   {
     icon: BookOpen,
     title: 'Noorani Qaida',
-    desc: 'Build a strong foundation with correct pronunciation.'
+    desc: 'Build a strong foundation with correct pronunciation.',
+    image: '/images/unsplash/course-noorani-qaida.webp',
+    imageAlt: 'Young student learning Noorani Qaida on a wooden rehal'
   },
   {
     icon: BookOpen,
     title: 'Quran Reading',
-    desc: 'Read the Quran fluently with confidence.'
+    desc: 'Read the Quran fluently with confidence.',
+    image: '/images/unsplash/course-quran-reading.webp',
+    imageAlt: 'Student reading the Holy Quran with focus'
   },
   {
     icon: Certificate,
     title: 'Tajweed',
-    desc: 'Learn the rules and beauty of correct recitation.'
+    desc: 'Learn the rules and beauty of correct recitation.',
+    image: '/images/unsplash/course-tajweed.webp',
+    imageAlt: 'Two children in white caps reciting the Quran on rehals'
   },
   {
     icon: GraduationCap,
     title: 'Hifz',
-    desc: 'Memorize the Quran with expert guidance and support.'
+    desc: 'Memorize the Quran with expert guidance and support.',
+    image: '/images/unsplash/course-hifz.webp',
+    imageAlt: 'Dedicated student memorizing the Holy Quran'
   },
   {
     icon: Church,
     title: 'Islamic Studies',
-    desc: 'Explore Islamic knowledge and values for everyday life.'
+    desc: 'Explore Islamic knowledge and values for everyday life.',
+    image: '/images/unsplash/course-islamic-studies.webp',
+    imageAlt: 'Beautiful mosque interior filled with light'
   }
 ];
 
@@ -67,24 +77,35 @@ export const CoursesSection: React.FC<CoursesSectionProps> = ({ onOpenTrial }) =
             return (
               <div
                 key={idx}
-                className="bg-[#0F1E35] border border-[#1E2D47] rounded-xl p-7 flex flex-col min-h-[280px] hover:border-[#5EEAD4]/40 transition-colors group"
+                className="bg-[#0F1E35] border border-[#1E2D47] rounded-xl overflow-hidden flex flex-col min-h-[340px] hover:border-[#5EEAD4]/40 transition-colors group"
               >
-                <span className="text-[#D4A437] mb-5">
-                  <Icon className="w-9 h-9" weight="regular" />
-                </span>
-                <h3 className="text-lg font-bold text-white mb-2.5">
-                  {card.title}
-                </h3>
-                <p className="text-sm text-[#9AA7B8] leading-relaxed flex-1">
-                  {card.desc}
-                </p>
-                <button
-                  onClick={() => onOpenTrial(card.title)}
-                  aria-label={`Start free trial for ${card.title}`}
-                  className="mt-6 w-10 h-10 rounded-full border border-[#5EEAD4] text-[#5EEAD4] flex items-center justify-center hover:bg-[#5EEAD4] hover:text-[#0A1428] transition-all cursor-pointer self-start"
-                >
-                  <ArrowRight className="w-4 h-4" />
-                </button>
+                <div className="relative h-40 shrink-0 overflow-hidden">
+                  <img
+                    src={card.image}
+                    alt={card.imageAlt}
+                    loading="lazy"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0F1E35] via-transparent to-transparent" />
+                  <span className="absolute bottom-3 left-4 w-10 h-10 rounded-full bg-[#0A1428]/85 border border-[#D4A437]/50 text-[#D4A437] flex items-center justify-center">
+                    <Icon className="w-5 h-5" weight="regular" />
+                  </span>
+                </div>
+                <div className="p-6 pt-4 flex flex-col flex-1">
+                  <h3 className="text-lg font-bold text-white mb-2.5">
+                    {card.title}
+                  </h3>
+                  <p className="text-sm text-[#9AA7B8] leading-relaxed flex-1">
+                    {card.desc}
+                  </p>
+                  <button
+                    onClick={() => onOpenTrial(card.title)}
+                    aria-label={`Start free trial for ${card.title}`}
+                    className="mt-6 w-10 h-10 rounded-full border border-[#5EEAD4] text-[#5EEAD4] flex items-center justify-center hover:bg-[#5EEAD4] hover:text-[#0A1428] transition-all cursor-pointer self-start"
+                  >
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
             );
           })}
