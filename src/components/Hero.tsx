@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import {
   Users,
   CalendarBlank,
@@ -14,36 +14,7 @@ interface HeroProps {
   onViewCourses?: () => void;
 }
 
-const SLIDES = [
-  {
-    src: '/images/unsplash/hero-slide-1.webp',
-    alt: 'Hands reading the Holy Quran on a wooden rehal in a bright masjid',
-    caption: 'Learn the Quran with love'
-  },
-  {
-    src: '/images/unsplash/hero-slide-2.webp',
-    alt: 'Young students learning to read the Quran together',
-    caption: 'Guided by caring teachers'
-  },
-  {
-    src: '/images/unsplash/hero-slide-3.webp',
-    alt: 'Child reciting the Holy Quran during an online class',
-    caption: 'Live 1-to-1 classes, anywhere'
-  }
-];
-
 export const Hero: React.FC<HeroProps> = ({ onOpenTrial, onViewCourses }) => {
-  const [active, setActive] = useState(0);
-  const [paused, setPaused] = useState(false);
-
-  useEffect(() => {
-    if (paused) return;
-    const t = setInterval(() => {
-      setActive((i) => (i + 1) % SLIDES.length);
-    }, 5000);
-    return () => clearInterval(t);
-  }, [paused]);
-
   const trustItems = [
     { label: 'Qualified male & female teachers', icon: Users },
     { label: 'Flexible class timings', icon: CalendarBlank },
@@ -109,28 +80,18 @@ export const Hero: React.FC<HeroProps> = ({ onOpenTrial, onViewCourses }) => {
             </div>
           </div>
 
-          {/* Right: image slider */}
+          {/* Right: Quran on rehal with luminous glow */}
           <div className="lg:col-span-6 relative">
-            <div
-              className="relative rounded-sm overflow-hidden border border-[#5EEAD4]/20 shadow-[0_20px_80px_rgba(0,0,0,0.45)]"
-              onMouseEnter={() => setPaused(true)}
-              onMouseLeave={() => setPaused(false)}
-            >
-              {SLIDES.map((slide, i) => (
-                <img
-                  key={slide.src}
-                  src={slide.src}
-                  alt={slide.alt}
-                  width="600"
-                  height="440"
-                  loading={i === 0 ? 'eager' : 'lazy'}
-                  fetchPriority={i === 0 ? 'high' : undefined}
-                  className={`w-full h-[300px] sm:h-[440px] object-cover transition-opacity duration-1000 ${
-                    i === active ? 'opacity-100 relative' : 'opacity-0 absolute inset-0'
-                  }`}
-                  aria-hidden={i !== active}
-                />
-              ))}
+            <div className="relative rounded-sm overflow-hidden border border-[#5EEAD4]/20 shadow-[0_20px_80px_rgba(0,0,0,0.45)]">
+              <img
+                src="/images/unsplash/hero-quran-dark.webp"
+                alt="Open Holy Quran on a carved wooden rehal, illuminated in soft light"
+                className="w-full h-[380px] sm:h-[440px] object-cover"
+                loading="eager"
+                fetchPriority="high"
+                width="600"
+                height="440"
+              />
               <div className="absolute inset-0 bg-gradient-to-t from-[#13263D]/60 via-transparent to-[#13263D]/10 pointer-events-none" />
               {/* Pearl glow ring accent */}
               <div
@@ -139,28 +100,6 @@ export const Hero: React.FC<HeroProps> = ({ onOpenTrial, onViewCourses }) => {
                   background: 'radial-gradient(ellipse 55% 45% at 50% 45%, rgba(94,234,212,0.22) 0%, transparent 70%)'
                 }}
               />
-              {/* Caption */}
-              <div className="absolute bottom-4 left-4 sm:bottom-5 sm:left-5 pointer-events-none">
-                <p
-                  key={active}
-                  className="text-sm sm:text-base font-sans font-semibold text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.7)]"
-                >
-                  {SLIDES[active].caption}
-                </p>
-              </div>
-              {/* Dots */}
-              <div className="absolute bottom-4 right-4 sm:bottom-5 sm:right-5 flex items-center gap-2">
-                {SLIDES.map((slide, i) => (
-                  <button
-                    key={slide.src}
-                    onClick={() => setActive(i)}
-                    aria-label={`Show slide ${i + 1}: ${slide.alt}`}
-                    className={`h-2 rounded-full transition-all cursor-pointer ${
-                      i === active ? 'w-7 bg-[#5EEAD4]' : 'w-2 bg-white/50 hover:bg-white/80'
-                    }`}
-                  />
-                ))}
-              </div>
             </div>
 
             {/* Floating badge */}

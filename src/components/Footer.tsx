@@ -203,7 +203,7 @@ export const Footer: React.FC<FooterProps> = ({
             <span>•</span>
             <span>Worldwide Online Education</span>
             <span>•</span>
-            <span className="opacity-75">Photos: <a href="https://unsplash.com/@abdu3h" target="_blank" rel="noopener noreferrer" className="hover:underline">Abdullah Arif</a>, <a href="https://unsplash.com/@alfasy" target="_blank" rel="noopener noreferrer" className="hover:underline">Mishary Alafasy</a>, <a href="https://unsplash.com/@lemonmelon" target="_blank" rel="noopener noreferrer" className="hover:underline">SR</a>, <a href="https://unsplash.com/@masjidmaba" target="_blank" rel="noopener noreferrer" className="hover:underline">Masjid MABA</a>, <a href="https://unsplash.com/@andri_helmansyah" target="_blank" rel="noopener noreferrer" className="hover:underline">Andri Helmansyah</a> / Unsplash</span>
+            <span className="opacity-75">Photos: <a href="https://unsplash.com/@abdu3h" target="_blank" rel="noopener noreferrer" className="hover:underline">Abdullah Arif</a>, <a href="https://unsplash.com/@alfasy" target="_blank" rel="noopener noreferrer" className="hover:underline">Mishary Alafasy</a>, <a href="https://unsplash.com/@lemonmelon" target="_blank" rel="noopener noreferrer" className="hover:underline">SR</a> / Unsplash</span>
           </div>
         </div>
 
