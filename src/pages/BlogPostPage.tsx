@@ -6,6 +6,52 @@ import { INITIAL_ARTICLES } from '../data/academyData';
 import { getBlogPostBySlug, getPublishedBlogPosts } from '../lib/firestoreService';
 import { Clock, User, ArrowLeft, BookOpen } from '@phosphor-icons/react';
 import DOMPurify from 'dompurify';
+import ReactMarkdown from 'react-markdown';
+
+/** True when the stored content is already HTML; otherwise it is Markdown. */
+function isHtmlContent(content: string): boolean {
+  return /<\s*(p|h1|h2|h3|h4|ul|ol|li|div|blockquote|table|figure|img)[\s>]/i.test(content);
+}
+
+/** Styled renderers for Markdown article bodies (no raw #, **, --- visible). */
+const markdownComponents = {
+  h1: ({ node, ...props }: any) => (
+    <h1 className="font-editorial text-2xl sm:text-3xl font-bold text-[#13263D] mt-10 mb-4 leading-snug" {...props} />
+  ),
+  h2: ({ node, ...props }: any) => (
+    <h2 className="font-editorial text-xl sm:text-2xl font-bold text-[#13263D] mt-10 mb-4 leading-snug" {...props} />
+  ),
+  h3: ({ node, ...props }: any) => (
+    <h3 className="text-lg font-bold text-[#13263D] mt-8 mb-3" {...props} />
+  ),
+  p: ({ node, ...props }: any) => (
+    <p className="text-sm sm:text-base leading-relaxed text-gray-700 mb-5" {...props} />
+  ),
+  ul: ({ node, ...props }: any) => (
+    <ul className="list-disc pl-6 mb-5 space-y-2 text-sm sm:text-base text-gray-700" {...props} />
+  ),
+  ol: ({ node, ...props }: any) => (
+    <ol className="list-decimal pl-6 mb-5 space-y-2 text-sm sm:text-base text-gray-700" {...props} />
+  ),
+  li: ({ node, ...props }: any) => (
+    <li className="leading-relaxed" {...props} />
+  ),
+  strong: ({ node, ...props }: any) => (
+    <strong className="font-bold text-[#13263D]" {...props} />
+  ),
+  em: ({ node, ...props }: any) => (
+    <em className="italic" {...props} />
+  ),
+  a: ({ node, ...props }: any) => (
+    <a className="text-[#A47A46] font-semibold hover:underline" {...props} />
+  ),
+  hr: ({ node, ...props }: any) => (
+    <hr className="my-8 border-[#E7DBC2]" {...props} />
+  ),
+  blockquote: ({ node, ...props }: any) => (
+    <blockquote className="border-l-4 border-[#A47A46] pl-5 py-1 my-6 italic text-gray-600" {...props} />
+  ),
+};
 
 interface BlogPostPageProps {
   onOpenTrial?: () => void;
@@ -283,10 +329,18 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({ onOpenTrial }) => {
 
         {/* Article Body Content */}
         <div className="prose prose-lg max-w-none text-gray-700 font-sans leading-relaxed space-y-6">
-          <div
-            className="whitespace-pre-line text-sm sm:text-base leading-relaxed"
-            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.content) }}
-          />
+          {isHtmlContent(post.content) ? (
+            <div
+              className="whitespace-pre-line text-sm sm:text-base leading-relaxed"
+              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.content) }}
+            />
+          ) : (
+            <div className="text-sm sm:text-base leading-relaxed">
+              <ReactMarkdown components={markdownComponents}>
+                {post.content}
+              </ReactMarkdown>
+            </div>
+          )}
         </div>
 
         {/* In-Article Conversion Callout Banner */}
