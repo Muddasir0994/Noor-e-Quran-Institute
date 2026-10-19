@@ -133,7 +133,7 @@ export const FreeTrialModal: React.FC<FreeTrialModalProps> = ({
       <div className="bg-white/95 backdrop-blur-xl w-full max-w-2xl rounded-3xl shadow-2xl border border-emerald-950/10 overflow-hidden relative my-8 animate-in fade-in zoom-in-95 duration-200">
         
         {/* Modal Header */}
-        <div className="bg-[#064E3B] text-white p-6 sm:p-8 relative">
+        <div className="bg-[#13263D] text-white p-6 sm:p-8 relative">
           <button
             onClick={handleReset}
             className="absolute top-5 right-5 text-emerald-200 hover:text-white p-1.5 rounded-full hover:bg-white/10 transition-all cursor-pointer"
@@ -169,10 +169,10 @@ export const FreeTrialModal: React.FC<FreeTrialModalProps> = ({
         <div className="p-6 sm:p-8">
           {successLead ? (
             <div className="text-center py-6 space-y-4">
-              <div className="w-16 h-16 bg-emerald-100 text-[#064E3B] rounded-full flex items-center justify-center mx-auto">
+              <div className="w-16 h-16 bg-emerald-100 text-[#13263D] rounded-full flex items-center justify-center mx-auto">
                 <CheckCircle className="w-10 h-10" weight="fill" />
               </div>
-              <h3 className="text-xl font-heading font-bold text-[#064E3B]">
+              <h3 className="text-xl font-heading font-bold text-[#13263D]">
                 JazakAllah Khair, {studentName}!
               </h3>
               <p className="text-xs text-gray-600 max-w-md mx-auto leading-relaxed">
@@ -222,7 +222,7 @@ export const FreeTrialModal: React.FC<FreeTrialModalProps> = ({
                     placeholder="e.g. Ayaan / Fatima"
                     value={studentName}
                     onChange={e => setStudentName(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-[#064E3B] focus:border-transparent outline-hidden bg-[#FAFAF7]"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-[#13263D] focus:border-transparent outline-hidden bg-[#FAFAF7]"
                   />
                 </div>
                 <div>
@@ -235,7 +235,7 @@ export const FreeTrialModal: React.FC<FreeTrialModalProps> = ({
                     placeholder="e.g. Imran Ali"
                     value={parentName}
                     onChange={e => setParentName(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-[#064E3B] focus:border-transparent outline-hidden bg-[#FAFAF7]"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-[#13263D] focus:border-transparent outline-hidden bg-[#FAFAF7]"
                   />
                 </div>
               </div>
@@ -253,7 +253,7 @@ export const FreeTrialModal: React.FC<FreeTrialModalProps> = ({
                     placeholder="e.g. +92 327 4496163 / +44..."
                     value={phone}
                     onChange={e => setPhone(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-[#064E3B] focus:border-transparent outline-hidden bg-[#FAFAF7]"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-[#13263D] focus:border-transparent outline-hidden bg-[#FAFAF7]"
                   />
                 </div>
                 <div>
@@ -265,7 +265,7 @@ export const FreeTrialModal: React.FC<FreeTrialModalProps> = ({
                     aria-label="Country / Timezone"
                     value={country}
                     onChange={e => setCountry(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-[#064E3B] focus:border-transparent outline-hidden bg-[#FAFAF7]"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-[#13263D] focus:border-transparent outline-hidden bg-[#FAFAF7]"
                   >
                     <option value="Asia/Karachi">Pakistan (PKT) — Asia/Karachi</option>
                     <option value="Asia/Dubai">UAE (GST) — Asia/Dubai</option>
@@ -299,7 +299,7 @@ export const FreeTrialModal: React.FC<FreeTrialModalProps> = ({
                   aria-label="Select Desired Course"
                   value={courseName}
                   onChange={e => setCourseName(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-[#064E3B] focus:border-transparent outline-hidden bg-[#FAFAF7]"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-[#13263D] focus:border-transparent outline-hidden bg-[#FAFAF7]"
                 >
                   {ALL_COURSES.map(c => (
                     <option key={c.id} value={c.name}>
@@ -318,7 +318,7 @@ export const FreeTrialModal: React.FC<FreeTrialModalProps> = ({
                   <select
                     value={preferredTutorId}
                     onChange={(e) => setPreferredTutorId(e.target.value)}
-                    className="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#064E3B]/30"
+                    className="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#13263D]/30"
                   >
                     <option value="">Any available teacher</option>
                     {INITIAL_TUTORS.map(t => (
@@ -341,7 +341,7 @@ export const FreeTrialModal: React.FC<FreeTrialModalProps> = ({
                         onClick={() => setTutorGender(g)}
                         className={`py-2 rounded-xl text-xs font-bold transition-all border ${
                           tutorGender === g
-                            ? 'bg-[#064E3B] text-white border-[#064E3B]'
+                            ? 'bg-[#13263D] text-white border-[#13263D]'
                             : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
                         }`}
                       >
@@ -410,7 +410,7 @@ export const FreeTrialModal: React.FC<FreeTrialModalProps> = ({
                     id="trial-time-slot-select"
                     value={timeSlot}
                     onChange={e => setTimeSlot(e.target.value as any)}
-                    className="w-full px-3.5 py-2 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-[#064E3B] outline-hidden bg-[#FAFAF7]"
+                    className="w-full px-3.5 py-2 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-[#13263D] outline-hidden bg-[#FAFAF7]"
                   >
                     <option value="Morning">Morning (8:00 AM - 12:00 PM)</option>
                     <option value="Afternoon">Afternoon (12:00 PM - 5:00 PM)</option>
@@ -428,7 +428,7 @@ export const FreeTrialModal: React.FC<FreeTrialModalProps> = ({
                     placeholder="e.g. 7:00 PM EST / 5:30 PM PKT"
                     value={preferredTimeRange}
                     onChange={e => setPreferredTimeRange(e.target.value)}
-                    className="w-full px-3.5 py-2 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-[#064E3B] outline-hidden bg-[#FAFAF7]"
+                    className="w-full px-3.5 py-2 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-[#13263D] outline-hidden bg-[#FAFAF7]"
                   />
                 </div>
               </div>
@@ -444,7 +444,7 @@ export const FreeTrialModal: React.FC<FreeTrialModalProps> = ({
                   placeholder="e.g. 6-year-old child starting Qaida; requires gentle female teacher."
                   value={notes}
                   onChange={e => setNotes(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-[#064E3B] outline-hidden bg-[#FAFAF7]"
+                  className="w-full px-3.5 py-2 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-[#13263D] outline-hidden bg-[#FAFAF7]"
                 />
               </div>
 
@@ -453,7 +453,7 @@ export const FreeTrialModal: React.FC<FreeTrialModalProps> = ({
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-3.5 gold-gradient-btn text-[#064E3B] rounded-2xl font-heading font-extrabold text-xs uppercase tracking-wider transition-all shadow-md active:scale-98 disabled:opacity-50 cursor-pointer"
+                  className="w-full py-3.5 gold-gradient-btn text-[#13263D] rounded-2xl font-heading font-extrabold text-xs uppercase tracking-wider transition-all shadow-md active:scale-98 disabled:opacity-50 cursor-pointer"
                 >
                   {loading ? 'Registering Trial...' : 'CONFIRM 3-DAY FREE TRIAL BOOKING →'}
                 </button>

@@ -30,7 +30,7 @@ export const CoursesSection: React.FC<CoursesSectionProps> = ({
   };
 
   return (
-    <section id="courses" className="py-24 lg:py-32 bg-[#FCFBF8] border-b border-[#E8E0D1]/70">
+    <section id="courses" className="py-24 lg:py-32 bg-[#FAF7F0] border-b border-[#E7DBC2]/70">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Editorial Section Header */}
@@ -38,14 +38,14 @@ export const CoursesSection: React.FC<CoursesSectionProps> = ({
           <p className="text-[11px] font-sans font-bold text-[#8C6D37] uppercase tracking-widest mb-3.5">
             OUR COURSES
           </p>
-          <h2 className="font-editorial text-3xl sm:text-4xl lg:text-5xl text-[#0B332D] leading-[1.15] font-semibold tracking-tight">
+          <h2 className="font-editorial text-3xl sm:text-4xl lg:text-5xl text-[#13263D] leading-[1.15] font-semibold tracking-tight">
             Learn at your pace.<br />
             <span className="italic font-normal">Grow for a lifetime.</span>
           </h2>
         </div>
 
         {/* Numbered Curriculum System (Faint Architectural Numbers + Thin Hairline Dividers) */}
-        <div className="divide-y divide-[#E8E0D1]/60 border-t border-b border-[#E8E0D1]/60">
+        <div className="divide-y divide-[#E7DBC2]/60 border-t border-b border-[#E7DBC2]/60">
           {displayCourses.map((course, idx) => {
             const Icon = getCourseIcon(course.slug, course.category);
             const numStr = String(idx + 1).padStart(2, '0');
@@ -53,26 +53,26 @@ export const CoursesSection: React.FC<CoursesSectionProps> = ({
             return (
               <div
                 key={course.id || idx}
-                className="py-10 lg:py-12 grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-8 items-start lg:items-center group hover:bg-[#F8F5EE]/40 transition-colors px-2 sm:px-4"
+                className="py-10 lg:py-12 grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-8 items-start lg:items-center group hover:bg-[#F5F0E6]/40 transition-colors px-2 sm:px-4"
               >
                 
                 {/* 1. Subtle, Faint Background-Style Editorial Number (Shifted slightly top) */}
                 <div className="md:col-span-2 flex items-center gap-3">
-                  <span className="font-editorial text-2xl sm:text-3xl text-[#B79A62]/35 font-light tracking-wider select-none -translate-y-0.5">
+                  <span className="font-editorial text-2xl sm:text-3xl text-[#A47A46]/35 font-light tracking-wider select-none -translate-y-0.5">
                     {numStr}
                   </span>
-                  <div className="w-7 h-7 rounded-sm bg-[#F8F5EE] border border-[#E8E0D1]/80 flex items-center justify-center text-[#0B332D] group-hover:border-[#B79A62] transition-colors">
+                  <div className="w-7 h-7 rounded-sm bg-[#F5F0E6] border border-[#E7DBC2]/80 flex items-center justify-center text-[#13263D] group-hover:border-[#A47A46] transition-colors">
                     <Icon className="w-3.5 h-3.5" weight="regular" />
                   </div>
                 </div>
 
                 {/* 2. Course Title & Arabic Subheading */}
                 <div className="md:col-span-4 space-y-1">
-                  <h3 className="font-editorial text-2xl sm:text-3xl text-[#0B332D] font-semibold group-hover:text-[#07221E] transition-colors">
+                  <h3 className="font-editorial text-2xl sm:text-3xl text-[#13263D] font-semibold group-hover:text-[#0C1A2E] transition-colors">
                     {course.name}
                   </h3>
                   {course.arabicName && (
-                    <p className="font-arabic text-xs text-[#0B332D]/70" dir="rtl">
+                    <p className="font-arabic text-xs text-[#13263D]/70" dir="rtl">
                       {course.arabicName}
                     </p>
                   )}
@@ -89,7 +89,7 @@ export const CoursesSection: React.FC<CoursesSectionProps> = ({
                 <div className="md:col-span-2 flex md:justify-end items-center gap-4 pt-2 md:pt-0">
                   <button
                     onClick={() => onInspectCourse(course)}
-                    className="inline-flex items-center gap-1.5 text-xs font-sans font-semibold text-[#0B332D] hover:text-[#B79A62] transition-colors py-1 border-b border-[#0B332D]/20 hover:border-[#B79A62] cursor-pointer"
+                    className="inline-flex items-center gap-1.5 text-xs font-sans font-semibold text-[#13263D] hover:text-[#A47A46] transition-colors py-1 border-b border-[#13263D]/20 hover:border-[#A47A46] cursor-pointer"
                   >
                     <span>Explore Course</span>
                     <ArrowRight className="w-3.5 h-3.5" />
@@ -108,7 +108,7 @@ export const CoursesSection: React.FC<CoursesSectionProps> = ({
           </p>
           <button
             onClick={() => onOpenTrial()}
-            className="inline-flex items-center gap-1.5 font-bold text-[#0B332D] hover:text-[#B79A62] transition-colors self-start sm:self-auto cursor-pointer"
+            className="inline-flex items-center gap-1.5 font-bold text-[#13263D] hover:text-[#A47A46] transition-colors self-start sm:self-auto cursor-pointer"
           >
             <span>Need advice selecting a track? Book a Free Trial</span>
             <ArrowRight className="w-3.5 h-3.5" />

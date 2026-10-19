@@ -107,26 +107,26 @@ export function TilawatPlayer() {
       {showPrompt && !hasStarted && (
         <button
           onClick={() => tryPlayRef.current()}
-          className="fixed bottom-24 right-4 z-[70] flex items-center gap-2.5 pl-3 pr-4 py-2.5 rounded-full bg-[#0B332D] text-[#F8F5EE] shadow-xl border border-[#B79A62]/40 hover:bg-[#07221E] transition-all animate-pulse"
+          className="fixed bottom-24 right-4 z-[70] flex items-center gap-2.5 pl-3 pr-4 py-2.5 rounded-full bg-[#13263D] text-[#F5F0E6] shadow-xl border border-[#A47A46]/40 hover:bg-[#0C1A2E] transition-all animate-pulse"
           aria-label="Play Quran recitation"
         >
-          <span className="w-8 h-8 rounded-full bg-[#B79A62] flex items-center justify-center">
-            <Play className="w-4 h-4 text-[#0B332D]" weight="fill" />
+          <span className="w-8 h-8 rounded-full bg-[#A47A46] flex items-center justify-center">
+            <Play className="w-4 h-4 text-[#13263D]" weight="fill" />
           </span>
           <span className="text-xs font-semibold">🎧 Play Tilawat</span>
         </button>
       )}
 
       {/* Mini player — persistent so pause never strands the user */}
-      <div className="fixed bottom-4 right-4 z-[70] w-[270px] rounded-2xl bg-[#0B332D]/95 backdrop-blur border border-[#B79A62]/40 shadow-2xl p-3.5 text-[#F8F5EE]">
+      <div className="fixed bottom-4 right-4 z-[70] w-[270px] rounded-2xl bg-[#13263D]/95 backdrop-blur border border-[#A47A46]/40 shadow-2xl p-3.5 text-[#F5F0E6]">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2 min-w-0">
-            <span className="w-8 h-8 rounded-full bg-[#B79A62]/20 flex items-center justify-center shrink-0">
-              <MusicNote className="w-4 h-4 text-[#B79A62]" weight="fill" />
+            <span className="w-8 h-8 rounded-full bg-[#A47A46]/20 flex items-center justify-center shrink-0">
+              <MusicNote className="w-4 h-4 text-[#A47A46]" weight="fill" />
             </span>
             <div className="min-w-0">
               <p className="text-[11px] font-bold truncate">{track.name}</p>
-              <p className="text-[10px] text-[#B79A62] font-arabic truncate" dir="rtl">{track.nameAr}</p>
+              <p className="text-[10px] text-[#A47A46] font-arabic truncate" dir="rtl">{track.nameAr}</p>
             </div>
           </div>
           <button onClick={() => setDismissed(true)} className="text-gray-400 hover:text-white p-1" aria-label="Close player">
@@ -139,7 +139,7 @@ export function TilawatPlayer() {
           {[0, 1, 2, 3, 4, 5, 6].map((i) => (
             <span
               key={i}
-              className={`w-1 rounded-full bg-[#B79A62] ${playing ? 'animate-pulse' : 'opacity-40'}`}
+              className={`w-1 rounded-full bg-[#A47A46] ${playing ? 'animate-pulse' : 'opacity-40'}`}
               style={{ height: `${40 + ((i * 37) % 60)}%`, animationDelay: `${i * 0.15}s` }}
             />
           ))}
@@ -149,10 +149,10 @@ export function TilawatPlayer() {
         <div className="flex items-center gap-2">
           <button
             onClick={toggle}
-            className="w-9 h-9 rounded-full bg-[#B79A62] hover:bg-[#a68a52] flex items-center justify-center shrink-0"
+            className="w-9 h-9 rounded-full bg-[#A47A46] hover:bg-[#a68a52] flex items-center justify-center shrink-0"
             aria-label={playing ? 'Pause' : 'Play'}
           >
-            {playing ? <Pause className="w-4 h-4 text-[#0B332D]" weight="fill" /> : <Play className="w-4 h-4 text-[#0B332D]" weight="fill" />}
+            {playing ? <Pause className="w-4 h-4 text-[#13263D]" weight="fill" /> : <Play className="w-4 h-4 text-[#13263D]" weight="fill" />}
           </button>
           <button
             onClick={() => setMuted(!muted)}
@@ -168,13 +168,13 @@ export function TilawatPlayer() {
             step={0.05}
             value={muted ? 0 : volume}
             onChange={(e) => { setVolume(parseFloat(e.target.value)); setMuted(false); }}
-            className="flex-1 accent-[#B79A62] h-1"
+            className="flex-1 accent-[#A47A46] h-1"
             aria-label="Volume"
           />
           {PLAYLIST.length > 1 && (
             <button
               onClick={() => setTrackIdx((i) => (i + 1) % PLAYLIST.length)}
-              className="text-[10px] text-[#B79A62] hover:text-white font-semibold px-1"
+              className="text-[10px] text-[#A47A46] hover:text-white font-semibold px-1"
             >
               Next →
             </button>

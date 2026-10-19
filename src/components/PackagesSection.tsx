@@ -140,16 +140,16 @@ export const PackagesSection: React.FC<PackagesSectionProps> = ({
   };
 
   return (
-    <section id="packages" className="py-20 bg-[#FAF9F5] border-y border-[#064E3B]/10 relative overflow-hidden">
+    <section id="packages" className="py-20 bg-[#FAF9F5] border-y border-[#13263D]/10 relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-12">
-          <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full glass-badge text-[#064E3B] text-[11px] font-extrabold uppercase tracking-widest mb-3">
+          <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full glass-badge text-[#13263D] text-[11px] font-extrabold uppercase tracking-widest mb-3">
             <CreditCard className="w-3.5 h-3.5 text-[#A16207]" weight="duotone" />
             <span>Affordable & Transparent Tuition</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl font-heading font-extrabold text-[#064E3B] tracking-tight">
+          <h2 className="text-3xl sm:text-4xl font-heading font-extrabold text-[#13263D] tracking-tight">
             Flexible 1-on-1 Learning Plans
           </h2>
           <p className="text-gray-600 mt-3 text-sm sm:text-base max-w-2xl mx-auto">
@@ -159,7 +159,7 @@ export const PackagesSection: React.FC<PackagesSectionProps> = ({
           {/* Currency Switcher Pill Bar */}
           <div className="mt-8 inline-flex items-center gap-1.5 p-1.5 glass-card-light rounded-2xl flex-wrap justify-center">
             <div className="px-3 py-1 text-xs font-bold text-gray-500 flex items-center gap-1.5">
-              <Globe className="w-3.5 h-3.5 text-[#064E3B]" weight="duotone" />
+              <Globe className="w-3.5 h-3.5 text-[#13263D]" weight="duotone" />
               <span>Select Currency:</span>
             </div>
             {(['USD', 'GBP', 'EUR', 'CAD', 'AUD', 'AED', 'PKR'] as const).map(curr => (
@@ -168,8 +168,8 @@ export const PackagesSection: React.FC<PackagesSectionProps> = ({
                 onClick={() => setSelectedCurrency(curr)}
                 className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                   selectedCurrency === curr
-                    ? 'bg-[#064E3B] text-white shadow-xs'
-                    : 'text-gray-600 hover:text-[#064E3B] hover:bg-emerald-50'
+                    ? 'bg-[#13263D] text-white shadow-xs'
+                    : 'text-gray-600 hover:text-[#13263D] hover:bg-emerald-50'
                 }`}
               >
                 {curr}
@@ -203,12 +203,12 @@ export const PackagesSection: React.FC<PackagesSectionProps> = ({
                     onKeyDown={e => { if (e.key === 'Enter') handleApplyCoupon(); }}
                     placeholder="Have a coupon code?"
                     disabled={couponLoading}
-                    className="px-3 py-1.5 text-xs bg-transparent outline-none text-[#064E3B] font-semibold placeholder:text-gray-400 placeholder:font-medium w-44"
+                    className="px-3 py-1.5 text-xs bg-transparent outline-none text-[#13263D] font-semibold placeholder:text-gray-400 placeholder:font-medium w-44"
                   />
                   <button
                     onClick={handleApplyCoupon}
                     disabled={couponLoading || !couponCode.trim()}
-                    className="px-4 py-1.5 rounded-xl text-xs font-extrabold bg-[#064E3B] text-white hover:bg-[#032B21] disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer"
+                    className="px-4 py-1.5 rounded-xl text-xs font-extrabold bg-[#13263D] text-white hover:bg-[#032B21] disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer"
                   >
                     {couponLoading ? 'Checking…' : 'Apply'}
                   </button>
@@ -258,7 +258,7 @@ export const PackagesSection: React.FC<PackagesSectionProps> = ({
 
               <div>
                 <div className="flex justify-between items-start mb-2">
-                  <span className="text-xs font-extrabold text-[#064E3B] bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-xl">
+                  <span className="text-xs font-extrabold text-[#13263D] bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-xl">
                     {pkg.daysPerWeek}
                   </span>
                   {pkg.badge && !pkg.isPopular && (
@@ -268,7 +268,7 @@ export const PackagesSection: React.FC<PackagesSectionProps> = ({
                   )}
                 </div>
 
-                <h3 className="text-xl font-heading font-extrabold text-[#064E3B] mt-2">
+                <h3 className="text-xl font-heading font-extrabold text-[#13263D] mt-2">
                   {pkg.name}
                 </h3>
                 <p className="text-xs text-gray-500 mt-1 line-clamp-2">
@@ -277,7 +277,7 @@ export const PackagesSection: React.FC<PackagesSectionProps> = ({
 
                 <div className="mt-5 mb-5 p-4 bg-[#FAF9F5] rounded-2xl border border-gray-200/80">
                   <div className="flex items-baseline gap-1">
-                    <span className="text-3xl font-heading font-extrabold text-[#064E3B]">
+                    <span className="text-3xl font-heading font-extrabold text-[#13263D]">
                       {appliedCoupon ? getDiscountedPrice(pkg) : getPrice(pkg)}
                     </span>
                     <span className="text-xs text-gray-500 font-medium">/ month</span>
@@ -303,7 +303,7 @@ export const PackagesSection: React.FC<PackagesSectionProps> = ({
                 <div className="space-y-2.5 mb-6">
                   {pkg.features.map((feat, idx) => (
                     <div key={idx} className="flex items-start gap-2.5 text-xs text-gray-700">
-                      <div className="w-4 h-4 rounded-full bg-emerald-100 text-[#064E3B] flex items-center justify-center shrink-0 mt-0.5">
+                      <div className="w-4 h-4 rounded-full bg-emerald-100 text-[#13263D] flex items-center justify-center shrink-0 mt-0.5">
                         <Check className="w-2.5 h-2.5 stroke-[3]" />
                       </div>
                       <span>{feat}</span>
@@ -317,7 +317,7 @@ export const PackagesSection: React.FC<PackagesSectionProps> = ({
                   onClick={() => onSelectPackage(pkg)}
                   className={`w-full py-3 rounded-xl font-extrabold text-xs transition-all shadow-xs cursor-pointer ${
                     pkg.isPopular
-                      ? 'bg-[#064E3B] text-white hover:bg-[#032B21] active:scale-95'
+                      ? 'bg-[#13263D] text-white hover:bg-[#032B21] active:scale-95'
                       : 'gold-gradient-btn text-[#032B21] active:scale-95'
                   }`}
                 >
@@ -338,11 +338,11 @@ export const PackagesSection: React.FC<PackagesSectionProps> = ({
         {/* Sibling & Family Discount Callout */}
         <div className="mt-8 p-5 rounded-2xl bg-gradient-to-r from-emerald-900/10 via-[#D4A72C]/10 to-emerald-900/10 border border-[#D4A72C]/40 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#D4A72C]/20 border border-[#D4A72C]/50 flex items-center justify-center text-[#064E3B] shrink-0 font-extrabold">
-              <Handshake className="w-5 h-5 text-[#064E3B]" weight="duotone" />
+            <div className="w-10 h-10 rounded-xl bg-[#D4A72C]/20 border border-[#D4A72C]/50 flex items-center justify-center text-[#13263D] shrink-0 font-extrabold">
+              <Handshake className="w-5 h-5 text-[#13263D]" weight="duotone" />
             </div>
             <div>
-              <h4 className="text-xs sm:text-sm font-extrabold text-[#064E3B]">
+              <h4 className="text-xs sm:text-sm font-extrabold text-[#13263D]">
                 Family & Sibling Discount Available
               </h4>
               <p className="text-xs text-gray-600">
@@ -352,7 +352,7 @@ export const PackagesSection: React.FC<PackagesSectionProps> = ({
           </div>
           <button
             onClick={onOpenTrial}
-            className="px-4 py-2 rounded-xl text-xs font-bold bg-[#064E3B] text-white hover:bg-[#032B21] shrink-0 cursor-pointer"
+            className="px-4 py-2 rounded-xl text-xs font-bold bg-[#13263D] text-white hover:bg-[#032B21] shrink-0 cursor-pointer"
           >
             Claim Family Trial
           </button>
@@ -361,11 +361,11 @@ export const PackagesSection: React.FC<PackagesSectionProps> = ({
         {/* Bottom Assurance Note */}
         <div className="mt-8 bg-white rounded-3xl p-6 sm:p-7 border border-emerald-950/10 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-[#064E3B] flex items-center justify-center shrink-0 border border-emerald-100">
-              <ShieldCheck className="w-6 h-6 text-[#064E3B]" weight="duotone" />
+            <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-[#13263D] flex items-center justify-center shrink-0 border border-emerald-100">
+              <ShieldCheck className="w-6 h-6 text-[#13263D]" weight="duotone" />
             </div>
             <div>
-              <h4 className="text-sm font-extrabold text-[#064E3B]">100% Satisfaction & Zero Advance Commitment</h4>
+              <h4 className="text-sm font-extrabold text-[#13263D]">100% Satisfaction & Zero Advance Commitment</h4>
               <p className="text-xs text-gray-600">
                 Take 3 full 1-on-1 trial classes with your assigned tutor. No credit card required. Only pay if you are completely delighted with the teacher.
               </p>
@@ -374,7 +374,7 @@ export const PackagesSection: React.FC<PackagesSectionProps> = ({
           <div className="flex items-center gap-3 shrink-0">
             <button
               onClick={onOpenTrial}
-              className="gold-gradient-btn text-[#064E3B] px-5 py-3 rounded-xl font-extrabold text-xs shadow-xs cursor-pointer"
+              className="gold-gradient-btn text-[#13263D] px-5 py-3 rounded-xl font-extrabold text-xs shadow-xs cursor-pointer"
             >
               BOOK 3-DAY FREE TRIAL
             </button>

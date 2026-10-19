@@ -28,7 +28,7 @@ export const WhatsAppWidget: React.FC<WhatsAppWidgetProps> = ({ onOpenTrial }) =
         <div className="mb-3 w-80 sm:w-88 glass-floating rounded-3xl shadow-2xl border border-[#D4A72C]/30 overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-200">
           
           {/* Header */}
-          <div className="bg-[#064E3B] text-white p-4 flex items-center justify-between bg-islamic-pattern">
+          <div className="bg-[#13263D] text-white p-4 flex items-center justify-between bg-islamic-pattern">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-[#25D366] text-white flex items-center justify-center shadow-inner">
                 <WhatsappLogo className="w-6 h-6" weight="fill" />
@@ -52,7 +52,7 @@ export const WhatsAppWidget: React.FC<WhatsAppWidgetProps> = ({ onOpenTrial }) =
           {/* Chat Body */}
           <div className="p-4 bg-emerald-50/40 space-y-3 text-xs">
             <div className="bg-white p-3 rounded-xl rounded-tl-none border border-gray-200/80 shadow-xs text-gray-800 space-y-1">
-              <p className="font-semibold text-[#064E3B]">Assalam-o-Alaikum!</p>
+              <p className="font-semibold text-[#13263D]">Assalam-o-Alaikum!</p>
               <p>Welcome to Noor E Quran Institute. How can we help you today with your Quran learning goals?</p>
             </div>
 
@@ -76,7 +76,7 @@ export const WhatsAppWidget: React.FC<WhatsAppWidgetProps> = ({ onOpenTrial }) =
                   setIsOpen(false);
                   onOpenTrial();
                 }}
-                className="text-[#064E3B] font-bold underline cursor-pointer"
+                className="text-[#13263D] font-bold underline cursor-pointer"
               >
                 Free Trial Form →
               </button>
@@ -95,7 +95,7 @@ export const WhatsAppWidget: React.FC<WhatsAppWidgetProps> = ({ onOpenTrial }) =
                   handleSend(customMsg);
                 }
               }}
-              className="flex-1 px-3 py-1.5 border border-gray-300 rounded-xl text-xs focus:outline-none focus:border-[#064E3B]"
+              className="flex-1 px-3 py-1.5 border border-gray-300 rounded-xl text-xs focus:outline-none focus:border-[#13263D]"
             />
             <button
               onClick={() => handleSend(customMsg || 'Assalam-o-Alaikum')}

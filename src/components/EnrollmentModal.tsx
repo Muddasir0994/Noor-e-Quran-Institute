@@ -114,7 +114,7 @@ export const EnrollmentModal: React.FC<EnrollmentModalProps> = ({
       <div className="bg-white/95 backdrop-blur-xl w-full max-w-2xl rounded-3xl shadow-2xl border border-emerald-950/10 overflow-hidden relative my-8 animate-in fade-in zoom-in-95 duration-200">
         
         {/* Modal Header */}
-        <div className="bg-[#064E3B] text-white p-6 sm:p-8 relative">
+        <div className="bg-[#13263D] text-white p-6 sm:p-8 relative">
           <button
             onClick={handleReset}
             className="absolute top-5 right-5 text-emerald-200 hover:text-white p-1.5 rounded-full hover:bg-white/10 transition-all cursor-pointer"
@@ -150,10 +150,10 @@ export const EnrollmentModal: React.FC<EnrollmentModalProps> = ({
         <div className="p-6 sm:p-8">
           {successApp ? (
             <div className="text-center py-6 space-y-4">
-              <div className="w-16 h-16 bg-emerald-100 text-[#064E3B] rounded-full flex items-center justify-center mx-auto">
+              <div className="w-16 h-16 bg-emerald-100 text-[#13263D] rounded-full flex items-center justify-center mx-auto">
                 <CheckCircle className="w-10 h-10" weight="fill" />
               </div>
-              <h3 className="text-xl font-heading font-bold text-[#064E3B]">
+              <h3 className="text-xl font-heading font-bold text-[#13263D]">
                 Application Submitted Successfully!
               </h3>
               <p className="text-xs text-gray-600 max-w-md mx-auto leading-relaxed">
@@ -201,7 +201,7 @@ export const EnrollmentModal: React.FC<EnrollmentModalProps> = ({
                     aria-label="Select Course Program"
                     value={courseName}
                     onChange={e => setCourseName(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-[#064E3B] outline-hidden bg-[#FAFAF7]"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-[#13263D] outline-hidden bg-[#FAFAF7]"
                   >
                     {ALL_COURSES.map(c => (
                       <option key={c.id} value={c.name}>
@@ -219,7 +219,7 @@ export const EnrollmentModal: React.FC<EnrollmentModalProps> = ({
                     aria-label="Select Tuition Package"
                     value={selectedPackageId}
                     onChange={e => setSelectedPackageId(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-[#064E3B] outline-hidden bg-[#FAFAF7]"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-[#13263D] outline-hidden bg-[#FAFAF7]"
                   >
                     {ALL_PACKAGES.map(p => (
                       <option key={p.id} value={p.id}>
@@ -243,7 +243,7 @@ export const EnrollmentModal: React.FC<EnrollmentModalProps> = ({
                     placeholder="Full Name"
                     value={studentName}
                     onChange={e => setStudentName(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-[#064E3B] outline-hidden bg-[#FAFAF7]"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-[#13263D] outline-hidden bg-[#FAFAF7]"
                   />
                 </div>
                 <div>
@@ -257,7 +257,7 @@ export const EnrollmentModal: React.FC<EnrollmentModalProps> = ({
                     placeholder="+92 327 4496163 / +44..."
                     value={phone}
                     onChange={e => setPhone(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-[#064E3B] outline-hidden bg-[#FAFAF7]"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-[#13263D] outline-hidden bg-[#FAFAF7]"
                   />
                 </div>
               </div>
@@ -274,7 +274,7 @@ export const EnrollmentModal: React.FC<EnrollmentModalProps> = ({
                     placeholder="e.g. Dr. Tariq Mahmood"
                     value={parentName}
                     onChange={e => setParentName(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-[#064E3B] outline-hidden bg-[#FAFAF7]"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-[#13263D] outline-hidden bg-[#FAFAF7]"
                   />
                 </div>
                 <div>
@@ -286,7 +286,7 @@ export const EnrollmentModal: React.FC<EnrollmentModalProps> = ({
                     aria-label="Country / Timezone"
                     value={country}
                     onChange={e => setCountry(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-[#064E3B] outline-hidden bg-[#FAFAF7]"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-[#13263D] outline-hidden bg-[#FAFAF7]"
                   >
                     <option value="Pakistan">Pakistan (PKT)</option>
                     <option value="United Kingdom">United Kingdom (GMT / BST)</option>
@@ -314,7 +314,7 @@ export const EnrollmentModal: React.FC<EnrollmentModalProps> = ({
                         onClick={() => setTutorPreference(g)}
                         className={`py-2 rounded-xl text-xs font-bold transition-all border ${
                           tutorPreference === g
-                            ? 'bg-[#064E3B] text-white border-[#064E3B]'
+                            ? 'bg-[#13263D] text-white border-[#13263D]'
                             : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
                         }`}
                       >
@@ -384,7 +384,7 @@ export const EnrollmentModal: React.FC<EnrollmentModalProps> = ({
                   placeholder="e.g. Previous Quran learning history, specific goals, preferred class timing..."
                   value={additionalNotes}
                   onChange={e => setAdditionalNotes(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-[#064E3B] outline-hidden bg-[#FAFAF7]"
+                  className="w-full px-3.5 py-2 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-[#13263D] outline-hidden bg-[#FAFAF7]"
                 />
               </div>
 
@@ -393,7 +393,7 @@ export const EnrollmentModal: React.FC<EnrollmentModalProps> = ({
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-3.5 bg-[#D4A72C] text-[#064E3B] hover:brightness-110 rounded-2xl font-heading font-bold text-xs uppercase tracking-wider transition-all shadow-md active:scale-98 disabled:opacity-50"
+                  className="w-full py-3.5 bg-[#D4A72C] text-[#13263D] hover:brightness-110 rounded-2xl font-heading font-bold text-xs uppercase tracking-wider transition-all shadow-md active:scale-98 disabled:opacity-50"
                 >
                   {loading ? 'Submitting Application...' : 'SUBMIT ENROLLMENT APPLICATION'}
                 </button>

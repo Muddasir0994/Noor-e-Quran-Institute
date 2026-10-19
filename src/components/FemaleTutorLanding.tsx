@@ -31,23 +31,23 @@ export const FemaleTutorLanding: React.FC<FemaleTutorLandingProps> = ({
         <nav aria-label="Breadcrumb" className="mb-6">
           <ol className="flex items-center space-x-2 text-xs text-gray-500 font-medium">
             <li>
-              <button onClick={() => onNavClick('home')} className="hover:text-[#064E3B] transition cursor-pointer">
+              <button onClick={() => onNavClick('home')} className="hover:text-[#13263D] transition cursor-pointer">
                 Home
               </button>
             </li>
             <li>/</li>
             <li>
-              <button onClick={() => onNavClick('tutors')} className="hover:text-[#064E3B] transition cursor-pointer">
+              <button onClick={() => onNavClick('tutors')} className="hover:text-[#13263D] transition cursor-pointer">
                 Faculty
               </button>
             </li>
             <li>/</li>
-            <li className="text-[#064E3B] font-extrabold">Female Quran Teachers</li>
+            <li className="text-[#13263D] font-extrabold">Female Quran Teachers</li>
           </ol>
         </nav>
 
         {/* Hero Banner for Female Quran Teachers */}
-        <div className="bg-gradient-to-br from-[#064E3B] via-[#043327] to-[#022119] text-white rounded-3xl p-6 sm:p-10 relative overflow-hidden shadow-xl border border-[#D4A72C]/30 bg-islamic-pattern mb-12">
+        <div className="bg-gradient-to-br from-[#13263D] via-[#043327] to-[#022119] text-white rounded-3xl p-6 sm:p-10 relative overflow-hidden shadow-xl border border-[#D4A72C]/30 bg-islamic-pattern mb-12">
           <div className="relative z-10 grid lg:grid-cols-12 gap-8 items-center">
             <div className="lg:col-span-7 space-y-4">
               <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#032B21]/90 border border-[#F3C64D]/40 text-xs text-[#F3C64D] font-extrabold">
@@ -118,18 +118,18 @@ export const FemaleTutorLanding: React.FC<FemaleTutorLandingProps> = ({
         {/* 3 Core Highlights of Female Faculty */}
         <div className="mb-12">
           <div className="text-center max-w-2xl mx-auto mb-8">
-            <span className="text-xs font-extrabold uppercase tracking-widest text-[#064E3B] bg-emerald-100/80 px-3 py-1 rounded-full border border-emerald-300">
+            <span className="text-xs font-extrabold uppercase tracking-widest text-[#13263D] bg-emerald-100/80 px-3 py-1 rounded-full border border-emerald-300">
               Dedicated Female Department
             </span>
-            <h2 className="text-2xl sm:text-3xl font-heading font-extrabold text-[#064E3B] mt-2">
+            <h2 className="text-2xl sm:text-3xl font-heading font-extrabold text-[#13263D] mt-2">
               Why Sisters & Parents Choose Our Female Faculty
             </h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="bg-white rounded-3xl p-6 border border-emerald-950/10 shadow-xs space-y-3">
-              <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-[#064E3B] flex items-center justify-center border border-emerald-100">
-                <ShieldCheck className="w-6 h-6 text-[#064E3B]" weight="duotone" />
+              <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-[#13263D] flex items-center justify-center border border-emerald-100">
+                <ShieldCheck className="w-6 h-6 text-[#13263D]" weight="duotone" />
               </div>
               <h3 className="font-heading font-bold text-base text-gray-900">
                 Certified Aalimah & Ijazah

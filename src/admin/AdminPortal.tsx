@@ -2139,25 +2139,25 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
   if (isOpen === false) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-[#FCFBF8] flex flex-col overflow-hidden">
-      <div className="w-full h-full bg-[#FCFBF8] flex flex-col flex-1 overflow-hidden">
+    <div className="fixed inset-0 z-50 bg-[#FAF7F0] flex flex-col overflow-hidden">
+      <div className="w-full h-full bg-[#FAF7F0] flex flex-col flex-1 overflow-hidden">
 
         {/* Top Editorial Navigation Bar */}
-        <header className="px-6 py-3.5 bg-[#0B332D] text-[#F8F5EE] border-b border-[#B79A62]/30 flex items-center justify-between shadow-xs shrink-0">
+        <header className="px-6 py-3.5 bg-[#13263D] text-[#F5F0E6] border-b border-[#A47A46]/30 flex items-center justify-between shadow-xs shrink-0">
           <div className="flex items-center gap-3">
             <img
               src="/branding/logo.webp?v=2"
               onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/branding/logo.png?v=2'; }}
               alt="Noor E Quran Official Seal"
-              className="w-14 h-14 sm:w-16 sm:h-16 object-contain rounded-xl bg-white border-2 border-[#B79A62]/60 p-1 shadow-md shrink-0"
+              className="w-14 h-14 sm:w-16 sm:h-16 object-contain rounded-xl bg-white border-2 border-[#A47A46]/60 p-1 shadow-md shrink-0"
               width="64"
               height="64"
             />
             <div>
-              <p className="text-[10px] font-sans font-bold uppercase tracking-widest text-[#B79A62]">
+              <p className="text-[10px] font-sans font-bold uppercase tracking-widest text-[#A47A46]">
                 ACADEMY ADMINISTRATION &amp; ERP
               </p>
-              <h1 className="font-editorial text-lg sm:text-xl text-[#F8F5EE] font-semibold">
+              <h1 className="font-editorial text-lg sm:text-xl text-[#F5F0E6] font-semibold">
                 Noor E Quran Command Studio
               </h1>
             </div>
@@ -2166,7 +2166,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
           <div className="flex items-center gap-3">
             <button
               onClick={onClose}
-              className="px-3 py-1.5 bg-[#07221E] border border-[#B79A62]/40 text-[#E8E0D1] hover:text-white hover:border-[#B79A62] text-xs font-sans font-semibold rounded-sm transition-colors flex items-center gap-1.5 cursor-pointer"
+              className="px-3 py-1.5 bg-[#0C1A2E] border border-[#A47A46]/40 text-[#E7DBC2] hover:text-white hover:border-[#A47A46] text-xs font-sans font-semibold rounded-sm transition-colors flex items-center gap-1.5 cursor-pointer"
             >
               <span>← Back to Academy</span>
             </button>
@@ -2174,7 +2174,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
             {token && (
               <button
                 onClick={handleLogout}
-                className="px-3.5 py-1.5 border border-[#B79A62]/40 text-[#E8E0D1] hover:text-white hover:border-[#B79A62] text-xs font-sans font-semibold rounded-sm transition-colors flex items-center gap-1.5 cursor-pointer"
+                className="px-3.5 py-1.5 border border-[#A47A46]/40 text-[#E7DBC2] hover:text-white hover:border-[#A47A46] text-xs font-sans font-semibold rounded-sm transition-colors flex items-center gap-1.5 cursor-pointer"
               >
                 <SignOut className="w-3.5 h-3.5" />
                 <span>Sign Out</span>
@@ -2183,7 +2183,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
 
             <button
               onClick={onClose}
-              className="p-1.5 text-[#E8E0D1]/70 hover:text-white transition-colors cursor-pointer"
+              className="p-1.5 text-[#E7DBC2]/70 hover:text-white transition-colors cursor-pointer"
               title="Close Portal"
             >
               <X className="w-5 h-5" />
@@ -2194,13 +2194,13 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
         {/* Content Container */}
         {!token ? (
           /* ADMIN LOGIN SCREEN */
-          <div className="flex-1 flex items-center justify-center p-6 bg-[#F8F5EE]">
-            <div className="w-full max-w-md bg-[#FCFBF8] border border-[#E8E0D1] p-8 rounded-sm shadow-lg space-y-6">
+          <div className="flex-1 flex items-center justify-center p-6 bg-[#F5F0E6]">
+            <div className="w-full max-w-md bg-[#FAF7F0] border border-[#E7DBC2] p-8 rounded-sm shadow-lg space-y-6">
               <div className="text-center space-y-1.5">
-                <div className="w-12 h-12 bg-[#0B332D] text-[#B79A62] rounded-sm mx-auto flex items-center justify-center mb-3 border border-[#B79A62]/40">
+                <div className="w-12 h-12 bg-[#13263D] text-[#A47A46] rounded-sm mx-auto flex items-center justify-center mb-3 border border-[#A47A46]/40">
                   <Lock className="w-6 h-6" />
                 </div>
-                <h2 className="font-editorial text-3xl text-[#0B332D] font-bold">Admin Authorization</h2>
+                <h2 className="font-editorial text-3xl text-[#13263D] font-bold">Admin Authorization</h2>
                 <p className="text-xs text-gray-500 font-sans">
                   Sign in with verified institutional credentials to access student admissions, faculty records, and curriculum settings.
                 </p>
@@ -2221,7 +2221,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                     placeholder="admin@alnoorquranacademy.com"
                     value={loginEmail}
                     onChange={e => setLoginEmail(e.target.value)}
-                    className="w-full px-3.5 py-2.5 border border-[#E8E0D1] rounded-sm text-xs font-sans bg-[#F8F5EE] focus:outline-none focus:border-[#0B332D]"
+                    className="w-full px-3.5 py-2.5 border border-[#E7DBC2] rounded-sm text-xs font-sans bg-[#F5F0E6] focus:outline-none focus:border-[#13263D]"
                   />
                 </div>
 
@@ -2233,7 +2233,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                     placeholder="••••••••••••"
                     value={loginPassword}
                     onChange={e => setLoginPassword(e.target.value)}
-                    className="w-full px-3.5 py-2.5 border border-[#E8E0D1] rounded-sm text-xs font-sans bg-[#F8F5EE] focus:outline-none focus:border-[#0B332D]"
+                    className="w-full px-3.5 py-2.5 border border-[#E7DBC2] rounded-sm text-xs font-sans bg-[#F5F0E6] focus:outline-none focus:border-[#13263D]"
                   />
                 </div>
 
@@ -2243,7 +2243,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                       type="checkbox"
                       checked={rememberMe}
                       onChange={e => setRememberMe(e.target.checked)}
-                      className="rounded-xs text-[#0B332D]"
+                      className="rounded-xs text-[#13263D]"
                     />
                     <span>Stay signed in for 30 days</span>
                   </label>
@@ -2252,7 +2252,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                 <button
                   type="submit"
                   disabled={loggingIn}
-                  className="w-full py-3 bg-[#0B332D] text-[#F8F5EE] text-xs font-sans font-semibold uppercase tracking-wider rounded-sm hover:bg-[#07221E] transition-all cursor-pointer shadow-xs"
+                  className="w-full py-3 bg-[#13263D] text-[#F5F0E6] text-xs font-sans font-semibold uppercase tracking-wider rounded-sm hover:bg-[#0C1A2E] transition-all cursor-pointer shadow-xs"
                 >
                   {loggingIn ? 'Verifying...' : 'Authenticate as Administrator'}
                 </button>
@@ -2264,13 +2264,13 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
           <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
 
             {/* Mobile-only top bar with hamburger */}
-            <div className="md:hidden flex items-center justify-between px-4 py-3 bg-[#F8F5EE] border-b border-[#E8E0D1] shrink-0">
-              <span className="font-editorial text-lg font-bold text-[#0B332D]">Noor E Quran Command Studio</span>
+            <div className="md:hidden flex items-center justify-between px-4 py-3 bg-[#F5F0E6] border-b border-[#E7DBC2] shrink-0">
+              <span className="font-editorial text-lg font-bold text-[#13263D]">Noor E Quran Command Studio</span>
               <button
                 type="button"
                 onClick={() => setSidebarOpen(true)}
                 aria-label="Open navigation menu"
-                className="p-2 text-[#0B332D] hover:bg-[#E8E0D1]/60 rounded-sm cursor-pointer"
+                className="p-2 text-[#13263D] hover:bg-[#E7DBC2]/60 rounded-sm cursor-pointer"
               >
                 <List className="w-6 h-6" weight="bold" />
               </button>
@@ -2286,17 +2286,17 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
             )}
 
             {/* Sidebar Navigation — slide-in drawer below md, static sidebar on desktop */}
-            <aside className={`w-60 bg-[#F8F5EE] border-r border-[#E8E0D1] p-3.5 flex flex-col justify-between shrink-0 overflow-y-auto fixed md:static inset-y-0 left-0 z-50 transition-transform duration-200 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
+            <aside className={`w-60 bg-[#F5F0E6] border-r border-[#E7DBC2] p-3.5 flex flex-col justify-between shrink-0 overflow-y-auto fixed md:static inset-y-0 left-0 z-50 transition-transform duration-200 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
               <div className="space-y-4">
 
                 {/* Mobile-only close button */}
                 <div className="md:hidden flex items-center justify-between px-1 pb-1">
-                  <span className="font-editorial text-base font-bold text-[#0B332D]">Menu</span>
+                  <span className="font-editorial text-base font-bold text-[#13263D]">Menu</span>
                   <button
                     type="button"
                     onClick={() => setSidebarOpen(false)}
                     aria-label="Close navigation menu"
-                    className="p-1.5 text-gray-600 hover:text-[#0B332D] cursor-pointer"
+                    className="p-1.5 text-gray-600 hover:text-[#13263D] cursor-pointer"
                   >
                     <X className="w-5 h-5" weight="bold" />
                   </button>
@@ -2331,16 +2331,16 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                           key={item.id}
                           onClick={() => { setActiveTab(item.id as any); setSidebarOpen(false); }}
                           className={`w-full flex items-center justify-between px-3 py-2 text-xs font-sans rounded-sm transition-all cursor-pointer ${active
-                            ? 'bg-[#0B332D] text-[#F8F5EE] font-bold shadow-xs'
-                            : 'text-gray-700 hover:bg-[#E8E0D1]/50'
+                            ? 'bg-[#13263D] text-[#F5F0E6] font-bold shadow-xs'
+                            : 'text-gray-700 hover:bg-[#E7DBC2]/50'
                             }`}
                         >
                           <div className="flex items-center gap-2">
-                            <Icon className={`w-4 h-4 ${active ? 'text-[#B79A62]' : 'text-gray-500'}`} />
+                            <Icon className={`w-4 h-4 ${active ? 'text-[#A47A46]' : 'text-gray-500'}`} />
                             <span>{item.label}</span>
                           </div>
                           {item.badge && item.badge > 0 ? (
-                            <span className="px-1.5 py-0.2 text-[9px] font-bold rounded-xs bg-[#B79A62] text-[#07221E]">
+                            <span className="px-1.5 py-0.2 text-[9px] font-bold rounded-xs bg-[#A47A46] text-[#0C1A2E]">
                               {item.badge}
                             </span>
                           ) : null}
@@ -2352,7 +2352,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
 
                 {/* Content CMS Section */}
                 <div>
-                  <p className="px-2.5 mb-1 text-[10px] font-sans font-bold uppercase tracking-wider text-[#B79A62]">
+                  <p className="px-2.5 mb-1 text-[10px] font-sans font-bold uppercase tracking-wider text-[#A47A46]">
                     Content &amp; Syllabi
                   </p>
                   <div className="space-y-1">
@@ -2370,12 +2370,12 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                           key={item.id}
                           onClick={() => { setActiveTab(item.id as any); setSidebarOpen(false); }}
                           className={`w-full flex items-center justify-between px-3 py-2 text-xs font-sans rounded-sm transition-all cursor-pointer ${active
-                            ? 'bg-[#0B332D] text-[#F8F5EE] font-bold shadow-xs'
-                            : 'text-gray-700 hover:bg-[#E8E0D1]/50'
+                            ? 'bg-[#13263D] text-[#F5F0E6] font-bold shadow-xs'
+                            : 'text-gray-700 hover:bg-[#E7DBC2]/50'
                             }`}
                         >
                           <div className="flex items-center gap-2">
-                            <Icon className={`w-4 h-4 ${active ? 'text-[#B79A62]' : 'text-gray-500'}`} />
+                            <Icon className={`w-4 h-4 ${active ? 'text-[#A47A46]' : 'text-gray-500'}`} />
                             <span>{item.label}</span>
                           </div>
                         </button>
@@ -2405,12 +2405,12 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                           key={item.id}
                           onClick={() => { setActiveTab(item.id as any); setSidebarOpen(false); }}
                           className={`w-full flex items-center justify-between px-3 py-2 text-xs font-sans rounded-sm transition-all cursor-pointer ${active
-                            ? 'bg-[#0B332D] text-[#F8F5EE] font-bold shadow-xs'
-                            : 'text-gray-700 hover:bg-[#E8E0D1]/50'
+                            ? 'bg-[#13263D] text-[#F5F0E6] font-bold shadow-xs'
+                            : 'text-gray-700 hover:bg-[#E7DBC2]/50'
                             }`}
                         >
                           <div className="flex items-center gap-2">
-                            <Icon className={`w-4 h-4 ${active ? 'text-[#B79A62]' : 'text-gray-500'}`} />
+                            <Icon className={`w-4 h-4 ${active ? 'text-[#A47A46]' : 'text-gray-500'}`} />
                             <span>{item.label}</span>
                           </div>
                         </button>
@@ -2421,7 +2421,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
 
               </div>
 
-              <div className="pt-3 border-t border-[#E8E0D1] text-[10px] font-sans text-gray-500 space-y-0.5">
+              <div className="pt-3 border-t border-[#E7DBC2] text-[10px] font-sans text-gray-500 space-y-0.5">
                 <p>CMS Studio: <strong className="text-emerald-700">Enterprise Mode</strong></p>
                 <p>Assets: <strong>{mediaAssets.length}</strong> • SEO: <strong>{seoConfigs.length} pages</strong></p>
                 <p>Packages: <strong>{packages.length}</strong> • FAQs: <strong>{faqs.length}</strong></p>
@@ -2429,25 +2429,25 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
             </aside>
 
             {/* Main Studio Viewport */}
-            <main className="flex-1 overflow-y-auto p-6 bg-[#FCFBF8]">
+            <main className="flex-1 overflow-y-auto p-6 bg-[#FAF7F0]">
 
               {/* TAB 1: OVERVIEW & STATS */}
               {activeTab === 'overview' && (
                 <div className="space-y-6">
                   <div>
-                    <h3 className="font-editorial text-2xl text-[#0B332D] font-bold">Executive Overview</h3>
+                    <h3 className="font-editorial text-2xl text-[#13263D] font-bold">Executive Overview</h3>
                     <p className="text-xs text-gray-500 font-sans">Real-time performance indicators and academic lead conversions.</p>
                   </div>
 
                   {stats && (
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                       {[
-                        { label: 'Total Inquiries / Leads', value: stats.totalLeads, color: 'text-[#0B332D]' },
-                        { label: 'New Trial Requests', value: stats.newTrialRequests, color: 'text-[#B79A62]' },
+                        { label: 'Total Inquiries / Leads', value: stats.totalLeads, color: 'text-[#13263D]' },
+                        { label: 'New Trial Requests', value: stats.newTrialRequests, color: 'text-[#A47A46]' },
                         { label: 'Active Students', value: stats.activeStudents, color: 'text-emerald-700' },
-                        { label: 'Conversion Rate', value: `${stats.conversionRate}%`, color: 'text-[#0B332D]' }
+                        { label: 'Conversion Rate', value: `${stats.conversionRate}%`, color: 'text-[#13263D]' }
                       ].map((card, idx) => (
-                        <div key={idx} className="p-5 bg-[#F8F5EE] border border-[#E8E0D1] rounded-sm space-y-1">
+                        <div key={idx} className="p-5 bg-[#F5F0E6] border border-[#E7DBC2] rounded-sm space-y-1">
                           <p className="text-[11px] font-sans font-bold uppercase tracking-wider text-gray-500">{card.label}</p>
                           <p className={`font-editorial text-3xl font-bold ${card.color}`}>{card.value}</p>
                         </div>
@@ -2459,25 +2459,25 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4">
                     <button
                       onClick={() => setActiveTab('leads')}
-                      className="p-5 bg-[#F8F5EE] border border-[#E8E0D1] rounded-sm text-left hover:border-[#B79A62] transition-colors cursor-pointer space-y-1"
+                      className="p-5 bg-[#F5F0E6] border border-[#E7DBC2] rounded-sm text-left hover:border-[#A47A46] transition-colors cursor-pointer space-y-1"
                     >
-                      <h4 className="font-editorial text-xl text-[#0B332D] font-bold">Review Trial Inquiries ({leads.length})</h4>
+                      <h4 className="font-editorial text-xl text-[#13263D] font-bold">Review Trial Inquiries ({leads.length})</h4>
                       <p className="text-xs text-gray-600 font-sans">Contact parents, schedule 1-on-1 trial slots, and assign teachers.</p>
                     </button>
 
                     <button
                       onClick={() => setActiveTab('courses')}
-                      className="p-5 bg-[#F8F5EE] border border-[#E8E0D1] rounded-sm text-left hover:border-[#B79A62] transition-colors cursor-pointer space-y-1"
+                      className="p-5 bg-[#F5F0E6] border border-[#E7DBC2] rounded-sm text-left hover:border-[#A47A46] transition-colors cursor-pointer space-y-1"
                     >
-                      <h4 className="font-editorial text-xl text-[#0B332D] font-bold">Manage Courses ({adminCourses.length})</h4>
+                      <h4 className="font-editorial text-xl text-[#13263D] font-bold">Manage Courses ({adminCourses.length})</h4>
                       <p className="text-xs text-gray-600 font-sans">Update fees, duration, syllabus structure, and titles.</p>
                     </button>
 
                     <button
                       onClick={() => setActiveTab('blog')}
-                      className="p-5 bg-[#F8F5EE] border border-[#E8E0D1] rounded-sm text-left hover:border-[#B79A62] transition-colors cursor-pointer space-y-1"
+                      className="p-5 bg-[#F5F0E6] border border-[#E7DBC2] rounded-sm text-left hover:border-[#A47A46] transition-colors cursor-pointer space-y-1"
                     >
-                      <h4 className="font-editorial text-xl text-[#0B332D] font-bold">Write Articles &amp; Guides</h4>
+                      <h4 className="font-editorial text-xl text-[#13263D] font-bold">Write Articles &amp; Guides</h4>
                       <p className="text-xs text-gray-600 font-sans">Create SEO guides with interactive image cropping and framing.</p>
                     </button>
                   </div>
@@ -2487,9 +2487,9 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
               {/* TAB 2: TRIAL LEADS */}
               {activeTab === 'leads' && (
                 <div className="space-y-4">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#F8F5EE] p-4 rounded-sm border border-[#E8E0D1]">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#F5F0E6] p-4 rounded-sm border border-[#E7DBC2]">
                     <div>
-                      <h3 className="font-editorial text-2xl text-[#0B332D] font-bold">Trial Inquiries &amp; Leads</h3>
+                      <h3 className="font-editorial text-2xl text-[#13263D] font-bold">Trial Inquiries &amp; Leads</h3>
                       <p className="text-xs text-gray-500 font-sans">Track incoming applications and coordinate trials via WhatsApp.</p>
                     </div>
 
@@ -2497,7 +2497,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                       <select
                         value={leadStatusFilter}
                         onChange={e => setLeadStatusFilter(e.target.value)}
-                        className="px-3 py-2 border border-[#E8E0D1] bg-[#FCFBF8] rounded-sm text-xs font-sans text-gray-700 cursor-pointer"
+                        className="px-3 py-2 border border-[#E7DBC2] bg-[#FAF7F0] rounded-sm text-xs font-sans text-gray-700 cursor-pointer"
                       >
                         <option value="all">All Statuses</option>
                         <option value="New Lead">New Leads</option>
@@ -2509,10 +2509,10 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                     </div>
                   </div>
 
-                  <div className="bg-[#FCFBF8] rounded-sm border border-[#E8E0D1] shadow-xs overflow-hidden">
+                  <div className="bg-[#FAF7F0] rounded-sm border border-[#E7DBC2] shadow-xs overflow-hidden">
                     <div className="overflow-x-auto">
                       <table className="w-full text-left text-xs font-sans">
-                        <thead className="bg-[#F8F5EE] text-[#0B332D] font-bold uppercase tracking-wider border-b border-[#E8E0D1] text-[10px]">
+                        <thead className="bg-[#F5F0E6] text-[#13263D] font-bold uppercase tracking-wider border-b border-[#E7DBC2] text-[10px]">
                           <tr>
                             <th className="p-3.5">Student / Parent</th>
                             <th className="p-3.5">Course</th>
@@ -2522,16 +2522,16 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                             <th className="p-3.5 text-right">Actions</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-[#E8E0D1]/60">
+                        <tbody className="divide-y divide-[#E7DBC2]/60">
                           {leads
                             .filter(l => leadStatusFilter === 'all' || l.status === leadStatusFilter)
                             .map(lead => (
-                              <tr key={lead.id} className="hover:bg-[#F8F5EE]/50 transition-colors">
+                              <tr key={lead.id} className="hover:bg-[#F5F0E6]/50 transition-colors">
                                 <td className="p-3.5">
-                                  <div className="font-bold text-[#0B332D]">{lead.studentName}</div>
+                                  <div className="font-bold text-[#13263D]">{lead.studentName}</div>
                                   <div className="text-[10px] text-gray-500">{lead.parentName ? `Parent: ${lead.parentName}` : lead.phone}</div>
                                 </td>
-                                <td className="p-3.5 font-semibold text-[#0B332D]">{lead.courseName}</td>
+                                <td className="p-3.5 font-semibold text-[#13263D]">{lead.courseName}</td>
                                 <td className="p-3.5">
                                   <div>{lead.timeSlot}</div>
                                   <div className="text-[10px] text-gray-500">{lead.country}</div>
@@ -2539,7 +2539,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                                 <td className="p-3.5 text-gray-600">
                                   {lead.tutorGender}
                                   {(lead as any).preferredTutorName && (
-                                    <div className="text-[10px] font-bold text-[#B79A62] mt-0.5">
+                                    <div className="text-[10px] font-bold text-[#A47A46] mt-0.5">
                                       👨‍🏫 {(lead as any).preferredTutorName}
                                     </div>
                                   )}
@@ -2548,7 +2548,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                                   <select
                                     value={lead.status}
                                     onChange={e => updateLeadStatus(lead.id, e.target.value as LeadStatus)}
-                                    className="px-2 py-1 text-xs border border-[#E8E0D1] rounded-sm bg-[#F8F5EE] text-[#0B332D] font-bold cursor-pointer"
+                                    className="px-2 py-1 text-xs border border-[#E7DBC2] rounded-sm bg-[#F5F0E6] text-[#13263D] font-bold cursor-pointer"
                                   >
                                     <option value="New Lead">New Lead</option>
                                     <option value="Contacted">Contacted</option>
@@ -2562,7 +2562,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                                   <div className="flex items-center justify-end gap-1.5">
                                     <button
                                       onClick={() => setSelectedLead(lead)}
-                                      className="p-1.5 text-gray-700 hover:text-[#0B332D] cursor-pointer"
+                                      className="p-1.5 text-gray-700 hover:text-[#13263D] cursor-pointer"
                                       title="View Lead Details"
                                     >
                                       <Eye className="w-4 h-4" />
@@ -2589,15 +2589,15 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
               {/* TAB 3: ENROLLMENTS */}
               {activeTab === 'enrollments' && (
                 <div className="space-y-4">
-                  <div className="bg-[#F8F5EE] p-4 rounded-sm border border-[#E8E0D1]">
-                    <h3 className="font-editorial text-2xl text-[#0B332D] font-bold">Official Student Enrollments</h3>
+                  <div className="bg-[#F5F0E6] p-4 rounded-sm border border-[#E7DBC2]">
+                    <h3 className="font-editorial text-2xl text-[#13263D] font-bold">Official Student Enrollments</h3>
                     <p className="text-xs text-gray-500 font-sans">Formal registration applications and tutor assignments.</p>
                   </div>
 
-                  <div className="bg-[#FCFBF8] rounded-sm border border-[#E8E0D1] shadow-xs overflow-hidden">
+                  <div className="bg-[#FAF7F0] rounded-sm border border-[#E7DBC2] shadow-xs overflow-hidden">
                     <div className="overflow-x-auto">
                       <table className="w-full text-left text-xs font-sans">
-                        <thead className="bg-[#F8F5EE] text-[#0B332D] font-bold uppercase tracking-wider border-b border-[#E8E0D1] text-[10px]">
+                        <thead className="bg-[#F5F0E6] text-[#13263D] font-bold uppercase tracking-wider border-b border-[#E7DBC2] text-[10px]">
                           <tr>
                             <th className="p-3.5">Student</th>
                             <th className="p-3.5">Course</th>
@@ -2606,14 +2606,14 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                             <th className="p-3.5 text-right">Actions</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-[#E8E0D1]/60">
+                        <tbody className="divide-y divide-[#E7DBC2]/60">
                           {enrollments.map(enr => (
-                            <tr key={enr.id} className="hover:bg-[#F8F5EE]/50 transition-colors">
+                            <tr key={enr.id} className="hover:bg-[#F5F0E6]/50 transition-colors">
                               <td className="p-3.5">
-                                <div className="font-bold text-[#0B332D]">{enr.studentName}</div>
+                                <div className="font-bold text-[#13263D]">{enr.studentName}</div>
                                 <div className="text-[10px] text-gray-500">{enr.phone}</div>
                               </td>
-                              <td className="p-3.5 font-semibold text-[#0B332D]">{enr.courseName}</td>
+                              <td className="p-3.5 font-semibold text-[#13263D]">{enr.courseName}</td>
                               <td className="p-3.5 text-gray-700">
                                 {enr.assignedTutorName || (
                                   <span className="text-gray-400 italic">Unassigned (Pref: {enr.tutorPreference})</span>
@@ -2627,7 +2627,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                               <td className="p-3.5 text-right">
                                 <button
                                   onClick={() => setSelectedEnrollment(enr)}
-                                  className="p-1.5 text-gray-700 hover:text-[#0B332D] cursor-pointer"
+                                  className="p-1.5 text-gray-700 hover:text-[#13263D] cursor-pointer"
                                   title="View Application"
                                 >
                                   <Eye className="w-4 h-4" />
@@ -2645,15 +2645,15 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
               {/* TAB 4: STUDENTS DIRECTORY */}
               {activeTab === 'students' && (
                 <div className="space-y-4">
-                  <div className="bg-[#F8F5EE] p-4 rounded-sm border border-[#E8E0D1]">
-                    <h3 className="font-editorial text-2xl text-[#0B332D] font-bold">Active Students Directory</h3>
+                  <div className="bg-[#F5F0E6] p-4 rounded-sm border border-[#E7DBC2]">
+                    <h3 className="font-editorial text-2xl text-[#13263D] font-bold">Active Students Directory</h3>
                     <p className="text-xs text-gray-500 font-sans">Review active Quran learners, schedules, and progress logs.</p>
                   </div>
 
-                  <div className="bg-[#FCFBF8] rounded-sm border border-[#E8E0D1] shadow-xs overflow-hidden">
+                  <div className="bg-[#FAF7F0] rounded-sm border border-[#E7DBC2] shadow-xs overflow-hidden">
                     <div className="overflow-x-auto">
                       <table className="w-full text-left text-xs font-sans">
-                        <thead className="bg-[#F8F5EE] text-[#0B332D] font-bold uppercase tracking-wider border-b border-[#E8E0D1] text-[10px]">
+                        <thead className="bg-[#F5F0E6] text-[#13263D] font-bold uppercase tracking-wider border-b border-[#E7DBC2] text-[10px]">
                           <tr>
                             <th className="p-3.5">Student / Parent</th>
                             <th className="p-3.5">Course &amp; Sabaq</th>
@@ -2664,11 +2664,11 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                             <th className="p-3.5 text-right">Actions</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-[#E8E0D1]/60">
+                        <tbody className="divide-y divide-[#E7DBC2]/60">
                           {students.map(stu => (
-                            <tr key={stu.id} className="hover:bg-[#F8F5EE]/50 transition-colors">
+                            <tr key={stu.id} className="hover:bg-[#F5F0E6]/50 transition-colors">
                               <td className="p-3.5">
-                                <p className="font-bold text-[#0B332D]">{stu.studentName}</p>
+                                <p className="font-bold text-[#13263D]">{stu.studentName}</p>
                                 <p className="text-[11px] text-gray-500">{stu.parentName || stu.email}</p>
                               </td>
                               <td className="p-3.5 text-gray-700">
@@ -2677,13 +2677,13 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                               </td>
                               <td className="p-3.5 text-gray-700">
                                 {stu.tutorName ? (
-                                  <span className="font-semibold text-[#0B332D]">{stu.tutorName}</span>
+                                  <span className="font-semibold text-[#13263D]">{stu.tutorName}</span>
                                 ) : (
                                   <span className="text-amber-700 italic">Pending Assignment</span>
                                 )}
                               </td>
                               <td className="p-3.5 text-gray-700">
-                                <span className="font-mono text-[11px] bg-[#F8F5EE] px-2 py-0.5 rounded-xs border border-[#E8E0D1]">
+                                <span className="font-mono text-[11px] bg-[#F5F0E6] px-2 py-0.5 rounded-xs border border-[#E7DBC2]">
                                   {stu.preferredDays && stu.preferredDays.length > 0 ? stu.preferredDays.join(', ') : 'Mon, Wed, Fri'} • {stu.preferredTime || 'Evening'}
                                 </span>
                               </td>
@@ -2708,9 +2708,9 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                               <td className="p-3.5 text-right">
                                 <button
                                   onClick={() => handleOpenAssignModal(stu)}
-                                  className="px-3 py-1.5 bg-[#0B332D] text-[#F8F5EE] hover:bg-[#07221E] text-[11px] font-semibold rounded-xs transition-colors cursor-pointer inline-flex items-center gap-1 shadow-xs"
+                                  className="px-3 py-1.5 bg-[#13263D] text-[#F5F0E6] hover:bg-[#0C1A2E] text-[11px] font-semibold rounded-xs transition-colors cursor-pointer inline-flex items-center gap-1 shadow-xs"
                                 >
-                                  <PencilSimple className="w-3.5 h-3.5 text-[#B79A62]" />
+                                  <PencilSimple className="w-3.5 h-3.5 text-[#A47A46]" />
                                   <span>Assign / Edit Timetable</span>
                                 </button>
                               </td>
@@ -2726,9 +2726,9 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
               {/* TAB: DAILY ATTENDANCE */}
               {activeTab === 'attendance' && (
                 <div className="space-y-4">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#F8F5EE] p-4 rounded-sm border border-[#E8E0D1]">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#F5F0E6] p-4 rounded-sm border border-[#E7DBC2]">
                     <div>
-                      <h3 className="font-editorial text-2xl text-[#0B332D] font-bold">Daily Attendance</h3>
+                      <h3 className="font-editorial text-2xl text-[#13263D] font-bold">Daily Attendance</h3>
                       <p className="text-xs text-gray-500 font-sans">Mark present, absent or leave for each student, day by day.</p>
                     </div>
                     <div className="flex items-center gap-2">
@@ -2741,12 +2741,12 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                         type="date"
                         value={attendanceDate}
                         onChange={e => { setAttendanceDate(e.target.value); fetchAttendance(e.target.value); }}
-                        className="px-3 py-2 border border-[#E8E0D1] bg-[#FCFBF8] rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]"
+                        className="px-3 py-2 border border-[#E7DBC2] bg-[#FAF7F0] rounded-sm text-xs font-sans focus:outline-none focus:border-[#13263D]"
                       />
                       <button
                         onClick={handleSaveAttendance}
                         disabled={savingAttendance}
-                        className="px-4 py-2 bg-[#0B332D] text-[#F8F5EE] text-xs font-sans font-semibold uppercase tracking-wider rounded-sm hover:bg-[#07221E] shadow-xs cursor-pointer disabled:opacity-60"
+                        className="px-4 py-2 bg-[#13263D] text-[#F5F0E6] text-xs font-sans font-semibold uppercase tracking-wider rounded-sm hover:bg-[#0C1A2E] shadow-xs cursor-pointer disabled:opacity-60"
                       >
                         {savingAttendance ? 'Saving...' : 'Save Attendance'}
                       </button>
@@ -2759,17 +2759,17 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                       : 'text-emerald-800 bg-emerald-50 border border-emerald-200'}`}>{attendanceMsg}</div>
                   )}
 
-                  <div className="bg-[#FCFBF8] rounded-sm border border-[#E8E0D1] shadow-xs overflow-hidden">
+                  <div className="bg-[#FAF7F0] rounded-sm border border-[#E7DBC2] shadow-xs overflow-hidden">
                     <div className="overflow-x-auto">
                       <table className="w-full text-left text-xs font-sans">
-                        <thead className="bg-[#F8F5EE] text-[#0B332D] font-bold uppercase tracking-wider border-b border-[#E8E0D1] text-[10px]">
+                        <thead className="bg-[#F5F0E6] text-[#13263D] font-bold uppercase tracking-wider border-b border-[#E7DBC2] text-[10px]">
                           <tr>
                             <th className="p-3.5">Student</th>
                             <th className="p-3.5">Course</th>
                             <th className="p-3.5 text-center">Status</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-[#E8E0D1]/60">
+                        <tbody className="divide-y divide-[#E7DBC2]/60">
                           {students
                             .filter(stu => stu.status === 'Active' || stu.status === 'On Trial')
                             .map(stu => {
@@ -2780,9 +2780,9 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                               { val: 'leave', label: 'Leave', activeCls: 'bg-amber-500 text-white border-amber-500' }
                             ];
                             return (
-                              <tr key={stu.id} className="hover:bg-[#F8F5EE]/50 transition-colors">
+                              <tr key={stu.id} className="hover:bg-[#F5F0E6]/50 transition-colors">
                                 <td className="p-3.5">
-                                  <div className="font-bold text-[#0B332D]">{stu.studentName}</div>
+                                  <div className="font-bold text-[#13263D]">{stu.studentName}</div>
                                   <div className="text-[10px] text-gray-500">{stu.parentName}</div>
                                 </td>
                                 <td className="p-3.5 text-gray-700">{stu.courseName}</td>
@@ -2792,7 +2792,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                                       <button
                                         key={o.val}
                                         onClick={() => setAttendanceStatus(prev => ({ ...prev, [stu.id]: o.val }))}
-                                        className={`px-3 py-1.5 text-[11px] font-bold rounded-xs border transition-colors cursor-pointer ${st === o.val ? o.activeCls : 'bg-white text-gray-500 border-[#E8E0D1] hover:border-gray-400'}`}
+                                        className={`px-3 py-1.5 text-[11px] font-bold rounded-xs border transition-colors cursor-pointer ${st === o.val ? o.activeCls : 'bg-white text-gray-500 border-[#E7DBC2] hover:border-gray-400'}`}
                                       >
                                         {o.label}
                                       </button>
@@ -2810,7 +2810,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                     </div>
                   </div>
 
-                  <div className="text-xs font-sans text-gray-600 bg-[#F8F5EE] border border-[#E8E0D1] rounded-sm px-4 py-2.5">
+                  <div className="text-xs font-sans text-gray-600 bg-[#F5F0E6] border border-[#E7DBC2] rounded-sm px-4 py-2.5">
                     {(() => {
                       const roster = students.filter(s => s.status === 'Active' || s.status === 'On Trial');
                       const marked = roster.filter(s => attendanceStatus[s.id]);
@@ -2835,22 +2835,22 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
               {/* TAB: TRIAL CLASSES */}
               {activeTab === 'trials' && (
                 <div className="space-y-4">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#F8F5EE] p-4 rounded-sm border border-[#E8E0D1]">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#F5F0E6] p-4 rounded-sm border border-[#E7DBC2]">
                     <div>
-                      <h3 className="font-editorial text-2xl text-[#0B332D] font-bold">Trial Classes</h3>
+                      <h3 className="font-editorial text-2xl text-[#13263D] font-bold">Trial Classes</h3>
                       <p className="text-xs text-gray-500 font-sans">Schedule free trial classes and track their outcome.</p>
                     </div>
                     <button
                       onClick={() => setShowTrialForm(v => !v)}
-                      className="px-4 py-2 bg-[#0B332D] text-[#F8F5EE] text-xs font-sans font-semibold uppercase tracking-wider rounded-sm hover:bg-[#07221E] flex items-center gap-1.5 shadow-xs cursor-pointer"
+                      className="px-4 py-2 bg-[#13263D] text-[#F5F0E6] text-xs font-sans font-semibold uppercase tracking-wider rounded-sm hover:bg-[#0C1A2E] flex items-center gap-1.5 shadow-xs cursor-pointer"
                     >
-                      <Plus className="w-4 h-4 text-[#B79A62]" />
+                      <Plus className="w-4 h-4 text-[#A47A46]" />
                       <span>{showTrialForm ? 'Close Form' : 'Schedule Trial'}</span>
                     </button>
                   </div>
 
                   {showTrialForm && (
-                    <form onSubmit={handleCreateTrial} className="bg-[#FCFBF8] rounded-sm border border-[#E8E0D1] shadow-xs p-4 space-y-3">
+                    <form onSubmit={handleCreateTrial} className="bg-[#FAF7F0] rounded-sm border border-[#E7DBC2] shadow-xs p-4 space-y-3">
                       <div>
                         <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Pick from leads (optional)</label>
                         <select
@@ -2860,7 +2860,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                             if (lead) setTrialForm(f => ({ ...f, leadId: lead.id, studentName: lead.studentName, phone: lead.phone, email: lead.email || '', courseId: lead.courseId, courseName: lead.courseName }));
                             else setTrialForm(f => ({ ...f, leadId: '' }));
                           }}
-                          className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]"
+                          className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm text-xs font-sans focus:outline-none focus:border-[#13263D]"
                         >
                           <option value="">— Select a lead to autofill —</option>
                           {leads.map(l => <option key={l.id} value={l.id}>{l.studentName} • {l.phone}</option>)}
@@ -2869,15 +2869,15 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
                           <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Student Name *</label>
-                          <input required value={trialForm.studentName} onChange={e => setTrialForm(f => ({ ...f, studentName: e.target.value }))} className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]" />
+                          <input required value={trialForm.studentName} onChange={e => setTrialForm(f => ({ ...f, studentName: e.target.value }))} className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm text-xs font-sans focus:outline-none focus:border-[#13263D]" />
                         </div>
                         <div>
                           <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Phone *</label>
-                          <input required value={trialForm.phone} onChange={e => setTrialForm(f => ({ ...f, phone: e.target.value }))} className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]" />
+                          <input required value={trialForm.phone} onChange={e => setTrialForm(f => ({ ...f, phone: e.target.value }))} className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm text-xs font-sans focus:outline-none focus:border-[#13263D]" />
                         </div>
                         <div>
                           <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Email</label>
-                          <input type="email" value={trialForm.email} onChange={e => setTrialForm(f => ({ ...f, email: e.target.value }))} className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]" />
+                          <input type="email" value={trialForm.email} onChange={e => setTrialForm(f => ({ ...f, email: e.target.value }))} className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm text-xs font-sans focus:outline-none focus:border-[#13263D]" />
                         </div>
                         <div>
                           <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Course</label>
@@ -2887,7 +2887,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                               const c = adminCourses.find(c => c.name === e.target.value);
                               setTrialForm(f => ({ ...f, courseName: e.target.value, courseId: c?.id || '' }));
                             }}
-                            className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]"
+                            className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm text-xs font-sans focus:outline-none focus:border-[#13263D]"
                           >
                             <option value="">Select course</option>
                             {adminCourses.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
@@ -2901,7 +2901,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                               const t = tutors.find(t => t.name === e.target.value);
                               setTrialForm(f => ({ ...f, tutorName: e.target.value, tutorId: t?.id || '' }));
                             }}
-                            className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]"
+                            className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm text-xs font-sans focus:outline-none focus:border-[#13263D]"
                           >
                             <option value="">Select tutor</option>
                             {tutors.map(t => <option key={t.id} value={t.name}>{t.name}</option>)}
@@ -2909,31 +2909,31 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                         </div>
                         <div>
                           <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Meeting Link</label>
-                          <input value={trialForm.meetingLink} onChange={e => setTrialForm(f => ({ ...f, meetingLink: e.target.value }))} placeholder="https://meet.jit.si/..." className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]" />
+                          <input value={trialForm.meetingLink} onChange={e => setTrialForm(f => ({ ...f, meetingLink: e.target.value }))} placeholder="https://meet.jit.si/..." className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm text-xs font-sans focus:outline-none focus:border-[#13263D]" />
                         </div>
                         <div>
                           <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Date *</label>
-                          <input required type="date" value={trialForm.date} onChange={e => setTrialForm(f => ({ ...f, date: e.target.value }))} className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]" />
+                          <input required type="date" value={trialForm.date} onChange={e => setTrialForm(f => ({ ...f, date: e.target.value }))} className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm text-xs font-sans focus:outline-none focus:border-[#13263D]" />
                         </div>
                         <div>
                           <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Time *</label>
-                          <input required type="time" value={trialForm.time} onChange={e => setTrialForm(f => ({ ...f, time: e.target.value }))} className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]" />
+                          <input required type="time" value={trialForm.time} onChange={e => setTrialForm(f => ({ ...f, time: e.target.value }))} className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm text-xs font-sans focus:outline-none focus:border-[#13263D]" />
                         </div>
                       </div>
                       <div>
                         <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Notes</label>
-                        <textarea value={trialForm.notes} onChange={e => setTrialForm(f => ({ ...f, notes: e.target.value }))} rows={2} className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]" />
+                        <textarea value={trialForm.notes} onChange={e => setTrialForm(f => ({ ...f, notes: e.target.value }))} rows={2} className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm text-xs font-sans focus:outline-none focus:border-[#13263D]" />
                       </div>
-                      <button type="submit" className="px-4 py-2 bg-[#0B332D] text-[#F8F5EE] text-xs font-sans font-semibold uppercase tracking-wider rounded-sm hover:bg-[#07221E] shadow-xs cursor-pointer">
+                      <button type="submit" className="px-4 py-2 bg-[#13263D] text-[#F5F0E6] text-xs font-sans font-semibold uppercase tracking-wider rounded-sm hover:bg-[#0C1A2E] shadow-xs cursor-pointer">
                         Schedule Trial Class
                       </button>
                     </form>
                   )}
 
-                  <div className="bg-[#FCFBF8] rounded-sm border border-[#E8E0D1] shadow-xs overflow-hidden">
+                  <div className="bg-[#FAF7F0] rounded-sm border border-[#E7DBC2] shadow-xs overflow-hidden">
                     <div className="overflow-x-auto">
                       <table className="w-full text-left text-xs font-sans">
-                        <thead className="bg-[#F8F5EE] text-[#0B332D] font-bold uppercase tracking-wider border-b border-[#E8E0D1] text-[10px]">
+                        <thead className="bg-[#F5F0E6] text-[#13263D] font-bold uppercase tracking-wider border-b border-[#E7DBC2] text-[10px]">
                           <tr>
                             <th className="p-3.5">Student</th>
                             <th className="p-3.5">Course / Tutor</th>
@@ -2942,11 +2942,11 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                             <th className="p-3.5 text-right">Actions</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-[#E8E0D1]/60">
+                        <tbody className="divide-y divide-[#E7DBC2]/60">
                           {[...trials].sort((a, b) => `${a.date} ${a.time}`.localeCompare(`${b.date} ${b.time}`)).map(t => (
-                            <tr key={t.id} className="hover:bg-[#F8F5EE]/50 transition-colors">
+                            <tr key={t.id} className="hover:bg-[#F5F0E6]/50 transition-colors">
                               <td className="p-3.5">
-                                <div className="font-bold text-[#0B332D]">{t.studentName}</div>
+                                <div className="font-bold text-[#13263D]">{t.studentName}</div>
                                 <div className="text-[10px] text-gray-500">{t.phone}{t.email ? ` • ${t.email}` : ''}</div>
                                 {t.notes && <div className="text-[10px] text-gray-400 italic mt-0.5">{t.notes}</div>}
                               </td>
@@ -2986,7 +2986,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                                       href={t.meetingLink}
                                       target="_blank"
                                       rel="noreferrer"
-                                      className="p-1.5 text-[#0B332D] hover:text-[#B79A62] cursor-pointer"
+                                      className="p-1.5 text-[#13263D] hover:text-[#A47A46] cursor-pointer"
                                       title="Join meeting"
                                     >
                                       <VideoCamera className="w-4 h-4" />
@@ -3016,12 +3016,12 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
               {/* TAB: HIFZ TRACKER (Sabaq / Sabqi / Manzil) */}
               {activeTab === 'hifz' && (
                 <div className="space-y-4">
-                  <div className="bg-[#F8F5EE] p-4 rounded-sm border border-[#E8E0D1]">
-                    <h3 className="font-editorial text-2xl text-[#0B332D] font-bold">Hifz Tracker</h3>
+                  <div className="bg-[#F5F0E6] p-4 rounded-sm border border-[#E7DBC2]">
+                    <h3 className="font-editorial text-2xl text-[#13263D] font-bold">Hifz Tracker</h3>
                     <p className="text-xs text-gray-500 font-sans">Daily Sabaq, Sabqi and Manzil log for memorization students.</p>
                   </div>
 
-                  <div className="bg-[#FCFBF8] rounded-sm border border-[#E8E0D1] shadow-xs p-4">
+                  <div className="bg-[#FAF7F0] rounded-sm border border-[#E7DBC2] shadow-xs p-4">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
                       <div>
                         <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Student *</label>
@@ -3032,7 +3032,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                             setHifzForm({ sabaqSurah: '', sabaqFrom: '', sabaqTo: '', sabqiSurah: '', sabqiFrom: '', sabqiTo: '', manzilJuz: '', remarks: '' });
                             fetchHifzLogs(e.target.value);
                           }}
-                          className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]"
+                          className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm text-xs font-sans focus:outline-none focus:border-[#13263D]"
                         >
                           <option value="">Select student</option>
                           {students.map(s => <option key={s.id} value={s.id}>{s.studentName}</option>)}
@@ -3044,55 +3044,55 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                           type="date"
                           value={hifzDate}
                           onChange={e => { setHifzDate(e.target.value); if (hifzStudentId) fetchHifzLogs(hifzStudentId); }}
-                          className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]"
+                          className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm text-xs font-sans focus:outline-none focus:border-[#13263D]"
                         />
                       </div>
                     </div>
 
                     {hifzStudentId && (
                       <form onSubmit={handleSaveHifzLog} className="space-y-4">
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3 bg-[#F8F5EE] rounded-sm border border-[#E8E0D1]">
-                          <p className="sm:col-span-3 text-[11px] font-bold uppercase tracking-wider text-[#0B332D]">Sabaq (New Lesson)</p>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3 bg-[#F5F0E6] rounded-sm border border-[#E7DBC2]">
+                          <p className="sm:col-span-3 text-[11px] font-bold uppercase tracking-wider text-[#13263D]">Sabaq (New Lesson)</p>
                           <div>
                             <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Surah</label>
-                            <input value={hifzForm.sabaqSurah} onChange={e => setHifzForm(f => ({ ...f, sabaqSurah: e.target.value }))} placeholder="e.g. Al-Baqarah" className="w-full px-3 py-2 border border-[#E8E0D1] bg-white rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]" />
+                            <input value={hifzForm.sabaqSurah} onChange={e => setHifzForm(f => ({ ...f, sabaqSurah: e.target.value }))} placeholder="e.g. Al-Baqarah" className="w-full px-3 py-2 border border-[#E7DBC2] bg-white rounded-sm text-xs font-sans focus:outline-none focus:border-[#13263D]" />
                           </div>
                           <div>
                             <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">From (Ayah)</label>
-                            <input value={hifzForm.sabaqFrom} onChange={e => setHifzForm(f => ({ ...f, sabaqFrom: e.target.value }))} placeholder="e.g. 1" className="w-full px-3 py-2 border border-[#E8E0D1] bg-white rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]" />
+                            <input value={hifzForm.sabaqFrom} onChange={e => setHifzForm(f => ({ ...f, sabaqFrom: e.target.value }))} placeholder="e.g. 1" className="w-full px-3 py-2 border border-[#E7DBC2] bg-white rounded-sm text-xs font-sans focus:outline-none focus:border-[#13263D]" />
                           </div>
                           <div>
                             <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">To (Ayah)</label>
-                            <input value={hifzForm.sabaqTo} onChange={e => setHifzForm(f => ({ ...f, sabaqTo: e.target.value }))} placeholder="e.g. 10" className="w-full px-3 py-2 border border-[#E8E0D1] bg-white rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]" />
+                            <input value={hifzForm.sabaqTo} onChange={e => setHifzForm(f => ({ ...f, sabaqTo: e.target.value }))} placeholder="e.g. 10" className="w-full px-3 py-2 border border-[#E7DBC2] bg-white rounded-sm text-xs font-sans focus:outline-none focus:border-[#13263D]" />
                           </div>
                         </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3 bg-[#F8F5EE] rounded-sm border border-[#E8E0D1]">
-                          <p className="sm:col-span-3 text-[11px] font-bold uppercase tracking-wider text-[#0B332D]">Sabqi (Recent Revision)</p>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3 bg-[#F5F0E6] rounded-sm border border-[#E7DBC2]">
+                          <p className="sm:col-span-3 text-[11px] font-bold uppercase tracking-wider text-[#13263D]">Sabqi (Recent Revision)</p>
                           <div>
                             <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Surah</label>
-                            <input value={hifzForm.sabqiSurah} onChange={e => setHifzForm(f => ({ ...f, sabqiSurah: e.target.value }))} placeholder="e.g. Al-Fatiha" className="w-full px-3 py-2 border border-[#E8E0D1] bg-white rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]" />
+                            <input value={hifzForm.sabqiSurah} onChange={e => setHifzForm(f => ({ ...f, sabqiSurah: e.target.value }))} placeholder="e.g. Al-Fatiha" className="w-full px-3 py-2 border border-[#E7DBC2] bg-white rounded-sm text-xs font-sans focus:outline-none focus:border-[#13263D]" />
                           </div>
                           <div>
                             <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">From</label>
-                            <input value={hifzForm.sabqiFrom} onChange={e => setHifzForm(f => ({ ...f, sabqiFrom: e.target.value }))} className="w-full px-3 py-2 border border-[#E8E0D1] bg-white rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]" />
+                            <input value={hifzForm.sabqiFrom} onChange={e => setHifzForm(f => ({ ...f, sabqiFrom: e.target.value }))} className="w-full px-3 py-2 border border-[#E7DBC2] bg-white rounded-sm text-xs font-sans focus:outline-none focus:border-[#13263D]" />
                           </div>
                           <div>
                             <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">To</label>
-                            <input value={hifzForm.sabqiTo} onChange={e => setHifzForm(f => ({ ...f, sabqiTo: e.target.value }))} className="w-full px-3 py-2 border border-[#E8E0D1] bg-white rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]" />
+                            <input value={hifzForm.sabqiTo} onChange={e => setHifzForm(f => ({ ...f, sabqiTo: e.target.value }))} className="w-full px-3 py-2 border border-[#E7DBC2] bg-white rounded-sm text-xs font-sans focus:outline-none focus:border-[#13263D]" />
                           </div>
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                           <div>
                             <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Manzil (Juz)</label>
-                            <input value={hifzForm.manzilJuz} onChange={e => setHifzForm(f => ({ ...f, manzilJuz: e.target.value }))} placeholder="e.g. Juz 3" className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]" />
+                            <input value={hifzForm.manzilJuz} onChange={e => setHifzForm(f => ({ ...f, manzilJuz: e.target.value }))} placeholder="e.g. Juz 3" className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm text-xs font-sans focus:outline-none focus:border-[#13263D]" />
                           </div>
                           <div>
                             <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Remarks</label>
-                            <input value={hifzForm.remarks} onChange={e => setHifzForm(f => ({ ...f, remarks: e.target.value }))} placeholder="Tutor remarks" className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]" />
+                            <input value={hifzForm.remarks} onChange={e => setHifzForm(f => ({ ...f, remarks: e.target.value }))} placeholder="Tutor remarks" className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm text-xs font-sans focus:outline-none focus:border-[#13263D]" />
                           </div>
                         </div>
                         <div className="flex items-center gap-3">
-                          <button type="submit" disabled={savingHifz} className="px-4 py-2 bg-[#0B332D] text-[#F8F5EE] text-xs font-sans font-semibold uppercase tracking-wider rounded-sm hover:bg-[#07221E] shadow-xs cursor-pointer disabled:opacity-60">
+                          <button type="submit" disabled={savingHifz} className="px-4 py-2 bg-[#13263D] text-[#F5F0E6] text-xs font-sans font-semibold uppercase tracking-wider rounded-sm hover:bg-[#0C1A2E] shadow-xs cursor-pointer disabled:opacity-60">
                             {savingHifz ? 'Saving...' : 'Save Hifz Log'}
                           </button>
                           {hifzMsg && <span className="text-xs font-sans text-emerald-800">{hifzMsg}</span>}
@@ -3102,10 +3102,10 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                   </div>
 
                   {hifzStudentId && hifzLogs.length > 0 && (
-                    <div className="bg-[#FCFBF8] rounded-sm border border-[#E8E0D1] shadow-xs overflow-hidden">
+                    <div className="bg-[#FAF7F0] rounded-sm border border-[#E7DBC2] shadow-xs overflow-hidden">
                       <div className="overflow-x-auto">
                         <table className="w-full text-left text-xs font-sans">
-                          <thead className="bg-[#F8F5EE] text-[#0B332D] font-bold uppercase tracking-wider border-b border-[#E8E0D1] text-[10px]">
+                          <thead className="bg-[#F5F0E6] text-[#13263D] font-bold uppercase tracking-wider border-b border-[#E7DBC2] text-[10px]">
                             <tr>
                               <th className="p-3.5">Date</th>
                               <th className="p-3.5">Sabaq</th>
@@ -3113,10 +3113,10 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                               <th className="p-3.5">Manzil</th>
                             </tr>
                           </thead>
-                          <tbody className="divide-y divide-[#E8E0D1]/60">
+                          <tbody className="divide-y divide-[#E7DBC2]/60">
                             {hifzLogs.map(l => (
-                              <tr key={l.id} className="hover:bg-[#F8F5EE]/50 transition-colors">
-                                <td className="p-3.5 font-bold text-[#0B332D]">{l.date}</td>
+                              <tr key={l.id} className="hover:bg-[#F5F0E6]/50 transition-colors">
+                                <td className="p-3.5 font-bold text-[#13263D]">{l.date}</td>
                                 <td className="p-3.5 text-gray-700">{[l.sabaqSurah, l.sabaqFrom && l.sabaqTo ? `${l.sabaqFrom}-${l.sabaqTo}` : ''].filter(Boolean).join(' ') || '—'}</td>
                                 <td className="p-3.5 text-gray-700">{[l.sabqiSurah, l.sabqiFrom && l.sabqiTo ? `${l.sabqiFrom}-${l.sabqiTo}` : ''].filter(Boolean).join(' ') || '—'}</td>
                                 <td className="p-3.5 text-gray-700">{l.manzilJuz || '—'}</td>
@@ -3133,12 +3133,12 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
               {/* TAB: TUTOR AVAILABILITY */}
               {activeTab === 'availability' && (
                 <div className="space-y-4">
-                  <div className="bg-[#F8F5EE] p-4 rounded-sm border border-[#E8E0D1]">
-                    <h3 className="font-editorial text-2xl text-[#0B332D] font-bold">Tutor Availability</h3>
+                  <div className="bg-[#F5F0E6] p-4 rounded-sm border border-[#E7DBC2]">
+                    <h3 className="font-editorial text-2xl text-[#13263D] font-bold">Tutor Availability</h3>
                     <p className="text-xs text-gray-500 font-sans">Weekly time slots when each scholar is free to take classes.</p>
                   </div>
 
-                  <form onSubmit={handleAddAvailability} className="bg-[#FCFBF8] rounded-sm border border-[#E8E0D1] shadow-xs p-4">
+                  <form onSubmit={handleAddAvailability} className="bg-[#FAF7F0] rounded-sm border border-[#E7DBC2] shadow-xs p-4">
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
                       <div>
                         <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Tutor *</label>
@@ -3149,7 +3149,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                             const t = tutors.find(t => t.id === e.target.value);
                             setAvailForm(f => ({ ...f, tutorId: e.target.value, tutorName: t?.name || '' }));
                           }}
-                          className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]"
+                          className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm text-xs font-sans focus:outline-none focus:border-[#13263D]"
                         >
                           <option value="">Select tutor</option>
                           {tutors.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
@@ -3157,21 +3157,21 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                       </div>
                       <div>
                         <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Day *</label>
-                        <select value={availForm.dayOfWeek} onChange={e => setAvailForm(f => ({ ...f, dayOfWeek: e.target.value }))} className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]">
+                        <select value={availForm.dayOfWeek} onChange={e => setAvailForm(f => ({ ...f, dayOfWeek: e.target.value }))} className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm text-xs font-sans focus:outline-none focus:border-[#13263D]">
                           {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map(d => <option key={d} value={d}>{d}</option>)}
                         </select>
                       </div>
                       <div>
                         <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Start *</label>
-                        <input required type="time" value={availForm.startTime} onChange={e => setAvailForm(f => ({ ...f, startTime: e.target.value }))} className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]" />
+                        <input required type="time" value={availForm.startTime} onChange={e => setAvailForm(f => ({ ...f, startTime: e.target.value }))} className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm text-xs font-sans focus:outline-none focus:border-[#13263D]" />
                       </div>
                       <div>
                         <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">End *</label>
-                        <input required type="time" value={availForm.endTime} onChange={e => setAvailForm(f => ({ ...f, endTime: e.target.value }))} className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]" />
+                        <input required type="time" value={availForm.endTime} onChange={e => setAvailForm(f => ({ ...f, endTime: e.target.value }))} className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm text-xs font-sans focus:outline-none focus:border-[#13263D]" />
                       </div>
                       <div className="flex items-end">
-                        <button type="submit" className="w-full px-4 py-2 bg-[#0B332D] text-[#F8F5EE] text-xs font-sans font-semibold uppercase tracking-wider rounded-sm hover:bg-[#07221E] shadow-xs cursor-pointer">
-                          <Plus className="w-3.5 h-3.5 inline mr-1 text-[#B79A62]" weight="bold" /> Add Slot
+                        <button type="submit" className="w-full px-4 py-2 bg-[#13263D] text-[#F5F0E6] text-xs font-sans font-semibold uppercase tracking-wider rounded-sm hover:bg-[#0C1A2E] shadow-xs cursor-pointer">
+                          <Plus className="w-3.5 h-3.5 inline mr-1 text-[#A47A46]" weight="bold" /> Add Slot
                         </button>
                       </div>
                     </div>
@@ -3182,12 +3182,12 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                       const slots = availability.filter(s => s.tutorId === t.id);
                       if (slots.length === 0) return null;
                       return (
-                        <div key={t.id} className="bg-[#FCFBF8] rounded-sm border border-[#E8E0D1] shadow-xs p-4">
-                          <p className="font-bold text-[#0B332D] text-sm mb-2">{t.name}</p>
+                        <div key={t.id} className="bg-[#FAF7F0] rounded-sm border border-[#E7DBC2] shadow-xs p-4">
+                          <p className="font-bold text-[#13263D] text-sm mb-2">{t.name}</p>
                           <div className="flex flex-wrap gap-2">
                             {slots.map(s => (
-                              <span key={s.id} className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#F8F5EE] border border-[#E8E0D1] rounded-xs text-[11px] font-sans text-[#0B332D]">
-                                <Clock className="w-3 h-3 text-[#B79A62]" />
+                              <span key={s.id} className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#F5F0E6] border border-[#E7DBC2] rounded-xs text-[11px] font-sans text-[#13263D]">
+                                <Clock className="w-3 h-3 text-[#A47A46]" />
                                 {s.dayOfWeek.slice(0, 3)} • {s.startTime}–{s.endTime}
                                 <button onClick={() => handleDeleteAvailability(s.id)} className="ml-1 text-gray-400 hover:text-red-700 cursor-pointer" title="Delete slot">
                                   <X className="w-3 h-3" />
@@ -3199,7 +3199,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                       );
                     })}
                     {availability.length === 0 && (
-                      <div className="p-6 text-center text-xs text-gray-400 font-sans bg-[#FCFBF8] border border-[#E8E0D1] rounded-sm">No availability slots added yet.</div>
+                      <div className="p-6 text-center text-xs text-gray-400 font-sans bg-[#FAF7F0] border border-[#E7DBC2] rounded-sm">No availability slots added yet.</div>
                     )}
                   </div>
                 </div>
@@ -3208,9 +3208,9 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
               {/* TAB 5: TUTORS & FACULTY WITH PHOTO CROP */}
               {activeTab === 'tutors' && (
                 <div className="space-y-4">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#F8F5EE] p-4 rounded-sm border border-[#E8E0D1]">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#F5F0E6] p-4 rounded-sm border border-[#E7DBC2]">
                     <div>
-                      <h3 className="font-editorial text-2xl text-[#0B332D] font-bold">Faculty &amp; Tutors Directory</h3>
+                      <h3 className="font-editorial text-2xl text-[#13263D] font-bold">Faculty &amp; Tutors Directory</h3>
                       <p className="text-xs text-gray-500 font-sans">Manage certified male and female scholars, credentials, and pictures.</p>
                     </div>
 
@@ -3232,18 +3232,18 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                         });
                         setIsAddingTutor(true);
                       }}
-                      className="px-4 py-2 bg-[#0B332D] text-[#F8F5EE] text-xs font-sans font-semibold uppercase tracking-wider rounded-sm hover:bg-[#07221E] flex items-center gap-1.5 shadow-xs cursor-pointer"
+                      className="px-4 py-2 bg-[#13263D] text-[#F5F0E6] text-xs font-sans font-semibold uppercase tracking-wider rounded-sm hover:bg-[#0C1A2E] flex items-center gap-1.5 shadow-xs cursor-pointer"
                     >
-                      <Plus className="w-3.5 h-3.5 text-[#B79A62]" weight="bold" />
+                      <Plus className="w-3.5 h-3.5 text-[#A47A46]" weight="bold" />
                       <span>Add Faculty Member</span>
                     </button>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {tutors.map(tutor => (
-                      <div key={tutor.id} className="p-5 bg-[#F8F5EE] border border-[#E8E0D1] rounded-sm space-y-4">
+                      <div key={tutor.id} className="p-5 bg-[#F5F0E6] border border-[#E7DBC2] rounded-sm space-y-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-14 h-14 rounded-sm overflow-hidden border border-[#E8E0D1] bg-[#FCFBF8] shrink-0">
+                          <div className="w-14 h-14 rounded-sm overflow-hidden border border-[#E7DBC2] bg-[#FAF7F0] shrink-0">
                             {tutor.photoUrl ? (
                               <img src={tutor.photoUrl} alt={tutor.name} className="w-full h-full object-cover" />
                             ) : (
@@ -3253,16 +3253,16 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                             )}
                           </div>
                           <div>
-                            <span className="text-[10px] font-sans font-bold uppercase tracking-wider text-[#B79A62]">
+                            <span className="text-[10px] font-sans font-bold uppercase tracking-wider text-[#A47A46]">
                               {tutor.gender} Teacher
                             </span>
-                            <h4 className="font-editorial text-xl text-[#0B332D] font-bold">{tutor.name}</h4>
+                            <h4 className="font-editorial text-xl text-[#13263D] font-bold">{tutor.name}</h4>
                           </div>
                         </div>
 
                         <p className="text-xs text-gray-600 font-sans">{tutor.specialization}</p>
 
-                        <div className="pt-2 border-t border-[#E8E0D1] text-[11px] font-sans text-gray-500 space-y-1">
+                        <div className="pt-2 border-t border-[#E7DBC2] text-[11px] font-sans text-gray-500 space-y-1">
                           <p>Availability: <strong>{tutor.availability || tutor.availableTimings}</strong></p>
                           <p>Contact: <strong>{tutor.phone}</strong></p>
                           <p className="flex items-center gap-1.5">
@@ -3300,7 +3300,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                               });
                               setIsAddingTutor(true);
                             }}
-                            className="inline-flex items-center gap-1 text-xs font-sans font-semibold text-[#0B332D] hover:text-[#B79A62] cursor-pointer"
+                            className="inline-flex items-center gap-1 text-xs font-sans font-semibold text-[#13263D] hover:text-[#A47A46] cursor-pointer"
                           >
                             <PencilSimple className="w-3.5 h-3.5" />
                             <span>Edit Profile &amp; Picture</span>
@@ -3315,9 +3315,9 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
               {/* TAB: WEEKLY SCHEDULE MATRIX & TIMETABLE GRID */}
               {activeTab === 'timetable' && (
                 <div className="space-y-4">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#F8F5EE] p-4 rounded-sm border border-[#E8E0D1]">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#F5F0E6] p-4 rounded-sm border border-[#E7DBC2]">
                     <div>
-                      <h3 className="font-editorial text-2xl text-[#0B332D] font-bold">Weekly Schedule Matrix</h3>
+                      <h3 className="font-editorial text-2xl text-[#13263D] font-bold">Weekly Schedule Matrix</h3>
                       <p className="text-xs text-gray-500 font-sans">Comprehensive multi-day schedule overview connecting students with assigned faculty scholars.</p>
                     </div>
 
@@ -3333,11 +3333,11 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                     {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map((day) => {
                       const dayStudents = students.filter(s => s.preferredDays && s.preferredDays.includes(day));
                       return (
-                        <div key={day} className="bg-[#F8F5EE] border border-[#E8E0D1] rounded-sm p-3 space-y-2.5 flex flex-col justify-between">
+                        <div key={day} className="bg-[#F5F0E6] border border-[#E7DBC2] rounded-sm p-3 space-y-2.5 flex flex-col justify-between">
                           <div>
-                            <div className="flex items-center justify-between border-b border-[#E8E0D1] pb-1.5 mb-2">
-                              <h4 className="font-bold text-[#0B332D] text-xs uppercase tracking-wider">{day.slice(0, 3)}</h4>
-                              <span className="text-[10px] font-bold px-1.5 py-0.2 rounded-xs bg-[#0B332D] text-[#F8F5EE]">
+                            <div className="flex items-center justify-between border-b border-[#E7DBC2] pb-1.5 mb-2">
+                              <h4 className="font-bold text-[#13263D] text-xs uppercase tracking-wider">{day.slice(0, 3)}</h4>
+                              <span className="text-[10px] font-bold px-1.5 py-0.2 rounded-xs bg-[#13263D] text-[#F5F0E6]">
                                 {dayStudents.length}
                               </span>
                             </div>
@@ -3349,10 +3349,10 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                                   return (
                                   <div
                                     key={stu.id}
-                                    className="p-2 bg-[#FCFBF8] border border-[#E8E0D1] rounded-xs text-[11px] space-y-1 shadow-2xs hover:border-[#B79A62] transition-colors"
+                                    className="p-2 bg-[#FAF7F0] border border-[#E7DBC2] rounded-xs text-[11px] space-y-1 shadow-2xs hover:border-[#A47A46] transition-colors"
                                   >
-                                    <div className="font-bold text-[#0B332D] truncate">{stu.studentName}</div>
-                                    <div className="text-[10px] text-[#B79A62] flex items-center gap-1">
+                                    <div className="font-bold text-[#13263D] truncate">{stu.studentName}</div>
+                                    <div className="text-[10px] text-[#A47A46] flex items-center gap-1">
                                       <Certificate className="w-3 h-3 shrink-0" />
                                       <span className="truncate">{stu.tutorName || 'Pending Tutor'}</span>
                                     </div>
@@ -3378,7 +3378,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                                           setEditingLinkFor(editingLinkFor === stu.id ? null : stu.id);
                                           setMeetingLinkInput(stuClass?.meetingLink || '');
                                         }}
-                                        className="px-2 py-0.5 bg-[#F8F5EE] text-[#0B332D] text-[10px] font-bold rounded-xs border border-[#E8E0D1] hover:border-[#B79A62] transition-colors cursor-pointer"
+                                        className="px-2 py-0.5 bg-[#F5F0E6] text-[#13263D] text-[10px] font-bold rounded-xs border border-[#E7DBC2] hover:border-[#A47A46] transition-colors cursor-pointer"
                                       >
                                         {editingLinkFor === stu.id ? 'Cancel' : 'Set Link'}
                                       </button>
@@ -3389,11 +3389,11 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                                           value={meetingLinkInput}
                                           onChange={e => setMeetingLinkInput(e.target.value)}
                                           placeholder="https://meet.jit.si/..."
-                                          className="flex-1 min-w-0 px-1.5 py-1 border border-[#E8E0D1] bg-white rounded-xs text-[10px] font-sans focus:outline-none focus:border-[#0B332D]"
+                                          className="flex-1 min-w-0 px-1.5 py-1 border border-[#E7DBC2] bg-white rounded-xs text-[10px] font-sans focus:outline-none focus:border-[#13263D]"
                                         />
                                         <button
                                           onClick={() => handleSaveMeetingLink(stu)}
-                                          className="px-2 py-1 bg-[#0B332D] text-[#F8F5EE] text-[10px] font-bold rounded-xs hover:bg-[#07221E] cursor-pointer shrink-0"
+                                          className="px-2 py-1 bg-[#13263D] text-[#F5F0E6] text-[10px] font-bold rounded-xs hover:bg-[#0C1A2E] cursor-pointer shrink-0"
                                         >
                                           Save
                                         </button>
@@ -3408,7 +3408,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                             </div>
                           </div>
 
-                          <div className="pt-2 border-t border-[#E8E0D1]/60 text-center">
+                          <div className="pt-2 border-t border-[#E7DBC2]/60 text-center">
                             <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">{day}</span>
                           </div>
                         </div>
@@ -3421,9 +3421,9 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
               {/* TAB: FINANCE, FEE TRACKING & INVOICING */}
               {activeTab === 'finance' && (
                 <div className="space-y-4">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#F8F5EE] p-4 rounded-sm border border-[#E8E0D1]">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#F5F0E6] p-4 rounded-sm border border-[#E7DBC2]">
                     <div>
-                      <h3 className="font-editorial text-2xl text-[#0B332D] font-bold">Billing &amp; Tuition Invoices</h3>
+                      <h3 className="font-editorial text-2xl text-[#13263D] font-bold">Billing &amp; Tuition Invoices</h3>
                       <p className="text-xs text-gray-500 font-sans">Generate monthly tuition invoices, track incoming wire/card transfers, and WhatsApp payment notices.</p>
                     </div>
 
@@ -3446,9 +3446,9 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                         });
                         setIsAddingInvoice(true);
                       }}
-                      className="px-4 py-2 bg-[#0B332D] text-[#F8F5EE] text-xs font-sans font-semibold uppercase tracking-wider rounded-sm hover:bg-[#07221E] flex items-center gap-1.5 shadow-xs cursor-pointer"
+                      className="px-4 py-2 bg-[#13263D] text-[#F5F0E6] text-xs font-sans font-semibold uppercase tracking-wider rounded-sm hover:bg-[#0C1A2E] flex items-center gap-1.5 shadow-xs cursor-pointer"
                     >
-                      <Plus className="w-3.5 h-3.5 text-[#B79A62]" weight="bold" />
+                      <Plus className="w-3.5 h-3.5 text-[#A47A46]" weight="bold" />
                       <span>Issue Fee Invoice</span>
                     </button>
                   </div>
@@ -3459,7 +3459,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
 
                   {/* Summary Metric Cards */}
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div className="p-4 bg-[#FCFBF8] border border-[#E8E0D1] rounded-sm flex items-center justify-between">
+                    <div className="p-4 bg-[#FAF7F0] border border-[#E7DBC2] rounded-sm flex items-center justify-between">
                       <div>
                         <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500">Collected Revenue</span>
                         <h4 className="font-editorial text-2xl text-emerald-800 font-bold mt-0.5">
@@ -3471,7 +3471,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                       </div>
                     </div>
 
-                    <div className="p-4 bg-[#FCFBF8] border border-[#E8E0D1] rounded-sm flex items-center justify-between">
+                    <div className="p-4 bg-[#FAF7F0] border border-[#E7DBC2] rounded-sm flex items-center justify-between">
                       <div>
                         <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500">Pending Invoices</span>
                         <h4 className="font-editorial text-2xl text-amber-700 font-bold mt-0.5">
@@ -3483,24 +3483,24 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                       </div>
                     </div>
 
-                    <div className="p-4 bg-[#FCFBF8] border border-[#E8E0D1] rounded-sm flex items-center justify-between">
+                    <div className="p-4 bg-[#FAF7F0] border border-[#E7DBC2] rounded-sm flex items-center justify-between">
                       <div>
                         <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500">Total Invoices Issued</span>
-                        <h4 className="font-editorial text-2xl text-[#0B332D] font-bold mt-0.5">
+                        <h4 className="font-editorial text-2xl text-[#13263D] font-bold mt-0.5">
                           {invoices.length} Total
                         </h4>
                       </div>
-                      <div className="w-10 h-10 rounded-sm bg-[#0B332D] text-[#B79A62] flex items-center justify-center">
+                      <div className="w-10 h-10 rounded-sm bg-[#13263D] text-[#A47A46] flex items-center justify-center">
                         <Receipt className="w-5 h-5" />
                       </div>
                     </div>
                   </div>
 
                   {/* Invoices Table */}
-                  <div className="bg-[#FCFBF8] rounded-sm border border-[#E8E0D1] shadow-xs overflow-hidden">
+                  <div className="bg-[#FAF7F0] rounded-sm border border-[#E7DBC2] shadow-xs overflow-hidden">
                     <div className="overflow-x-auto">
                       <table className="w-full text-left text-xs font-sans">
-                        <thead className="bg-[#F8F5EE] text-[#0B332D] font-bold uppercase tracking-wider border-b border-[#E8E0D1] text-[10px]">
+                        <thead className="bg-[#F5F0E6] text-[#13263D] font-bold uppercase tracking-wider border-b border-[#E7DBC2] text-[10px]">
                           <tr>
                             <th className="p-3.5">Invoice #</th>
                             <th className="p-3.5">Student / Parent</th>
@@ -3511,16 +3511,16 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                             <th className="p-3.5 text-right">Actions</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-[#E8E0D1]/60">
+                        <tbody className="divide-y divide-[#E7DBC2]/60">
                           {invoices.map(inv => (
-                            <tr key={inv.id} className="hover:bg-[#F8F5EE]/50 transition-colors">
-                              <td className="p-3.5 font-mono font-bold text-[#0B332D]">{inv.invoiceNumber}</td>
+                            <tr key={inv.id} className="hover:bg-[#F5F0E6]/50 transition-colors">
+                              <td className="p-3.5 font-mono font-bold text-[#13263D]">{inv.invoiceNumber}</td>
                               <td className="p-3.5">
-                                <div className="font-bold text-[#0B332D]">{inv.studentName}</div>
+                                <div className="font-bold text-[#13263D]">{inv.studentName}</div>
                                 <div className="text-[10px] text-gray-500">{inv.parentName} • {inv.phone}</div>
                               </td>
                               <td className="p-3.5 text-gray-700">{inv.courseName} ({inv.packageName})</td>
-                              <td className="p-3.5 font-bold text-[#0B332D]">
+                              <td className="p-3.5 font-bold text-[#13263D]">
                                 {inv.currency} {inv.amount?.toLocaleString()}
                               </td>
                               <td className="p-3.5 text-gray-600 font-mono text-[11px]">{inv.dueDate}</td>
@@ -3541,7 +3541,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                                   </button>
                                   <button
                                     onClick={() => setSelectedInvoiceForPrint(inv)}
-                                    className="p-1.5 text-[#0B332D] hover:text-[#B79A62] cursor-pointer"
+                                    className="p-1.5 text-[#13263D] hover:text-[#A47A46] cursor-pointer"
                                     title="View / Print Receipt"
                                   >
                                     <Receipt className="w-4 h-4" />
@@ -3551,7 +3551,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                                   <div className="mt-1.5">
                                     <button
                                       onClick={() => handleFeeReminder(inv)}
-                                      className="px-2.5 py-1 bg-[#B79A62] text-white text-[10px] font-sans font-bold rounded-xs hover:bg-[#a3874f] cursor-pointer inline-flex items-center gap-1 shadow-xs"
+                                      className="px-2.5 py-1 bg-[#A47A46] text-white text-[10px] font-sans font-bold rounded-xs hover:bg-[#a3874f] cursor-pointer inline-flex items-center gap-1 shadow-xs"
                                       title="Opens a WhatsApp chat with a pre-filled fee reminder — you must press Send in WhatsApp yourself; nothing is sent automatically"
                                     >
                                       <WhatsappLogo className="w-3.5 h-3.5" weight="fill" />
@@ -3580,9 +3580,9 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
               {/* TAB: STUDENT PROGRESS REPORTS & CERTIFICATES */}
               {activeTab === 'reports' && (
                 <div className="space-y-4">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#F8F5EE] p-4 rounded-sm border border-[#E8E0D1]">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#F5F0E6] p-4 rounded-sm border border-[#E7DBC2]">
                     <div>
-                      <h3 className="font-editorial text-2xl text-[#0B332D] font-bold">Monthly Student Evaluation Reports</h3>
+                      <h3 className="font-editorial text-2xl text-[#13263D] font-bold">Monthly Student Evaluation Reports</h3>
                       <p className="text-xs text-gray-500 font-sans">Formal pedagogical assessment cards, Tajweed evaluation, and academic certificates for parents.</p>
                     </div>
 
@@ -3603,9 +3603,9 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                         });
                         setIsGeneratingReport(true);
                       }}
-                      className="px-4 py-2 bg-[#0B332D] text-[#F8F5EE] text-xs font-sans font-semibold uppercase tracking-wider rounded-sm hover:bg-[#07221E] flex items-center gap-1.5 shadow-xs cursor-pointer"
+                      className="px-4 py-2 bg-[#13263D] text-[#F5F0E6] text-xs font-sans font-semibold uppercase tracking-wider rounded-sm hover:bg-[#0C1A2E] flex items-center gap-1.5 shadow-xs cursor-pointer"
                     >
-                      <Plus className="w-3.5 h-3.5 text-[#B79A62]" weight="bold" />
+                      <Plus className="w-3.5 h-3.5 text-[#A47A46]" weight="bold" />
                       <span>Issue Progress Card</span>
                     </button>
                   </div>
@@ -3618,23 +3618,23 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                     {reportCards.map((rep) => (
                       <div
                         key={rep.id}
-                        className="bg-[#F8F5EE] border border-[#E8E0D1] rounded-sm p-5 space-y-3 shadow-xs flex flex-col justify-between"
+                        className="bg-[#F5F0E6] border border-[#E7DBC2] rounded-sm p-5 space-y-3 shadow-xs flex flex-col justify-between"
                       >
                         <div className="space-y-3">
                           <div className="flex items-start justify-between">
                             <div>
-                              <span className="text-[10px] font-bold uppercase tracking-wider text-[#B79A62] block">
+                              <span className="text-[10px] font-bold uppercase tracking-wider text-[#A47A46] block">
                                 {rep.evaluationMonth} Evaluation
                               </span>
-                              <h4 className="font-editorial text-xl text-[#0B332D] font-bold">{rep.studentName}</h4>
+                              <h4 className="font-editorial text-xl text-[#13263D] font-bold">{rep.studentName}</h4>
                               <p className="text-[11px] text-gray-600 font-sans">{rep.courseName} • Tutor: {rep.tutorName}</p>
                             </div>
-                            <span className="px-2 py-0.5 text-xs font-bold rounded-xs bg-[#0B332D] text-[#F8F5EE]">
+                            <span className="px-2 py-0.5 text-xs font-bold rounded-xs bg-[#13263D] text-[#F5F0E6]">
                               {fmtAttendance(rep.attendancePercentage)} Attendance
                             </span>
                           </div>
 
-                          <div className="grid grid-cols-2 gap-2 bg-[#FCFBF8] p-3 rounded-xs border border-[#E8E0D1]/60 text-xs">
+                          <div className="grid grid-cols-2 gap-2 bg-[#FAF7F0] p-3 rounded-xs border border-[#E7DBC2]/60 text-xs">
                             <div>
                               <span className="text-[9px] text-gray-500 font-bold uppercase block">Tajweed Accuracy</span>
                               <span className="font-bold text-emerald-700 text-sm">{rep.tajweedGrade}</span>
@@ -3643,18 +3643,18 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                               <span className="text-[9px] text-gray-500 font-bold uppercase block">Reading Fluency</span>
                               <span className="font-bold text-emerald-700 text-sm">{rep.readingGrade}</span>
                             </div>
-                            <div className="col-span-2 pt-1 border-t border-[#E8E0D1]/40">
+                            <div className="col-span-2 pt-1 border-t border-[#E7DBC2]/40">
                               <span className="text-[9px] text-gray-500 font-bold uppercase block">Current Sabaq</span>
-                              <span className="font-semibold text-[#0B332D] text-xs">{rep.currentSabaq}</span>
+                              <span className="font-semibold text-[#13263D] text-xs">{rep.currentSabaq}</span>
                             </div>
                           </div>
 
-                          <p className="text-xs text-gray-700 italic bg-[#FCFBF8] p-3 rounded-xs border border-[#E8E0D1]/60">
+                          <p className="text-xs text-gray-700 italic bg-[#FAF7F0] p-3 rounded-xs border border-[#E7DBC2]/60">
                             "{rep.teacherRemarks}"
                           </p>
                         </div>
 
-                        <div className="pt-3 border-t border-[#E8E0D1] flex items-center justify-between">
+                        <div className="pt-3 border-t border-[#E7DBC2] flex items-center justify-between">
                           <button
                             onClick={() => handleSendReportWhatsApp(rep)}
                             className="px-3 py-1.5 bg-[#25D366] text-white text-xs font-bold rounded-sm inline-flex items-center gap-1 cursor-pointer shadow-2xs"
@@ -3665,9 +3665,9 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
 
                           <button
                             onClick={() => setSelectedReportForPrint(rep)}
-                            className="px-3 py-1.5 bg-[#0B332D] text-[#F8F5EE] text-xs font-bold rounded-sm inline-flex items-center gap-1 cursor-pointer"
+                            className="px-3 py-1.5 bg-[#13263D] text-[#F5F0E6] text-xs font-bold rounded-sm inline-flex items-center gap-1 cursor-pointer"
                           >
-                            <Printer className="w-3.5 h-3.5 text-[#B79A62]" />
+                            <Printer className="w-3.5 h-3.5 text-[#A47A46]" />
                             <span>View Certificate</span>
                           </button>
                         </div>
@@ -3680,13 +3680,13 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
               {/* TAB: TUTOR PAYROLL & COMPENSATION */}
               {activeTab === 'payroll' && (
                 <div className="space-y-4">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#F8F5EE] p-4 rounded-sm border border-[#E8E0D1]">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#F5F0E6] p-4 rounded-sm border border-[#E7DBC2]">
                     <div>
-                      <h3 className="font-editorial text-2xl text-[#0B332D] font-bold">Faculty Payroll &amp; Compensation</h3>
+                      <h3 className="font-editorial text-2xl text-[#13263D] font-bold">Faculty Payroll &amp; Compensation</h3>
                       <p className="text-xs text-gray-500 font-sans">Monthly calculated honorarium and compensation for certified faculty scholars.</p>
                     </div>
 
-                    <span className="text-xs font-bold text-[#0B332D] bg-[#FCFBF8] px-3 py-1.5 rounded-sm border border-[#E8E0D1]">
+                    <span className="text-xs font-bold text-[#13263D] bg-[#FAF7F0] px-3 py-1.5 rounded-sm border border-[#E7DBC2]">
                       Total Payout: Rs {payrollList.reduce((acc, p) => acc + p.totalPayoutPKR, 0).toLocaleString()}
                     </span>
                   </div>
@@ -3695,10 +3695,10 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                     <div className="px-4 py-2.5 bg-red-50 border border-red-300 text-red-800 text-xs font-sans rounded-sm">{payrollErr}</div>
                   )}
 
-                  <div className="bg-[#FCFBF8] rounded-sm border border-[#E8E0D1] shadow-xs overflow-hidden">
+                  <div className="bg-[#FAF7F0] rounded-sm border border-[#E7DBC2] shadow-xs overflow-hidden">
                     <div className="overflow-x-auto">
                       <table className="w-full text-left text-xs font-sans">
-                        <thead className="bg-[#F8F5EE] text-[#0B332D] font-bold uppercase tracking-wider border-b border-[#E8E0D1] text-[10px]">
+                        <thead className="bg-[#F5F0E6] text-[#13263D] font-bold uppercase tracking-wider border-b border-[#E7DBC2] text-[10px]">
                           <tr>
                             <th className="p-3.5">Faculty Scholar</th>
                             <th className="p-3.5">Billing Month</th>
@@ -3709,12 +3709,12 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                             <th className="p-3.5 text-right">Toggle Action</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-[#E8E0D1]/60">
+                        <tbody className="divide-y divide-[#E7DBC2]/60">
                           {payrollList.map(pay => (
-                            <tr key={pay.id} className="hover:bg-[#F8F5EE]/50 transition-colors">
-                              <td className="p-3.5 font-bold text-[#0B332D]">{pay.tutorName}</td>
+                            <tr key={pay.id} className="hover:bg-[#F5F0E6]/50 transition-colors">
+                              <td className="p-3.5 font-bold text-[#13263D]">{pay.tutorName}</td>
                               <td className="p-3.5 text-gray-600">{pay.billingMonth}</td>
-                              <td className="p-3.5 font-bold text-[#0B332D]">{pay.classesConducted} Classes</td>
+                              <td className="p-3.5 font-bold text-[#13263D]">{pay.classesConducted} Classes</td>
                               <td className="p-3.5 text-gray-600">Rs {pay.ratePerClassPKR}</td>
                               <td className="p-3.5 font-bold text-emerald-800 text-sm">Rs {pay.totalPayoutPKR.toLocaleString()}</td>
                               <td className="p-3.5">
@@ -3726,7 +3726,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                               <td className="p-3.5 text-right">
                                 <button
                                   onClick={() => handleTogglePayrollStatus(pay.id)}
-                                  className="px-3 py-1 bg-[#0B332D] text-[#F8F5EE] text-[10px] font-bold rounded-xs hover:bg-[#07221E] cursor-pointer"
+                                  className="px-3 py-1 bg-[#13263D] text-[#F5F0E6] text-[10px] font-bold rounded-xs hover:bg-[#0C1A2E] cursor-pointer"
                                 >
                                   Mark as {pay.status === 'Paid' ? 'Pending' : 'Paid'}
                                 </button>
@@ -3743,8 +3743,8 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
               {/* TAB: AUDIT ACTIVITY LOGS */}
               {activeTab === 'logs' && (
                 <div className="space-y-4">
-                  <div className="bg-[#F8F5EE] p-4 rounded-sm border border-[#E8E0D1]">
-                    <h3 className="font-editorial text-2xl text-[#0B332D] font-bold">System Activity Audit Log</h3>
+                  <div className="bg-[#F5F0E6] p-4 rounded-sm border border-[#E7DBC2]">
+                    <h3 className="font-editorial text-2xl text-[#13263D] font-bold">System Activity Audit Log</h3>
                     <p className="text-xs text-gray-500 font-sans">Live traceable audit trail of administrative events, admissions, tutor allocations, and fee management.</p>
                   </div>
 
@@ -3752,11 +3752,11 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                     <div className="px-4 py-2.5 bg-red-50 border border-red-300 text-red-800 text-xs font-sans rounded-sm">{logErr}</div>
                   )}
 
-                  <div className="bg-[#FCFBF8] rounded-sm border border-[#E8E0D1] p-4 divide-y divide-[#E8E0D1]/60 text-xs font-sans">
+                  <div className="bg-[#FAF7F0] rounded-sm border border-[#E7DBC2] p-4 divide-y divide-[#E7DBC2]/60 text-xs font-sans">
                     {activityLogs.map((log) => (
                       <div key={log.id} className="py-2.5 flex items-center justify-between gap-4">
                         <div className="flex items-center gap-3">
-                          <span className="px-2 py-0.5 text-[9px] font-bold rounded-xs bg-[#0B332D] text-[#F8F5EE]">
+                          <span className="px-2 py-0.5 text-[9px] font-bold rounded-xs bg-[#13263D] text-[#F5F0E6]">
                             {log.category}
                           </span>
                           <span className="font-medium text-gray-800">{log.action}</span>
@@ -3771,9 +3771,9 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
               {/* TAB 6: COURSES MANAGEMENT */}
               {activeTab === 'courses' && (
                 <div className="space-y-4">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#F8F5EE] p-4 rounded-sm border border-[#E8E0D1]">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#F5F0E6] p-4 rounded-sm border border-[#E7DBC2]">
                     <div>
-                      <h3 className="font-editorial text-2xl text-[#0B332D] font-bold">Course Programs Management</h3>
+                      <h3 className="font-editorial text-2xl text-[#13263D] font-bold">Course Programs Management</h3>
                       <p className="text-xs text-gray-500 font-sans">Manage curricula, syllabus milestones, tuition fees, and descriptions.</p>
                     </div>
 
@@ -3797,31 +3797,31 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                         });
                         setIsAddingCourse(true);
                       }}
-                      className="px-4 py-2 bg-[#0B332D] text-[#F8F5EE] text-xs font-sans font-semibold uppercase tracking-wider rounded-sm hover:bg-[#07221E] flex items-center gap-1.5 shadow-xs cursor-pointer"
+                      className="px-4 py-2 bg-[#13263D] text-[#F5F0E6] text-xs font-sans font-semibold uppercase tracking-wider rounded-sm hover:bg-[#0C1A2E] flex items-center gap-1.5 shadow-xs cursor-pointer"
                     >
-                      <Plus className="w-3.5 h-3.5 text-[#B79A62]" weight="bold" />
+                      <Plus className="w-3.5 h-3.5 text-[#A47A46]" weight="bold" />
                       <span>Add Course</span>
                     </button>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {adminCourses.map(course => (
-                      <div key={course.id} className="p-6 bg-[#F8F5EE] border border-[#E8E0D1] rounded-sm space-y-4">
+                      <div key={course.id} className="p-6 bg-[#F5F0E6] border border-[#E7DBC2] rounded-sm space-y-4">
                         <div className="flex items-start justify-between">
                           <div>
                             {course.arabicName && (
                               <p className="font-arabic text-xs text-gray-500 mb-0.5">{course.arabicName}</p>
                             )}
-                            <h4 className="font-editorial text-2xl text-[#0B332D] font-bold">{course.name}</h4>
+                            <h4 className="font-editorial text-2xl text-[#13263D] font-bold">{course.name}</h4>
                           </div>
-                          <span className="text-xs font-sans font-bold text-[#0B332D] bg-[#FCFBF8] px-2.5 py-1 rounded-sm border border-[#E8E0D1]">
+                          <span className="text-xs font-sans font-bold text-[#13263D] bg-[#FAF7F0] px-2.5 py-1 rounded-sm border border-[#E7DBC2]">
                             PKR {course.feePKR?.toLocaleString()} / ${course.feeUSD}
                           </span>
                         </div>
 
                         <p className="text-xs text-gray-600 font-sans leading-relaxed">{course.shortDescription}</p>
 
-                        <div className="text-xs font-sans text-gray-500 pt-2 border-t border-[#E8E0D1] flex items-center gap-4">
+                        <div className="text-xs font-sans text-gray-500 pt-2 border-t border-[#E7DBC2] flex items-center gap-4">
                           <span>⏱️ {course.duration}</span>
                           <span>📅 {course.classesPerWeek}</span>
                         </div>
@@ -3845,7 +3845,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                               });
                               setIsAddingCourse(true);
                             }}
-                            className="inline-flex items-center gap-1 text-xs font-sans font-semibold text-[#0B332D] hover:text-[#B79A62] cursor-pointer"
+                            className="inline-flex items-center gap-1 text-xs font-sans font-semibold text-[#13263D] hover:text-[#A47A46] cursor-pointer"
                           >
                             <PencilSimple className="w-3.5 h-3.5" />
                             <span>Edit Course</span>
@@ -3873,9 +3873,9 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
               {/* TAB 8: PRICING & PACKAGES CMS */}
               {activeTab === 'packages' && (
                 <div className="space-y-4">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#F8F5EE] p-4 rounded-sm border border-[#E8E0D1]">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#F5F0E6] p-4 rounded-sm border border-[#E7DBC2]">
                     <div>
-                      <h3 className="font-editorial text-2xl text-[#0B332D] font-bold">Pricing &amp; Packages CMS</h3>
+                      <h3 className="font-editorial text-2xl text-[#13263D] font-bold">Pricing &amp; Packages CMS</h3>
                       <p className="text-xs text-gray-500 font-sans">Configure monthly subscription plans, class durations, days per week, and international currency tiers.</p>
                     </div>
 
@@ -3902,9 +3902,9 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                         });
                         setIsAddingPackage(true);
                       }}
-                      className="px-4 py-2 bg-[#0B332D] text-[#F8F5EE] text-xs font-sans font-semibold uppercase tracking-wider rounded-sm hover:bg-[#07221E] flex items-center gap-1.5 shadow-xs cursor-pointer"
+                      className="px-4 py-2 bg-[#13263D] text-[#F5F0E6] text-xs font-sans font-semibold uppercase tracking-wider rounded-sm hover:bg-[#0C1A2E] flex items-center gap-1.5 shadow-xs cursor-pointer"
                     >
-                      <Plus className="w-3.5 h-3.5 text-[#B79A62]" weight="bold" />
+                      <Plus className="w-3.5 h-3.5 text-[#A47A46]" weight="bold" />
                       <span>Add Package Plan</span>
                     </button>
                   </div>
@@ -3917,31 +3917,31 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                     {packages.map((pkg) => (
                       <div
                         key={pkg.id}
-                        className={`p-6 bg-[#F8F5EE] border rounded-sm space-y-4 relative flex flex-col justify-between ${pkg.isPopular ? 'border-[#B79A62] shadow-sm' : 'border-[#E8E0D1]'
+                        className={`p-6 bg-[#F5F0E6] border rounded-sm space-y-4 relative flex flex-col justify-between ${pkg.isPopular ? 'border-[#A47A46] shadow-sm' : 'border-[#E7DBC2]'
                           }`}
                       >
                         <div>
                           <div className="flex items-start justify-between gap-2">
                             <div>
                               {pkg.isPopular && (
-                                <span className="inline-block px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider bg-[#B79A62] text-[#07221E] rounded-xs mb-1">
+                                <span className="inline-block px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider bg-[#A47A46] text-[#0C1A2E] rounded-xs mb-1">
                                   {pkg.badge || 'Popular'}
                                 </span>
                               )}
-                              <h4 className="font-editorial text-2xl text-[#0B332D] font-bold">{pkg.name}</h4>
+                              <h4 className="font-editorial text-2xl text-[#13263D] font-bold">{pkg.name}</h4>
                             </div>
-                            <span className="text-xs font-sans font-bold text-[#0B332D] bg-[#FCFBF8] px-2.5 py-1 rounded-sm border border-[#E8E0D1]">
+                            <span className="text-xs font-sans font-bold text-[#13263D] bg-[#FAF7F0] px-2.5 py-1 rounded-sm border border-[#E7DBC2]">
                               PKR {pkg.monthlyFeePKR?.toLocaleString()} / ${pkg.monthlyFeeUSD}
                             </span>
                           </div>
 
                           <div className="mt-3 flex items-center gap-3 text-xs font-sans text-gray-600">
                             <span className="flex items-center gap-1">
-                              <Calendar className="w-3.5 h-3.5 text-[#B79A62]" />
+                              <Calendar className="w-3.5 h-3.5 text-[#A47A46]" />
                               {pkg.daysPerWeek}
                             </span>
                             <span className="flex items-center gap-1">
-                              <Clock className="w-3.5 h-3.5 text-[#B79A62]" />
+                              <Clock className="w-3.5 h-3.5 text-[#A47A46]" />
                               {pkg.classDurationMinutes} Mins / Class
                             </span>
                           </div>
@@ -3950,24 +3950,24 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                             {pkg.description}
                           </p>
 
-                          <div className="mt-3 pt-3 border-t border-[#E8E0D1]/60 space-y-1 text-xs font-sans text-gray-700">
+                          <div className="mt-3 pt-3 border-t border-[#E7DBC2]/60 space-y-1 text-xs font-sans text-gray-700">
                             {pkg.features?.map((f, i) => (
                               <div key={i} className="flex items-center gap-1.5 text-[11px]">
-                                <CheckCircle className="w-3.5 h-3.5 text-[#B79A62] shrink-0" weight="fill" />
+                                <CheckCircle className="w-3.5 h-3.5 text-[#A47A46] shrink-0" weight="fill" />
                                 <span>{f}</span>
                               </div>
                             ))}
                           </div>
                         </div>
 
-                        <div className="pt-3 border-t border-[#E8E0D1] flex items-center justify-between">
+                        <div className="pt-3 border-t border-[#E7DBC2] flex items-center justify-between">
                           <button
                             onClick={() => {
                               setEditingPackage(pkg);
                               setPackageForm({ ...pkg });
                               setIsAddingPackage(true);
                             }}
-                            className="inline-flex items-center gap-1 text-xs font-sans font-semibold text-[#0B332D] hover:text-[#B79A62] cursor-pointer"
+                            className="inline-flex items-center gap-1 text-xs font-sans font-semibold text-[#13263D] hover:text-[#A47A46] cursor-pointer"
                           >
                             <PencilSimple className="w-3.5 h-3.5" />
                             <span>Edit Package</span>
@@ -3989,9 +3989,9 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
               {/* TAB 9: TESTIMONIALS & REVIEWS CMS */}
               {activeTab === 'testimonials' && (
                 <div className="space-y-4">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#F8F5EE] p-4 rounded-sm border border-[#E8E0D1]">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#F5F0E6] p-4 rounded-sm border border-[#E7DBC2]">
                     <div>
-                      <h3 className="font-editorial text-2xl text-[#0B332D] font-bold">Parent &amp; Student Reviews CMS</h3>
+                      <h3 className="font-editorial text-2xl text-[#13263D] font-bold">Parent &amp; Student Reviews CMS</h3>
                       <p className="text-xs text-gray-500 font-sans">Curate, publish, and manage verified parent reflections and student testimonials on the website.</p>
                     </div>
 
@@ -4010,9 +4010,9 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                         });
                         setIsAddingTestimonial(true);
                       }}
-                      className="px-4 py-2 bg-[#0B332D] text-[#F8F5EE] text-xs font-sans font-semibold uppercase tracking-wider rounded-sm hover:bg-[#07221E] flex items-center gap-1.5 shadow-xs cursor-pointer"
+                      className="px-4 py-2 bg-[#13263D] text-[#F5F0E6] text-xs font-sans font-semibold uppercase tracking-wider rounded-sm hover:bg-[#0C1A2E] flex items-center gap-1.5 shadow-xs cursor-pointer"
                     >
-                      <Plus className="w-3.5 h-3.5 text-[#B79A62]" weight="bold" />
+                      <Plus className="w-3.5 h-3.5 text-[#A47A46]" weight="bold" />
                       <span>Add Testimonial</span>
                     </button>
                   </div>
@@ -4025,14 +4025,14 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                     {testimonials.map((t) => (
                       <div
                         key={t.id}
-                        className="p-5 bg-[#F8F5EE] border border-[#E8E0D1] rounded-sm space-y-3 flex flex-col justify-between shadow-xs"
+                        className="p-5 bg-[#F5F0E6] border border-[#E7DBC2] rounded-sm space-y-3 flex flex-col justify-between shadow-xs"
                       >
                         <div className="space-y-2">
                           <div className="flex items-start justify-between">
                             <div>
                               <div className="flex items-center gap-1.5">
                                 <span className="text-base">{t.countryFlag || '🌍'}</span>
-                                <h4 className="font-bold text-[#0B332D] text-sm">{t.name}</h4>
+                                <h4 className="font-bold text-[#13263D] text-sm">{t.name}</h4>
                               </div>
                               <p className="text-[10px] text-gray-500">{t.studentOrParent} • {t.location}</p>
                             </div>
@@ -4043,22 +4043,22 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                             </span>
                           </div>
 
-                          <div className="flex items-center gap-1 text-[#B79A62]">
+                          <div className="flex items-center gap-1 text-[#A47A46]">
                             {Array.from({ length: t.rating || 5 }).map((_, idx) => (
                               <Star key={idx} className="w-3.5 h-3.5" weight="fill" />
                             ))}
                             <span className="text-[11px] text-gray-500 font-sans ml-1 font-semibold">({t.courseName})</span>
                           </div>
 
-                          <p className="text-xs text-gray-700 italic leading-relaxed bg-[#FCFBF8] p-3 rounded-xs border border-[#E8E0D1]/60">
+                          <p className="text-xs text-gray-700 italic leading-relaxed bg-[#FAF7F0] p-3 rounded-xs border border-[#E7DBC2]/60">
                             "{t.comment}"
                           </p>
                         </div>
 
-                        <div className="pt-2 border-t border-[#E8E0D1] flex items-center justify-between">
+                        <div className="pt-2 border-t border-[#E7DBC2] flex items-center justify-between">
                           <button
                             onClick={() => handleToggleTestimonialStatus(t.id)}
-                            className="text-[11px] font-sans font-semibold text-[#0B332D] hover:underline cursor-pointer"
+                            className="text-[11px] font-sans font-semibold text-[#13263D] hover:underline cursor-pointer"
                           >
                             {t.status === 'published' ? 'Unpublish to Draft' : 'Approve & Publish'}
                           </button>
@@ -4070,7 +4070,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                                 setTestimonialForm({ ...t });
                                 setIsAddingTestimonial(true);
                               }}
-                              className="p-1 text-gray-700 hover:text-[#0B332D] cursor-pointer"
+                              className="p-1 text-gray-700 hover:text-[#13263D] cursor-pointer"
                               title="Edit Review"
                             >
                               <PencilSimple className="w-3.5 h-3.5" />
@@ -4094,9 +4094,9 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
               {/* TAB 10: FAQ MANAGEMENT CMS */}
               {activeTab === 'faqs' && (
                 <div className="space-y-4">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#F8F5EE] p-4 rounded-sm border border-[#E8E0D1]">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#F5F0E6] p-4 rounded-sm border border-[#E7DBC2]">
                     <div>
-                      <h3 className="font-editorial text-2xl text-[#0B332D] font-bold">FAQ Management CMS</h3>
+                      <h3 className="font-editorial text-2xl text-[#13263D] font-bold">FAQ Management CMS</h3>
                       <p className="text-xs text-gray-500 font-sans">Manage frequently asked questions, admission queries, and curriculum guidance displayed on the website.</p>
                     </div>
 
@@ -4111,9 +4111,9 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                         });
                         setIsAddingFaq(true);
                       }}
-                      className="px-4 py-2 bg-[#0B332D] text-[#F8F5EE] text-xs font-sans font-semibold uppercase tracking-wider rounded-sm hover:bg-[#07221E] flex items-center gap-1.5 shadow-xs cursor-pointer"
+                      className="px-4 py-2 bg-[#13263D] text-[#F5F0E6] text-xs font-sans font-semibold uppercase tracking-wider rounded-sm hover:bg-[#0C1A2E] flex items-center gap-1.5 shadow-xs cursor-pointer"
                     >
-                      <Plus className="w-3.5 h-3.5 text-[#B79A62]" weight="bold" />
+                      <Plus className="w-3.5 h-3.5 text-[#A47A46]" weight="bold" />
                       <span>Add New FAQ</span>
                     </button>
                   </div>
@@ -4126,18 +4126,18 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                     {faqs.map((faq, idx) => (
                       <div
                         key={faq.id}
-                        className="p-5 bg-[#F8F5EE] border border-[#E8E0D1] rounded-sm space-y-2"
+                        className="p-5 bg-[#F5F0E6] border border-[#E7DBC2] rounded-sm space-y-2"
                       >
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex items-start gap-2">
-                            <span className="w-5 h-5 rounded-full bg-[#0B332D] text-[#F8F5EE] text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">
+                            <span className="w-5 h-5 rounded-full bg-[#13263D] text-[#F5F0E6] text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">
                               {idx + 1}
                             </span>
                             <div>
-                              <span className="text-[9px] font-bold uppercase tracking-widest text-[#B79A62] block mb-0.5">
+                              <span className="text-[9px] font-bold uppercase tracking-widest text-[#A47A46] block mb-0.5">
                                 {faq.category || 'General'}
                               </span>
-                              <h4 className="font-bold text-[#0B332D] text-sm">{faq.question}</h4>
+                              <h4 className="font-bold text-[#13263D] text-sm">{faq.question}</h4>
                             </div>
                           </div>
 
@@ -4148,7 +4148,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                                 setFaqForm({ ...faq });
                                 setIsAddingFaq(true);
                               }}
-                              className="p-1 text-gray-700 hover:text-[#0B332D] cursor-pointer"
+                              className="p-1 text-gray-700 hover:text-[#13263D] cursor-pointer"
                               title="Edit FAQ"
                             >
                               <PencilSimple className="w-3.5 h-3.5" />
@@ -4176,9 +4176,9 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
               {/* TAB 11: SITE SETTINGS & ANNOUNCEMENT CMS */}
               {activeTab === 'settings' && (
                 <div className="space-y-6 max-w-4xl">
-                  <div className="bg-[#F8F5EE] p-4 rounded-sm border border-[#E8E0D1] flex items-center justify-between">
+                  <div className="bg-[#F5F0E6] p-4 rounded-sm border border-[#E7DBC2] flex items-center justify-between">
                     <div>
-                      <h3 className="font-editorial text-2xl text-[#0B332D] font-bold">Site Settings &amp; Banners CMS</h3>
+                      <h3 className="font-editorial text-2xl text-[#13263D] font-bold">Site Settings &amp; Banners CMS</h3>
                       <p className="text-xs text-gray-500 font-sans">Manage top announcement ticker bar, hero titles, contact channels, and academy branding.</p>
                     </div>
 
@@ -4194,13 +4194,13 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                     <div className="px-4 py-2.5 bg-red-50 border border-red-300 text-red-800 text-xs font-sans rounded-sm">{settingsErr}</div>
                   )}
 
-                  <form onSubmit={handleSaveSiteSettings} className="space-y-6 bg-[#FCFBF8] p-6 border border-[#E8E0D1] rounded-sm text-xs font-sans">
+                  <form onSubmit={handleSaveSiteSettings} className="space-y-6 bg-[#FAF7F0] p-6 border border-[#E7DBC2] rounded-sm text-xs font-sans">
 
                     {/* Announcement Bar CMS */}
-                    <div className="space-y-3 pb-6 border-b border-[#E8E0D1]">
+                    <div className="space-y-3 pb-6 border-b border-[#E7DBC2]">
                       <div className="flex items-center justify-between">
-                        <h4 className="font-editorial text-lg text-[#0B332D] font-bold flex items-center gap-1.5">
-                          <Megaphone className="w-4 h-4 text-[#B79A62]" />
+                        <h4 className="font-editorial text-lg text-[#13263D] font-bold flex items-center gap-1.5">
+                          <Megaphone className="w-4 h-4 text-[#A47A46]" />
                           <span>Announcement Bar Ticker</span>
                         </h4>
                         <label className="flex items-center gap-2 cursor-pointer">
@@ -4208,9 +4208,9 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                             type="checkbox"
                             checked={siteSettings.announcementBarEnabled}
                             onChange={e => setSiteSettings({ ...siteSettings, announcementBarEnabled: e.target.checked })}
-                            className="rounded-xs text-[#0B332D]"
+                            className="rounded-xs text-[#13263D]"
                           />
-                          <span className="font-bold text-[#0B332D]">Enable Announcement Bar</span>
+                          <span className="font-bold text-[#13263D]">Enable Announcement Bar</span>
                         </label>
                       </div>
 
@@ -4221,7 +4221,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                             type="text"
                             value={siteSettings.announcementBadge}
                             onChange={e => setSiteSettings({ ...siteSettings, announcementBadge: e.target.value })}
-                            className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                            className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                           />
                         </div>
                         <div className="sm:col-span-3">
@@ -4230,16 +4230,16 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                             type="text"
                             value={siteSettings.announcementBarText}
                             onChange={e => setSiteSettings({ ...siteSettings, announcementBarText: e.target.value })}
-                            className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                            className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                           />
                         </div>
                       </div>
                     </div>
 
                     {/* Hero Section Headlines CMS */}
-                    <div className="space-y-3 pb-6 border-b border-[#E8E0D1]">
-                      <h4 className="font-editorial text-lg text-[#0B332D] font-bold flex items-center gap-1.5">
-                        <Sparkle className="w-4 h-4 text-[#B79A62]" />
+                    <div className="space-y-3 pb-6 border-b border-[#E7DBC2]">
+                      <h4 className="font-editorial text-lg text-[#13263D] font-bold flex items-center gap-1.5">
+                        <Sparkle className="w-4 h-4 text-[#A47A46]" />
                         <span>Homepage Hero Branding</span>
                       </h4>
 
@@ -4249,7 +4249,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                           type="text"
                           value={siteSettings.heroHeadline}
                           onChange={e => setSiteSettings({ ...siteSettings, heroHeadline: e.target.value })}
-                          className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                          className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                         />
                       </div>
 
@@ -4259,15 +4259,15 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                           rows={2}
                           value={siteSettings.heroSubtitle}
                           onChange={e => setSiteSettings({ ...siteSettings, heroSubtitle: e.target.value })}
-                          className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                          className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                         />
                       </div>
                     </div>
 
                     {/* Official Contact Channels CMS */}
-                    <div className="space-y-3 pb-6 border-b border-[#E8E0D1]">
-                      <h4 className="font-editorial text-lg text-[#0B332D] font-bold flex items-center gap-1.5">
-                        <PhoneCall className="w-4 h-4 text-[#B79A62]" />
+                    <div className="space-y-3 pb-6 border-b border-[#E7DBC2]">
+                      <h4 className="font-editorial text-lg text-[#13263D] font-bold flex items-center gap-1.5">
+                        <PhoneCall className="w-4 h-4 text-[#A47A46]" />
                         <span>Official Academy Channels</span>
                       </h4>
 
@@ -4278,7 +4278,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                             type="text"
                             value={siteSettings.primaryWhatsApp}
                             onChange={e => setSiteSettings({ ...siteSettings, primaryWhatsApp: e.target.value })}
-                            className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                            className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                           />
                         </div>
 
@@ -4288,7 +4288,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                             type="email"
                             value={siteSettings.officialEmail}
                             onChange={e => setSiteSettings({ ...siteSettings, officialEmail: e.target.value })}
-                            className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                            className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                           />
                         </div>
                       </div>
@@ -4299,7 +4299,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                           type="text"
                           value={siteSettings.address}
                           onChange={e => setSiteSettings({ ...siteSettings, address: e.target.value })}
-                          className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                          className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                         />
                       </div>
                     </div>
@@ -4308,20 +4308,20 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                       <button
                         type="submit"
                         disabled={savingSettings}
-                        className="px-6 py-2.5 bg-[#0B332D] text-[#F8F5EE] font-semibold uppercase tracking-wider rounded-sm hover:bg-[#07221E] shadow-sm flex items-center gap-2 cursor-pointer disabled:opacity-60"
+                        className="px-6 py-2.5 bg-[#13263D] text-[#F5F0E6] font-semibold uppercase tracking-wider rounded-sm hover:bg-[#0C1A2E] shadow-sm flex items-center gap-2 cursor-pointer disabled:opacity-60"
                       >
-                        <FloppyDisk className="w-4 h-4 text-[#B79A62]" />
+                        <FloppyDisk className="w-4 h-4 text-[#A47A46]" />
                         <span>{savingSettings ? 'Saving…' : 'Save Site Settings'}</span>
                       </button>
                     </div>
                   </form>
 
                   {/* Academy Data Backup, Restore & CSV Export Hub */}
-                  <div className="bg-[#FCFBF8] p-6 border border-[#E8E0D1] rounded-sm space-y-4 text-xs font-sans">
-                    <div className="flex items-center justify-between pb-3 border-b border-[#E8E0D1]">
+                  <div className="bg-[#FAF7F0] p-6 border border-[#E7DBC2] rounded-sm space-y-4 text-xs font-sans">
+                    <div className="flex items-center justify-between pb-3 border-b border-[#E7DBC2]">
                       <div>
-                        <h4 className="font-editorial text-lg text-[#0B332D] font-bold flex items-center gap-1.5">
-                          <DownloadSimple className="w-4 h-4 text-[#B79A62]" />
+                        <h4 className="font-editorial text-lg text-[#13263D] font-bold flex items-center gap-1.5">
+                          <DownloadSimple className="w-4 h-4 text-[#A47A46]" />
                           <span>Data Backup, Export &amp; Disaster Recovery</span>
                         </h4>
                         <p className="text-gray-500 text-[11px]">Download instant offline snapshots of your academy database or export student and lead rosters to CSV for Excel.</p>
@@ -4332,13 +4332,13 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                       <button
                         type="button"
                         onClick={handleExportDatabaseJson}
-                        className="p-4 bg-[#F8F5EE] border border-[#E8E0D1] rounded-sm text-left hover:border-[#0B332D] transition-colors cursor-pointer flex flex-col justify-between"
+                        className="p-4 bg-[#F5F0E6] border border-[#E7DBC2] rounded-sm text-left hover:border-[#13263D] transition-colors cursor-pointer flex flex-col justify-between"
                       >
                         <div className="space-y-1">
-                          <div className="w-7 h-7 rounded-sm bg-[#0B332D] text-[#B79A62] flex items-center justify-center mb-2">
+                          <div className="w-7 h-7 rounded-sm bg-[#13263D] text-[#A47A46] flex items-center justify-center mb-2">
                             <FloppyDisk className="w-4 h-4" />
                           </div>
-                          <span className="font-bold text-[#0B332D] text-sm block">Download Database Backup (JSON)</span>
+                          <span className="font-bold text-[#13263D] text-sm block">Download Database Backup (JSON)</span>
                           <p className="text-[11px] text-gray-500">Export complete JSON snapshot — courses, students, invoices, payroll, report cards, attendance, Hifz logs, classes, coupons, referrals, trials &amp; activity logs (last 1000).</p>
                         </div>
                         <span className="text-[10px] font-bold text-emerald-800 uppercase tracking-wider mt-3 inline-flex items-center gap-1">
@@ -4349,13 +4349,13 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                       <button
                         type="button"
                         onClick={handleExportStudentsCsv}
-                        className="p-4 bg-[#F8F5EE] border border-[#E8E0D1] rounded-sm text-left hover:border-[#0B332D] transition-colors cursor-pointer flex flex-col justify-between"
+                        className="p-4 bg-[#F5F0E6] border border-[#E7DBC2] rounded-sm text-left hover:border-[#13263D] transition-colors cursor-pointer flex flex-col justify-between"
                       >
                         <div className="space-y-1">
-                          <div className="w-7 h-7 rounded-sm bg-[#0B332D] text-[#B79A62] flex items-center justify-center mb-2">
+                          <div className="w-7 h-7 rounded-sm bg-[#13263D] text-[#A47A46] flex items-center justify-center mb-2">
                             <GraduationCap className="w-4 h-4" />
                           </div>
-                          <span className="font-bold text-[#0B332D] text-sm block">Export Students (CSV)</span>
+                          <span className="font-bold text-[#13263D] text-sm block">Export Students (CSV)</span>
                           <p className="text-[11px] text-gray-500">Download formatted spreadsheet of active students, sabaq milestones &amp; timetable.</p>
                         </div>
                         <span className="text-[10px] font-bold text-emerald-800 uppercase tracking-wider mt-3 inline-flex items-center gap-1">
@@ -4366,13 +4366,13 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                       <button
                         type="button"
                         onClick={handleExportLeadsCsv}
-                        className="p-4 bg-[#F8F5EE] border border-[#E8E0D1] rounded-sm text-left hover:border-[#0B332D] transition-colors cursor-pointer flex flex-col justify-between"
+                        className="p-4 bg-[#F5F0E6] border border-[#E7DBC2] rounded-sm text-left hover:border-[#13263D] transition-colors cursor-pointer flex flex-col justify-between"
                       >
                         <div className="space-y-1">
-                          <div className="w-7 h-7 rounded-sm bg-[#0B332D] text-[#B79A62] flex items-center justify-center mb-2">
+                          <div className="w-7 h-7 rounded-sm bg-[#13263D] text-[#A47A46] flex items-center justify-center mb-2">
                             <Users className="w-4 h-4" />
                           </div>
-                          <span className="font-bold text-[#0B332D] text-sm block">Export Trial Leads (CSV)</span>
+                          <span className="font-bold text-[#13263D] text-sm block">Export Trial Leads (CSV)</span>
                           <p className="text-[11px] text-gray-500">Export trial inquiries and prospective parent contacts for CRM and follow-ups.</p>
                         </div>
                         <span className="text-[10px] font-bold text-emerald-800 uppercase tracking-wider mt-3 inline-flex items-center gap-1">
@@ -4381,11 +4381,11 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                       </button>
                     </div>
 
-                    <div className="pt-3 border-t border-[#E8E0D1] flex items-center justify-between">
+                    <div className="pt-3 border-t border-[#E7DBC2] flex items-center justify-between">
                       <div className="text-[11px] text-gray-500">
                         <span>Need to restore data from a previous JSON backup?</span>
                       </div>
-                      <label className="px-4 py-2 bg-[#F8F5EE] border border-[#E8E0D1] hover:border-[#0B332D] text-[#0B332D] font-bold text-xs rounded-sm cursor-pointer inline-flex items-center gap-1.5">
+                      <label className="px-4 py-2 bg-[#F5F0E6] border border-[#E7DBC2] hover:border-[#13263D] text-[#13263D] font-bold text-xs rounded-sm cursor-pointer inline-flex items-center gap-1.5">
                         <UploadSimple className="w-3.5 h-3.5" />
                         <span>Restore Database (JSON)</span>
                         <input
@@ -4403,42 +4403,42 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
               {/* TAB: COUPONS */}
               {activeTab === 'coupons' && (
                 <div className="space-y-4">
-                  <div className="bg-[#F8F5EE] p-4 rounded-sm border border-[#E8E0D1]">
-                    <h3 className="font-editorial text-2xl text-[#0B332D] font-bold">Discount Coupons</h3>
+                  <div className="bg-[#F5F0E6] p-4 rounded-sm border border-[#E7DBC2]">
+                    <h3 className="font-editorial text-2xl text-[#13263D] font-bold">Discount Coupons</h3>
                     <p className="text-xs text-gray-500 font-sans">Create promo codes with a percentage discount for pricing plans.</p>
                   </div>
 
-                  <form onSubmit={handleCreateCoupon} className="bg-[#FCFBF8] rounded-sm border border-[#E8E0D1] shadow-xs p-4">
+                  <form onSubmit={handleCreateCoupon} className="bg-[#FAF7F0] rounded-sm border border-[#E7DBC2] shadow-xs p-4">
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
                       <div>
                         <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Code *</label>
-                        <input required value={couponForm.code} onChange={e => setCouponForm(f => ({ ...f, code: e.target.value.toUpperCase() }))} placeholder="EID10" className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm text-xs font-sans uppercase focus:outline-none focus:border-[#0B332D]" />
+                        <input required value={couponForm.code} onChange={e => setCouponForm(f => ({ ...f, code: e.target.value.toUpperCase() }))} placeholder="EID10" className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm text-xs font-sans uppercase focus:outline-none focus:border-[#13263D]" />
                       </div>
                       <div>
                         <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Discount % *</label>
-                        <input required type="number" min={1} max={100} value={couponForm.discountPercent} onChange={e => setCouponForm(f => ({ ...f, discountPercent: Number(e.target.value) }))} className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]" />
+                        <input required type="number" min={1} max={100} value={couponForm.discountPercent} onChange={e => setCouponForm(f => ({ ...f, discountPercent: Number(e.target.value) }))} className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm text-xs font-sans focus:outline-none focus:border-[#13263D]" />
                       </div>
                       <div>
                         <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Max Uses (0 = unlimited)</label>
-                        <input type="number" min={0} value={couponForm.maxUses} onChange={e => setCouponForm(f => ({ ...f, maxUses: Number(e.target.value) }))} className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]" />
+                        <input type="number" min={0} value={couponForm.maxUses} onChange={e => setCouponForm(f => ({ ...f, maxUses: Number(e.target.value) }))} className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm text-xs font-sans focus:outline-none focus:border-[#13263D]" />
                       </div>
                       <div>
                         <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Expires On</label>
-                        <input type="date" value={couponForm.expiresAt} onChange={e => setCouponForm(f => ({ ...f, expiresAt: e.target.value }))} className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]" />
+                        <input type="date" value={couponForm.expiresAt} onChange={e => setCouponForm(f => ({ ...f, expiresAt: e.target.value }))} className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm text-xs font-sans focus:outline-none focus:border-[#13263D]" />
                       </div>
                       <div className="flex items-end">
-                        <button type="submit" className="w-full px-4 py-2 bg-[#0B332D] text-[#F8F5EE] text-xs font-sans font-semibold uppercase tracking-wider rounded-sm hover:bg-[#07221E] shadow-xs cursor-pointer">
-                          <Tag className="w-3.5 h-3.5 inline mr-1 text-[#B79A62]" /> Create
+                        <button type="submit" className="w-full px-4 py-2 bg-[#13263D] text-[#F5F0E6] text-xs font-sans font-semibold uppercase tracking-wider rounded-sm hover:bg-[#0C1A2E] shadow-xs cursor-pointer">
+                          <Tag className="w-3.5 h-3.5 inline mr-1 text-[#A47A46]" /> Create
                         </button>
                       </div>
                     </div>
                     {couponMsg && <p className="mt-2 text-xs font-sans text-emerald-800">{couponMsg}</p>}
                   </form>
 
-                  <div className="bg-[#FCFBF8] rounded-sm border border-[#E8E0D1] shadow-xs overflow-hidden">
+                  <div className="bg-[#FAF7F0] rounded-sm border border-[#E7DBC2] shadow-xs overflow-hidden">
                     <div className="overflow-x-auto">
                       <table className="w-full text-left text-xs font-sans">
-                        <thead className="bg-[#F8F5EE] text-[#0B332D] font-bold uppercase tracking-wider border-b border-[#E8E0D1] text-[10px]">
+                        <thead className="bg-[#F5F0E6] text-[#13263D] font-bold uppercase tracking-wider border-b border-[#E7DBC2] text-[10px]">
                           <tr>
                             <th className="p-3.5">Code</th>
                             <th className="p-3.5">Discount</th>
@@ -4447,10 +4447,10 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                             <th className="p-3.5">Status</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-[#E8E0D1]/60">
+                        <tbody className="divide-y divide-[#E7DBC2]/60">
                           {coupons.map(c => (
-                            <tr key={c.id} className="hover:bg-[#F8F5EE]/50 transition-colors">
-                              <td className="p-3.5"><span className="font-mono font-bold text-[#0B332D] bg-[#F8F5EE] px-2 py-0.5 rounded-xs border border-[#E8E0D1]">{c.code}</span></td>
+                            <tr key={c.id} className="hover:bg-[#F5F0E6]/50 transition-colors">
+                              <td className="p-3.5"><span className="font-mono font-bold text-[#13263D] bg-[#F5F0E6] px-2 py-0.5 rounded-xs border border-[#E7DBC2]">{c.code}</span></td>
                               <td className="p-3.5 font-bold text-emerald-800">{c.discountPercent}% off</td>
                               <td className="p-3.5 text-gray-700">{c.usedCount}{c.maxUses > 0 ? ` / ${c.maxUses}` : ' / ∞'}</td>
                               <td className="p-3.5 text-gray-700">{c.expiresAt || '—'}</td>
@@ -4477,45 +4477,45 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
               {/* TAB: REFERRALS */}
               {activeTab === 'referrals' && (
                 <div className="space-y-4">
-                  <div className="bg-[#F8F5EE] p-4 rounded-sm border border-[#E8E0D1]">
-                    <h3 className="font-editorial text-2xl text-[#0B332D] font-bold">Parent Referrals</h3>
+                  <div className="bg-[#F5F0E6] p-4 rounded-sm border border-[#E7DBC2]">
+                    <h3 className="font-editorial text-2xl text-[#13263D] font-bold">Parent Referrals</h3>
                     <p className="text-xs text-gray-500 font-sans">Track parents who refer new students and manage their rewards.</p>
                   </div>
 
-                  <form onSubmit={handleCreateReferral} className="bg-[#FCFBF8] rounded-sm border border-[#E8E0D1] shadow-xs p-4">
+                  <form onSubmit={handleCreateReferral} className="bg-[#FAF7F0] rounded-sm border border-[#E7DBC2] shadow-xs p-4">
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                       <div>
                         <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Referrer Name *</label>
-                        <input required value={referralForm.referrerName} onChange={e => setReferralForm(f => ({ ...f, referrerName: e.target.value }))} placeholder="Parent who referred" className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]" />
+                        <input required value={referralForm.referrerName} onChange={e => setReferralForm(f => ({ ...f, referrerName: e.target.value }))} placeholder="Parent who referred" className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm text-xs font-sans focus:outline-none focus:border-[#13263D]" />
                       </div>
                       <div>
                         <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Referrer Phone</label>
-                        <input value={referralForm.referrerPhone} onChange={e => setReferralForm(f => ({ ...f, referrerPhone: e.target.value }))} className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]" />
+                        <input value={referralForm.referrerPhone} onChange={e => setReferralForm(f => ({ ...f, referrerPhone: e.target.value }))} className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm text-xs font-sans focus:outline-none focus:border-[#13263D]" />
                       </div>
                       <div>
                         <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Referred Student *</label>
-                        <input required value={referralForm.referredStudentName} onChange={e => setReferralForm(f => ({ ...f, referredStudentName: e.target.value }))} placeholder="New student name" className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]" />
+                        <input required value={referralForm.referredStudentName} onChange={e => setReferralForm(f => ({ ...f, referredStudentName: e.target.value }))} placeholder="New student name" className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm text-xs font-sans focus:outline-none focus:border-[#13263D]" />
                       </div>
                       <div>
                         <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Referred Phone</label>
-                        <input value={referralForm.referredPhone} onChange={e => setReferralForm(f => ({ ...f, referredPhone: e.target.value }))} className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]" />
+                        <input value={referralForm.referredPhone} onChange={e => setReferralForm(f => ({ ...f, referredPhone: e.target.value }))} className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm text-xs font-sans focus:outline-none focus:border-[#13263D]" />
                       </div>
                       <div>
                         <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">Reward Note</label>
-                        <input value={referralForm.rewardNote} onChange={e => setReferralForm(f => ({ ...f, rewardNote: e.target.value }))} placeholder="e.g. 10% off next month" className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D]" />
+                        <input value={referralForm.rewardNote} onChange={e => setReferralForm(f => ({ ...f, rewardNote: e.target.value }))} placeholder="e.g. 10% off next month" className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm text-xs font-sans focus:outline-none focus:border-[#13263D]" />
                       </div>
                       <div className="flex items-end">
-                        <button type="submit" className="w-full px-4 py-2 bg-[#0B332D] text-[#F8F5EE] text-xs font-sans font-semibold uppercase tracking-wider rounded-sm hover:bg-[#07221E] shadow-xs cursor-pointer">
-                          <ShareNetwork className="w-3.5 h-3.5 inline mr-1 text-[#B79A62]" /> Add Referral
+                        <button type="submit" className="w-full px-4 py-2 bg-[#13263D] text-[#F5F0E6] text-xs font-sans font-semibold uppercase tracking-wider rounded-sm hover:bg-[#0C1A2E] shadow-xs cursor-pointer">
+                          <ShareNetwork className="w-3.5 h-3.5 inline mr-1 text-[#A47A46]" /> Add Referral
                         </button>
                       </div>
                     </div>
                   </form>
 
-                  <div className="bg-[#FCFBF8] rounded-sm border border-[#E8E0D1] shadow-xs overflow-hidden">
+                  <div className="bg-[#FAF7F0] rounded-sm border border-[#E7DBC2] shadow-xs overflow-hidden">
                     <div className="overflow-x-auto">
                       <table className="w-full text-left text-xs font-sans">
-                        <thead className="bg-[#F8F5EE] text-[#0B332D] font-bold uppercase tracking-wider border-b border-[#E8E0D1] text-[10px]">
+                        <thead className="bg-[#F5F0E6] text-[#13263D] font-bold uppercase tracking-wider border-b border-[#E7DBC2] text-[10px]">
                           <tr>
                             <th className="p-3.5">Referrer</th>
                             <th className="p-3.5">Referred Student</th>
@@ -4523,11 +4523,11 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                             <th className="p-3.5">Status</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-[#E8E0D1]/60">
+                        <tbody className="divide-y divide-[#E7DBC2]/60">
                           {referrals.map(r => (
-                            <tr key={r.id} className="hover:bg-[#F8F5EE]/50 transition-colors">
+                            <tr key={r.id} className="hover:bg-[#F5F0E6]/50 transition-colors">
                               <td className="p-3.5">
-                                <p className="font-bold text-[#0B332D]">{r.referrerName}</p>
+                                <p className="font-bold text-[#13263D]">{r.referrerName}</p>
                                 {r.referrerPhone && <p className="text-[11px] text-gray-500">{r.referrerPhone}</p>}
                               </td>
                               <td className="p-3.5">
@@ -4561,9 +4561,9 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
               {/* TAB 12: MEDIA & ASSETS LIBRARY CMS */}
               {activeTab === 'media' && (
                 <div className="space-y-4">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#F8F5EE] p-4 rounded-sm border border-[#E8E0D1]">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#F5F0E6] p-4 rounded-sm border border-[#E7DBC2]">
                     <div>
-                      <h3 className="font-editorial text-2xl text-[#0B332D] font-bold">Media &amp; Visual Assets Library</h3>
+                      <h3 className="font-editorial text-2xl text-[#13263D] font-bold">Media &amp; Visual Assets Library</h3>
                       <p className="text-xs text-gray-500 font-sans">Central repository for course banners, scholar portraits, infographics, and branding assets.</p>
                     </div>
 
@@ -4572,9 +4572,9 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                         setMediaForm({ name: '', category: 'banner', url: '', fileSize: '120 KB' });
                         setIsAddingMedia(true);
                       }}
-                      className="px-4 py-2 bg-[#0B332D] text-[#F8F5EE] text-xs font-sans font-semibold uppercase tracking-wider rounded-sm hover:bg-[#07221E] flex items-center gap-1.5 shadow-xs cursor-pointer"
+                      className="px-4 py-2 bg-[#13263D] text-[#F5F0E6] text-xs font-sans font-semibold uppercase tracking-wider rounded-sm hover:bg-[#0C1A2E] flex items-center gap-1.5 shadow-xs cursor-pointer"
                     >
-                      <Plus className="w-3.5 h-3.5 text-[#B79A62]" weight="bold" />
+                      <Plus className="w-3.5 h-3.5 text-[#A47A46]" weight="bold" />
                       <span>Add Media Asset</span>
                     </button>
                   </div>
@@ -4584,14 +4584,14 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                   )}
 
                   {/* Filter tabs */}
-                  <div className="flex items-center gap-2 border-b border-[#E8E0D1] pb-2 text-xs font-sans">
+                  <div className="flex items-center gap-2 border-b border-[#E7DBC2] pb-2 text-xs font-sans">
                     {['all', 'banner', 'course', 'tutor', 'icon'].map((cat) => (
                       <button
                         key={cat}
                         onClick={() => setMediaCategoryFilter(cat)}
                         className={`px-3 py-1 rounded-xs font-semibold capitalize cursor-pointer transition-colors ${mediaCategoryFilter === cat
-                          ? 'bg-[#0B332D] text-[#F8F5EE]'
-                          : 'bg-[#F8F5EE] text-gray-700 hover:bg-[#E8E0D1]'
+                          ? 'bg-[#13263D] text-[#F5F0E6]'
+                          : 'bg-[#F5F0E6] text-gray-700 hover:bg-[#E7DBC2]'
                           }`}
                       >
                         {cat === 'all' ? 'All Assets' : cat + 's'}
@@ -4606,7 +4606,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                       .map((media) => (
                         <div
                           key={media.id}
-                          className="bg-[#F8F5EE] border border-[#E8E0D1] rounded-sm overflow-hidden flex flex-col justify-between shadow-xs group"
+                          className="bg-[#F5F0E6] border border-[#E7DBC2] rounded-sm overflow-hidden flex flex-col justify-between shadow-xs group"
                         >
                           <div className="aspect-square bg-neutral-900/5 relative overflow-hidden flex items-center justify-center">
                             <img
@@ -4623,15 +4623,15 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                           </div>
 
                           <div className="p-2.5 space-y-1.5">
-                            <h5 className="font-bold text-[#0B332D] text-[11px] truncate" title={media.name}>
+                            <h5 className="font-bold text-[#13263D] text-[11px] truncate" title={media.name}>
                               {media.name}
                             </h5>
                             <p className="text-[9px] text-gray-500">{media.fileSize || 'WebP'}</p>
 
-                            <div className="pt-1.5 border-t border-[#E8E0D1] flex items-center justify-between gap-1">
+                            <div className="pt-1.5 border-t border-[#E7DBC2] flex items-center justify-between gap-1">
                               <button
                                 onClick={() => handleCopyUrl(media.url)}
-                                className="flex-1 py-1 px-1.5 bg-[#FCFBF8] border border-[#E8E0D1] hover:border-[#0B332D] text-[10px] font-semibold text-[#0B332D] rounded-xs inline-flex items-center justify-center gap-1 cursor-pointer"
+                                className="flex-1 py-1 px-1.5 bg-[#FAF7F0] border border-[#E7DBC2] hover:border-[#13263D] text-[10px] font-semibold text-[#13263D] rounded-xs inline-flex items-center justify-center gap-1 cursor-pointer"
                               >
                                 {copiedUrl === media.url ? (
                                   <>
@@ -4640,7 +4640,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                                   </>
                                 ) : (
                                   <>
-                                    <Copy className="w-3 h-3 text-[#B79A62]" />
+                                    <Copy className="w-3 h-3 text-[#A47A46]" />
                                     <span>Copy URL</span>
                                   </>
                                 )}
@@ -4664,9 +4664,9 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
               {/* TAB 13: WHATSAPP & EMAIL MESSAGE TEMPLATES CMS */}
               {activeTab === 'templates' && (
                 <div className="space-y-4">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#F8F5EE] p-4 rounded-sm border border-[#E8E0D1]">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#F5F0E6] p-4 rounded-sm border border-[#E7DBC2]">
                     <div>
-                      <h3 className="font-editorial text-2xl text-[#0B332D] font-bold">Notification &amp; Message Templates Studio</h3>
+                      <h3 className="font-editorial text-2xl text-[#13263D] font-bold">Notification &amp; Message Templates Studio</h3>
                       <p className="text-xs text-gray-500 font-sans">Automated message copywriting for WhatsApp updates, timetable notices, class reminders, and progress reports.</p>
                     </div>
 
@@ -4695,12 +4695,12 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                             setTemplateForm({ ...tpl });
                           }}
                           className={`p-3.5 rounded-sm border transition-all cursor-pointer ${(selectedTemplate?.id || templates[0]?.id) === tpl.id
-                            ? 'bg-[#0B332D] text-[#F8F5EE] border-[#0B332D] shadow-xs'
-                            : 'bg-[#F8F5EE] text-gray-800 border-[#E8E0D1] hover:bg-[#E8E0D1]/50'
+                            ? 'bg-[#13263D] text-[#F5F0E6] border-[#13263D] shadow-xs'
+                            : 'bg-[#F5F0E6] text-gray-800 border-[#E7DBC2] hover:bg-[#E7DBC2]/50'
                             }`}
                         >
                           <div className="flex items-center justify-between mb-1">
-                            <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-xs bg-[#B79A62] text-[#07221E]">
+                            <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-xs bg-[#A47A46] text-[#0C1A2E]">
                               {tpl.channel}
                             </span>
                           </div>
@@ -4711,7 +4711,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                     </div>
 
                     {/* Right: Template Editor */}
-                    <div className="md:col-span-2 bg-[#FCFBF8] border border-[#E8E0D1] rounded-sm p-6 space-y-4 text-xs font-sans">
+                    <div className="md:col-span-2 bg-[#FAF7F0] border border-[#E7DBC2] rounded-sm p-6 space-y-4 text-xs font-sans">
                       {selectedTemplate || templates[0] ? (
                         <form
                           onSubmit={(e) => {
@@ -4728,7 +4728,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                               type="text"
                               value={templateForm.title || selectedTemplate?.title || templates[0]?.title || ''}
                               onChange={e => setTemplateForm({ ...templateForm, title: e.target.value })}
-                              className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                              className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                             />
                           </div>
 
@@ -4739,7 +4739,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                                 type="text"
                                 value={templateForm.subject || selectedTemplate?.subject || ''}
                                 onChange={e => setTemplateForm({ ...templateForm, subject: e.target.value })}
-                                className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                                className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                               />
                             </div>
                           )}
@@ -4756,7 +4756,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                                     const currentBody = templateForm.body ?? selectedTemplate?.body ?? templates[0]?.body ?? '';
                                     setTemplateForm({ ...templateForm, body: currentBody + ' ' + v });
                                   }}
-                                  className="px-2 py-1 bg-[#F8F5EE] border border-[#E8E0D1] hover:border-[#0B332D] text-[#0B332D] font-mono text-[10px] rounded-xs cursor-pointer"
+                                  className="px-2 py-1 bg-[#F5F0E6] border border-[#E7DBC2] hover:border-[#13263D] text-[#13263D] font-mono text-[10px] rounded-xs cursor-pointer"
                                 >
                                   {v}
                                 </button>
@@ -4770,7 +4770,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                               rows={8}
                               value={templateForm.body !== undefined ? templateForm.body : (selectedTemplate?.body || templates[0]?.body || '')}
                               onChange={e => setTemplateForm({ ...templateForm, body: e.target.value })}
-                              className="w-full font-mono text-xs px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D] leading-relaxed"
+                              className="w-full font-mono text-xs px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D] leading-relaxed"
                             />
                           </div>
 
@@ -4778,9 +4778,9 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                             <button
                               type="submit"
                               disabled={savingTemplate}
-                              className="px-6 py-2 bg-[#0B332D] text-[#F8F5EE] font-semibold uppercase tracking-wider rounded-sm hover:bg-[#07221E] flex items-center gap-1.5 cursor-pointer shadow-xs disabled:opacity-60"
+                              className="px-6 py-2 bg-[#13263D] text-[#F5F0E6] font-semibold uppercase tracking-wider rounded-sm hover:bg-[#0C1A2E] flex items-center gap-1.5 cursor-pointer shadow-xs disabled:opacity-60"
                             >
-                              <FloppyDisk className="w-4 h-4 text-[#B79A62]" />
+                              <FloppyDisk className="w-4 h-4 text-[#A47A46]" />
                               <span>{savingTemplate ? 'Saving…' : 'Save Template Changes'}</span>
                             </button>
                           </div>
@@ -4794,9 +4794,9 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
               {/* TAB 14: SEO & META TAGS CMS */}
               {activeTab === 'seo' && (
                 <div className="space-y-4">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#F8F5EE] p-4 rounded-sm border border-[#E8E0D1]">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#F5F0E6] p-4 rounded-sm border border-[#E7DBC2]">
                     <div>
-                      <h3 className="font-editorial text-2xl text-[#0B332D] font-bold">SEO &amp; Search Engine Optimization CMS</h3>
+                      <h3 className="font-editorial text-2xl text-[#13263D] font-bold">SEO &amp; Search Engine Optimization CMS</h3>
                       <p className="text-xs text-gray-500 font-sans">Manage meta titles, Google SERP search snippets, descriptions, and keywords for every academy landing page.</p>
                     </div>
 
@@ -4809,16 +4809,16 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                   </div>
 
                   {/* IndexNow Instant Search Engine Indexing Bar */}
-                  <div className="bg-[#FCFBF8] border border-[#B79A62]/40 rounded-sm p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-2xs">
+                  <div className="bg-[#FAF7F0] border border-[#A47A46]/40 rounded-sm p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-2xs">
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
-                        <span className="px-2 py-0.5 bg-[#0B332D] text-[#B79A62] text-[10px] font-bold uppercase rounded-xs">
+                        <span className="px-2 py-0.5 bg-[#13263D] text-[#A47A46] text-[10px] font-bold uppercase rounded-xs">
                           IndexNow.org Protocol
                         </span>
-                        <span className="text-xs font-bold text-[#0B332D]">Instant Bing / Yandex Crawler Ping</span>
+                        <span className="text-xs font-bold text-[#13263D]">Instant Bing / Yandex Crawler Ping</span>
                       </div>
                       <p className="text-[11px] text-gray-600 font-sans">
-                        Key: <code className="font-mono text-[10px] bg-gray-100 px-1 py-0.5 rounded-xs">171291dc902c49d0af85b3414442a356</code> • File: <a href="https://noorequraninstitute.me/171291dc902c49d0af85b3414442a356.txt" target="_blank" rel="noreferrer" className="text-[#B79A62] hover:underline font-mono text-[10px]">171291dc902c49d0af85b3414442a356.txt</a>
+                        Key: <code className="font-mono text-[10px] bg-gray-100 px-1 py-0.5 rounded-xs">171291dc902c49d0af85b3414442a356</code> • File: <a href="https://noorequraninstitute.me/171291dc902c49d0af85b3414442a356.txt" target="_blank" rel="noreferrer" className="text-[#A47A46] hover:underline font-mono text-[10px]">171291dc902c49d0af85b3414442a356.txt</a>
                       </p>
                       {indexNowStatusMsg && (
                         <p className="text-xs font-semibold text-emerald-800 animate-fade-in">{indexNowStatusMsg}</p>
@@ -4829,9 +4829,9 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                       type="button"
                       disabled={isSubmittingIndexNow}
                       onClick={handleDispatchIndexNow}
-                      className="px-4 py-2 bg-[#0B332D] hover:bg-[#07221E] text-[#F8F5EE] text-xs font-sans font-semibold uppercase tracking-wider rounded-sm transition-all flex items-center gap-1.5 shadow-xs cursor-pointer disabled:opacity-50 shrink-0"
+                      className="px-4 py-2 bg-[#13263D] hover:bg-[#0C1A2E] text-[#F5F0E6] text-xs font-sans font-semibold uppercase tracking-wider rounded-sm transition-all flex items-center gap-1.5 shadow-xs cursor-pointer disabled:opacity-50 shrink-0"
                     >
-                      <Sparkle className="w-3.5 h-3.5 text-[#B79A62]" weight="fill" />
+                      <Sparkle className="w-3.5 h-3.5 text-[#A47A46]" weight="fill" />
                       <span>{isSubmittingIndexNow ? 'Dispatching URLs...' : '🚀 Dispatch 31 URLs to IndexNow'}</span>
                     </button>
                   </div>
@@ -4848,8 +4848,8 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                             setSeoForm({ ...page });
                           }}
                           className={`p-3.5 rounded-sm border transition-all cursor-pointer ${(selectedSeoPage?.pagePath || seoConfigs[0]?.pagePath) === page.pagePath
-                            ? 'bg-[#0B332D] text-[#F8F5EE] border-[#0B332D] shadow-xs'
-                            : 'bg-[#F8F5EE] text-gray-800 border-[#E8E0D1] hover:bg-[#E8E0D1]/50'
+                            ? 'bg-[#13263D] text-[#F5F0E6] border-[#13263D] shadow-xs'
+                            : 'bg-[#F5F0E6] text-gray-800 border-[#E7DBC2] hover:bg-[#E7DBC2]/50'
                             }`}
                         >
                           <div className="flex items-center justify-between mb-0.5">
@@ -4864,12 +4864,12 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                     {/* Right: SEO Editor & SERP Simulator */}
                     <div className="md:col-span-2 space-y-5">
                       {/* Google Search Snippet Live Preview */}
-                      <div className="bg-[#FFFFFF] border border-[#E8E0D1] rounded-sm p-4 space-y-1 shadow-xs">
+                      <div className="bg-[#FFFFFF] border border-[#E7DBC2] rounded-sm p-4 space-y-1 shadow-xs">
                         <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-1">
                           Google Search Result Preview (SERP Simulator)
                         </span>
                         <div className="flex items-center gap-1.5 text-xs text-[#202124]">
-                          <span className="w-4 h-4 rounded-full bg-[#0B332D] text-white text-[8px] flex items-center justify-center font-bold">N</span>
+                          <span className="w-4 h-4 rounded-full bg-[#13263D] text-white text-[8px] flex items-center justify-center font-bold">N</span>
                           <span className="text-gray-700 text-[11px]">https://noorequraninstitute.me{selectedSeoPage?.pagePath !== '/' ? selectedSeoPage?.pagePath : ''}</span>
                         </div>
                         <h4 className="text-[#1a0dab] hover:underline text-base font-medium cursor-pointer line-clamp-1">
@@ -4888,7 +4888,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                           }
                           handleSaveSeo(e);
                         }}
-                        className="bg-[#FCFBF8] border border-[#E8E0D1] rounded-sm p-6 space-y-4 text-xs font-sans"
+                        className="bg-[#FAF7F0] border border-[#E7DBC2] rounded-sm p-6 space-y-4 text-xs font-sans"
                       >
                         <div>
                           <div className="flex items-center justify-between mb-1">
@@ -4901,7 +4901,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                             type="text"
                             value={seoForm.metaTitle !== undefined ? seoForm.metaTitle : (selectedSeoPage?.metaTitle || seoConfigs[0]?.metaTitle || '')}
                             onChange={e => setSeoForm({ ...seoForm, metaTitle: e.target.value })}
-                            className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                            className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                           />
                         </div>
 
@@ -4916,7 +4916,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                             rows={3}
                             value={seoForm.metaDescription !== undefined ? seoForm.metaDescription : (selectedSeoPage?.metaDescription || seoConfigs[0]?.metaDescription || '')}
                             onChange={e => setSeoForm({ ...seoForm, metaDescription: e.target.value })}
-                            className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                            className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                           />
                         </div>
 
@@ -4926,16 +4926,16 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                             type="text"
                             value={seoForm.canonicalUrl !== undefined ? seoForm.canonicalUrl : (selectedSeoPage?.canonicalUrl || seoConfigs[0]?.canonicalUrl || '')}
                             onChange={e => setSeoForm({ ...seoForm, canonicalUrl: e.target.value })}
-                            className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                            className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                           />
                         </div>
 
                         <div className="flex justify-end pt-2">
                           <button
                             type="submit"
-                            className="px-6 py-2 bg-[#0B332D] text-[#F8F5EE] font-semibold uppercase tracking-wider rounded-sm hover:bg-[#07221E] flex items-center gap-1.5 cursor-pointer shadow-xs"
+                            className="px-6 py-2 bg-[#13263D] text-[#F5F0E6] font-semibold uppercase tracking-wider rounded-sm hover:bg-[#0C1A2E] flex items-center gap-1.5 cursor-pointer shadow-xs"
                           >
-                            <FloppyDisk className="w-4 h-4 text-[#B79A62]" />
+                            <FloppyDisk className="w-4 h-4 text-[#A47A46]" />
                             <span>Save Page SEO</span>
                           </button>
                         </div>
@@ -4952,8 +4952,8 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
         {/* Add/Edit Tutor Modal with Photo Upload & Cropping */}
         {isAddingTutor && (
           <div className="fixed inset-0 z-60 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-            <div className="w-full max-w-lg bg-[#FCFBF8] border border-[#E8E0D1] rounded-sm shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-              <div className="px-6 py-4 bg-[#0B332D] text-[#F8F5EE] flex items-center justify-between border-b border-[#B79A62]/30">
+            <div className="w-full max-w-lg bg-[#FAF7F0] border border-[#E7DBC2] rounded-sm shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+              <div className="px-6 py-4 bg-[#13263D] text-[#F5F0E6] flex items-center justify-between border-b border-[#A47A46]/30">
                 <h3 className="font-editorial text-xl font-semibold">
                   {editingTutor ? 'Edit Faculty Profile' : 'Add New Faculty Member'}
                 </h3>
@@ -4966,8 +4966,8 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                 {/* Photo Upload & Preview Card */}
                 <div>
                   <label className="block font-bold text-gray-700 mb-1.5">Tutor Portrait Picture</label>
-                  <div className="flex items-center gap-4 p-3 bg-[#F8F5EE] border border-[#E8E0D1] rounded-sm">
-                    <div className="w-16 h-16 rounded-sm overflow-hidden border border-[#E8E0D1] bg-[#FCFBF8] shrink-0">
+                  <div className="flex items-center gap-4 p-3 bg-[#F5F0E6] border border-[#E7DBC2] rounded-sm">
+                    <div className="w-16 h-16 rounded-sm overflow-hidden border border-[#E7DBC2] bg-[#FAF7F0] shrink-0">
                       {tutorForm.photoUrl ? (
                         <img src={tutorForm.photoUrl} alt="Tutor preview" className="w-full h-full object-cover" />
                       ) : (
@@ -4978,8 +4978,8 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                     </div>
 
                     <div className="space-y-1.5">
-                      <label className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#0B332D] text-[#F8F5EE] text-xs font-semibold rounded-sm hover:bg-[#07221E] cursor-pointer">
-                        <UploadSimple className="w-3.5 h-3.5 text-[#B79A62]" />
+                      <label className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#13263D] text-[#F5F0E6] text-xs font-semibold rounded-sm hover:bg-[#0C1A2E] cursor-pointer">
+                        <UploadSimple className="w-3.5 h-3.5 text-[#A47A46]" />
                         <span>Upload &amp; Frame Picture</span>
                         <input
                           type="file"
@@ -4995,7 +4995,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                             setRawTutorImage(tutorForm.photoUrl || '');
                             setIsTutorCropOpen(true);
                           }}
-                          className="block text-[11px] font-semibold text-[#0B332D] hover:underline cursor-pointer"
+                          className="block text-[11px] font-semibold text-[#13263D] hover:underline cursor-pointer"
                         >
                           Re-crop / Re-frame Picture
                         </button>
@@ -5012,7 +5012,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                     placeholder="e.g. Qari Muhammad Bilal"
                     value={tutorForm.name}
                     onChange={e => setTutorForm({ ...tutorForm, name: e.target.value })}
-                    className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                    className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                   />
                 </div>
 
@@ -5022,7 +5022,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                     <select
                       value={tutorForm.gender}
                       onChange={e => setTutorForm({ ...tutorForm, gender: e.target.value as any })}
-                      className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                      className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                     >
                       <option value="Male">Male Scholar</option>
                       <option value="Female">Female Scholar</option>
@@ -5033,7 +5033,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                     <select
                       value={tutorForm.status}
                       onChange={e => setTutorForm({ ...tutorForm, status: e.target.value as any })}
-                      className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                      className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                     >
                       <option value="Available">Available</option>
                       <option value="Assigned">Assigned</option>
@@ -5050,7 +5050,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                     placeholder="e.g. Tajweed Mastery, Hifz, Noorani Qaida"
                     value={tutorForm.specialization}
                     onChange={e => setTutorForm({ ...tutorForm, specialization: e.target.value })}
-                    className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                    className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                   />
                 </div>
 
@@ -5061,7 +5061,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                     placeholder="Shahadat-ul-Aalamia / Certified Qari"
                     value={tutorForm.qualification}
                     onChange={e => setTutorForm({ ...tutorForm, qualification: e.target.value })}
-                    className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                    className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                   />
                 </div>
 
@@ -5074,7 +5074,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                       placeholder="tutor@noorequran.com"
                       value={tutorForm.email}
                       onChange={e => setTutorForm({ ...tutorForm, email: e.target.value })}
-                      className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                      className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                     />
                   </div>
                   <div>
@@ -5084,12 +5084,12 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                       placeholder="+92 327 4496163"
                       value={tutorForm.phone}
                       onChange={e => setTutorForm({ ...tutorForm, phone: e.target.value })}
-                      className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                      className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                     />
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-[#E8E0D1] flex justify-end gap-2">
+                <div className="pt-4 border-t border-[#E7DBC2] flex justify-end gap-2">
                   <button
                     type="button"
                     onClick={() => setIsAddingTutor(false)}
@@ -5099,7 +5099,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                   </button>
                   <button
                     type="submit"
-                    className="px-6 py-2 bg-[#0B332D] text-[#F8F5EE] font-semibold uppercase tracking-wider rounded-sm hover:bg-[#07221E] cursor-pointer"
+                    className="px-6 py-2 bg-[#13263D] text-[#F5F0E6] font-semibold uppercase tracking-wider rounded-sm hover:bg-[#0C1A2E] cursor-pointer"
                   >
                     Save Faculty Profile
                   </button>
@@ -5112,8 +5112,8 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
         {/* Add/Edit Course Modal */}
         {isAddingCourse && (
           <div className="fixed inset-0 z-60 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-            <div className="w-full max-w-lg bg-[#FCFBF8] border border-[#E8E0D1] rounded-sm shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-              <div className="px-6 py-4 bg-[#0B332D] text-[#F8F5EE] flex items-center justify-between border-b border-[#B79A62]/30">
+            <div className="w-full max-w-lg bg-[#FAF7F0] border border-[#E7DBC2] rounded-sm shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+              <div className="px-6 py-4 bg-[#13263D] text-[#F5F0E6] flex items-center justify-between border-b border-[#A47A46]/30">
                 <h3 className="font-editorial text-xl font-semibold">
                   {editingCourse ? 'Edit Course Program' : 'Add Course Program'}
                 </h3>
@@ -5130,7 +5130,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                     required
                     value={courseForm.name || ''}
                     onChange={e => setCourseForm({ ...courseForm, name: e.target.value })}
-                    className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                    className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                   />
                 </div>
 
@@ -5141,7 +5141,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                     placeholder="القاعدة النورانية"
                     value={courseForm.arabicName || ''}
                     onChange={e => setCourseForm({ ...courseForm, arabicName: e.target.value })}
-                    className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm font-arabic focus:outline-none focus:border-[#0B332D]"
+                    className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm font-arabic focus:outline-none focus:border-[#13263D]"
                   />
                 </div>
 
@@ -5151,7 +5151,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                     rows={2}
                     value={courseForm.shortDescription || ''}
                     onChange={e => setCourseForm({ ...courseForm, shortDescription: e.target.value })}
-                    className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                    className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                   />
                 </div>
 
@@ -5162,7 +5162,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                       type="number"
                       value={courseForm.feePKR || 3500}
                       onChange={e => setCourseForm({ ...courseForm, feePKR: Number(e.target.value) })}
-                      className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                      className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                     />
                   </div>
                   <div>
@@ -5171,7 +5171,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                       type="number"
                       value={courseForm.feeUSD || 35}
                       onChange={e => setCourseForm({ ...courseForm, feeUSD: Number(e.target.value) })}
-                      className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                      className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                     />
                   </div>
                 </div>
@@ -5183,7 +5183,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                       type="text"
                       value={courseForm.duration || '3 - 6 Months'}
                       onChange={e => setCourseForm({ ...courseForm, duration: e.target.value })}
-                      className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                      className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                     />
                   </div>
                   <div>
@@ -5192,12 +5192,12 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                       type="text"
                       value={courseForm.classesPerWeek || '4 - 5 Days / Week'}
                       onChange={e => setCourseForm({ ...courseForm, classesPerWeek: e.target.value })}
-                      className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                      className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                     />
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-[#E8E0D1] flex justify-end gap-2">
+                <div className="pt-4 border-t border-[#E7DBC2] flex justify-end gap-2">
                   <button
                     type="button"
                     onClick={() => setIsAddingCourse(false)}
@@ -5207,7 +5207,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                   </button>
                   <button
                     type="submit"
-                    className="px-6 py-2 bg-[#0B332D] text-[#F8F5EE] font-semibold uppercase tracking-wider rounded-sm hover:bg-[#07221E] cursor-pointer"
+                    className="px-6 py-2 bg-[#13263D] text-[#F5F0E6] font-semibold uppercase tracking-wider rounded-sm hover:bg-[#0C1A2E] cursor-pointer"
                   >
                     Save Course
                   </button>
@@ -5220,13 +5220,13 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
         {/* Assign Scholar & Timetable Modal */}
         {assigningStudent && (
           <div className="fixed inset-0 z-60 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-            <div className="w-full max-w-lg bg-[#FCFBF8] border border-[#E8E0D1] rounded-sm shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-              <div className="px-6 py-4 bg-[#0B332D] text-[#F8F5EE] flex items-center justify-between border-b border-[#B79A62]/30">
+            <div className="w-full max-w-lg bg-[#FAF7F0] border border-[#E7DBC2] rounded-sm shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+              <div className="px-6 py-4 bg-[#13263D] text-[#F5F0E6] flex items-center justify-between border-b border-[#A47A46]/30">
                 <div>
                   <h3 className="font-editorial text-xl font-semibold">
                     Assign Scholar &amp; Set Class Timetable
                   </h3>
-                  <p className="text-[11px] text-[#B79A62]">
+                  <p className="text-[11px] text-[#A47A46]">
                     Student: {assigningStudent.studentName} • {assigningStudent.courseName}
                   </p>
                 </div>
@@ -5248,7 +5248,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                         tutorName: selTut ? selTut.name : ''
                       });
                     }}
-                    className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                    className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                   >
                     <option value="">-- Choose Faculty Member --</option>
                     {tutors.map(t => (
@@ -5275,8 +5275,8 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                             setAssignmentForm({ ...assignmentForm, preferredDays: newDays });
                           }}
                           className={`py-1.5 px-2 text-[11px] rounded-xs border text-center font-medium transition-colors cursor-pointer ${isSelected
-                            ? 'bg-[#0B332D] text-[#F8F5EE] border-[#0B332D]'
-                            : 'bg-[#F8F5EE] text-gray-700 border-[#E8E0D1] hover:border-[#B79A62]'
+                            ? 'bg-[#13263D] text-[#F5F0E6] border-[#13263D]'
+                            : 'bg-[#F5F0E6] text-gray-700 border-[#E7DBC2] hover:border-[#A47A46]'
                             }`}
                         >
                           {day.slice(0, 3)}
@@ -5292,7 +5292,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                     <select
                       value={assignmentForm.preferredTime}
                       onChange={e => setAssignmentForm({ ...assignmentForm, preferredTime: e.target.value as any })}
-                      className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                      className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                     >
                       <option value="Morning">Morning (08:00 AM - 12:00 PM)</option>
                       <option value="Afternoon">Afternoon (12:00 PM - 04:00 PM)</option>
@@ -5306,7 +5306,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                     <select
                       value={assignmentForm.status}
                       onChange={e => setAssignmentForm({ ...assignmentForm, status: e.target.value as any })}
-                      className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                      className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                     >
                       <option value="Active">Active</option>
                       <option value="On Trial">On Trial</option>
@@ -5323,11 +5323,11 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                     placeholder="e.g. Surah Al-Baqarah (Ayah 142) or Qaida Lesson 4"
                     value={assignmentForm.currentSurahOrLesson}
                     onChange={e => setAssignmentForm({ ...assignmentForm, currentSurahOrLesson: e.target.value })}
-                    className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                    className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                   />
                 </div>
 
-                <div className="pt-4 border-t border-[#E8E0D1] flex justify-end gap-2">
+                <div className="pt-4 border-t border-[#E7DBC2] flex justify-end gap-2">
                   <button
                     type="button"
                     onClick={() => setAssigningStudent(null)}
@@ -5337,7 +5337,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                   </button>
                   <button
                     type="submit"
-                    className="px-6 py-2 bg-[#0B332D] text-[#F8F5EE] font-semibold uppercase tracking-wider rounded-sm hover:bg-[#07221E] cursor-pointer"
+                    className="px-6 py-2 bg-[#13263D] text-[#F5F0E6] font-semibold uppercase tracking-wider rounded-sm hover:bg-[#0C1A2E] cursor-pointer"
                   >
                     Save Assignment &amp; Timetable
                   </button>
@@ -5350,13 +5350,13 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
         {/* Enrollment Details & Approval Modal */}
         {selectedEnrollment && (
           <div className="fixed inset-0 z-60 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-            <div className="w-full max-w-xl bg-[#FCFBF8] border border-[#E8E0D1] rounded-sm shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-              <div className="px-6 py-4 bg-[#0B332D] text-[#F8F5EE] flex items-center justify-between border-b border-[#B79A62]/30">
+            <div className="w-full max-w-xl bg-[#FAF7F0] border border-[#E7DBC2] rounded-sm shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+              <div className="px-6 py-4 bg-[#13263D] text-[#F5F0E6] flex items-center justify-between border-b border-[#A47A46]/30">
                 <div>
                   <h3 className="font-editorial text-xl font-semibold">
                     Enrollment Application
                   </h3>
-                  <p className="text-[11px] text-[#B79A62]">
+                  <p className="text-[11px] text-[#A47A46]">
                     Student: {selectedEnrollment.studentName} ({selectedEnrollment.courseName})
                   </p>
                 </div>
@@ -5366,10 +5366,10 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
               </div>
 
               <div className="p-6 space-y-5 overflow-y-auto text-xs font-sans">
-                <div className="grid grid-cols-2 gap-4 p-4 bg-[#F8F5EE] rounded-sm border border-[#E8E0D1]">
+                <div className="grid grid-cols-2 gap-4 p-4 bg-[#F5F0E6] rounded-sm border border-[#E7DBC2]">
                   <div>
                     <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider block">Student Name</span>
-                    <span className="font-bold text-[#0B332D] text-sm">{selectedEnrollment.studentName}</span>
+                    <span className="font-bold text-[#13263D] text-sm">{selectedEnrollment.studentName}</span>
                   </div>
                   <div>
                     <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider block">Parent / Guardian</span>
@@ -5404,7 +5404,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                 {selectedEnrollment.additionalNotes && (
                   <div>
                     <label className="block font-bold text-gray-700 mb-1">Applicant's Additional Notes</label>
-                    <p className="p-3 bg-[#F8F5EE] border border-[#E8E0D1] rounded-sm text-gray-700 italic">
+                    <p className="p-3 bg-[#F5F0E6] border border-[#E7DBC2] rounded-sm text-gray-700 italic">
                       "{selectedEnrollment.additionalNotes}"
                     </p>
                   </div>
@@ -5422,7 +5422,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                           assignedTutorName: tut ? tut.name : ''
                         });
                       }}
-                      className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                      className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                     >
                       <option value="">-- Choose Scholar --</option>
                       {tutors.map(t => (
@@ -5436,7 +5436,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                     <select
                       value={selectedEnrollment.status}
                       onChange={e => updateEnrollment(selectedEnrollment.id, { status: e.target.value as any })}
-                      className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                      className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                     >
                       <option value="New Application">New Application</option>
                       <option value="Contacted">Contacted</option>
@@ -5449,7 +5449,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-[#E8E0D1] flex flex-wrap items-center justify-between gap-3">
+                <div className="pt-4 border-t border-[#E7DBC2] flex flex-wrap items-center justify-between gap-3">
                   <a
                     href={`https://wa.me/${selectedEnrollment.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Assalam-o-Alaikum ${selectedEnrollment.parentName || selectedEnrollment.studentName}! This is Noor E Quran Institute regarding your enrollment application for ${selectedEnrollment.courseName}.`)}`}
                     target="_blank"
@@ -5531,7 +5531,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                         setApprovingEnrollment(false);
                       }
                     }}
-                    className="px-4 py-2 bg-[#0B332D] text-[#F8F5EE] font-semibold uppercase tracking-wider rounded-sm hover:bg-[#07221E] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-4 py-2 bg-[#13263D] text-[#F5F0E6] font-semibold uppercase tracking-wider rounded-sm hover:bg-[#0C1A2E] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {approvingEnrollment ? 'Approving…' : 'Approve & Add to Students'}
                   </button>
@@ -5544,13 +5544,13 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
         {/* Lead Details Modal with Notes */}
         {selectedLead && (
           <div className="fixed inset-0 z-60 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-            <div className="w-full max-w-lg bg-[#FCFBF8] border border-[#E8E0D1] rounded-sm shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-              <div className="px-6 py-4 bg-[#0B332D] text-[#F8F5EE] flex items-center justify-between border-b border-[#B79A62]/30">
+            <div className="w-full max-w-lg bg-[#FAF7F0] border border-[#E7DBC2] rounded-sm shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+              <div className="px-6 py-4 bg-[#13263D] text-[#F5F0E6] flex items-center justify-between border-b border-[#A47A46]/30">
                 <div>
                   <h3 className="font-editorial text-xl font-semibold">
                     Trial Inquiry Details
                   </h3>
-                  <p className="text-[11px] text-[#B79A62]">
+                  <p className="text-[11px] text-[#A47A46]">
                     Student: {selectedLead.studentName} ({selectedLead.courseName})
                   </p>
                 </div>
@@ -5560,10 +5560,10 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
               </div>
 
               <div className="p-6 space-y-4 overflow-y-auto text-xs font-sans">
-                <div className="grid grid-cols-2 gap-3 p-4 bg-[#F8F5EE] rounded-sm border border-[#E8E0D1]">
+                <div className="grid grid-cols-2 gap-3 p-4 bg-[#F5F0E6] rounded-sm border border-[#E7DBC2]">
                   <div>
                     <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider block">Student</span>
-                    <span className="font-bold text-[#0B332D]">{selectedLead.studentName}</span>
+                    <span className="font-bold text-[#13263D]">{selectedLead.studentName}</span>
                   </div>
                   <div>
                     <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider block">Parent</span>
@@ -5592,7 +5592,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                   <select
                     value={selectedLead.status}
                     onChange={e => updateLeadStatus(selectedLead.id, e.target.value as LeadStatus)}
-                    className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                    className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                   >
                     <option value="New Lead">New Lead</option>
                     <option value="Contacted">Contacted</option>
@@ -5609,7 +5609,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                   <div className="space-y-2 mb-2 max-h-32 overflow-y-auto">
                     {selectedLead.notes && selectedLead.notes.length > 0 ? (
                       selectedLead.notes.map((n, i) => (
-                        <div key={i} className="p-2 bg-[#F8F5EE] border border-[#E8E0D1] rounded-xs text-[11px]">
+                        <div key={i} className="p-2 bg-[#F5F0E6] border border-[#E7DBC2] rounded-xs text-[11px]">
                           <p className="text-gray-800">{n.text}</p>
                           <p className="text-[9px] text-gray-400 mt-0.5">{n.author} • {new Date(n.createdAt).toLocaleDateString()}</p>
                         </div>
@@ -5625,19 +5625,19 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                       placeholder="Add a new note..."
                       value={newNoteText}
                       onChange={e => setNewNoteText(e.target.value)}
-                      className="flex-1 px-3 py-1.5 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                      className="flex-1 px-3 py-1.5 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                     />
                     <button
                       type="button"
                       onClick={() => addLeadNote(selectedLead.id)}
-                      className="px-3 py-1.5 bg-[#0B332D] text-[#F8F5EE] font-semibold rounded-sm hover:bg-[#07221E] cursor-pointer"
+                      className="px-3 py-1.5 bg-[#13263D] text-[#F5F0E6] font-semibold rounded-sm hover:bg-[#0C1A2E] cursor-pointer"
                     >
                       Add
                     </button>
                   </div>
                 </div>
 
-                <div className="pt-3 border-t border-[#E8E0D1] flex justify-between">
+                <div className="pt-3 border-t border-[#E7DBC2] flex justify-between">
                   <button
                     onClick={() => openWhatsAppForLead(selectedLead)}
                     className="px-4 py-2 bg-[#25D366] text-white font-bold rounded-sm inline-flex items-center gap-1.5 cursor-pointer shadow-xs"
@@ -5662,8 +5662,8 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
         {/* Add/Edit Package Plan Modal */}
         {isAddingPackage && (
           <div className="fixed inset-0 z-60 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-            <div className="w-full max-w-lg bg-[#FCFBF8] border border-[#E8E0D1] rounded-sm shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-              <div className="px-6 py-4 bg-[#0B332D] text-[#F8F5EE] flex items-center justify-between border-b border-[#B79A62]/30">
+            <div className="w-full max-w-lg bg-[#FAF7F0] border border-[#E7DBC2] rounded-sm shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+              <div className="px-6 py-4 bg-[#13263D] text-[#F5F0E6] flex items-center justify-between border-b border-[#A47A46]/30">
                 <h3 className="font-editorial text-xl font-semibold">
                   {editingPackage ? 'Edit Pricing Package' : 'Add Pricing Package'}
                 </h3>
@@ -5681,7 +5681,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                     placeholder="e.g. Standard 3 Days/Week"
                     value={packageForm.name || ''}
                     onChange={e => setPackageForm({ ...packageForm, name: e.target.value })}
-                    className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                    className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                   />
                 </div>
 
@@ -5693,7 +5693,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                       placeholder="3 Days / Week"
                       value={packageForm.daysPerWeek || ''}
                       onChange={e => setPackageForm({ ...packageForm, daysPerWeek: e.target.value })}
-                      className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                      className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                     />
                   </div>
                   <div>
@@ -5702,7 +5702,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                       type="number"
                       value={packageForm.classDurationMinutes || 30}
                       onChange={e => setPackageForm({ ...packageForm, classDurationMinutes: Number(e.target.value) })}
-                      className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                      className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                     />
                   </div>
                 </div>
@@ -5714,7 +5714,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                       type="number"
                       value={packageForm.monthlyFeePKR || 3500}
                       onChange={e => setPackageForm({ ...packageForm, monthlyFeePKR: Number(e.target.value) })}
-                      className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                      className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                     />
                   </div>
                   <div>
@@ -5723,7 +5723,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                       type="number"
                       value={packageForm.monthlyFeeUSD || 35}
                       onChange={e => setPackageForm({ ...packageForm, monthlyFeeUSD: Number(e.target.value) })}
-                      className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                      className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                     />
                   </div>
                 </div>
@@ -5734,19 +5734,19 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                     rows={2}
                     value={packageForm.description || ''}
                     onChange={e => setPackageForm({ ...packageForm, description: e.target.value })}
-                    className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                    className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                   />
                 </div>
 
-                <div className="flex items-center justify-between p-3 bg-[#F8F5EE] border border-[#E8E0D1] rounded-sm">
+                <div className="flex items-center justify-between p-3 bg-[#F5F0E6] border border-[#E7DBC2] rounded-sm">
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input
                       type="checkbox"
                       checked={!!packageForm.isPopular}
                       onChange={e => setPackageForm({ ...packageForm, isPopular: e.target.checked })}
-                      className="rounded-xs text-[#0B332D]"
+                      className="rounded-xs text-[#13263D]"
                     />
-                    <span className="font-bold text-[#0B332D]">Mark as Popular / Best Value Plan</span>
+                    <span className="font-bold text-[#13263D]">Mark as Popular / Best Value Plan</span>
                   </label>
                   {packageForm.isPopular && (
                     <input
@@ -5754,7 +5754,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                       placeholder="Badge: e.g. Most Popular"
                       value={packageForm.badge || 'Popular'}
                       onChange={e => setPackageForm({ ...packageForm, badge: e.target.value })}
-                      className="px-2 py-1 text-xs border border-[#E8E0D1] bg-[#FCFBF8] rounded-sm"
+                      className="px-2 py-1 text-xs border border-[#E7DBC2] bg-[#FAF7F0] rounded-sm"
                     />
                   )}
                 </div>
@@ -5762,7 +5762,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                 {packageErr && (
                   <p className="text-xs font-sans text-red-700 px-1">{packageErr}</p>
                 )}
-                <div className="pt-4 border-t border-[#E8E0D1] flex justify-end gap-2">
+                <div className="pt-4 border-t border-[#E7DBC2] flex justify-end gap-2">
                   <button
                     type="button"
                     onClick={() => setIsAddingPackage(false)}
@@ -5773,7 +5773,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                   <button
                     type="submit"
                     disabled={savingPackage}
-                    className="px-6 py-2 bg-[#0B332D] text-[#F8F5EE] font-semibold uppercase tracking-wider rounded-sm hover:bg-[#07221E] cursor-pointer disabled:opacity-60"
+                    className="px-6 py-2 bg-[#13263D] text-[#F5F0E6] font-semibold uppercase tracking-wider rounded-sm hover:bg-[#0C1A2E] cursor-pointer disabled:opacity-60"
                   >
                     {savingPackage ? 'Saving…' : 'Save Package'}
                   </button>
@@ -5786,8 +5786,8 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
         {/* Add/Edit Testimonial Modal */}
         {isAddingTestimonial && (
           <div className="fixed inset-0 z-60 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-            <div className="w-full max-w-lg bg-[#FCFBF8] border border-[#E8E0D1] rounded-sm shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-              <div className="px-6 py-4 bg-[#0B332D] text-[#F8F5EE] flex items-center justify-between border-b border-[#B79A62]/30">
+            <div className="w-full max-w-lg bg-[#FAF7F0] border border-[#E7DBC2] rounded-sm shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+              <div className="px-6 py-4 bg-[#13263D] text-[#F5F0E6] flex items-center justify-between border-b border-[#A47A46]/30">
                 <h3 className="font-editorial text-xl font-semibold">
                   {editingTestimonial ? 'Edit Parent Review' : 'Add Parent Review'}
                 </h3>
@@ -5806,7 +5806,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                       placeholder="e.g. Sister Fatima Khan"
                       value={testimonialForm.name || ''}
                       onChange={e => setTestimonialForm({ ...testimonialForm, name: e.target.value })}
-                      className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                      className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                     />
                   </div>
                   <div>
@@ -5816,7 +5816,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                       placeholder="e.g. Mother of Ayaan (7 yrs)"
                       value={testimonialForm.studentOrParent || ''}
                       onChange={e => setTestimonialForm({ ...testimonialForm, studentOrParent: e.target.value })}
-                      className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                      className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                     />
                   </div>
                 </div>
@@ -5829,7 +5829,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                       placeholder="e.g. London, UK"
                       value={testimonialForm.location || ''}
                       onChange={e => setTestimonialForm({ ...testimonialForm, location: e.target.value })}
-                      className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                      className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                     />
                   </div>
                   <div>
@@ -5839,7 +5839,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                       placeholder="e.g. 🇬🇧 or 🇺🇸"
                       value={testimonialForm.countryFlag || '🇬🇧'}
                       onChange={e => setTestimonialForm({ ...testimonialForm, countryFlag: e.target.value })}
-                      className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                      className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                     />
                   </div>
                 </div>
@@ -5852,7 +5852,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                       placeholder="e.g. Noorani Qaida & Tajweed"
                       value={testimonialForm.courseName || ''}
                       onChange={e => setTestimonialForm({ ...testimonialForm, courseName: e.target.value })}
-                      className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                      className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                     />
                   </div>
                   <div>
@@ -5860,7 +5860,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                     <select
                       value={testimonialForm.rating || 5}
                       onChange={e => setTestimonialForm({ ...testimonialForm, rating: Number(e.target.value) })}
-                      className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                      className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                     >
                       <option value={5}>⭐⭐⭐⭐⭐ (5 Stars)</option>
                       <option value={4}>⭐⭐⭐⭐ (4 Stars)</option>
@@ -5877,7 +5877,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                     placeholder="Enter quote or parent reflection..."
                     value={testimonialForm.comment || ''}
                     onChange={e => setTestimonialForm({ ...testimonialForm, comment: e.target.value })}
-                    className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                    className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                   />
                 </div>
 
@@ -5886,7 +5886,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                   <select
                     value={testimonialForm.status || 'published'}
                     onChange={e => setTestimonialForm({ ...testimonialForm, status: e.target.value as any })}
-                    className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                    className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                   >
                     <option value="published">Published (Visible on Website)</option>
                     <option value="pending">Draft / Pending</option>
@@ -5896,7 +5896,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                 {testimonialErr && (
                   <p className="text-xs font-sans text-red-700 px-1">{testimonialErr}</p>
                 )}
-                <div className="pt-4 border-t border-[#E8E0D1] flex justify-end gap-2">
+                <div className="pt-4 border-t border-[#E7DBC2] flex justify-end gap-2">
                   <button
                     type="button"
                     onClick={() => setIsAddingTestimonial(false)}
@@ -5907,7 +5907,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                   <button
                     type="submit"
                     disabled={savingTestimonial}
-                    className="px-6 py-2 bg-[#0B332D] text-[#F8F5EE] font-semibold uppercase tracking-wider rounded-sm hover:bg-[#07221E] cursor-pointer disabled:opacity-60"
+                    className="px-6 py-2 bg-[#13263D] text-[#F5F0E6] font-semibold uppercase tracking-wider rounded-sm hover:bg-[#0C1A2E] cursor-pointer disabled:opacity-60"
                   >
                     {savingTestimonial ? 'Saving…' : 'Save Review'}
                   </button>
@@ -5920,8 +5920,8 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
         {/* Add/Edit FAQ Modal */}
         {isAddingFaq && (
           <div className="fixed inset-0 z-60 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-            <div className="w-full max-w-lg bg-[#FCFBF8] border border-[#E8E0D1] rounded-sm shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-              <div className="px-6 py-4 bg-[#0B332D] text-[#F8F5EE] flex items-center justify-between border-b border-[#B79A62]/30">
+            <div className="w-full max-w-lg bg-[#FAF7F0] border border-[#E7DBC2] rounded-sm shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+              <div className="px-6 py-4 bg-[#13263D] text-[#F5F0E6] flex items-center justify-between border-b border-[#A47A46]/30">
                 <h3 className="font-editorial text-xl font-semibold">
                   {editingFaq ? 'Edit FAQ' : 'Add New FAQ'}
                 </h3>
@@ -5939,7 +5939,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                     placeholder="e.g. Do you offer female Quran teachers?"
                     value={faqForm.question || ''}
                     onChange={e => setFaqForm({ ...faqForm, question: e.target.value })}
-                    className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                    className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                   />
                 </div>
 
@@ -5951,7 +5951,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                     placeholder="Comprehensive answer..."
                     value={faqForm.answer || ''}
                     onChange={e => setFaqForm({ ...faqForm, answer: e.target.value })}
-                    className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                    className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                   />
                 </div>
 
@@ -5961,7 +5961,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                     <select
                       value={faqForm.category || 'Admissions'}
                       onChange={e => setFaqForm({ ...faqForm, category: e.target.value })}
-                      className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                      className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                     >
                       <option value="Admissions">Admissions</option>
                       <option value="Classes">Classes</option>
@@ -5978,7 +5978,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                       type="number"
                       value={faqForm.order || 1}
                       onChange={e => setFaqForm({ ...faqForm, order: Number(e.target.value) })}
-                      className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                      className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                     />
                   </div>
                 </div>
@@ -5986,7 +5986,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                 {faqErr && (
                   <p className="text-xs font-sans text-red-700 px-1">{faqErr}</p>
                 )}
-                <div className="pt-4 border-t border-[#E8E0D1] flex justify-end gap-2">
+                <div className="pt-4 border-t border-[#E7DBC2] flex justify-end gap-2">
                   <button
                     type="button"
                     onClick={() => setIsAddingFaq(false)}
@@ -5997,7 +5997,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                   <button
                     type="submit"
                     disabled={savingFaq}
-                    className="px-6 py-2 bg-[#0B332D] text-[#F8F5EE] font-semibold uppercase tracking-wider rounded-sm hover:bg-[#07221E] cursor-pointer disabled:opacity-60"
+                    className="px-6 py-2 bg-[#13263D] text-[#F5F0E6] font-semibold uppercase tracking-wider rounded-sm hover:bg-[#0C1A2E] cursor-pointer disabled:opacity-60"
                   >
                     {savingFaq ? 'Saving…' : 'Save FAQ'}
                   </button>
@@ -6010,8 +6010,8 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
         {/* Add Media Asset Modal */}
         {isAddingMedia && (
           <div className="fixed inset-0 z-60 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-            <div className="w-full max-w-md bg-[#FCFBF8] border border-[#E8E0D1] rounded-sm shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-              <div className="px-6 py-4 bg-[#0B332D] text-[#F8F5EE] flex items-center justify-between border-b border-[#B79A62]/30">
+            <div className="w-full max-w-md bg-[#FAF7F0] border border-[#E7DBC2] rounded-sm shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+              <div className="px-6 py-4 bg-[#13263D] text-[#F5F0E6] flex items-center justify-between border-b border-[#A47A46]/30">
                 <h3 className="font-editorial text-xl font-semibold">
                   Add Media Asset
                 </h3>
@@ -6029,7 +6029,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                     placeholder="e.g. Ramadan Special Promo Graphic"
                     value={mediaForm.name}
                     onChange={e => setMediaForm({ ...mediaForm, name: e.target.value })}
-                    className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                    className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                   />
                 </div>
 
@@ -6038,7 +6038,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                   <select
                     value={mediaForm.category}
                     onChange={e => setMediaForm({ ...mediaForm, category: e.target.value as any })}
-                    className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                    className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                   >
                     <option value="banner">Banner / Hero Graphics</option>
                     <option value="course">Course Curriculum Graphic</option>
@@ -6057,15 +6057,15 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                     placeholder="e.g. /images/promo-banner.webp or https://..."
                     value={mediaForm.url}
                     onChange={e => setMediaForm({ ...mediaForm, url: e.target.value })}
-                    className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                    className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                   />
                 </div>
 
                 {/* Upload Local Image option */}
-                <div className="p-3 bg-[#F8F5EE] border border-[#E8E0D1] rounded-sm flex items-center justify-between">
+                <div className="p-3 bg-[#F5F0E6] border border-[#E7DBC2] rounded-sm flex items-center justify-between">
                   <span className="text-gray-600 font-medium">Or choose a local image file:</span>
-                  <label className="px-3 py-1.5 bg-[#0B332D] text-[#F8F5EE] text-[11px] font-bold rounded-xs cursor-pointer inline-flex items-center gap-1">
-                    <UploadSimple className="w-3 h-3 text-[#B79A62]" />
+                  <label className="px-3 py-1.5 bg-[#13263D] text-[#F5F0E6] text-[11px] font-bold rounded-xs cursor-pointer inline-flex items-center gap-1">
+                    <UploadSimple className="w-3 h-3 text-[#A47A46]" />
                     <span>Browse File</span>
                     <input
                       type="file"
@@ -6092,7 +6092,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                 </div>
 
                 {mediaForm.url && (
-                  <div className="aspect-video bg-neutral-900/5 rounded-sm border border-[#E8E0D1] overflow-hidden flex items-center justify-center">
+                  <div className="aspect-video bg-neutral-900/5 rounded-sm border border-[#E7DBC2] overflow-hidden flex items-center justify-center">
                     <img src={mediaForm.url} alt="Preview" className="max-h-32 object-contain" />
                   </div>
                 )}
@@ -6100,7 +6100,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                 {mediaErr && (
                   <p className="text-xs font-sans text-red-700 px-1">{mediaErr}</p>
                 )}
-                <div className="pt-4 border-t border-[#E8E0D1] flex justify-end gap-2">
+                <div className="pt-4 border-t border-[#E7DBC2] flex justify-end gap-2">
                   <button
                     type="button"
                     onClick={() => setIsAddingMedia(false)}
@@ -6111,7 +6111,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                   <button
                     type="submit"
                     disabled={savingMedia}
-                    className="px-6 py-2 bg-[#0B332D] text-[#F8F5EE] font-semibold uppercase tracking-wider rounded-sm hover:bg-[#07221E] cursor-pointer disabled:opacity-60"
+                    className="px-6 py-2 bg-[#13263D] text-[#F5F0E6] font-semibold uppercase tracking-wider rounded-sm hover:bg-[#0C1A2E] cursor-pointer disabled:opacity-60"
                   >
                     {savingMedia ? 'Saving…' : 'Save Asset'}
                   </button>
@@ -6124,8 +6124,8 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
         {/* Issue Fee Invoice Modal */}
         {isAddingInvoice && (
           <div className="fixed inset-0 z-60 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-            <div className="w-full max-w-lg bg-[#FCFBF8] border border-[#E8E0D1] rounded-sm shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-              <div className="px-6 py-4 bg-[#0B332D] text-[#F8F5EE] flex items-center justify-between border-b border-[#B79A62]/30">
+            <div className="w-full max-w-lg bg-[#FAF7F0] border border-[#E7DBC2] rounded-sm shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+              <div className="px-6 py-4 bg-[#13263D] text-[#F5F0E6] flex items-center justify-between border-b border-[#A47A46]/30">
                 <h3 className="font-editorial text-xl font-semibold">
                   Issue Tuition Fee Invoice
                 </h3>
@@ -6153,7 +6153,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                         });
                       }
                     }}
-                    className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                    className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                   >
                     <option value="">-- Select Student --</option>
                     {students.map(s => (
@@ -6170,7 +6170,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                       required
                       value={invoiceForm.amount ?? ''}
                       onChange={e => setInvoiceForm({ ...invoiceForm, amount: e.target.value === '' ? undefined : Number(e.target.value) })}
-                      className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                      className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                     />
                   </div>
                   <div>
@@ -6178,7 +6178,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                     <select
                       value={invoiceForm.currency || 'USD'}
                       onChange={e => setInvoiceForm({ ...invoiceForm, currency: e.target.value as any })}
-                      className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                      className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                     >
                       <option value="USD">USD ($)</option>
                       <option value="PKR">PKR (Rs)</option>
@@ -6199,7 +6199,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                       placeholder="e.g. August 2026"
                       value={invoiceForm.billingMonth || ''}
                       onChange={e => setInvoiceForm({ ...invoiceForm, billingMonth: e.target.value })}
-                      className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                      className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                     />
                   </div>
                   <div>
@@ -6208,7 +6208,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                       type="date"
                       value={invoiceForm.dueDate || ''}
                       onChange={e => setInvoiceForm({ ...invoiceForm, dueDate: e.target.value })}
-                      className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                      className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                     />
                   </div>
                 </div>
@@ -6216,7 +6216,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                 {invoiceErr && (
                   <p className="text-xs font-sans text-red-700 px-1">{invoiceErr}</p>
                 )}
-                <div className="pt-4 border-t border-[#E8E0D1] flex justify-end gap-2">
+                <div className="pt-4 border-t border-[#E7DBC2] flex justify-end gap-2">
                   <button
                     type="button"
                     onClick={() => setIsAddingInvoice(false)}
@@ -6227,7 +6227,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                   <button
                     type="submit"
                     disabled={savingInvoice}
-                    className="px-6 py-2 bg-[#0B332D] text-[#F8F5EE] font-semibold uppercase tracking-wider rounded-sm hover:bg-[#07221E] cursor-pointer disabled:opacity-60"
+                    className="px-6 py-2 bg-[#13263D] text-[#F5F0E6] font-semibold uppercase tracking-wider rounded-sm hover:bg-[#0C1A2E] cursor-pointer disabled:opacity-60"
                   >
                     {savingInvoice ? 'Saving…' : 'Generate Invoice'}
                   </button>
@@ -6240,8 +6240,8 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
         {/* Generate Student Progress Card Modal */}
         {isGeneratingReport && (
           <div className="fixed inset-0 z-60 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-            <div className="w-full max-w-lg bg-[#FCFBF8] border border-[#E8E0D1] rounded-sm shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-              <div className="px-6 py-4 bg-[#0B332D] text-[#F8F5EE] flex items-center justify-between border-b border-[#B79A62]/30">
+            <div className="w-full max-w-lg bg-[#FAF7F0] border border-[#E7DBC2] rounded-sm shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+              <div className="px-6 py-4 bg-[#13263D] text-[#F5F0E6] flex items-center justify-between border-b border-[#A47A46]/30">
                 <h3 className="font-editorial text-xl font-semibold">
                   Generate Monthly Evaluation Card
                 </h3>
@@ -6278,7 +6278,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                         });
                       }
                     }}
-                    className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                    className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                   >
                     <option value="">-- Select Student --</option>
                     {students.map(s => (
@@ -6295,7 +6295,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                       placeholder="e.g. August 2026"
                       value={reportForm.evaluationMonth || ''}
                       onChange={e => setReportForm({ ...reportForm, evaluationMonth: e.target.value })}
-                      className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                      className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                     />
                   </div>
                   <div>
@@ -6305,7 +6305,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                       placeholder="Course name"
                       value={reportForm.courseName || ''}
                       onChange={e => setReportForm({ ...reportForm, courseName: e.target.value })}
-                      className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                      className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                     />
                   </div>
                 </div>
@@ -6315,7 +6315,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                   <select
                     value={reportForm.tutorName || ''}
                     onChange={e => setReportForm({ ...reportForm, tutorName: e.target.value })}
-                    className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                    className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                   >
                     <option value="">-- Select Tutor --</option>
                     {tutors.map(t => (
@@ -6330,7 +6330,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                     <select
                       value={reportForm.tajweedGrade || ''}
                       onChange={e => setReportForm({ ...reportForm, tajweedGrade: e.target.value as any })}
-                      className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                      className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                     >
                       <option value="">-- Select --</option>
                       <option value="A+">A+ (Exceptional)</option>
@@ -6345,7 +6345,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                     <select
                       value={reportForm.readingGrade || ''}
                       onChange={e => setReportForm({ ...reportForm, readingGrade: e.target.value as any })}
-                      className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                      className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                     >
                       <option value="">-- Select --</option>
                       <option value="A+">A+ (Fluent)</option>
@@ -6356,7 +6356,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                   </div>
                   <div>
                     <label className="block font-bold text-gray-700 mb-1">Attendance %</label>
-                    <div className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE]/60 rounded-sm text-gray-500 text-[11px] leading-relaxed">
+                    <div className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6]/60 rounded-sm text-gray-500 text-[11px] leading-relaxed">
                       Auto-calculated from attendance records for this student &amp; month when the card is issued (0 if none recorded).
                     </div>
                   </div>
@@ -6368,7 +6368,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                     type="text"
                     value={reportForm.currentSabaq || ''}
                     onChange={e => setReportForm({ ...reportForm, currentSabaq: e.target.value })}
-                    className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                    className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                   />
                 </div>
 
@@ -6378,14 +6378,14 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                     rows={3}
                     value={reportForm.teacherRemarks || ''}
                     onChange={e => setReportForm({ ...reportForm, teacherRemarks: e.target.value })}
-                    className="w-full px-3 py-2 border border-[#E8E0D1] bg-[#F8F5EE] rounded-sm focus:outline-none focus:border-[#0B332D]"
+                    className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"
                   />
                 </div>
 
                 {reportErr && (
                   <p className="text-xs font-sans text-red-700 px-1">{reportErr}</p>
                 )}
-                <div className="pt-4 border-t border-[#E8E0D1] flex justify-end gap-2">
+                <div className="pt-4 border-t border-[#E7DBC2] flex justify-end gap-2">
                   <button
                     type="button"
                     onClick={() => setIsGeneratingReport(false)}
@@ -6396,7 +6396,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                   <button
                     type="submit"
                     disabled={savingReport}
-                    className="px-6 py-2 bg-[#0B332D] text-[#F8F5EE] font-semibold uppercase tracking-wider rounded-sm hover:bg-[#07221E] cursor-pointer disabled:opacity-60"
+                    className="px-6 py-2 bg-[#13263D] text-[#F5F0E6] font-semibold uppercase tracking-wider rounded-sm hover:bg-[#0C1A2E] cursor-pointer disabled:opacity-60"
                   >
                     {savingReport ? 'Saving…' : 'Issue Report Card'}
                   </button>
@@ -6409,11 +6409,11 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
         {/* Printable Formal Fee Receipt Modal */}
         {selectedInvoiceForPrint && (
           <div className="fixed inset-0 z-60 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
-            <div className="w-full max-w-lg bg-[#FFFFFF] border border-[#E8E0D1] rounded-sm shadow-2xl p-8 space-y-6 text-xs font-sans">
-              <div className="flex items-center justify-between border-b border-[#0B332D] pb-4">
+            <div className="w-full max-w-lg bg-[#FFFFFF] border border-[#E7DBC2] rounded-sm shadow-2xl p-8 space-y-6 text-xs font-sans">
+              <div className="flex items-center justify-between border-b border-[#13263D] pb-4">
                 <div>
-                  <h2 className="font-editorial text-2xl text-[#0B332D] font-bold">Noor E Quran Institute</h2>
-                  <p className="text-[10px] text-[#B79A62] font-semibold">Official Tuition Fee Receipt</p>
+                  <h2 className="font-editorial text-2xl text-[#13263D] font-bold">Noor E Quran Institute</h2>
+                  <p className="text-[10px] text-[#A47A46] font-semibold">Official Tuition Fee Receipt</p>
                 </div>
                 <div className="text-right">
                   <span className="font-mono text-xs font-bold text-gray-800">{selectedInvoiceForPrint.invoiceNumber}</span>
@@ -6424,7 +6424,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
               <div className="grid grid-cols-2 gap-4 text-xs">
                 <div>
                   <span className="text-[10px] font-bold text-gray-400 uppercase block">Billed To:</span>
-                  <strong className="text-sm text-[#0B332D]">{selectedInvoiceForPrint.studentName}</strong>
+                  <strong className="text-sm text-[#13263D]">{selectedInvoiceForPrint.studentName}</strong>
                   <p className="text-gray-600">{selectedInvoiceForPrint.parentName}</p>
                   <p className="text-gray-500 font-mono">{selectedInvoiceForPrint.phone}</p>
                 </div>
@@ -6443,7 +6443,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                   <span>{selectedInvoiceForPrint.courseName} ({selectedInvoiceForPrint.packageName})</span>
                   <span>{selectedInvoiceForPrint.currency} {selectedInvoiceForPrint.amount}</span>
                 </div>
-                <div className="pt-2 border-t border-gray-300 flex justify-between font-bold text-sm text-[#0B332D]">
+                <div className="pt-2 border-t border-gray-300 flex justify-between font-bold text-sm text-[#13263D]">
                   <span>Total Amount</span>
                   <span>{selectedInvoiceForPrint.currency} {selectedInvoiceForPrint.amount}</span>
                 </div>
@@ -6452,7 +6452,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
               <div className="flex justify-between items-center pt-4 border-t border-gray-200">
                 <button
                   onClick={() => window.print()}
-                  className="px-4 py-2 bg-[#0B332D] text-[#F8F5EE] font-bold rounded-sm inline-flex items-center gap-1.5 cursor-pointer"
+                  className="px-4 py-2 bg-[#13263D] text-[#F5F0E6] font-bold rounded-sm inline-flex items-center gap-1.5 cursor-pointer"
                 >
                   <Printer className="w-4 h-4" />
                   <span>Print Receipt</span>
@@ -6473,8 +6473,8 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
           <div className="fixed inset-0 z-60 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
             <div className="w-full max-w-2xl my-8 relative">
               {/* Certificate paper with ornate double border */}
-              <div className="bg-[#FDFBF5] border-[6px] border-[#B79A62] shadow-2xl relative">
-                <div className="border border-[#B79A62]/60 m-2 px-8 py-10 text-center space-y-5">
+              <div className="bg-[#FDFBF5] border-[6px] border-[#A47A46] shadow-2xl relative">
+                <div className="border border-[#A47A46]/60 m-2 px-8 py-10 text-center space-y-5">
                   {/* Logo seal */}
                   <div className="flex justify-center">
                     <img
@@ -6487,29 +6487,29 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
 
                   {/* Header */}
                   <div className="space-y-1">
-                    <p className="text-[#B79A62] font-bold text-sm tracking-[0.3em] uppercase">Noor E Quran Institute</p>
+                    <p className="text-[#A47A46] font-bold text-sm tracking-[0.3em] uppercase">Noor E Quran Institute</p>
                     <p className="text-[10px] text-gray-500 tracking-widest uppercase">Online Quran Academy • 1-on-1 Classes</p>
                   </div>
 
                   {/* Title with flourishes */}
                   <div className="flex items-center justify-center gap-4">
-                    <span className="h-px w-16 bg-[#B79A62]" />
-                    <span className="text-[#B79A62] text-lg">✦</span>
-                    <span className="h-px w-16 bg-[#B79A62]" />
+                    <span className="h-px w-16 bg-[#A47A46]" />
+                    <span className="text-[#A47A46] text-lg">✦</span>
+                    <span className="h-px w-16 bg-[#A47A46]" />
                   </div>
                   <div className="space-y-1">
-                    <h2 className="font-editorial text-4xl text-[#0B332D] font-bold">Certificate</h2>
-                    <p className="text-sm text-[#0B332D]/70 tracking-[0.2em] uppercase">of Quranic Evaluation</p>
+                    <h2 className="font-editorial text-4xl text-[#13263D] font-bold">Certificate</h2>
+                    <p className="text-sm text-[#13263D]/70 tracking-[0.2em] uppercase">of Quranic Evaluation</p>
                     <p className="text-xs text-gray-500">{selectedReportForPrint.evaluationMonth} Progress Report</p>
                   </div>
 
                   {/* Recipient */}
                   <div className="py-2 space-y-2">
                     <p className="text-xs text-gray-500 italic tracking-wide">This certificate is proudly presented to</p>
-                    <h3 className="font-editorial text-3xl text-[#0B332D] font-bold tracking-wide border-b-2 border-[#B79A62]/40 inline-block px-8 pb-1">
+                    <h3 className="font-editorial text-3xl text-[#13263D] font-bold tracking-wide border-b-2 border-[#A47A46]/40 inline-block px-8 pb-1">
                       {selectedReportForPrint.studentName}
                     </h3>
-                    <p className="text-sm text-gray-700">for dedicated studies in <strong className="text-[#0B332D]">{selectedReportForPrint.courseName}</strong></p>
+                    <p className="text-sm text-gray-700">for dedicated studies in <strong className="text-[#13263D]">{selectedReportForPrint.courseName}</strong></p>
                   </div>
 
                   {/* Grades */}
@@ -6520,8 +6520,8 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                       { label: 'Attendance', value: fmtAttendance(selectedReportForPrint.attendancePercentage) },
                     ].map((g) => (
                       <div key={g.label} className="text-center">
-                        <div className="w-20 h-20 mx-auto rounded-full border-2 border-[#B79A62] bg-[#F8F5EE] flex items-center justify-center">
-                          <strong className="text-[#0B332D] text-lg font-editorial">{g.value}</strong>
+                        <div className="w-20 h-20 mx-auto rounded-full border-2 border-[#A47A46] bg-[#F5F0E6] flex items-center justify-center">
+                          <strong className="text-[#13263D] text-lg font-editorial">{g.value}</strong>
                         </div>
                         <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-1">{g.label}</p>
                       </div>
@@ -6536,17 +6536,17 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                   {/* Signatures */}
                   <div className="flex justify-between items-end pt-6 px-4">
                     <div className="text-center">
-                      <div className="w-40 border-t border-[#0B332D]/40 pt-1">
-                        <p className="text-[10px] font-bold text-[#0B332D] uppercase tracking-widest">Administrator</p>
+                      <div className="w-40 border-t border-[#13263D]/40 pt-1">
+                        <p className="text-[10px] font-bold text-[#13263D] uppercase tracking-widest">Administrator</p>
                         <p className="text-[9px] text-gray-500">Noor E Quran Institute</p>
                       </div>
                     </div>
-                    <div className="w-16 h-16 rounded-full border-2 border-[#B79A62] flex items-center justify-center bg-[#F8F5EE] rotate-[-8deg]">
-                      <span className="text-[8px] font-bold text-[#B79A62] uppercase tracking-wider text-center leading-tight">Official<br />Seal</span>
+                    <div className="w-16 h-16 rounded-full border-2 border-[#A47A46] flex items-center justify-center bg-[#F5F0E6] rotate-[-8deg]">
+                      <span className="text-[8px] font-bold text-[#A47A46] uppercase tracking-wider text-center leading-tight">Official<br />Seal</span>
                     </div>
                     <div className="text-center">
-                      <div className="w-40 border-t border-[#0B332D]/40 pt-1">
-                        <p className="text-[10px] font-bold text-[#0B332D] uppercase tracking-widest">Date Issued</p>
+                      <div className="w-40 border-t border-[#13263D]/40 pt-1">
+                        <p className="text-[10px] font-bold text-[#13263D] uppercase tracking-widest">Date Issued</p>
                         <p className="text-[9px] text-gray-500">{selectedReportForPrint.evaluationMonth}</p>
                       </div>
                     </div>
@@ -6558,9 +6558,9 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
               <div className="flex justify-between items-center pt-4">
                 <button
                   onClick={() => window.print()}
-                  className="px-5 py-2 bg-[#0B332D] text-[#F8F5EE] font-bold rounded-sm inline-flex items-center gap-1.5 cursor-pointer"
+                  className="px-5 py-2 bg-[#13263D] text-[#F5F0E6] font-bold rounded-sm inline-flex items-center gap-1.5 cursor-pointer"
                 >
-                  <Printer className="w-4 h-4 text-[#B79A62]" />
+                  <Printer className="w-4 h-4 text-[#A47A46]" />
                   <span>Print Certificate</span>
                 </button>
                 <button

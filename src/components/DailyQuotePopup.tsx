@@ -50,15 +50,15 @@ export const DailyQuotePopup: React.FC = () => {
       >
         {/* Ornamental gold medallion overlapping the top edge */}
         <div className="absolute -top-5 left-1/2 -translate-x-1/2 z-10">
-          <div className="w-10 h-10 rotate-45 bg-gradient-to-br from-[#D8C7A3] via-[#B79A62] to-[#8f7440] shadow-lg flex items-center justify-center">
-            <span className="-rotate-45 text-[#0B332D] text-lg leading-none select-none">✦</span>
+          <div className="w-10 h-10 rotate-45 bg-gradient-to-br from-[#C9AE7E] via-[#A47A46] to-[#8f7440] shadow-lg flex items-center justify-center">
+            <span className="-rotate-45 text-[#13263D] text-lg leading-none select-none">✦</span>
           </div>
         </div>
 
         {/* Card */}
-        <div className="relative bg-[#FDFBF7] rounded-[1.75rem] shadow-[0_30px_80px_-20px_rgba(11,51,45,0.45)] ring-1 ring-[#B79A62]/50 overflow-hidden">
+        <div className="relative bg-[#FDFBF7] rounded-[1.75rem] shadow-[0_30px_80px_-20px_rgba(19,38,61,0.45)] ring-1 ring-[#A47A46]/50 overflow-hidden">
           {/* Inner hairline gold frame (double-frame effect) */}
-          <div className="pointer-events-none absolute inset-2.5 rounded-[1.35rem] border border-[#B79A62]/40" />
+          <div className="pointer-events-none absolute inset-2.5 rounded-[1.35rem] border border-[#A47A46]/40" />
 
           {/* Gold top accent bar */}
           <div className="h-1.5 bg-gradient-to-r from-[#8f7440] via-[#F3C64D] to-[#8f7440]" />
@@ -67,7 +67,7 @@ export const DailyQuotePopup: React.FC = () => {
           <button
             onClick={onClose}
             aria-label="Close quote"
-            className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-[#0B332D]/5 hover:bg-[#0B332D]/15 text-[#0B332D] flex items-center justify-center transition-colors cursor-pointer"
+            className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-[#13263D]/5 hover:bg-[#13263D]/15 text-[#13263D] flex items-center justify-center transition-colors cursor-pointer"
           >
             <X size={18} weight="bold" />
           </button>
@@ -75,29 +75,29 @@ export const DailyQuotePopup: React.FC = () => {
           <div className="px-6 sm:px-10 pt-9 pb-8 text-center">
             {/* Eyebrow */}
             <div className="flex items-center justify-center gap-2.5 mb-6">
-              <span className="h-px w-10 bg-gradient-to-r from-transparent to-[#B79A62]/70" />
-              <Quotes size={18} className="text-[#B79A62]" weight="fill" />
+              <span className="h-px w-10 bg-gradient-to-r from-transparent to-[#A47A46]/70" />
+              <Quotes size={18} className="text-[#A47A46]" weight="fill" />
               <span className="text-[11px] font-bold uppercase tracking-[0.25em] text-[#8f7440]">
                 Daily Inspiration
               </span>
-              <Quotes size={18} className="text-[#B79A62] rotate-180" weight="fill" />
-              <span className="h-px w-10 bg-gradient-to-l from-transparent to-[#B79A62]/70" />
+              <Quotes size={18} className="text-[#A47A46] rotate-180" weight="fill" />
+              <span className="h-px w-10 bg-gradient-to-l from-transparent to-[#A47A46]/70" />
             </div>
 
             {/* Arabic quote */}
             <p
               dir="rtl"
               lang="ar"
-              className="font-arabic text-3xl sm:text-[2rem] leading-[2.1] text-[#0B332D] mb-6"
+              className="font-arabic text-3xl sm:text-[2rem] leading-[2.1] text-[#13263D] mb-6"
             >
               {quote.arabic}
             </p>
 
             {/* Gold diamond divider */}
             <div className="flex items-center justify-center gap-3 mb-6">
-              <span className="h-px w-20 bg-gradient-to-r from-transparent to-[#B79A62]/60" />
-              <span className="w-2 h-2 rotate-45 bg-gradient-to-br from-[#D8C7A3] to-[#8f7440] shadow-sm" />
-              <span className="h-px w-20 bg-gradient-to-l from-transparent to-[#B79A62]/60" />
+              <span className="h-px w-20 bg-gradient-to-r from-transparent to-[#A47A46]/60" />
+              <span className="w-2 h-2 rotate-45 bg-gradient-to-br from-[#C9AE7E] to-[#8f7440] shadow-sm" />
+              <span className="h-px w-20 bg-gradient-to-l from-transparent to-[#A47A46]/60" />
             </div>
 
             {/* Urdu translation — Jameel Noori Nastaleeq (self-hosted) */}
@@ -112,10 +112,10 @@ export const DailyQuotePopup: React.FC = () => {
           </div>
 
           {/* Footer strip */}
-          <div className="relative bg-gradient-to-r from-[#07221E] via-[#0B332D] to-[#07221E] px-6 py-3.5 text-center">
-            <div className="absolute top-0 inset-x-8 h-px bg-[#B79A62]/40" />
+          <div className="relative bg-gradient-to-r from-[#0C1A2E] via-[#13263D] to-[#0C1A2E] px-6 py-3.5 text-center">
+            <div className="absolute top-0 inset-x-8 h-px bg-[#A47A46]/40" />
             <p className="text-[11px] text-white/85 tracking-[0.14em] uppercase">
-              A new quote every day <span className="text-[#B79A62] mx-1">✦</span> Refresh for another
+              A new quote every day <span className="text-[#A47A46] mx-1">✦</span> Refresh for another
             </p>
           </div>
         </div>

@@ -173,7 +173,7 @@ export const QuranReader: React.FC = () => {
       <div className="bg-white p-6 rounded-3xl border border-gray-200 shadow-xs max-w-3xl mx-auto">
         <div className="flex items-center gap-2 mb-4">
           <BookOpen className="w-5 h-5 text-[#D4A72C]" weight="duotone" />
-          <h3 className="text-lg font-bold text-[#064E3B]">Quran Reader</h3>
+          <h3 className="text-lg font-bold text-[#13263D]">Quran Reader</h3>
         </div>
 
         {/* Surah selector */}
@@ -207,7 +207,7 @@ export const QuranReader: React.FC = () => {
           <div className="space-y-5">
             {/* Surah header */}
             <div className="text-center pb-4 border-b border-gray-100">
-              <p className="text-2xl font-bold text-[#064E3B]" dir="rtl" lang="ar">{surahMeta.arabicName}</p>
+              <p className="text-2xl font-bold text-[#13263D]" dir="rtl" lang="ar">{surahMeta.arabicName}</p>
               <p className="text-sm font-bold text-gray-700 mt-1">
                 Surah {surahMeta.name} — {surahMeta.englishNameTranslation}
               </p>
@@ -217,11 +217,11 @@ export const QuranReader: React.FC = () => {
             </div>
 
             {/* Ayah display */}
-            <div className="bg-[#F8F5EE] rounded-2xl border border-[#E8E0D1] p-6 space-y-4">
+            <div className="bg-[#F5F0E6] rounded-2xl border border-[#E7DBC2] p-6 space-y-4">
               <p dir="rtl" lang="ar" className="text-3xl leading-[2.2] text-right text-gray-900 font-[Amiri]">
                 {ayah.arabic}
               </p>
-              <p className="text-sm text-gray-700 leading-relaxed border-t border-[#E8E0D1] pt-4">
+              <p className="text-sm text-gray-700 leading-relaxed border-t border-[#E7DBC2] pt-4">
                 {ayah.english}
               </p>
             </div>
@@ -230,7 +230,7 @@ export const QuranReader: React.FC = () => {
             <div className="flex justify-center">
               <button
                 onClick={playing ? stopAudio : playAudio}
-                className="px-5 py-2.5 rounded-xl bg-[#064E3B] text-white text-xs font-bold flex items-center gap-2 hover:bg-emerald-900 cursor-pointer"
+                className="px-5 py-2.5 rounded-xl bg-[#13263D] text-white text-xs font-bold flex items-center gap-2 hover:bg-emerald-900 cursor-pointer"
               >
                 <SpeakerHigh className="w-4 h-4 text-[#D4A72C]" weight="duotone" />
                 <span>{playing ? 'Stop Recitation' : 'Play Recitation (Alafasy)'}</span>
@@ -243,7 +243,7 @@ export const QuranReader: React.FC = () => {
                   type="checkbox"
                   checked={continuousPlay}
                   onChange={(e) => setContinuousPlay(e.target.checked)}
-                  className="w-4 h-4 accent-[#064E3B]"
+                  className="w-4 h-4 accent-[#13263D]"
                 />
                 <span>🔄 Auto-play next ayah (continuous Tilawat)</span>
               </label>
@@ -254,7 +254,7 @@ export const QuranReader: React.FC = () => {
               <button
                 onClick={prevAyah}
                 disabled={surahNum === 1 && ayahIdx === 0}
-                className="flex-1 py-3 rounded-xl bg-gray-100 hover:bg-gray-200 text-[#064E3B] text-xs font-bold flex items-center justify-center gap-1 disabled:opacity-40 cursor-pointer"
+                className="flex-1 py-3 rounded-xl bg-gray-100 hover:bg-gray-200 text-[#13263D] text-xs font-bold flex items-center justify-center gap-1 disabled:opacity-40 cursor-pointer"
               >
                 <CaretLeft className="w-4 h-4" weight="bold" />
                 <span>Previous Ayah</span>
@@ -262,7 +262,7 @@ export const QuranReader: React.FC = () => {
               <button
                 onClick={nextAyah}
                 disabled={surahNum === 114 && ayahIdx === ayahs.length - 1}
-                className="flex-1 py-3 rounded-xl bg-[#064E3B] hover:bg-emerald-900 text-white text-xs font-bold flex items-center justify-center gap-1 disabled:opacity-40 cursor-pointer"
+                className="flex-1 py-3 rounded-xl bg-[#13263D] hover:bg-emerald-900 text-white text-xs font-bold flex items-center justify-center gap-1 disabled:opacity-40 cursor-pointer"
               >
                 <span>Next Ayah</span>
                 <CaretRight className="w-4 h-4" weight="bold" />

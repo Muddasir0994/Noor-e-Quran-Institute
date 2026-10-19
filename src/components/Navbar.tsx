@@ -109,43 +109,43 @@ export const Navbar: React.FC<NavbarProps> = ({
     <header ref={navRef} className="sticky top-0 z-40 w-full transition-all duration-200">
       
       {/* 1. Top Utility Ribbon: Clean & Restrained */}
-      <div className="bg-[#0B332D] text-[#F8F5EE] py-1.5 px-4 sm:px-8 flex justify-between items-center text-xs border-b border-[#B79A62]/20 font-sans">
+      <div className="bg-[#13263D] text-[#F5F0E6] py-1.5 px-4 sm:px-8 flex justify-between items-center text-xs border-b border-[#A47A46]/20 font-sans">
         <div className="flex items-center gap-3">
-          <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#B79A62]"></span>
-          <span className="text-[#E8E0D1] text-[11px] sm:text-xs font-normal tracking-wide">
-            1-on-1 Certified Online Quran Academy • <span className="text-[#B79A62] font-semibold">3-Day Free Trial</span>
+          <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#A47A46]"></span>
+          <span className="text-[#E7DBC2] text-[11px] sm:text-xs font-normal tracking-wide">
+            1-on-1 Certified Online Quran Academy • <span className="text-[#A47A46] font-semibold">3-Day Free Trial</span>
           </span>
         </div>
 
         {/* Right Utility: Portals & Contact */}
-        <div className="flex items-center gap-4 text-[11px] text-[#E8E0D1]">
+        <div className="flex items-center gap-4 text-[11px] text-[#E7DBC2]">
           <a
             href="https://wa.me/923274496163"
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:text-[#B79A62] transition-colors hidden sm:inline-flex items-center gap-1.5"
+            className="hover:text-[#A47A46] transition-colors hidden sm:inline-flex items-center gap-1.5"
           >
             <span>WhatsApp: +92 327 4496163</span>
           </a>
-          <span className="text-[#B79A62]/40 hidden sm:inline">|</span>
+          <span className="text-[#A47A46]/40 hidden sm:inline">|</span>
           <button
             onClick={() => handlePortalNavigation('classroom')}
             className="hover:text-white transition-colors cursor-pointer"
           >
             Classroom Studio
           </button>
-          <span className="text-[#B79A62]/40">|</span>
+          <span className="text-[#A47A46]/40">|</span>
           {currentUser ? (
             <button
               onClick={() => handlePortalNavigation(getPortalView())}
-              className="text-[#B79A62] font-medium hover:underline cursor-pointer"
+              className="text-[#A47A46] font-medium hover:underline cursor-pointer"
             >
               My Portal
             </button>
           ) : (
             <button
               onClick={() => onOpenAuth && onOpenAuth('student', 'login')}
-              className="text-[#E8E0D1] hover:text-white font-medium cursor-pointer"
+              className="text-[#E7DBC2] hover:text-white font-medium cursor-pointer"
             >
               Portal Login
             </button>
@@ -154,7 +154,7 @@ export const Navbar: React.FC<NavbarProps> = ({
       </div>
 
       {/* 2. Main Editorial Navbar */}
-      <div className={`w-full bg-[#FCFBF8] border-b border-[#E8E0D1] transition-all duration-300 ${isScrolled ? 'shadow-xs py-3' : 'py-4'}`}>
+      <div className={`w-full bg-[#FAF7F0] border-b border-[#E7DBC2] transition-all duration-300 ${isScrolled ? 'shadow-xs py-3' : 'py-4'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
           
           {/* Brand Logo: Official Academy Seal + Typography */}
@@ -166,17 +166,17 @@ export const Navbar: React.FC<NavbarProps> = ({
               src="/branding/logo.webp?v=2"
               onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/branding/logo.png?v=2'; }}
               alt="Noor E Quran Institute"
-              className="w-16 h-16 sm:w-20 sm:h-20 lg:w-22 lg:h-22 object-contain rounded-xl border-2 border-[#B79A62]/60 bg-white p-1.5 shadow-lg group-hover:border-[#B79A62] group-hover:shadow-xl transition-all group-hover:scale-105 shrink-0"
+              className="w-16 h-16 sm:w-20 sm:h-20 lg:w-22 lg:h-22 object-contain rounded-xl border-2 border-[#A47A46]/60 bg-white p-1.5 shadow-lg group-hover:border-[#A47A46] group-hover:shadow-xl transition-all group-hover:scale-105 shrink-0"
               width="88"
               height="88"
             />
 
             <div>
               <div className="flex items-baseline gap-2">
-                <span className="font-editorial text-2xl sm:text-3xl font-bold tracking-tight text-[#0B332D]">
+                <span className="font-editorial text-2xl sm:text-3xl font-bold tracking-tight text-[#13263D]">
                   Noor E Quran
                 </span>
-                <span className="text-[11px] sm:text-xs tracking-widest uppercase text-[#B79A62] font-bold">
+                <span className="text-[11px] sm:text-xs tracking-widest uppercase text-[#A47A46] font-bold">
                   Institute
                 </span>
               </div>
@@ -196,13 +196,13 @@ export const Navbar: React.FC<NavbarProps> = ({
                   to={link.path}
                   className={`text-sm font-sans font-medium transition-colors relative py-1 cursor-pointer ${
                     active
-                      ? 'text-[#0B332D] font-semibold'
-                      : 'text-gray-600 hover:text-[#0B332D]'
+                      ? 'text-[#13263D] font-semibold'
+                      : 'text-gray-600 hover:text-[#13263D]'
                   }`}
                 >
                   {link.label}
                   {active && (
-                    <span className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-[#B79A62] rounded-full" />
+                    <span className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-[#A47A46] rounded-full" />
                   )}
                 </Link>
               );
@@ -216,15 +216,15 @@ export const Navbar: React.FC<NavbarProps> = ({
             <div className="relative">
               <button
                 onClick={() => setLangDropdownOpen(!langDropdownOpen)}
-                className="flex items-center gap-1.5 text-xs text-gray-600 hover:text-[#0B332D] py-1 px-2 rounded-sm border border-transparent hover:border-[#E8E0D1] transition-all cursor-pointer"
+                className="flex items-center gap-1.5 text-xs text-gray-600 hover:text-[#13263D] py-1 px-2 rounded-sm border border-transparent hover:border-[#E7DBC2] transition-all cursor-pointer"
               >
-                <Globe className="w-3.5 h-3.5 text-[#B79A62]" />
+                <Globe className="w-3.5 h-3.5 text-[#A47A46]" />
                 <span>{selectedLang}</span>
                 <CaretDown className="w-3 h-3 text-gray-400" />
               </button>
 
               {langDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-32 bg-[#FCFBF8] border border-[#E8E0D1] rounded-sm shadow-md py-1 z-50 text-xs font-sans">
+                <div className="absolute right-0 mt-2 w-32 bg-[#FAF7F0] border border-[#E7DBC2] rounded-sm shadow-md py-1 z-50 text-xs font-sans">
                   {['English', 'العربية (Arabic)', 'اردو (Urdu)'].map((lang) => (
                     <button
                       key={lang}
@@ -232,7 +232,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                         setSelectedLang(lang.split(' ')[0]);
                         setLangDropdownOpen(false);
                       }}
-                      className="w-full text-left px-3 py-1.5 hover:bg-[#F8F5EE] text-gray-700 hover:text-[#0B332D]"
+                      className="w-full text-left px-3 py-1.5 hover:bg-[#F5F0E6] text-gray-700 hover:text-[#13263D]"
                     >
                       {lang}
                     </button>
@@ -244,10 +244,10 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* Primary Action Button: Squared, Editorial, Deep Emerald */}
             <button
               onClick={() => onOpenTrial()}
-              className="px-5 py-2.5 bg-[#0B332D] text-[#F8F5EE] text-xs font-sans font-semibold uppercase tracking-wider rounded-sm hover:bg-[#07221E] transition-all shadow-xs flex items-center gap-2 cursor-pointer"
+              className="px-5 py-2.5 bg-[#13263D] text-[#F5F0E6] text-xs font-sans font-semibold uppercase tracking-wider rounded-sm hover:bg-[#0C1A2E] transition-all shadow-xs flex items-center gap-2 cursor-pointer"
             >
               <span>Book Free Trial</span>
-              <ArrowRight className="w-3.5 h-3.5 text-[#B79A62]" />
+              <ArrowRight className="w-3.5 h-3.5 text-[#A47A46]" />
             </button>
 
           </div>
@@ -256,7 +256,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle navigation menu"
-            className="lg:hidden p-2 rounded-sm text-[#0B332D] hover:bg-[#F8F5EE] transition-colors"
+            className="lg:hidden p-2 rounded-sm text-[#13263D] hover:bg-[#F5F0E6] transition-colors"
           >
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <List className="w-6 h-6" />}
           </button>
@@ -266,7 +266,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
       {/* 3. Mobile Navigation Drawer */}
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-[#FCFBF8] border-b border-[#E8E0D1] px-4 py-6 shadow-lg space-y-4">
+        <div className="lg:hidden bg-[#FAF7F0] border-b border-[#E7DBC2] px-4 py-6 shadow-lg space-y-4">
           <div className="space-y-1">
             {mobileNavLinks.map((link) => {
               const active = isLinkActive(link.path);
@@ -277,8 +277,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                   onClick={() => setMobileMenuOpen(false)}
                   className={`block px-3 py-2 text-sm font-sans rounded-sm transition-colors ${
                     active
-                      ? 'bg-[#F8F5EE] text-[#0B332D] font-bold border-l-2 border-[#B79A62]'
-                      : 'text-gray-700 hover:bg-[#F8F5EE]'
+                      ? 'bg-[#F5F0E6] text-[#13263D] font-bold border-l-2 border-[#A47A46]'
+                      : 'text-gray-700 hover:bg-[#F5F0E6]'
                   }`}
                 >
                   {link.label}
@@ -287,16 +287,16 @@ export const Navbar: React.FC<NavbarProps> = ({
             })}
           </div>
 
-          <div className="pt-4 border-t border-[#E8E0D1] space-y-3">
+          <div className="pt-4 border-t border-[#E7DBC2] space-y-3">
             <button
               onClick={() => {
                 onOpenTrial();
                 setMobileMenuOpen(false);
               }}
-              className="w-full py-3 bg-[#0B332D] text-[#F8F5EE] text-xs font-semibold uppercase tracking-wider rounded-sm text-center flex items-center justify-center gap-2 shadow-xs"
+              className="w-full py-3 bg-[#13263D] text-[#F5F0E6] text-xs font-semibold uppercase tracking-wider rounded-sm text-center flex items-center justify-center gap-2 shadow-xs"
             >
               <span>Book Your Free Trial</span>
-              <ArrowRight className="w-3.5 h-3.5 text-[#B79A62]" />
+              <ArrowRight className="w-3.5 h-3.5 text-[#A47A46]" />
             </button>
 
             <div className="grid grid-cols-2 gap-2 text-center text-xs pt-1">
@@ -305,7 +305,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   handlePortalNavigation('classroom');
                   setMobileMenuOpen(false);
                 }}
-                className="py-2 px-3 border border-[#E8E0D1] rounded-sm text-[#0B332D] hover:bg-[#F8F5EE]"
+                className="py-2 px-3 border border-[#E7DBC2] rounded-sm text-[#13263D] hover:bg-[#F5F0E6]"
               >
                 Classroom Studio
               </button>
@@ -316,7 +316,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     handlePortalNavigation(getPortalView());
                     setMobileMenuOpen(false);
                   }}
-                  className="py-2 px-3 bg-[#B79A62] text-[#07221E] font-bold rounded-sm"
+                  className="py-2 px-3 bg-[#A47A46] text-[#0C1A2E] font-bold rounded-sm"
                 >
                   My Portal
                 </button>
@@ -326,7 +326,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     onOpenAuth && onOpenAuth('student', 'login');
                     setMobileMenuOpen(false);
                   }}
-                  className="py-2 px-3 border border-[#0B332D] text-[#0B332D] font-medium rounded-sm"
+                  className="py-2 px-3 border border-[#13263D] text-[#13263D] font-medium rounded-sm"
                 >
                   Portal Login
                 </button>

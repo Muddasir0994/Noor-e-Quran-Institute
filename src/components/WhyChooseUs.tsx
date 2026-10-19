@@ -40,13 +40,13 @@ export const WhyChooseUs: React.FC<WhyChooseUsProps> = ({ onOpenTrial }) => {
   ];
 
   return (
-    <section className="relative py-24 lg:py-32 bg-[#0B332D] text-[#F8F5EE] overflow-hidden">
+    <section className="relative py-24 lg:py-32 bg-[#13263D] text-[#F5F0E6] overflow-hidden">
       
       {/* Subtle Geometric Accent */}
       <div 
         className="absolute inset-0 opacity-15 pointer-events-none"
         style={{
-          backgroundImage: 'radial-gradient(#B79A62 1px, transparent 1px)',
+          backgroundImage: 'radial-gradient(#A47A46 1px, transparent 1px)',
           backgroundSize: '32px 32px'
         }}
       />
@@ -58,16 +58,16 @@ export const WhyChooseUs: React.FC<WhyChooseUsProps> = ({ onOpenTrial }) => {
           
           {/* Left Column: Powerful Editorial Statement */}
           <div className="lg:col-span-5 space-y-6">
-            <p className="text-[11px] font-sans font-bold text-[#B79A62] uppercase tracking-widest">
+            <p className="text-[11px] font-sans font-bold text-[#A47A46] uppercase tracking-widest">
               WHY NOOR E QURAN
             </p>
 
-            <h2 className="font-editorial text-3xl sm:text-4xl lg:text-5xl text-[#F8F5EE] leading-[1.12] font-semibold tracking-tight">
+            <h2 className="font-editorial text-3xl sm:text-4xl lg:text-5xl text-[#F5F0E6] leading-[1.12] font-semibold tracking-tight">
               More than classes.<br />
-              <span className="italic font-normal text-[#E8E0D1]">A relationship that lasts.</span>
+              <span className="italic font-normal text-[#E7DBC2]">A relationship that lasts.</span>
             </h2>
 
-            <p className="text-sm sm:text-base text-[#E8E0D1]/85 font-sans leading-relaxed max-w-md">
+            <p className="text-sm sm:text-base text-[#E7DBC2]/85 font-sans leading-relaxed max-w-md">
               We focus on building a deep, personal connection between teacher and student. Learning the Quran is a sacred journey that requires patience, respect, and sincere care.
             </p>
 
@@ -75,7 +75,7 @@ export const WhyChooseUs: React.FC<WhyChooseUsProps> = ({ onOpenTrial }) => {
               <div className="pt-2">
                 <button
                   onClick={onOpenTrial}
-                  className="inline-flex items-center gap-2 text-xs font-sans font-semibold uppercase tracking-wider text-[#B79A62] hover:text-[#D8C7A3] transition-colors py-2 border-b border-[#B79A62]/40 hover:border-[#D8C7A3] cursor-pointer"
+                  className="inline-flex items-center gap-2 text-xs font-sans font-semibold uppercase tracking-wider text-[#A47A46] hover:text-[#C9AE7E] transition-colors py-2 border-b border-[#A47A46]/40 hover:border-[#C9AE7E] cursor-pointer"
                 >
                   <span>Experience the Difference</span>
                   <ArrowRight className="w-3.5 h-3.5" />
@@ -91,19 +91,19 @@ export const WhyChooseUs: React.FC<WhyChooseUsProps> = ({ onOpenTrial }) => {
               return (
                 <div key={item.number} className="space-y-3.5">
                   <div className="flex items-center justify-between">
-                    <div className="w-9 h-9 rounded-sm border border-[#B79A62]/40 bg-[#07221E] flex items-center justify-center text-[#B79A62]">
+                    <div className="w-9 h-9 rounded-sm border border-[#A47A46]/40 bg-[#0C1A2E] flex items-center justify-center text-[#A47A46]">
                       <Icon className="w-4 h-4" weight="regular" />
                     </div>
-                    <span className="font-editorial text-xl text-[#B79A62]/40 font-light select-none">
+                    <span className="font-editorial text-xl text-[#A47A46]/40 font-light select-none">
                       {item.number}
                     </span>
                   </div>
 
-                  <h3 className="font-editorial text-xl text-[#F8F5EE] font-semibold">
+                  <h3 className="font-editorial text-xl text-[#F5F0E6] font-semibold">
                     {item.title}
                   </h3>
 
-                  <p className="text-xs sm:text-sm text-[#E8E0D1]/75 font-sans leading-relaxed">
+                  <p className="text-xs sm:text-sm text-[#E7DBC2]/75 font-sans leading-relaxed">
                     {item.description}
                   </p>
                 </div>

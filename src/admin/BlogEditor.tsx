@@ -266,9 +266,9 @@ export const BlogEditor: React.FC<BlogEditorProps> = ({ onViewPost }) => {
     const translation = prompt('Enter English / Urdu Translation:', 'In the name of Allah, the Entirely Merciful, the Especially Merciful.');
     if (ayah) {
       const boxHtml = `
-<div class="my-6 p-6 rounded-sm bg-[#0B332D] text-[#F8F5EE] border border-[#B79A62]/40 shadow-xs">
-  <p class="font-arabic text-xl sm:text-2xl text-[#B79A62] font-bold text-center mb-3 dir-rtl">${ayah}</p>
-  <p class="text-xs sm:text-sm text-[#E8E0D1]/85 text-center italic">"${translation || ''}"</p>
+<div class="my-6 p-6 rounded-sm bg-[#13263D] text-[#F5F0E6] border border-[#A47A46]/40 shadow-xs">
+  <p class="font-arabic text-xl sm:text-2xl text-[#A47A46] font-bold text-center mb-3 dir-rtl">${ayah}</p>
+  <p class="text-xs sm:text-sm text-[#E7DBC2]/85 text-center italic">"${translation || ''}"</p>
 </div>\n`;
       if (editorMode === 'visual' && contentEditableRef.current) {
         contentEditableRef.current.focus();
@@ -362,7 +362,7 @@ export const BlogEditor: React.FC<BlogEditorProps> = ({ onViewPost }) => {
         <div
           className={`p-4 rounded-sm text-xs font-sans font-semibold flex items-center justify-between ${
             statusMessage.type === 'success'
-              ? 'bg-[#F8F5EE] text-[#0B332D] border border-[#B79A62]'
+              ? 'bg-[#F5F0E6] text-[#13263D] border border-[#A47A46]'
               : 'bg-red-50 text-red-800 border border-red-200'
           }`}
         >
@@ -373,11 +373,11 @@ export const BlogEditor: React.FC<BlogEditorProps> = ({ onViewPost }) => {
 
       {/* Editor View */}
       {isEditing ? (
-        <div className="bg-[#FCFBF8] p-6 sm:p-8 rounded-sm border border-[#E8E0D1] shadow-xs space-y-6">
-          <div className="flex items-center justify-between border-b border-[#E8E0D1] pb-4">
+        <div className="bg-[#FAF7F0] p-6 sm:p-8 rounded-sm border border-[#E7DBC2] shadow-xs space-y-6">
+          <div className="flex items-center justify-between border-b border-[#E7DBC2] pb-4">
             <button
               onClick={() => setIsEditing(false)}
-              className="flex items-center gap-1.5 text-gray-600 hover:text-[#0B332D] text-xs font-sans font-bold transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 text-gray-600 hover:text-[#13263D] text-xs font-sans font-bold transition-colors cursor-pointer"
             >
               <ArrowLeft className="w-4 h-4" />
               <span>Back to Article List</span>
@@ -388,7 +388,7 @@ export const BlogEditor: React.FC<BlogEditorProps> = ({ onViewPost }) => {
                   type="checkbox"
                   checked={published}
                   onChange={e => setPublished(e.target.checked)}
-                  className="rounded-xs text-[#0B332D] focus:ring-[#B79A62]"
+                  className="rounded-xs text-[#13263D] focus:ring-[#A47A46]"
                 />
                 <span>Publish on Website</span>
               </label>
@@ -408,7 +408,7 @@ export const BlogEditor: React.FC<BlogEditorProps> = ({ onViewPost }) => {
                   placeholder="e.g. 5 Simple Tajweed Rules Every Parent Should Teach"
                   value={title}
                   onChange={e => handleTitleChange(e.target.value)}
-                  className="w-full px-3 py-2 border border-[#E8E0D1] rounded-sm text-xs sm:text-sm font-sans focus:outline-none focus:border-[#0B332D] bg-[#F8F5EE]"
+                  className="w-full px-3 py-2 border border-[#E7DBC2] rounded-sm text-xs sm:text-sm font-sans focus:outline-none focus:border-[#13263D] bg-[#F5F0E6]"
                 />
               </div>
 
@@ -422,7 +422,7 @@ export const BlogEditor: React.FC<BlogEditorProps> = ({ onViewPost }) => {
                   placeholder="5-simple-tajweed-rules"
                   value={slug}
                   onChange={e => setSlug(e.target.value.toLowerCase().replace(/[^\w\s-]/g, '').replace(/[\s_]+/g, '-'))}
-                  className="w-full px-3 py-2 border border-[#E8E0D1] rounded-sm text-xs sm:text-sm font-mono text-gray-600 focus:outline-none focus:border-[#0B332D] bg-[#F8F5EE]"
+                  className="w-full px-3 py-2 border border-[#E7DBC2] rounded-sm text-xs sm:text-sm font-mono text-gray-600 focus:outline-none focus:border-[#13263D] bg-[#F5F0E6]"
                 />
               </div>
             </div>
@@ -436,7 +436,7 @@ export const BlogEditor: React.FC<BlogEditorProps> = ({ onViewPost }) => {
                 <select
                   value={category}
                   onChange={e => setCategory(e.target.value as BlogPost['category'])}
-                  className="w-full px-3 py-2 border border-[#E8E0D1] rounded-sm text-xs sm:text-sm font-sans focus:outline-none focus:border-[#0B332D] bg-[#F8F5EE]"
+                  className="w-full px-3 py-2 border border-[#E7DBC2] rounded-sm text-xs sm:text-sm font-sans focus:outline-none focus:border-[#13263D] bg-[#F5F0E6]"
                 >
                   {CATEGORIES.map(cat => (
                     <option key={cat} value={cat}>{cat}</option>
@@ -452,7 +452,7 @@ export const BlogEditor: React.FC<BlogEditorProps> = ({ onViewPost }) => {
                   type="text"
                   value={author}
                   onChange={e => setAuthor(e.target.value)}
-                  className="w-full px-3 py-2 border border-[#E8E0D1] rounded-sm text-xs sm:text-sm font-sans focus:outline-none focus:border-[#0B332D] bg-[#F8F5EE]"
+                  className="w-full px-3 py-2 border border-[#E7DBC2] rounded-sm text-xs sm:text-sm font-sans focus:outline-none focus:border-[#13263D] bg-[#F5F0E6]"
                 />
               </div>
 
@@ -465,7 +465,7 @@ export const BlogEditor: React.FC<BlogEditorProps> = ({ onViewPost }) => {
                   value={readTime}
                   onChange={e => setReadTime(e.target.value)}
                   placeholder="e.g. 6 min read"
-                  className="w-full px-3 py-2 border border-[#E8E0D1] rounded-sm text-xs sm:text-sm font-sans focus:outline-none focus:border-[#0B332D] bg-[#F8F5EE]"
+                  className="w-full px-3 py-2 border border-[#E7DBC2] rounded-sm text-xs sm:text-sm font-sans focus:outline-none focus:border-[#13263D] bg-[#F5F0E6]"
                 />
               </div>
             </div>
@@ -485,7 +485,7 @@ export const BlogEditor: React.FC<BlogEditorProps> = ({ onViewPost }) => {
                 value={metaDescription}
                 onChange={e => setMetaDescription(e.target.value)}
                 placeholder="A compelling 1-2 sentence summary of this article that will appear on search engine snippets..."
-                className="w-full px-3 py-2 border border-[#E8E0D1] rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D] bg-[#F8F5EE]"
+                className="w-full px-3 py-2 border border-[#E7DBC2] rounded-sm text-xs font-sans focus:outline-none focus:border-[#13263D] bg-[#F5F0E6]"
               />
             </div>
 
@@ -502,16 +502,16 @@ export const BlogEditor: React.FC<BlogEditorProps> = ({ onViewPost }) => {
                     value={featuredImage}
                     onChange={e => setFeaturedImage(e.target.value)}
                     placeholder="https://... or upload below"
-                    className="w-full px-3 py-2 border border-[#E8E0D1] rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D] bg-[#F8F5EE]"
+                    className="w-full px-3 py-2 border border-[#E7DBC2] rounded-sm text-xs font-sans focus:outline-none focus:border-[#13263D] bg-[#F5F0E6]"
                   />
                   
                   <div className="flex items-center gap-2">
                     <button
                       type="button"
                       onClick={() => fileInputRef.current?.click()}
-                      className="flex items-center gap-1.5 px-3 py-2 bg-[#F8F5EE] hover:bg-[#E8E0D1]/60 text-[#0B332D] border border-[#E8E0D1] rounded-sm text-xs font-sans font-bold cursor-pointer transition-colors"
+                      className="flex items-center gap-1.5 px-3 py-2 bg-[#F5F0E6] hover:bg-[#E7DBC2]/60 text-[#13263D] border border-[#E7DBC2] rounded-sm text-xs font-sans font-bold cursor-pointer transition-colors"
                     >
-                      <UploadSimple className="w-4 h-4 text-[#B79A62]" />
+                      <UploadSimple className="w-4 h-4 text-[#A47A46]" />
                       <span>Upload &amp; Frame</span>
                     </button>
                     <input
@@ -531,9 +531,9 @@ export const BlogEditor: React.FC<BlogEditorProps> = ({ onViewPost }) => {
                           setRawImageForCrop(featuredImage);
                           setIsCropModalOpen(true);
                         }}
-                        className="flex items-center gap-1 px-3 py-2 bg-[#0B332D] text-[#F8F5EE] rounded-sm text-xs font-sans font-semibold hover:bg-[#07221E] cursor-pointer"
+                        className="flex items-center gap-1 px-3 py-2 bg-[#13263D] text-[#F5F0E6] rounded-sm text-xs font-sans font-semibold hover:bg-[#0C1A2E] cursor-pointer"
                       >
-                        <Crop className="w-3.5 h-3.5 text-[#B79A62]" />
+                        <Crop className="w-3.5 h-3.5 text-[#A47A46]" />
                         <span>Adjust Frame</span>
                       </button>
                     )}
@@ -542,7 +542,7 @@ export const BlogEditor: React.FC<BlogEditorProps> = ({ onViewPost }) => {
 
                 {/* Live Banner Preview Box */}
                 {featuredImage && (
-                  <div className="relative aspect-[16/9] max-w-md overflow-hidden rounded-sm border border-[#E8E0D1] bg-[#12201D]">
+                  <div className="relative aspect-[16/9] max-w-md overflow-hidden rounded-sm border border-[#E7DBC2] bg-[#152A45]">
                     <img
                       src={featuredImage}
                       alt="Banner preview"
@@ -555,7 +555,7 @@ export const BlogEditor: React.FC<BlogEditorProps> = ({ onViewPost }) => {
                           setRawImageForCrop(featuredImage);
                           setIsCropModalOpen(true);
                         }}
-                        className="px-2 py-1 bg-[#0B332D]/90 text-[#B79A62] text-[10px] font-sans font-bold uppercase rounded-xs backdrop-blur-xs flex items-center gap-1 cursor-pointer"
+                        className="px-2 py-1 bg-[#13263D]/90 text-[#A47A46] text-[10px] font-sans font-bold uppercase rounded-xs backdrop-blur-xs flex items-center gap-1 cursor-pointer"
                       >
                         <Crop className="w-3 h-3" />
                         <span>Crop</span>
@@ -584,7 +584,7 @@ export const BlogEditor: React.FC<BlogEditorProps> = ({ onViewPost }) => {
                 value={tagsInput}
                 onChange={e => setTagsInput(e.target.value)}
                 placeholder="Tajweed, Quran for Kids, Online Tutor, Hifz"
-                className="w-full px-3 py-2 border border-[#E8E0D1] rounded-sm text-xs font-sans focus:outline-none focus:border-[#0B332D] bg-[#F8F5EE]"
+                className="w-full px-3 py-2 border border-[#E7DBC2] rounded-sm text-xs font-sans focus:outline-none focus:border-[#13263D] bg-[#F5F0E6]"
               />
             </div>
 
@@ -594,7 +594,7 @@ export const BlogEditor: React.FC<BlogEditorProps> = ({ onViewPost }) => {
                 <label className="block text-xs font-sans font-bold text-gray-700">
                   Article Content *
                 </label>
-                <div className="flex items-center gap-1 bg-[#F8F5EE] p-0.5 rounded-sm border border-[#E8E0D1]">
+                <div className="flex items-center gap-1 bg-[#F5F0E6] p-0.5 rounded-sm border border-[#E7DBC2]">
                   {(['visual', 'code', 'preview'] as const).map(m => (
                     <button
                       key={m}
@@ -602,8 +602,8 @@ export const BlogEditor: React.FC<BlogEditorProps> = ({ onViewPost }) => {
                       onClick={() => setEditorMode(m)}
                       className={`px-2.5 py-1 text-xs font-sans rounded-xs transition-colors cursor-pointer ${
                         editorMode === m
-                          ? 'bg-[#0B332D] text-[#F8F5EE] font-bold'
-                          : 'text-gray-600 hover:text-[#0B332D]'
+                          ? 'bg-[#13263D] text-[#F5F0E6] font-bold'
+                          : 'text-gray-600 hover:text-[#13263D]'
                       }`}
                     >
                       {m === 'visual' ? 'Visual Editor' : m === 'code' ? 'HTML / Markdown' : 'Live Preview'}
@@ -614,11 +614,11 @@ export const BlogEditor: React.FC<BlogEditorProps> = ({ onViewPost }) => {
 
               {/* Toolbar */}
               {editorMode !== 'preview' && (
-                <div className="flex flex-wrap items-center gap-1 p-2 bg-[#F8F5EE] border border-[#E8E0D1] rounded-t-sm text-gray-700">
+                <div className="flex flex-wrap items-center gap-1 p-2 bg-[#F5F0E6] border border-[#E7DBC2] rounded-t-sm text-gray-700">
                   <button
                     type="button"
                     onClick={() => executeCommand('bold')}
-                    className="p-1.5 hover:bg-[#E8E0D1]/60 rounded-xs cursor-pointer"
+                    className="p-1.5 hover:bg-[#E7DBC2]/60 rounded-xs cursor-pointer"
                     title="Bold"
                   >
                     <TextB className="w-4 h-4" />
@@ -626,7 +626,7 @@ export const BlogEditor: React.FC<BlogEditorProps> = ({ onViewPost }) => {
                   <button
                     type="button"
                     onClick={() => executeCommand('italic')}
-                    className="p-1.5 hover:bg-[#E8E0D1]/60 rounded-xs cursor-pointer"
+                    className="p-1.5 hover:bg-[#E7DBC2]/60 rounded-xs cursor-pointer"
                     title="Italic"
                   >
                     <TextItalic className="w-4 h-4" />
@@ -634,18 +634,18 @@ export const BlogEditor: React.FC<BlogEditorProps> = ({ onViewPost }) => {
                   <button
                     type="button"
                     onClick={() => executeCommand('underline')}
-                    className="p-1.5 hover:bg-[#E8E0D1]/60 rounded-xs cursor-pointer"
+                    className="p-1.5 hover:bg-[#E7DBC2]/60 rounded-xs cursor-pointer"
                     title="Underline"
                   >
                     <TextUnderline className="w-4 h-4" />
                   </button>
                   
-                  <span className="w-[1px] h-4 bg-[#E8E0D1] mx-1" />
+                  <span className="w-[1px] h-4 bg-[#E7DBC2] mx-1" />
 
                   <button
                     type="button"
                     onClick={() => executeCommand('formatBlock', 'h2')}
-                    className="p-1.5 hover:bg-[#E8E0D1]/60 rounded-xs cursor-pointer"
+                    className="p-1.5 hover:bg-[#E7DBC2]/60 rounded-xs cursor-pointer"
                     title="Heading 2"
                   >
                     <TextHTwo className="w-4 h-4" />
@@ -653,18 +653,18 @@ export const BlogEditor: React.FC<BlogEditorProps> = ({ onViewPost }) => {
                   <button
                     type="button"
                     onClick={() => executeCommand('formatBlock', 'h3')}
-                    className="p-1.5 hover:bg-[#E8E0D1]/60 rounded-xs cursor-pointer"
+                    className="p-1.5 hover:bg-[#E7DBC2]/60 rounded-xs cursor-pointer"
                     title="Heading 3"
                   >
                     <TextHThree className="w-4 h-4" />
                   </button>
 
-                  <span className="w-[1px] h-4 bg-[#E8E0D1] mx-1" />
+                  <span className="w-[1px] h-4 bg-[#E7DBC2] mx-1" />
 
                   <button
                     type="button"
                     onClick={() => executeCommand('insertUnorderedList')}
-                    className="p-1.5 hover:bg-[#E8E0D1]/60 rounded-xs cursor-pointer"
+                    className="p-1.5 hover:bg-[#E7DBC2]/60 rounded-xs cursor-pointer"
                     title="Bullet List"
                   >
                     <ListBullets className="w-4 h-4" />
@@ -672,7 +672,7 @@ export const BlogEditor: React.FC<BlogEditorProps> = ({ onViewPost }) => {
                   <button
                     type="button"
                     onClick={() => executeCommand('insertOrderedList')}
-                    className="p-1.5 hover:bg-[#E8E0D1]/60 rounded-xs cursor-pointer"
+                    className="p-1.5 hover:bg-[#E7DBC2]/60 rounded-xs cursor-pointer"
                     title="Numbered List"
                   >
                     <ListNumbers className="w-4 h-4" />
@@ -680,18 +680,18 @@ export const BlogEditor: React.FC<BlogEditorProps> = ({ onViewPost }) => {
                   <button
                     type="button"
                     onClick={() => executeCommand('formatBlock', 'blockquote')}
-                    className="p-1.5 hover:bg-[#E8E0D1]/60 rounded-xs cursor-pointer"
+                    className="p-1.5 hover:bg-[#E7DBC2]/60 rounded-xs cursor-pointer"
                     title="Quote"
                   >
                     <Quotes className="w-4 h-4" />
                   </button>
 
-                  <span className="w-[1px] h-4 bg-[#E8E0D1] mx-1" />
+                  <span className="w-[1px] h-4 bg-[#E7DBC2] mx-1" />
 
                   <button
                     type="button"
                     onClick={insertLinkPrompt}
-                    className="p-1.5 hover:bg-[#E8E0D1]/60 rounded-xs cursor-pointer"
+                    className="p-1.5 hover:bg-[#E7DBC2]/60 rounded-xs cursor-pointer"
                     title="Insert Link"
                   >
                     <LinkSimple className="w-4 h-4" />
@@ -700,7 +700,7 @@ export const BlogEditor: React.FC<BlogEditorProps> = ({ onViewPost }) => {
                   <button
                     type="button"
                     onClick={insertQuranBox}
-                    className="px-2 py-1 bg-[#0B332D] text-[#B79A62] text-[10px] font-sans font-bold uppercase rounded-xs hover:bg-[#07221E] cursor-pointer ml-auto"
+                    className="px-2 py-1 bg-[#13263D] text-[#A47A46] text-[10px] font-sans font-bold uppercase rounded-xs hover:bg-[#0C1A2E] cursor-pointer ml-auto"
                     title="Insert Arabic Quran Verse Card"
                   >
                     + Arabic Ayah Card
@@ -714,7 +714,7 @@ export const BlogEditor: React.FC<BlogEditorProps> = ({ onViewPost }) => {
                   ref={contentEditableRef}
                   contentEditable
                   onInput={e => setContent(e.currentTarget.innerHTML)}
-                  className="w-full min-h-[360px] p-4 bg-[#FCFBF8] border border-t-0 border-[#E8E0D1] rounded-b-sm focus:outline-none text-xs sm:text-sm font-sans leading-relaxed prose prose-sm max-w-none"
+                  className="w-full min-h-[360px] p-4 bg-[#FAF7F0] border border-t-0 border-[#E7DBC2] rounded-b-sm focus:outline-none text-xs sm:text-sm font-sans leading-relaxed prose prose-sm max-w-none"
                   style={{ minHeight: '360px' }}
                 />
               )}
@@ -726,14 +726,14 @@ export const BlogEditor: React.FC<BlogEditorProps> = ({ onViewPost }) => {
                   rows={14}
                   value={content}
                   onChange={e => setContent(e.target.value)}
-                  className="w-full p-4 bg-[#12201D] text-[#E8E0D1] font-mono text-xs border border-t-0 border-[#E8E0D1] rounded-b-sm focus:outline-none"
+                  className="w-full p-4 bg-[#152A45] text-[#E7DBC2] font-mono text-xs border border-t-0 border-[#E7DBC2] rounded-b-sm focus:outline-none"
                 />
               )}
 
               {/* Live Preview View */}
               {editorMode === 'preview' && (
-                <div className="p-6 bg-[#FCFBF8] border border-[#E8E0D1] rounded-sm min-h-[360px] space-y-4">
-                  <h2 className="font-editorial text-2xl text-[#0B332D] font-bold">{title || 'Untitled Article'}</h2>
+                <div className="p-6 bg-[#FAF7F0] border border-[#E7DBC2] rounded-sm min-h-[360px] space-y-4">
+                  <h2 className="font-editorial text-2xl text-[#13263D] font-bold">{title || 'Untitled Article'}</h2>
                   <div
                     dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(content || '<p class="text-gray-400 italic">No content yet...</p>') }}
                     className="prose max-w-none text-xs sm:text-sm font-sans leading-relaxed"
@@ -743,7 +743,7 @@ export const BlogEditor: React.FC<BlogEditorProps> = ({ onViewPost }) => {
             </div>
 
             {/* Bottom Actions */}
-            <div className="pt-4 border-t border-[#E8E0D1] flex items-center justify-between">
+            <div className="pt-4 border-t border-[#E7DBC2] flex items-center justify-between">
               <button
                 type="button"
                 onClick={() => setIsEditing(false)}
@@ -755,9 +755,9 @@ export const BlogEditor: React.FC<BlogEditorProps> = ({ onViewPost }) => {
               <button
                 type="submit"
                 disabled={saving}
-                className="px-6 py-2.5 bg-[#0B332D] text-[#F8F5EE] text-xs font-sans font-semibold uppercase tracking-wider rounded-sm hover:bg-[#07221E] transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
+                className="px-6 py-2.5 bg-[#13263D] text-[#F5F0E6] text-xs font-sans font-semibold uppercase tracking-wider rounded-sm hover:bg-[#0C1A2E] transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
               >
-                <FloppyDisk className="w-4 h-4 text-[#B79A62]" />
+                <FloppyDisk className="w-4 h-4 text-[#A47A46]" />
                 <span>{saving ? 'Publishing...' : 'Save & Publish Article'}</span>
               </button>
             </div>
@@ -767,9 +767,9 @@ export const BlogEditor: React.FC<BlogEditorProps> = ({ onViewPost }) => {
       ) : (
         /* Posts Table & Directory */
         <div className="space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#FCFBF8] p-4 rounded-sm border border-[#E8E0D1]">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#FAF7F0] p-4 rounded-sm border border-[#E7DBC2]">
             <div>
-              <h3 className="font-editorial text-2xl text-[#0B332D] font-bold">Islamic Blog &amp; Articles</h3>
+              <h3 className="font-editorial text-2xl text-[#13263D] font-bold">Islamic Blog &amp; Articles</h3>
               <p className="text-xs text-gray-500 font-sans">Manage publications, Tajweed guides, and SEO parent articles.</p>
             </div>
             
@@ -777,7 +777,7 @@ export const BlogEditor: React.FC<BlogEditorProps> = ({ onViewPost }) => {
               <button
                 onClick={fetchPosts}
                 disabled={loading}
-                className="p-2 border border-[#E8E0D1] rounded-sm hover:bg-[#F8F5EE] text-gray-600 transition-colors cursor-pointer"
+                className="p-2 border border-[#E7DBC2] rounded-sm hover:bg-[#F5F0E6] text-gray-600 transition-colors cursor-pointer"
                 title="Refresh"
               >
                 <ArrowsClockwise className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
@@ -785,26 +785,26 @@ export const BlogEditor: React.FC<BlogEditorProps> = ({ onViewPost }) => {
 
               <button
                 onClick={handleCreateNew}
-                className="px-4 py-2 bg-[#0B332D] text-[#F8F5EE] text-xs font-sans font-semibold uppercase tracking-wider rounded-sm hover:bg-[#07221E] flex items-center gap-1.5 shadow-xs cursor-pointer"
+                className="px-4 py-2 bg-[#13263D] text-[#F5F0E6] text-xs font-sans font-semibold uppercase tracking-wider rounded-sm hover:bg-[#0C1A2E] flex items-center gap-1.5 shadow-xs cursor-pointer"
               >
-                <Plus className="w-3.5 h-3.5 text-[#B79A62]" weight="bold" />
+                <Plus className="w-3.5 h-3.5 text-[#A47A46]" weight="bold" />
                 <span>Write New Article</span>
               </button>
             </div>
           </div>
 
-          <div className="bg-[#FCFBF8] rounded-sm border border-[#E8E0D1] shadow-xs overflow-hidden">
+          <div className="bg-[#FAF7F0] rounded-sm border border-[#E7DBC2] shadow-xs overflow-hidden">
             {loading ? (
               <div className="p-8 text-center text-xs font-sans text-gray-500">Loading articles...</div>
             ) : posts.length === 0 ? (
               <div className="p-12 text-center text-xs font-sans text-gray-500 space-y-2">
-                <BookOpen className="w-8 h-8 text-[#B79A62] mx-auto" />
+                <BookOpen className="w-8 h-8 text-[#A47A46] mx-auto" />
                 <p>No blog posts published yet.</p>
               </div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs font-sans">
-                  <thead className="bg-[#F8F5EE] text-[#0B332D] font-bold uppercase tracking-wider border-b border-[#E8E0D1] text-[10px]">
+                  <thead className="bg-[#F5F0E6] text-[#13263D] font-bold uppercase tracking-wider border-b border-[#E7DBC2] text-[10px]">
                     <tr>
                       <th className="p-3.5">Article</th>
                       <th className="p-3.5">Category</th>
@@ -813,15 +813,15 @@ export const BlogEditor: React.FC<BlogEditorProps> = ({ onViewPost }) => {
                       <th className="p-3.5 text-right">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#E8E0D1]/60">
+                  <tbody className="divide-y divide-[#E7DBC2]/60">
                     {posts.map(post => (
-                      <tr key={post.id} className="hover:bg-[#F8F5EE]/50 transition-colors">
+                      <tr key={post.id} className="hover:bg-[#F5F0E6]/50 transition-colors">
                         <td className="p-3.5 max-w-sm">
-                          <div className="font-bold text-[#0B332D] line-clamp-1">{post.title}</div>
+                          <div className="font-bold text-[#13263D] line-clamp-1">{post.title}</div>
                           <div className="text-[10px] text-gray-400 font-mono">/blog/{post.slug}</div>
                         </td>
                         <td className="p-3.5">
-                          <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-[#F8F5EE] text-[#B79A62] border border-[#E8E0D1] rounded-xs">
+                          <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-[#F5F0E6] text-[#A47A46] border border-[#E7DBC2] rounded-xs">
                             {post.category}
                           </span>
                         </td>
@@ -838,7 +838,7 @@ export const BlogEditor: React.FC<BlogEditorProps> = ({ onViewPost }) => {
                             {onViewPost && (
                               <button
                                 onClick={() => onViewPost(post.slug)}
-                                className="p-1.5 text-gray-600 hover:text-[#0B332D] cursor-pointer"
+                                className="p-1.5 text-gray-600 hover:text-[#13263D] cursor-pointer"
                                 title="View on site"
                               >
                                 <Eye className="w-4 h-4" />
@@ -846,7 +846,7 @@ export const BlogEditor: React.FC<BlogEditorProps> = ({ onViewPost }) => {
                             )}
                             <button
                               onClick={() => handleEdit(post)}
-                              className="p-1.5 text-[#0B332D] hover:text-[#B79A62] cursor-pointer"
+                              className="p-1.5 text-[#13263D] hover:text-[#A47A46] cursor-pointer"
                               title="Edit"
                             >
                               <PencilSimple className="w-4 h-4" />

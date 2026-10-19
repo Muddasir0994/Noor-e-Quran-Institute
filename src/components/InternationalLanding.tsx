@@ -217,7 +217,7 @@ export const InternationalLanding: React.FC<InternationalLandingProps> = ({
                 onClick={() => onSelectCountry(key)}
                 className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
                   active
-                    ? 'bg-[#064E3B] text-[#F3C64D] shadow-md border border-[#F3C64D]/40'
+                    ? 'bg-[#13263D] text-[#F3C64D] shadow-md border border-[#F3C64D]/40'
                     : 'bg-white text-gray-700 hover:bg-emerald-50 border border-gray-200'
                 }`}
               >
@@ -229,7 +229,7 @@ export const InternationalLanding: React.FC<InternationalLandingProps> = ({
         </div>
 
         {/* Hero Banner for Country */}
-        <div className="bg-[#064E3B] text-white rounded-3xl p-8 sm:p-10 relative overflow-hidden shadow-xl border border-[#064E3B]/30 bg-islamic-pattern mb-10">
+        <div className="bg-[#13263D] text-white rounded-3xl p-8 sm:p-10 relative overflow-hidden shadow-xl border border-[#13263D]/30 bg-islamic-pattern mb-10">
           <div className="relative z-10 max-w-3xl space-y-4">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#043629]/90 border border-[#F3C64D]/40 text-xs text-[#F3C64D] font-bold">
               <span>{data.flag}</span>
@@ -272,11 +272,11 @@ export const InternationalLanding: React.FC<InternationalLandingProps> = ({
           
           {/* Timezones & Timetable */}
           <div className="bg-white rounded-3xl p-6 border border-gray-200/90 shadow-xs space-y-4">
-            <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-[#064E3B] flex items-center justify-center border border-emerald-100">
+            <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-[#13263D] flex items-center justify-center border border-emerald-100">
               <Clock className="w-5 h-5" weight="duotone" />
             </div>
             <div>
-              <h3 className="font-heading font-bold text-lg text-[#064E3B]">
+              <h3 className="font-heading font-bold text-lg text-[#13263D]">
                 {data.name} Timetable
               </h3>
               <p className="text-xs text-gray-500 font-medium mt-0.5">
@@ -312,30 +312,30 @@ export const InternationalLanding: React.FC<InternationalLandingProps> = ({
             <div className="space-y-2 text-xs">
               <div className="flex justify-between p-2 rounded-lg bg-gray-50">
                 <span className="text-gray-600 font-medium">2 Days / Week</span>
-                <span className="font-bold text-[#064E3B]">{data.monthlyPricing.twoDays}</span>
+                <span className="font-bold text-[#13263D]">{data.monthlyPricing.twoDays}</span>
               </div>
               <div className="flex justify-between p-2 rounded-lg bg-emerald-50 border border-emerald-100">
                 <span className="text-emerald-950 font-bold">3 Days / Week (Popular)</span>
-                <span className="font-bold text-[#064E3B]">{data.monthlyPricing.threeDays}</span>
+                <span className="font-bold text-[#13263D]">{data.monthlyPricing.threeDays}</span>
               </div>
               <div className="flex justify-between p-2 rounded-lg bg-gray-50">
                 <span className="text-gray-600 font-medium">4 Days / Week</span>
-                <span className="font-bold text-[#064E3B]">{data.monthlyPricing.fourDays}</span>
+                <span className="font-bold text-[#13263D]">{data.monthlyPricing.fourDays}</span>
               </div>
               <div className="flex justify-between p-2 rounded-lg bg-gray-50">
                 <span className="text-gray-600 font-medium">5 Days / Week</span>
-                <span className="font-bold text-[#064E3B]">{data.monthlyPricing.fiveDays}</span>
+                <span className="font-bold text-[#13263D]">{data.monthlyPricing.fiveDays}</span>
               </div>
             </div>
           </div>
 
           {/* Vetted Faculty & Safety */}
           <div className="bg-white rounded-3xl p-6 border border-gray-200/90 shadow-xs space-y-4">
-            <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-[#064E3B] flex items-center justify-center border border-emerald-100">
+            <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-[#13263D] flex items-center justify-center border border-emerald-100">
               <ShieldCheck className="w-5 h-5" weight="duotone" />
             </div>
             <div>
-              <h3 className="font-heading font-bold text-lg text-[#064E3B]">
+              <h3 className="font-heading font-bold text-lg text-[#13263D]">
                 Faculty & Safeguarding
               </h3>
               <p className="text-xs text-gray-500 font-medium mt-0.5">
@@ -356,7 +356,7 @@ export const InternationalLanding: React.FC<InternationalLandingProps> = ({
 
         {/* Country Specific FAQs */}
         <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-200/90 shadow-xs">
-          <h3 className="font-heading font-bold text-xl text-[#064E3B] mb-4">
+          <h3 className="font-heading font-bold text-xl text-[#13263D] mb-4">
             Frequently Asked Questions for {data.name} Parents & Students
           </h3>
           <div className="space-y-4">

@@ -25,15 +25,15 @@ export const Footer: React.FC<FooterProps> = ({
   ];
 
   return (
-    <footer className="bg-[#07221E] text-[#E8E0D1] pt-16 pb-12 border-t border-[#B79A62]/20">
+    <footer className="bg-[#0C1A2E] text-[#E7DBC2] pt-16 pb-12 border-t border-[#A47A46]/20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Top Minimal Quranic Calligraphy Accent */}
-        <div className="pb-10 border-b border-[#B79A62]/15 text-center max-w-xl mx-auto space-y-2">
-          <p className="font-arabic text-xl text-[#B79A62] font-normal" dir="rtl">
+        <div className="pb-10 border-b border-[#A47A46]/15 text-center max-w-xl mx-auto space-y-2">
+          <p className="font-arabic text-xl text-[#A47A46] font-normal" dir="rtl">
             وَرَتِّلِ الْقُرْآنَ تَرْتِيلًا
           </p>
-          <p className="text-xs text-[#E8E0D1]/60 font-sans italic">
+          <p className="text-xs text-[#E7DBC2]/60 font-sans italic">
             &ldquo;And recite the Quran with measured, rhythmic recitation.&rdquo; — Surah Al-Muzzammil (73:4)
           </p>
         </div>
@@ -48,35 +48,35 @@ export const Footer: React.FC<FooterProps> = ({
                 src="/branding/logo.webp?v=2"
                 onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/branding/logo.png?v=2'; }}
                 alt="Noor E Quran Institute Official Seal"
-                className="w-18 h-18 sm:w-22 sm:h-22 object-contain rounded-xl border-2 border-[#B79A62]/70 bg-white p-1.5 shadow-xl shrink-0"
+                className="w-18 h-18 sm:w-22 sm:h-22 object-contain rounded-xl border-2 border-[#A47A46]/70 bg-white p-1.5 shadow-xl shrink-0"
                 width="88"
                 height="88"
               />
               <div>
-                <span className="font-editorial text-2xl sm:text-3xl font-bold text-[#F8F5EE] tracking-tight block">
+                <span className="font-editorial text-2xl sm:text-3xl font-bold text-[#F5F0E6] tracking-tight block">
                   Noor E Quran Institute
                 </span>
-                <span className="text-[11px] uppercase tracking-widest text-[#B79A62] font-semibold">
+                <span className="text-[11px] uppercase tracking-widest text-[#A47A46] font-semibold">
                   Global Online Islamic Academy
                 </span>
               </div>
             </Link>
 
-            <p className="text-xs text-[#E8E0D1]/70 font-sans leading-relaxed max-w-xs">
+            <p className="text-xs text-[#E7DBC2]/70 font-sans leading-relaxed max-w-xs">
               Premier international Islamic academy dedicated to patient, certified 1-on-1 Quran and Tajweed education for families worldwide.
             </p>
 
-            <p className="text-xs text-[#B79A62] font-sans">
+            <p className="text-xs text-[#A47A46] font-sans">
               contact.noorequraninstitute@gmail.com
             </p>
           </div>
 
           {/* Column 1: Courses (Col 5-6) */}
           <div className="lg:col-span-2 space-y-3">
-            <p className="text-[11px] font-sans font-bold text-[#B79A62] uppercase tracking-wider">
+            <p className="text-[11px] font-sans font-bold text-[#A47A46] uppercase tracking-wider">
               Courses
             </p>
-            <ul className="space-y-2 text-xs font-sans text-[#E8E0D1]/80">
+            <ul className="space-y-2 text-xs font-sans text-[#E7DBC2]/80">
               <li>
                 <Link to="/courses" className="hover:text-white transition-colors">
                   Quran Reading
@@ -102,10 +102,10 @@ export const Footer: React.FC<FooterProps> = ({
 
           {/* Column 2: Quick Links (Col 7-8) */}
           <div className="lg:col-span-2 space-y-3">
-            <p className="text-[11px] font-sans font-bold text-[#B79A62] uppercase tracking-wider">
+            <p className="text-[11px] font-sans font-bold text-[#A47A46] uppercase tracking-wider">
               Quick Links
             </p>
-            <ul className="space-y-2 text-xs font-sans text-[#E8E0D1]/80">
+            <ul className="space-y-2 text-xs font-sans text-[#E7DBC2]/80">
               <li>
                 <Link to="/about" className="hover:text-white transition-colors">
                   About Us
@@ -136,10 +136,10 @@ export const Footer: React.FC<FooterProps> = ({
 
           {/* Column 3: Support (Col 9-10) */}
           <div className="lg:col-span-2 space-y-3">
-            <p className="text-[11px] font-sans font-bold text-[#B79A62] uppercase tracking-wider">
+            <p className="text-[11px] font-sans font-bold text-[#A47A46] uppercase tracking-wider">
               Support
             </p>
-            <ul className="space-y-2 text-xs font-sans text-[#E8E0D1]/80">
+            <ul className="space-y-2 text-xs font-sans text-[#E7DBC2]/80">
               <li>
                 <Link to="/faq" className="hover:text-white transition-colors">
                   Help Center & FAQ
@@ -165,7 +165,7 @@ export const Footer: React.FC<FooterProps> = ({
 
           {/* Column 4: Stay Connected (Col 11-12) */}
           <div className="lg:col-span-2 space-y-3">
-            <p className="text-[11px] font-sans font-bold text-[#B79A62] uppercase tracking-wider">
+            <p className="text-[11px] font-sans font-bold text-[#A47A46] uppercase tracking-wider">
               Stay Connected
             </p>
             <div className="flex flex-wrap gap-2.5 pt-1">
@@ -178,23 +178,23 @@ export const Footer: React.FC<FooterProps> = ({
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={item.name}
-                    className="w-8 h-8 rounded-sm bg-[#0B332D] border border-[#B79A62]/30 flex items-center justify-center text-[#B79A62] hover:text-white hover:border-[#B79A62] transition-colors"
+                    className="w-8 h-8 rounded-sm bg-[#13263D] border border-[#A47A46]/30 flex items-center justify-center text-[#A47A46] hover:text-white hover:border-[#A47A46] transition-colors"
                   >
                     <Icon className="w-4 h-4" weight="regular" />
                   </a>
                 );
               })}
             </div>
-            <p className="text-[11px] text-[#E8E0D1]/50 font-sans pt-2">
+            <p className="text-[11px] text-[#E7DBC2]/50 font-sans pt-2">
               WhatsApp Support: <br />
-              <span className="text-[#B79A62]">+92 327 4496163</span>
+              <span className="text-[#A47A46]">+92 327 4496163</span>
             </p>
           </div>
 
         </div>
 
         {/* Bottom Minimal Copyright Bar */}
-        <div className="pt-8 border-t border-[#B79A62]/15 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-[#E8E0D1]/50 font-sans">
+        <div className="pt-8 border-t border-[#A47A46]/15 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-[#E7DBC2]/50 font-sans">
           <p>© {new Date().getFullYear()} Noor E Quran Institute. All rights reserved.</p>
           <div className="flex items-center gap-4">
             <button onClick={() => onOpenLegal && onOpenLegal('privacy')} className="hover:underline cursor-pointer">Privacy</button>

@@ -45,22 +45,22 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ onOpenTrial, onOpenE
 
   const coreValues = [
     {
-      icon: <ShieldCheck className="w-6 h-6 text-[#064E3B]" weight="duotone" />,
+      icon: <ShieldCheck className="w-6 h-6 text-[#13263D]" weight="duotone" />,
       title: 'Authenticity & Tajweed Rigor',
       desc: 'We uphold the exact recitation rules transmitted through unbroken chains of certified reciters (Ijazah).'
     },
     {
-      icon: <Heart className="w-6 h-6 text-[#064E3B]" weight="duotone" />,
+      icon: <Heart className="w-6 h-6 text-[#13263D]" weight="duotone" />,
       title: 'Patience & Compassion',
       desc: 'Our teachers create an uplifting, encouraging atmosphere where mistakes are gently corrected without frustration.'
     },
     {
-      icon: <Clock className="w-6 h-6 text-[#064E3B]" weight="duotone" />,
+      icon: <Clock className="w-6 h-6 text-[#13263D]" weight="duotone" />,
       title: 'Punctuality & Reliability',
       desc: 'Classes start strictly on time. With flexible rescheduling options and 24/7 coordinator support.'
     },
     {
-      icon: <Certificate className="w-6 h-6 text-[#064E3B]" weight="duotone" />,
+      icon: <Certificate className="w-6 h-6 text-[#13263D]" weight="duotone" />,
       title: 'Vetted Faculty',
       desc: 'Every tutor undergoes background verification, Tajweed audits, and pedagogical training before teaching.'
     }
@@ -72,11 +72,11 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ onOpenTrial, onOpenE
         
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-14">
-          <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-emerald-100/70 text-[#064E3B] text-[11px] font-extrabold uppercase tracking-widest mb-2.5 border border-emerald-300">
+          <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-emerald-100/70 text-[#13263D] text-[11px] font-extrabold uppercase tracking-widest mb-2.5 border border-emerald-300">
             <BookOpen className="w-3.5 h-3.5 text-[#D4A72C]" />
             <span>About The Academy</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-heading font-extrabold text-[#064E3B] tracking-tight">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-heading font-extrabold text-[#13263D] tracking-tight">
             About Noor E Quran Institute
           </h2>
           <p className="mt-3 text-sm sm:text-base text-gray-600">
@@ -91,7 +91,7 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ onOpenTrial, onOpenE
               <span className="text-xs font-extrabold uppercase tracking-widest text-[#A37B15] block">
                 Who We Are
               </span>
-              <h3 className="text-2xl sm:text-3xl font-heading font-extrabold text-[#064E3B]">
+              <h3 className="text-2xl sm:text-3xl font-heading font-extrabold text-[#13263D]">
                 Connecting Families Worldwide With God-Fearing Quran Teachers
               </h3>
               <p className="text-sm text-gray-700 leading-relaxed">
@@ -139,10 +139,10 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ onOpenTrial, onOpenE
         {/* 2. Our 4-Step Teaching Methodology */}
         <div className="mb-14">
           <div className="text-center max-w-2xl mx-auto mb-10">
-            <span className="text-[11px] font-extrabold uppercase tracking-widest text-[#064E3B] bg-emerald-100/80 px-3.5 py-1 rounded-full border border-emerald-300">
+            <span className="text-[11px] font-extrabold uppercase tracking-widest text-[#13263D] bg-emerald-100/80 px-3.5 py-1 rounded-full border border-emerald-300">
               Our Methodology
             </span>
-            <h2 className="text-2xl sm:text-3xl font-heading font-extrabold text-[#064E3B] mt-2">
+            <h2 className="text-2xl sm:text-3xl font-heading font-extrabold text-[#13263D] mt-2">
               Structured & Proven Teaching Framework
             </h2>
           </div>
@@ -152,10 +152,10 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ onOpenTrial, onOpenE
               <div key={idx} className="bg-white rounded-3xl p-6 border border-emerald-950/10 shadow-xs flex flex-col justify-between">
                 <div>
                   <span className="text-2xl font-black text-[#9A690B] mb-2 block">{s.step}</span>
-                  <h3 className="text-base font-heading font-bold text-[#064E3B] mb-2">{s.title}</h3>
+                  <h3 className="text-base font-heading font-bold text-[#13263D] mb-2">{s.title}</h3>
                   <p className="text-xs text-gray-600 leading-relaxed">{s.desc}</p>
                 </div>
-                <div className="mt-4 pt-3 border-t border-gray-100 text-[11px] font-bold text-[#064E3B] flex items-center gap-1">
+                <div className="mt-4 pt-3 border-t border-gray-100 text-[11px] font-bold text-[#13263D] flex items-center gap-1">
                   <CheckCircle className="w-3.5 h-3.5 text-[#9A690B]" weight="fill" />
                   <span>Student Centered</span>
                 </div>
@@ -167,10 +167,10 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ onOpenTrial, onOpenE
         {/* 3. Core Values */}
         <div className="mb-14">
           <div className="text-center max-w-2xl mx-auto mb-10">
-            <span className="text-[11px] font-extrabold uppercase tracking-widest text-[#064E3B] bg-emerald-100/80 px-3.5 py-1 rounded-full border border-emerald-300">
+            <span className="text-[11px] font-extrabold uppercase tracking-widest text-[#13263D] bg-emerald-100/80 px-3.5 py-1 rounded-full border border-emerald-300">
               Guiding Principles
             </span>
-            <h2 className="text-2xl sm:text-3xl font-heading font-extrabold text-[#064E3B] mt-2">
+            <h2 className="text-2xl sm:text-3xl font-heading font-extrabold text-[#13263D] mt-2">
               The Values Behind Noor E Quran Institute
             </h2>
           </div>
@@ -178,10 +178,10 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ onOpenTrial, onOpenE
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {coreValues.map((v, idx) => (
               <div key={idx} className="bg-white rounded-3xl p-6 border border-emerald-950/10 shadow-xs">
-                <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-[#064E3B] flex items-center justify-center mb-4 border border-emerald-100">
+                <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-[#13263D] flex items-center justify-center mb-4 border border-emerald-100">
                   {v.icon}
                 </div>
-                <h3 className="text-base font-heading font-bold text-[#064E3B] mb-1.5">{v.title}</h3>
+                <h3 className="text-base font-heading font-bold text-[#13263D] mb-1.5">{v.title}</h3>
                 <p className="text-xs text-gray-600 leading-relaxed">{v.desc}</p>
               </div>
             ))}
@@ -189,7 +189,7 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ onOpenTrial, onOpenE
         </div>
 
         {/* 4. Bottom CTA Card */}
-        <div className="bg-gradient-to-br from-[#064E3B] via-[#043327] to-[#022119] rounded-3xl p-8 sm:p-10 text-white flex flex-col sm:flex-row items-center justify-between gap-6 border border-[#D4A72C]/40 shadow-xl bg-islamic-pattern">
+        <div className="bg-gradient-to-br from-[#13263D] via-[#043327] to-[#022119] rounded-3xl p-8 sm:p-10 text-white flex flex-col sm:flex-row items-center justify-between gap-6 border border-[#D4A72C]/40 shadow-xl bg-islamic-pattern">
           <div className="space-y-1 text-center sm:text-left">
             <h3 className="text-xl sm:text-2xl font-heading font-extrabold text-white">
               Experience Our Classes With a 3-Day Free Trial

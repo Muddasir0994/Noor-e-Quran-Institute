@@ -14,7 +14,7 @@ export const LegalModal: React.FC<LegalModalProps> = ({ type, onClose }) => {
       <div className="relative w-full max-w-2xl bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-emerald-950/10 overflow-hidden my-6">
         
         {/* Header */}
-        <div className="bg-[#064E3B] text-white p-5 sm:p-6 relative bg-islamic-pattern">
+        <div className="bg-[#13263D] text-white p-5 sm:p-6 relative bg-islamic-pattern">
           <button
             onClick={onClose}
             className="absolute top-4 right-4 p-1.5 rounded-full bg-emerald-950/60 hover:bg-emerald-950 text-emerald-200 hover:text-white transition-colors"
@@ -87,7 +87,7 @@ export const LegalModal: React.FC<LegalModalProps> = ({ type, onClose }) => {
         <div className="p-4 bg-gray-50 border-t border-gray-200 text-right">
           <button
             onClick={onClose}
-            className="px-5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-[#064E3B] text-white hover:bg-[#043629]"
+            className="px-5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-[#13263D] text-white hover:bg-[#043629]"
           >
             Close
           </button>
