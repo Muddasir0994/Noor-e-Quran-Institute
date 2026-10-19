@@ -1,0 +1,3 @@
+## 2025-02-26 - Missing Memoization for Lists
+**Learning:** Found multiple instances where large arrays (like `courses` or `posts`) were being filtered synchronously directly inside functional components on every render without any memoization (e.g., `CoursesPage.tsx`, `BlogListPage.tsx`, `ClassroomStudio.tsx`). This causes unnecessary performance overhead, especially on pages that allow filtering and text search simultaneously.
+**Action:** Always wrap derived list filtering and sorting calculations with `useMemo` so that they only re-run when their dependency arrays (`[list, query, category]`) change.
