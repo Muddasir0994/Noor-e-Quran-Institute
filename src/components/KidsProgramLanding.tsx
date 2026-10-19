@@ -39,23 +39,23 @@ export const KidsProgramLanding: React.FC<KidsProgramLandingProps> = ({
         <nav aria-label="Breadcrumb" className="mb-6">
           <ol className="flex items-center space-x-2 text-xs text-gray-500 font-medium">
             <li>
-              <button onClick={() => onNavClick('home')} className="hover:text-[#064E3B] transition cursor-pointer">
+              <button onClick={() => onNavClick('home')} className="hover:text-[#13263D] transition cursor-pointer">
                 Home
               </button>
             </li>
             <li>/</li>
             <li>
-              <button onClick={() => onNavClick('courses')} className="hover:text-[#064E3B] transition cursor-pointer">
+              <button onClick={() => onNavClick('courses')} className="hover:text-[#13263D] transition cursor-pointer">
                 Courses
               </button>
             </li>
             <li>/</li>
-            <li className="text-[#064E3B] font-extrabold">Kids Program</li>
+            <li className="text-[#13263D] font-extrabold">Kids Program</li>
           </ol>
         </nav>
 
         {/* Hero Banner for Kids Program */}
-        <div className="bg-gradient-to-br from-[#064E3B] via-[#043327] to-[#022119] text-white rounded-3xl p-6 sm:p-10 relative overflow-hidden shadow-xl border border-[#D4A72C]/30 bg-islamic-pattern mb-12">
+        <div className="bg-gradient-to-br from-[#13263D] via-[#043327] to-[#022119] text-white rounded-3xl p-6 sm:p-10 relative overflow-hidden shadow-xl border border-[#D4A72C]/30 bg-islamic-pattern mb-12">
           <div className="relative z-10 grid lg:grid-cols-12 gap-8 items-center">
             <div className="lg:col-span-7 space-y-4">
               <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#032B21]/90 border border-[#F3C64D]/40 text-xs text-[#F3C64D] font-extrabold">
@@ -115,7 +115,7 @@ export const KidsProgramLanding: React.FC<KidsProgramLandingProps> = ({
                   <p className="text-xs font-bold text-white">Engaging & Joyful</p>
                   <p className="text-[10px] text-emerald-200">Animated Whiteboards & Rewards</p>
                 </div>
-                <span className="bg-[#D4A72C] text-[#064E3B] text-[10px] font-extrabold px-2.5 py-1 rounded-full">
+                <span className="bg-[#D4A72C] text-[#13263D] text-[10px] font-extrabold px-2.5 py-1 rounded-full">
                   100% Patient
                 </span>
               </div>
@@ -126,10 +126,10 @@ export const KidsProgramLanding: React.FC<KidsProgramLandingProps> = ({
         {/* 4 Pillars of Kids Program */}
         <div className="mb-14">
           <div className="text-center max-w-2xl mx-auto mb-8">
-            <span className="text-xs font-extrabold uppercase tracking-widest text-[#064E3B] bg-emerald-100/80 px-3 py-1 rounded-full border border-emerald-300">
+            <span className="text-xs font-extrabold uppercase tracking-widest text-[#13263D] bg-emerald-100/80 px-3 py-1 rounded-full border border-emerald-300">
               Child-Centered Pedagogy
             </span>
-            <h2 className="text-2xl sm:text-3xl font-heading font-extrabold text-[#064E3B] mt-2">
+            <h2 className="text-2xl sm:text-3xl font-heading font-extrabold text-[#13263D] mt-2">
               Why Parents Choose Noor E Quran for Their Children
             </h2>
           </div>
@@ -148,8 +148,8 @@ export const KidsProgramLanding: React.FC<KidsProgramLandingProps> = ({
             </div>
 
             <div className="bg-white rounded-3xl p-6 border border-emerald-950/10 shadow-xs space-y-3">
-              <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-[#064E3B] flex items-center justify-center border border-emerald-100">
-                <ShieldCheck className="w-6 h-6 text-[#064E3B]" weight="duotone" />
+              <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-[#13263D] flex items-center justify-center border border-emerald-100">
+                <ShieldCheck className="w-6 h-6 text-[#13263D]" weight="duotone" />
               </div>
               <h3 className="font-heading font-bold text-base text-gray-900">
                 Female Teachers for Kids
@@ -188,7 +188,7 @@ export const KidsProgramLanding: React.FC<KidsProgramLandingProps> = ({
         {/* 4-Stage Kids Learning Roadmap */}
         <div className="bg-white rounded-3xl p-8 sm:p-10 border border-emerald-950/10 shadow-sm mb-12">
           <div className="text-center max-w-2xl mx-auto mb-8">
-            <h3 className="text-2xl font-heading font-extrabold text-[#064E3B]">
+            <h3 className="text-2xl font-heading font-extrabold text-[#13263D]">
               4-Stage Learning Roadmap for Children
             </h3>
             <p className="text-xs sm:text-sm text-gray-600 mt-1">
@@ -201,7 +201,7 @@ export const KidsProgramLanding: React.FC<KidsProgramLandingProps> = ({
               <div key={idx} className="p-5 rounded-2xl bg-[#FAF9F5] border border-gray-200/80 flex flex-col justify-between">
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#064E3B] bg-emerald-100 px-2 py-0.5 rounded-md">
+                    <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#13263D] bg-emerald-100 px-2 py-0.5 rounded-md">
                       {m.level}
                     </span>
                     <span className="text-xs text-gray-400 font-bold">{m.age}</span>

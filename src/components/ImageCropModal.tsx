@@ -112,7 +112,7 @@ export const ImageCropModal: React.FC<ImageCropModalProps> = ({
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    ctx.fillStyle = '#FCFBF8';
+    ctx.fillStyle = '#FAF7F0';
     ctx.fillRect(0, 0, targetWidth, targetHeight);
 
     // Save context state for rotation & translations
@@ -150,29 +150,29 @@ export const ImageCropModal: React.FC<ImageCropModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-70 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="w-full max-w-2xl bg-[#FCFBF8] border border-[#E8E0D1] rounded-sm shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      <div className="w-full max-w-2xl bg-[#FAF7F0] border border-[#E7DBC2] rounded-sm shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
         
         {/* Header */}
-        <div className="px-6 py-4 bg-[#0B332D] text-[#F8F5EE] flex items-center justify-between border-b border-[#B79A62]/30">
+        <div className="px-6 py-4 bg-[#13263D] text-[#F5F0E6] flex items-center justify-between border-b border-[#A47A46]/30">
           <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-sm bg-[#07221E] border border-[#B79A62]/40 flex items-center justify-center text-[#B79A62]">
+            <div className="w-7 h-7 rounded-sm bg-[#0C1A2E] border border-[#A47A46]/40 flex items-center justify-center text-[#A47A46]">
               <Crop className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="font-editorial text-lg text-[#F8F5EE] font-semibold">{title}</h3>
-              <p className="text-[11px] text-[#E8E0D1]/70 font-sans">Drag to position, scale, and select optimal framing</p>
+              <h3 className="font-editorial text-lg text-[#F5F0E6] font-semibold">{title}</h3>
+              <p className="text-[11px] text-[#E7DBC2]/70 font-sans">Drag to position, scale, and select optimal framing</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1 text-[#E8E0D1]/70 hover:text-white transition-colors cursor-pointer"
+            className="p-1 text-[#E7DBC2]/70 hover:text-white transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Viewport / Crop Canvas Area */}
-        <div className="p-6 bg-[#F8F5EE] flex-1 overflow-hidden flex flex-col items-center justify-center">
+        <div className="p-6 bg-[#F5F0E6] flex-1 overflow-hidden flex flex-col items-center justify-center">
           
           {/* Aspect Ratio Selector Pills */}
           <div className="flex items-center gap-2 mb-4">
@@ -183,8 +183,8 @@ export const ImageCropModal: React.FC<ImageCropModalProps> = ({
                 onClick={() => setAspectRatio(ratio)}
                 className={`px-3 py-1 text-xs font-sans rounded-sm transition-colors cursor-pointer ${
                   aspectRatio === ratio
-                    ? 'bg-[#0B332D] text-[#F8F5EE] font-bold border border-[#0B332D]'
-                    : 'bg-[#FCFBF8] text-gray-700 hover:text-[#0B332D] border border-[#E8E0D1]'
+                    ? 'bg-[#13263D] text-[#F5F0E6] font-bold border border-[#13263D]'
+                    : 'bg-[#FAF7F0] text-gray-700 hover:text-[#13263D] border border-[#E7DBC2]'
                 }`}
               >
                 {ratio === '16:9' ? '16:9 Banner' : ratio === '1:1' ? '1:1 Square' : ratio === '4:3' ? '4:3 Landscape' : '3:4 Portrait'}
@@ -202,7 +202,7 @@ export const ImageCropModal: React.FC<ImageCropModalProps> = ({
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
-            className={`relative w-full ${getAspectClass()} overflow-hidden rounded-sm bg-[#12201D] border-2 border-dashed border-[#B79A62] shadow-inner select-none cursor-move flex items-center justify-center`}
+            className={`relative w-full ${getAspectClass()} overflow-hidden rounded-sm bg-[#152A45] border-2 border-dashed border-[#A47A46] shadow-inner select-none cursor-move flex items-center justify-center`}
           >
             {/* Background Grid Guide Lines */}
             <div className="absolute inset-0 grid grid-cols-3 grid-rows-3 pointer-events-none opacity-20 border border-white/20">
@@ -237,14 +237,14 @@ export const ImageCropModal: React.FC<ImageCropModalProps> = ({
             />
 
             {/* Floating helper badge */}
-            <span className="absolute bottom-2 right-2 px-2 py-0.5 text-[10px] font-sans font-medium bg-[#0B332D]/85 text-[#B79A62] rounded-xs backdrop-blur-xs flex items-center gap-1 pointer-events-none">
+            <span className="absolute bottom-2 right-2 px-2 py-0.5 text-[10px] font-sans font-medium bg-[#13263D]/85 text-[#A47A46] rounded-xs backdrop-blur-xs flex items-center gap-1 pointer-events-none">
               <ArrowsOutCardinal className="w-3 h-3" />
               <span>Drag to Pan</span>
             </span>
           </div>
 
           {/* Controls Bar: Zoom Slider + Rotate + Reset */}
-          <div className="w-full mt-5 bg-[#FCFBF8] p-4 rounded-sm border border-[#E8E0D1] flex flex-wrap items-center justify-between gap-4 text-xs font-sans">
+          <div className="w-full mt-5 bg-[#FAF7F0] p-4 rounded-sm border border-[#E7DBC2] flex flex-wrap items-center justify-between gap-4 text-xs font-sans">
             
             {/* Zoom Slider */}
             <div className="flex items-center gap-2.5 flex-1 min-w-[200px]">
@@ -256,7 +256,7 @@ export const ImageCropModal: React.FC<ImageCropModalProps> = ({
                 step="0.05"
                 value={zoom}
                 onChange={(e) => setZoom(parseFloat(e.target.value))}
-                className="flex-1 accent-[#0B332D] cursor-pointer"
+                className="flex-1 accent-[#13263D] cursor-pointer"
               />
               <MagnifyingGlassPlus className="w-4 h-4 text-gray-500" />
               <span className="w-10 text-right font-mono text-gray-700">{Math.round(zoom * 100)}%</span>
@@ -267,7 +267,7 @@ export const ImageCropModal: React.FC<ImageCropModalProps> = ({
               <button
                 type="button"
                 onClick={() => setRotation((prev) => (prev + 90) % 360)}
-                className="px-3 py-1.5 bg-[#F8F5EE] border border-[#E8E0D1] rounded-sm hover:border-[#B79A62] text-gray-700 flex items-center gap-1 cursor-pointer"
+                className="px-3 py-1.5 bg-[#F5F0E6] border border-[#E7DBC2] rounded-sm hover:border-[#A47A46] text-gray-700 flex items-center gap-1 cursor-pointer"
                 title="Rotate 90 degrees"
               >
                 <ArrowsClockwise className="w-3.5 h-3.5" />
@@ -281,7 +281,7 @@ export const ImageCropModal: React.FC<ImageCropModalProps> = ({
                   setPosition({ x: 0, y: 0 });
                   setRotation(0);
                 }}
-                className="px-3 py-1.5 bg-[#F8F5EE] border border-[#E8E0D1] rounded-sm hover:border-gray-400 text-gray-600 cursor-pointer"
+                className="px-3 py-1.5 bg-[#F5F0E6] border border-[#E7DBC2] rounded-sm hover:border-gray-400 text-gray-600 cursor-pointer"
               >
                 Reset
               </button>
@@ -292,7 +292,7 @@ export const ImageCropModal: React.FC<ImageCropModalProps> = ({
         </div>
 
         {/* Footer Actions */}
-        <div className="px-6 py-4 bg-[#FCFBF8] border-t border-[#E8E0D1] flex items-center justify-between">
+        <div className="px-6 py-4 bg-[#FAF7F0] border-t border-[#E7DBC2] flex items-center justify-between">
           <button
             type="button"
             onClick={onClose}
@@ -304,9 +304,9 @@ export const ImageCropModal: React.FC<ImageCropModalProps> = ({
           <button
             type="button"
             onClick={handleApplyCrop}
-            className="px-6 py-2.5 bg-[#0B332D] text-[#F8F5EE] text-xs font-sans font-semibold uppercase tracking-wider rounded-sm hover:bg-[#07221E] transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
+            className="px-6 py-2.5 bg-[#13263D] text-[#F5F0E6] text-xs font-sans font-semibold uppercase tracking-wider rounded-sm hover:bg-[#0C1A2E] transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
           >
-            <Check className="w-3.5 h-3.5 text-[#B79A62]" weight="bold" />
+            <Check className="w-3.5 h-3.5 text-[#A47A46]" weight="bold" />
             <span>Apply Framing &amp; Use</span>
           </button>
         </div>

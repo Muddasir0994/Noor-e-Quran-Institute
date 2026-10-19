@@ -116,12 +116,12 @@ function ProtectedPortalRoute({
 
   if (!isLoggedIn) {
     return (
-      <div className="min-h-screen bg-[#F8F5EE] flex items-center justify-center px-4">
-        <div className="max-w-md w-full bg-white rounded-3xl border border-[#E8E0D1] shadow-lg p-8 text-center space-y-4">
-          <div className="w-16 h-16 mx-auto rounded-2xl bg-[#0B332D] text-[#B79A62] flex items-center justify-center text-2xl font-bold">
+      <div className="min-h-screen bg-[#F5F0E6] flex items-center justify-center px-4">
+        <div className="max-w-md w-full bg-white rounded-3xl border border-[#E7DBC2] shadow-lg p-8 text-center space-y-4">
+          <div className="w-16 h-16 mx-auto rounded-2xl bg-[#13263D] text-[#A47A46] flex items-center justify-center text-2xl font-bold">
             🔒
           </div>
-          <h2 className="text-xl font-bold text-[#0B332D] font-editorial">
+          <h2 className="text-xl font-bold text-[#13263D] font-editorial">
             {requiredRole === 'teacher' ? 'Teacher Portal' : 'Student Portal'}
           </h2>
           <p className="text-sm text-gray-600">
@@ -129,18 +129,18 @@ function ProtectedPortalRoute({
           </p>
           <button
             onClick={() => setShowLoginPrompt(true)}
-            className="w-full py-3 bg-[#0B332D] text-[#F8F5EE] font-bold rounded-sm hover:bg-[#07221E] transition-colors cursor-pointer"
+            className="w-full py-3 bg-[#13263D] text-[#F5F0E6] font-bold rounded-sm hover:bg-[#0C1A2E] transition-colors cursor-pointer"
           >
             Sign In
           </button>
           <button
             onClick={() => window.location.href = '/'}
-            className="w-full py-2 text-sm text-gray-500 hover:text-[#0B332D] cursor-pointer"
+            className="w-full py-2 text-sm text-gray-500 hover:text-[#13263D] cursor-pointer"
           >
             ← Back to Homepage
           </button>
           {showLoginPrompt && (
-            <p className="text-xs text-[#B79A62]">
+            <p className="text-xs text-[#A47A46]">
               Use the "Portal Login" button in the site header to sign in.
             </p>
           )}
@@ -352,7 +352,7 @@ function AppContent() {
     location.pathname === '/admin' || location.pathname.startsWith('/admin/');
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#F8F5EE] text-[#12201D] font-sans antialiased selection:bg-[#B79A62]/30 selection:text-[#0B332D]">
+    <div className="min-h-screen flex flex-col bg-[#F5F0E6] text-[#152A45] font-sans antialiased selection:bg-[#A47A46]/30 selection:text-[#13263D]">
       <SEOHead
         title={liveSeoData.title}
         description={liveSeoData.description}
@@ -374,10 +374,10 @@ function AppContent() {
       <main className="flex-1">
         <Suspense
           fallback={
-            <div className="py-28 flex items-center justify-center bg-[#F8F5EE]">
+            <div className="py-28 flex items-center justify-center bg-[#F5F0E6]">
               <div className="text-center space-y-3">
-                <div className="w-10 h-10 border-2 border-[#0B332D] border-t-[#B79A62] rounded-full animate-spin mx-auto" />
-                <p className="text-xs font-semibold text-[#0B332D] font-sans tracking-wide">Loading Noor E Quran Institute...</p>
+                <div className="w-10 h-10 border-2 border-[#13263D] border-t-[#A47A46] rounded-full animate-spin mx-auto" />
+                <p className="text-xs font-semibold text-[#13263D] font-sans tracking-wide">Loading Noor E Quran Institute...</p>
               </div>
             </div>
           }

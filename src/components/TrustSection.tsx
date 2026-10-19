@@ -66,7 +66,7 @@ export const TrustSection: React.FC<TrustSectionProps> = ({ testimonials: initia
   };
 
   return (
-    <section className="py-20 lg:py-28 bg-[#F8F5EE] border-b border-[#E8E0D1]">
+    <section className="py-20 lg:py-28 bg-[#F5F0E6] border-b border-[#E7DBC2]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Magazine-Style Editorial Testimonial from Real Data */}
@@ -76,7 +76,7 @@ export const TrustSection: React.FC<TrustSectionProps> = ({ testimonials: initia
           <div className="lg:col-span-8 space-y-6">
             {loading && items.length === 0 ? (
               <div className="animate-pulse space-y-6" aria-hidden>
-                <div className="w-10 h-10 rounded-xl bg-[#B79A62]/20" />
+                <div className="w-10 h-10 rounded-xl bg-[#A47A46]/20" />
                 <div className="space-y-3">
                   <div className="h-8 w-full bg-gray-200/70 rounded-xl" />
                   <div className="h-8 w-11/12 bg-gray-200/70 rounded-xl" />
@@ -93,7 +93,7 @@ export const TrustSection: React.FC<TrustSectionProps> = ({ testimonials: initia
             ) : (
               <>
             <div className="flex items-center justify-between">
-              <div className="text-[#B79A62]">
+              <div className="text-[#A47A46]">
                 <Quotes className="w-10 h-10" weight="fill" />
               </div>
 
@@ -102,14 +102,14 @@ export const TrustSection: React.FC<TrustSectionProps> = ({ testimonials: initia
                   <button
                     onClick={handlePrev}
                     aria-label="Previous testimonial"
-                    className="p-1.5 rounded-sm border border-[#E8E0D1] bg-[#FCFBF8] text-[#0B332D] hover:border-[#B79A62] transition-colors cursor-pointer"
+                    className="p-1.5 rounded-sm border border-[#E7DBC2] bg-[#FAF7F0] text-[#13263D] hover:border-[#A47A46] transition-colors cursor-pointer"
                   >
                     <CaretLeft className="w-4 h-4" />
                   </button>
                   <button
                     onClick={handleNext}
                     aria-label="Next testimonial"
-                    className="p-1.5 rounded-sm border border-[#E8E0D1] bg-[#FCFBF8] text-[#0B332D] hover:border-[#B79A62] transition-colors cursor-pointer"
+                    className="p-1.5 rounded-sm border border-[#E7DBC2] bg-[#FAF7F0] text-[#13263D] hover:border-[#A47A46] transition-colors cursor-pointer"
                   >
                     <CaretRight className="w-4 h-4" />
                   </button>
@@ -117,16 +117,16 @@ export const TrustSection: React.FC<TrustSectionProps> = ({ testimonials: initia
               )}
             </div>
 
-            <blockquote className="font-editorial text-2xl sm:text-3xl lg:text-4xl text-[#0B332D] leading-[1.25] font-normal italic">
+            <blockquote className="font-editorial text-2xl sm:text-3xl lg:text-4xl text-[#13263D] leading-[1.25] font-normal italic">
               &ldquo;{currentTestimonial.comment}&rdquo;
             </blockquote>
 
             <div className="flex items-center gap-4 pt-2">
-              <div className="w-10 h-10 rounded-full border border-[#B79A62] bg-[#FCFBF8] flex items-center justify-center font-editorial text-base text-[#0B332D] font-bold shrink-0">
+              <div className="w-10 h-10 rounded-full border border-[#A47A46] bg-[#FAF7F0] flex items-center justify-center font-editorial text-base text-[#13263D] font-bold shrink-0">
                 {currentTestimonial.name.charAt(0)}
               </div>
               <div>
-                <p className="text-sm font-sans font-bold text-[#0B332D]">
+                <p className="text-sm font-sans font-bold text-[#13263D]">
                   {currentTestimonial.name}
                 </p>
                 <p className="text-xs text-gray-700 font-sans font-medium">
@@ -139,21 +139,21 @@ export const TrustSection: React.FC<TrustSectionProps> = ({ testimonials: initia
           </div>
 
           {/* Right Column: Academic Standards Panel */}
-          <div className="lg:col-span-4 bg-[#FCFBF8] border border-[#E8E0D1] rounded-sm p-6 sm:p-8 space-y-6">
+          <div className="lg:col-span-4 bg-[#FAF7F0] border border-[#E7DBC2] rounded-sm p-6 sm:p-8 space-y-6">
             <p className="text-[11px] font-sans font-bold text-[#8C6D37] uppercase tracking-widest">
               ACADEMIC STANDARDS
             </p>
 
-            <div className="space-y-5 divide-y divide-[#E8E0D1]">
+            <div className="space-y-5 divide-y divide-[#E7DBC2]">
               {academicPrinciples.map((principle, idx) => {
                 const Icon = principle.icon;
                 return (
                   <div key={idx} className={idx > 0 ? 'pt-5' : ''}>
                     <div className="flex items-center justify-between">
-                      <span className="font-editorial text-2xl sm:text-3xl text-[#0B332D] font-bold">
+                      <span className="font-editorial text-2xl sm:text-3xl text-[#13263D] font-bold">
                         {principle.value}
                       </span>
-                      <Icon className="w-5 h-5 text-[#B79A62]" weight="regular" />
+                      <Icon className="w-5 h-5 text-[#A47A46]" weight="regular" />
                     </div>
                     <p className="text-xs text-gray-700 font-sans mt-0.5">
                       {principle.label}
@@ -163,7 +163,7 @@ export const TrustSection: React.FC<TrustSectionProps> = ({ testimonials: initia
               })}
             </div>
 
-            <p className="text-[11px] text-gray-600 font-sans pt-2 border-t border-[#E8E0D1] leading-relaxed font-medium">
+            <p className="text-[11px] text-gray-600 font-sans pt-2 border-t border-[#E7DBC2] leading-relaxed font-medium">
               Every lesson is conducted 1-on-1 with accredited educators under ongoing academic review.
             </p>
           </div>

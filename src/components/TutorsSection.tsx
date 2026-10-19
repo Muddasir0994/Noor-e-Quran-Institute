@@ -26,7 +26,7 @@ export const TutorsSection: React.FC<TutorsSectionProps> = ({
   };
 
   return (
-    <section id="tutors" className="py-24 lg:py-32 bg-[#F8F5EE] border-b border-[#E8E0D1]/70">
+    <section id="tutors" className="py-24 lg:py-32 bg-[#F5F0E6] border-b border-[#E7DBC2]/70">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header: Editorial & Restrained */}
@@ -35,7 +35,7 @@ export const TutorsSection: React.FC<TutorsSectionProps> = ({
             <p className="text-[11px] font-sans font-bold text-[#8C6D37] uppercase tracking-widest mb-3.5">
               OUR TEACHERS
             </p>
-            <h2 className="font-editorial text-3xl sm:text-4xl lg:text-5xl text-[#0B332D] leading-[1.1] font-semibold tracking-tight">
+            <h2 className="font-editorial text-3xl sm:text-4xl lg:text-5xl text-[#13263D] leading-[1.1] font-semibold tracking-tight">
               Qualified.<br />
               Compassionate.<br />
               <span className="italic font-normal">Committed.</span>
@@ -45,7 +45,7 @@ export const TutorsSection: React.FC<TutorsSectionProps> = ({
           <div className="text-right">
             <button
               onClick={() => handleSelectTeacher('No Preference')}
-              className="inline-flex items-center gap-2 text-xs font-sans font-semibold text-[#0B332D] hover:text-[#B79A62] transition-colors py-1 border-b border-[#0B332D]/20 hover:border-[#B79A62] cursor-pointer"
+              className="inline-flex items-center gap-2 text-xs font-sans font-semibold text-[#13263D] hover:text-[#A47A46] transition-colors py-1 border-b border-[#13263D]/20 hover:border-[#A47A46] cursor-pointer"
             >
               <span>Explore All Verified Faculty ({tutors.length || 4})</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -63,8 +63,8 @@ export const TutorsSection: React.FC<TutorsSectionProps> = ({
             
             {/* 1. Featured Senior Faculty (Large Column - 7 cols) */}
             {featuredTutor && (
-              <div className="lg:col-span-7 bg-[#FCFBF8] border border-[#E8E0D1]/80 rounded-sm p-6 sm:p-8 space-y-6">
-                <div className="relative aspect-[16/11] rounded-sm overflow-hidden border border-[#E8E0D1]/60 bg-[#F8F5EE]">
+              <div className="lg:col-span-7 bg-[#FAF7F0] border border-[#E7DBC2]/80 rounded-sm p-6 sm:p-8 space-y-6">
+                <div className="relative aspect-[16/11] rounded-sm overflow-hidden border border-[#E7DBC2]/60 bg-[#F5F0E6]">
                   {featuredTutor.photoUrl ? (
                     <img
                       src={featuredTutor.photoUrl}
@@ -73,20 +73,20 @@ export const TutorsSection: React.FC<TutorsSectionProps> = ({
                       loading="lazy"
                     />
                   ) : (
-                    <div className="w-full h-full flex flex-col items-center justify-center text-[#0B332D]/40">
+                    <div className="w-full h-full flex flex-col items-center justify-center text-[#13263D]/40">
                       <User className="w-16 h-16 mb-2" weight="thin" />
                     </div>
                   )}
-                  <span className="absolute top-3 left-3 px-2.5 py-1 text-[10px] font-sans font-bold uppercase tracking-wider bg-[#0B332D] text-[#B79A62]">
+                  <span className="absolute top-3 left-3 px-2.5 py-1 text-[10px] font-sans font-bold uppercase tracking-wider bg-[#13263D] text-[#A47A46]">
                     Senior Faculty • {featuredTutor.experienceYears}+ Years
                   </span>
                 </div>
 
                 <div className="space-y-3">
-                  <div className="w-8 h-[1.5px] bg-[#B79A62]" />
+                  <div className="w-8 h-[1.5px] bg-[#A47A46]" />
 
                   <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-1">
-                    <h3 className="font-editorial text-3xl text-[#0B332D] font-semibold">
+                    <h3 className="font-editorial text-3xl text-[#13263D] font-semibold">
                       {featuredTutor.name}
                     </h3>
                     <span className="text-xs font-sans font-semibold text-[#8C6D37] uppercase tracking-wider">
@@ -105,10 +105,10 @@ export const TutorsSection: React.FC<TutorsSectionProps> = ({
                   <div className="pt-3">
                     <button
                       onClick={() => handleSelectTeacher(featuredTutor.gender, featuredTutor.name)}
-                      className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#0B332D] text-[#F8F5EE] text-xs font-sans font-semibold uppercase tracking-wider rounded-sm hover:bg-[#07221E] transition-all cursor-pointer shadow-xs"
+                      className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#13263D] text-[#F5F0E6] text-xs font-sans font-semibold uppercase tracking-wider rounded-sm hover:bg-[#0C1A2E] transition-all cursor-pointer shadow-xs"
                     >
                       <span>Request Trial with {featuredTutor.name.split(' ')[0]}</span>
-                      <ArrowRight className="w-3.5 h-3.5 text-[#B79A62]" />
+                      <ArrowRight className="w-3.5 h-3.5 text-[#A47A46]" />
                     </button>
                   </div>
                 </div>
@@ -123,10 +123,10 @@ export const TutorsSection: React.FC<TutorsSectionProps> = ({
                 return (
                   <div
                     key={tutor.id}
-                    className="p-6 bg-[#FCFBF8] border border-[#E8E0D1]/80 rounded-sm space-y-4 group hover:border-[#B79A62] transition-colors"
+                    className="p-6 bg-[#FAF7F0] border border-[#E7DBC2]/80 rounded-sm space-y-4 group hover:border-[#A47A46] transition-colors"
                   >
                     <div className="flex items-center gap-4">
-                      <div className="w-16 h-20 rounded-sm overflow-hidden border border-[#E8E0D1]/60 bg-[#F8F5EE] shrink-0">
+                      <div className="w-16 h-20 rounded-sm overflow-hidden border border-[#E7DBC2]/60 bg-[#F5F0E6] shrink-0">
                         {tutor.photoUrl ? (
                           <img
                             src={tutor.photoUrl}
@@ -135,14 +135,14 @@ export const TutorsSection: React.FC<TutorsSectionProps> = ({
                             loading="lazy"
                           />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center text-[#0B332D]/40">
+                          <div className="w-full h-full flex items-center justify-center text-[#13263D]/40">
                             <User className="w-8 h-8" weight="thin" />
                           </div>
                         )}
                       </div>
 
                       <div className="space-y-1">
-                        <h4 className="font-editorial text-2xl text-[#0B332D] font-semibold">
+                        <h4 className="font-editorial text-2xl text-[#13263D] font-semibold">
                           {tutor.name}
                         </h4>
                         <p className="text-[10px] font-sans font-bold text-[#8C6D37] uppercase tracking-wider">
@@ -163,7 +163,7 @@ export const TutorsSection: React.FC<TutorsSectionProps> = ({
                     <div className="pt-1">
                       <button
                         onClick={() => handleSelectTeacher(tutor.gender, tutor.name)}
-                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#0B332D] hover:text-[#B79A62] transition-colors cursor-pointer border-b border-[#0B332D]/20 pb-0.5"
+                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#13263D] hover:text-[#A47A46] transition-colors cursor-pointer border-b border-[#13263D]/20 pb-0.5"
                       >
                         <span>Request Trial with {firstName}</span>
                         <ArrowRight className="w-3 h-3" />

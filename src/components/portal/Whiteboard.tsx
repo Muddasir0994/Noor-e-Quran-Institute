@@ -141,7 +141,7 @@ export const Whiteboard: React.FC<{ title?: string; subtitle?: string }> = ({
       key={id}
       onClick={() => setTool(id)}
       className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer ${
-        tool === id ? 'bg-[#064E3B] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+        tool === id ? 'bg-[#13263D] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
       }`}
       title={label}
     >
@@ -154,7 +154,7 @@ export const Whiteboard: React.FC<{ title?: string; subtitle?: string }> = ({
     <div className="bg-white p-4 sm:p-6 rounded-3xl border border-gray-200 shadow-xs space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h3 className="text-base font-bold text-[#064E3B] flex items-center gap-2">
+          <h3 className="text-base font-bold text-[#13263D] flex items-center gap-2">
             <Palette className="w-4 h-4 text-[#D4A72C]" weight="duotone" />
             {title}
           </h3>
@@ -210,7 +210,7 @@ export const Whiteboard: React.FC<{ title?: string; subtitle?: string }> = ({
             max={10}
             value={brushSize}
             onChange={e => setBrushSize(Number(e.target.value))}
-            className="w-20 sm:w-28 accent-[#064E3B] cursor-pointer"
+            className="w-20 sm:w-28 accent-[#13263D] cursor-pointer"
           />
         </label>
       </div>

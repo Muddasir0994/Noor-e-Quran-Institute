@@ -47,11 +47,11 @@ export const FAQSection: React.FC<FAQSectionProps> = ({ onOpenTrial }) => {
         
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-12">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#064E3B]/10 text-[#064E3B] text-[11px] font-bold uppercase tracking-widest mb-2.5 border border-[#064E3B]/20">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#13263D]/10 text-[#13263D] text-[11px] font-bold uppercase tracking-widest mb-2.5 border border-[#13263D]/20">
             <Question className="w-3.5 h-3.5 text-[#A16207]" weight="duotone" />
             <span>Frequently Asked Questions</span>
           </div>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-heading font-extrabold text-[#064E3B] tracking-tight">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-heading font-extrabold text-[#13263D] tracking-tight">
             Frequently Asked Questions (FAQ)
           </h2>
           <p className="mt-2 text-sm sm:text-base text-gray-600">
@@ -65,7 +65,7 @@ export const FAQSection: React.FC<FAQSectionProps> = ({ onOpenTrial }) => {
           {/* Left Bento Info Card (Col 1-4) */}
           <div className="lg:col-span-4 bg-[#FAFAF7] border border-gray-200/90 rounded-3xl p-7 space-y-6">
             <div>
-              <span className="text-[10px] font-bold uppercase tracking-widest text-[#064E3B] block mb-1">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-[#13263D] block mb-1">
                 24/7 Coordinator Support
               </span>
               <h3 className="text-xl font-heading font-bold text-gray-900">
@@ -89,7 +89,7 @@ export const FAQSection: React.FC<FAQSectionProps> = ({ onOpenTrial }) => {
 
               <button
                 onClick={onOpenTrial}
-                className="w-full inline-flex items-center justify-center gap-1.5 px-5 py-3 rounded-2xl text-xs sm:text-sm font-bold bg-[#064E3B] text-white hover:bg-[#043629] transition-all shadow-sm"
+                className="w-full inline-flex items-center justify-center gap-1.5 px-5 py-3 rounded-2xl text-xs sm:text-sm font-bold bg-[#13263D] text-white hover:bg-[#043629] transition-all shadow-sm"
               >
                 <ArrowRight className="w-3.5 h-3.5 text-[#F3C64D]" weight="bold" />
                 <span>Book 3-Day Free Trial</span>
@@ -123,13 +123,13 @@ export const FAQSection: React.FC<FAQSectionProps> = ({ onOpenTrial }) => {
                   <button
                     onClick={() => toggle(idx)}
                     className={`w-full p-4 sm:p-5 text-left flex items-center justify-between gap-4 font-heading font-semibold text-sm sm:text-base transition-colors ${
-                      isOpen ? 'bg-emerald-50/70 text-[#064E3B]' : 'bg-white text-gray-800 hover:bg-gray-50'
+                      isOpen ? 'bg-emerald-50/70 text-[#13263D]' : 'bg-white text-gray-800 hover:bg-gray-50'
                     }`}
                     aria-expanded={isOpen}
                   >
                     <span className="flex items-center gap-3">
                       <span className={`w-7 h-7 rounded-xl flex items-center justify-center text-xs font-bold shrink-0 ${
-                        isOpen ? 'bg-[#064E3B] text-[#F3C64D]' : 'bg-gray-100 text-gray-600'
+                        isOpen ? 'bg-[#13263D] text-[#F3C64D]' : 'bg-gray-100 text-gray-600'
                       }`}>
                         {idx + 1}
                       </span>
@@ -137,7 +137,7 @@ export const FAQSection: React.FC<FAQSectionProps> = ({ onOpenTrial }) => {
                         {faq.question}
                       </h3>
                     </span>
-                    <span className="text-[#064E3B] shrink-0">
+                    <span className="text-[#13263D] shrink-0">
                       {isOpen ? <CaretUp className="w-5 h-5" /> : <CaretDown className="w-5 h-5 text-gray-400" />}
                     </span>
                   </button>

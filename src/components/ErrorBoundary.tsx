@@ -33,9 +33,9 @@ export class ErrorBoundary extends ComponentBase {
       if (this.props.fallback) return this.props.fallback;
       return (
         <div className="min-h-[50vh] flex items-center justify-center p-8">
-          <div className="max-w-md text-center bg-[#FCFBF8] border border-[#E8E0D1] rounded-2xl p-8 shadow-sm">
+          <div className="max-w-md text-center bg-[#FAF7F0] border border-[#E7DBC2] rounded-2xl p-8 shadow-sm">
             <div className="text-4xl mb-4">🕌</div>
-            <h2 className="font-editorial text-xl font-bold text-[#0B332D] mb-2">
+            <h2 className="font-editorial text-xl font-bold text-[#13263D] mb-2">
               Something went wrong
             </h2>
             <p className="text-sm text-gray-600 mb-6">
@@ -43,7 +43,7 @@ export class ErrorBoundary extends ComponentBase {
             </p>
             <button
               onClick={() => window.location.reload()}
-              className="px-6 py-2.5 bg-[#0B332D] text-white rounded-lg text-sm font-semibold hover:bg-[#07221E]"
+              className="px-6 py-2.5 bg-[#13263D] text-white rounded-lg text-sm font-semibold hover:bg-[#0C1A2E]"
             >
               Refresh Page
             </button>

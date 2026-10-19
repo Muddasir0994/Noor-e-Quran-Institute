@@ -802,21 +802,21 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
   // If user is not authenticated and hasn't selected guest demo mode, show Gateway
   if (!currentUser && !guestPreviewMode) {
     return (
-      <div className="min-h-screen bg-[#07221E] text-[#F8F5EE] flex items-center justify-center p-4 sm:p-6 font-sans">
-        <div className="w-full max-w-2xl bg-[#FCFBF8] text-[#0B332D] border border-[#B79A62]/30 rounded-sm shadow-2xl overflow-hidden flex flex-col">
+      <div className="min-h-screen bg-[#0C1A2E] text-[#F5F0E6] flex items-center justify-center p-4 sm:p-6 font-sans">
+        <div className="w-full max-w-2xl bg-[#FAF7F0] text-[#13263D] border border-[#A47A46]/30 rounded-sm shadow-2xl overflow-hidden flex flex-col">
           
           {/* Gateway Header */}
-          <div className="px-6 py-6 bg-[#0B332D] text-[#F8F5EE] border-b border-[#B79A62]/30 text-center space-y-2">
-            <div className="w-12 h-12 rounded-sm border border-[#B79A62]/40 bg-[#07221E] flex items-center justify-center text-[#B79A62] mx-auto shadow-sm">
+          <div className="px-6 py-6 bg-[#13263D] text-[#F5F0E6] border-b border-[#A47A46]/30 text-center space-y-2">
+            <div className="w-12 h-12 rounded-sm border border-[#A47A46]/40 bg-[#0C1A2E] flex items-center justify-center text-[#A47A46] mx-auto shadow-sm">
               <Lock className="w-6 h-6" />
             </div>
-            <p className="text-[10px] font-sans font-bold uppercase tracking-widest text-[#B79A62]">
+            <p className="text-[10px] font-sans font-bold uppercase tracking-widest text-[#A47A46]">
               NOOR E QURAN INSTITUTE • PRIVATE DIGITAL CLASSROOM
             </p>
-            <h2 className="font-editorial text-2xl sm:text-3xl text-[#F8F5EE] font-bold">
+            <h2 className="font-editorial text-2xl sm:text-3xl text-[#F5F0E6] font-bold">
               Authenticated Classroom Access
             </h2>
-            <p className="text-xs text-[#E8E0D1]/80 max-w-md mx-auto leading-relaxed">
+            <p className="text-xs text-[#E7DBC2]/80 max-w-md mx-auto leading-relaxed">
               Live 1-on-1 private lessons are strictly conducted in private rooms between verified students and their assigned scholars.
             </p>
           </div>
@@ -826,38 +826,38 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               
               {/* Card 1: Student Login */}
-              <div className="p-5 bg-[#F8F5EE] border border-[#E8E0D1] rounded-sm flex flex-col justify-between space-y-4 hover:border-[#B79A62] transition-colors">
+              <div className="p-5 bg-[#F5F0E6] border border-[#E7DBC2] rounded-sm flex flex-col justify-between space-y-4 hover:border-[#A47A46] transition-colors">
                 <div className="space-y-2">
-                  <div className="w-8 h-8 rounded-sm bg-[#0B332D] text-[#B79A62] flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-sm bg-[#13263D] text-[#A47A46] flex items-center justify-center">
                     <GraduationCap className="w-4 h-4" />
                   </div>
-                  <h3 className="font-editorial text-lg font-bold text-[#0B332D]">Student & Parent Portal</h3>
+                  <h3 className="font-editorial text-lg font-bold text-[#13263D]">Student & Parent Portal</h3>
                   <p className="text-xs text-gray-600 leading-relaxed">
                     Join your assigned teacher's live room, access your active Sabaq, and open the interactive Mushaf.
                   </p>
                 </div>
                 <button
                   onClick={() => onOpenAuth ? onOpenAuth('student', 'login') : window.location.href = '/login'}
-                  className="w-full py-2.5 bg-[#0B332D] text-[#F8F5EE] text-xs font-semibold uppercase tracking-wider rounded-sm hover:bg-[#07221E] transition-colors cursor-pointer"
+                  className="w-full py-2.5 bg-[#13263D] text-[#F5F0E6] text-xs font-semibold uppercase tracking-wider rounded-sm hover:bg-[#0C1A2E] transition-colors cursor-pointer"
                 >
                   Sign In as Student
                 </button>
               </div>
 
               {/* Card 2: Teacher Login */}
-              <div className="p-5 bg-[#F8F5EE] border border-[#E8E0D1] rounded-sm flex flex-col justify-between space-y-4 hover:border-[#B79A62] transition-colors">
+              <div className="p-5 bg-[#F5F0E6] border border-[#E7DBC2] rounded-sm flex flex-col justify-between space-y-4 hover:border-[#A47A46] transition-colors">
                 <div className="space-y-2">
-                  <div className="w-8 h-8 rounded-sm bg-[#0B332D] text-[#B79A62] flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-sm bg-[#13263D] text-[#A47A46] flex items-center justify-center">
                     <Certificate className="w-4 h-4" />
                   </div>
-                  <h3 className="font-editorial text-lg font-bold text-[#0B332D]">Faculty & Tutor Portal</h3>
+                  <h3 className="font-editorial text-lg font-bold text-[#13263D]">Faculty & Tutor Portal</h3>
                   <p className="text-xs text-gray-600 leading-relaxed">
                     Open your active timetable roster, start student sessions, mark attendance, and evaluate recitation.
                   </p>
                 </div>
                 <button
                   onClick={() => onOpenAuth ? onOpenAuth('teacher', 'login') : window.location.href = '/login'}
-                  className="w-full py-2.5 bg-[#B79A62] text-[#07221E] text-xs font-bold uppercase tracking-wider rounded-sm hover:bg-[#C5AA73] transition-colors cursor-pointer"
+                  className="w-full py-2.5 bg-[#A47A46] text-[#0C1A2E] text-xs font-bold uppercase tracking-wider rounded-sm hover:bg-[#C5AA73] transition-colors cursor-pointer"
                 >
                   Sign In as Teacher
                 </button>
@@ -866,10 +866,10 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
             </div>
 
             {/* Bottom Actions: Demo Mode & Home */}
-            <div className="pt-4 border-t border-[#E8E0D1] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+            <div className="pt-4 border-t border-[#E7DBC2] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
               <button
                 onClick={() => setGuestPreviewMode(true)}
-                className="text-[#0B332D] font-semibold hover:text-[#B79A62] flex items-center gap-1.5 cursor-pointer"
+                className="text-[#13263D] font-semibold hover:text-[#A47A46] flex items-center gap-1.5 cursor-pointer"
               >
                 <BookOpen className="w-4 h-4" />
                 <span>Explore Interactive Studio Tools (Guest Preview)</span>
@@ -895,22 +895,22 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
     <div className="min-h-screen bg-[#F4F6F4] text-[#17201B] flex flex-col font-body">
       
       {/* Studio Header Bar */}
-      <div className="bg-[#0B332D] text-white px-4 sm:px-8 py-3.5 flex flex-wrap justify-between items-center border-b border-[#B79A62]/40 shadow-sm">
+      <div className="bg-[#13263D] text-white px-4 sm:px-8 py-3.5 flex flex-wrap justify-between items-center border-b border-[#A47A46]/40 shadow-sm">
         <div className="flex items-center gap-3">
           <img
             src="/branding/logo.webp?v=2"
             onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/branding/logo.png?v=2'; }}
             alt="Noor E Quran Official Seal"
-            className="w-14 h-14 sm:w-16 sm:h-16 object-contain rounded-xl bg-white border-2 border-[#B79A62]/60 p-1 shadow-md shrink-0"
+            className="w-14 h-14 sm:w-16 sm:h-16 object-contain rounded-xl bg-white border-2 border-[#A47A46]/60 p-1 shadow-md shrink-0"
             width="64"
             height="64"
           />
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-base sm:text-lg font-editorial font-bold text-[#F8F5EE] tracking-wide">
+              <h1 className="text-base sm:text-lg font-editorial font-bold text-[#F5F0E6] tracking-wide">
                 NOOR E QURAN DIGITAL QURAN STUDIO &amp; CLASSROOM
               </h1>
-              <span className="bg-[#B79A62] text-[#07221E] text-[10px] font-extrabold px-2 py-0.5 rounded-xs uppercase tracking-wider">
+              <span className="bg-[#A47A46] text-[#0C1A2E] text-[10px] font-extrabold px-2 py-0.5 rounded-xs uppercase tracking-wider">
                 {currentUser ? 'Live Active Session' : 'Demo Lab Mode'}
               </span>
             </div>
@@ -925,7 +925,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
           {onReturnToPortal && (
             <button
               onClick={onReturnToPortal}
-              className="px-4 py-2 rounded-xs text-xs font-bold bg-[#B79A62] hover:brightness-110 text-[#07221E] shadow-xs transition-transform active:scale-95 flex items-center gap-1.5 cursor-pointer"
+              className="px-4 py-2 rounded-xs text-xs font-bold bg-[#A47A46] hover:brightness-110 text-[#0C1A2E] shadow-xs transition-transform active:scale-95 flex items-center gap-1.5 cursor-pointer"
             >
               <span>←</span>
               <span>Return to {portalOrigin === 'teacher' ? 'Teacher Portal' : 'Student Portal'}</span>
@@ -935,7 +935,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
           {onBackToLanding && (
             <button
               onClick={onBackToLanding}
-              className="px-3.5 py-2 rounded-xs text-xs font-semibold bg-[#07221E] hover:bg-black/50 text-[#F8F5EE] border border-[#B79A62]/30 transition-colors flex items-center gap-1.5 cursor-pointer"
+              className="px-3.5 py-2 rounded-xs text-xs font-semibold bg-[#0C1A2E] hover:bg-black/50 text-[#F5F0E6] border border-[#A47A46]/30 transition-colors flex items-center gap-1.5 cursor-pointer"
             >
               <span>←</span>
               <span>Home</span>
@@ -945,7 +945,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
           {onOpenTrial && !currentUser && (
             <button
               onClick={onOpenTrial}
-              className="px-3.5 py-2 rounded-xs text-xs font-bold bg-[#B79A62] hover:brightness-110 text-[#07221E] shadow-xs transition-transform active:scale-95 cursor-pointer"
+              className="px-3.5 py-2 rounded-xs text-xs font-bold bg-[#A47A46] hover:brightness-110 text-[#0C1A2E] shadow-xs transition-transform active:scale-95 cursor-pointer"
             >
               Book 1-on-1 Trial
             </button>
@@ -954,43 +954,43 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
       </div>
 
       {/* Dynamic Class Session Ribbon (Showing Assigned Student, Teacher, Timetable & Sabaq) */}
-      <div className="bg-[#07221E] text-[#E8E0D1] px-4 sm:px-8 py-2.5 border-b border-[#B79A62]/20 font-sans text-xs flex flex-wrap items-center justify-between gap-3">
+      <div className="bg-[#0C1A2E] text-[#E7DBC2] px-4 sm:px-8 py-2.5 border-b border-[#A47A46]/20 font-sans text-xs flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-4 sm:gap-6">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span className="text-[#F8F5EE] font-bold">Room: CLS-{(currentUser?.uid || 'DEMO').slice(0, 6).toUpperCase()}</span>
+            <span className="text-[#F5F0E6] font-bold">Room: CLS-{(currentUser?.uid || 'DEMO').slice(0, 6).toUpperCase()}</span>
           </div>
 
           <div className="flex items-center gap-1.5">
-            <span className="text-[#B79A62] font-semibold">Student:</span>
+            <span className="text-[#A47A46] font-semibold">Student:</span>
             <span className="text-white font-bold">{studentDisplayName}</span>
           </div>
 
           <div className="flex items-center gap-1.5">
-            <span className="text-[#B79A62] font-semibold">Assigned Scholar:</span>
+            <span className="text-[#A47A46] font-semibold">Assigned Scholar:</span>
             <span className="text-white font-bold">{assignedTutorName}</span>
           </div>
 
           <div className="hidden md:flex items-center gap-1.5">
-            <span className="text-[#B79A62] font-semibold">Timetable:</span>
+            <span className="text-[#A47A46] font-semibold">Timetable:</span>
             <span className="text-emerald-200">{assignedScheduleDays} @ {assignedScheduleTime}</span>
           </div>
 
           <div className="hidden lg:flex items-center gap-1.5">
-            <span className="text-[#B79A62] font-semibold">Course &amp; Sabaq:</span>
-            <span className="text-[#F8F5EE]">{assignedCourseName} ({currentSabaq})</span>
+            <span className="text-[#A47A46] font-semibold">Course &amp; Sabaq:</span>
+            <span className="text-[#F5F0E6]">{assignedCourseName} ({currentSabaq})</span>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5 bg-[#0B332D] border border-[#B79A62]/30 px-2.5 py-1 rounded-xs">
-            <Clock className="w-3.5 h-3.5 text-[#B79A62]" />
-            <span className="text-[#F8F5EE] font-bold font-mono">{formatSessionTime(classSessionSeconds)} / 30:00</span>
+          <div className="flex items-center gap-1.5 bg-[#13263D] border border-[#A47A46]/30 px-2.5 py-1 rounded-xs">
+            <Clock className="w-3.5 h-3.5 text-[#A47A46]" />
+            <span className="text-[#F5F0E6] font-bold font-mono">{formatSessionTime(classSessionSeconds)} / 30:00</span>
           </div>
 
           <button
             onClick={() => setIsSessionTimerActive(!isSessionTimerActive)}
-            className="text-[11px] text-[#B79A62] hover:underline cursor-pointer"
+            className="text-[11px] text-[#A47A46] hover:underline cursor-pointer"
           >
             {isSessionTimerActive ? 'Pause' : 'Resume'}
           </button>
@@ -1004,7 +1004,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
             onClick={() => { stopAudio(); setStudioMode('quran'); }}
             className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer ${
               studioMode === 'quran'
-                ? 'bg-[#064E3B] text-white shadow-xs'
+                ? 'bg-[#13263D] text-white shadow-xs'
                 : 'text-gray-600 hover:bg-gray-100'
             }`}
           >
@@ -1016,7 +1016,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
             onClick={() => { stopAudio(); setStudioMode('qaida'); }}
             className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer ${
               studioMode === 'qaida'
-                ? 'bg-[#064E3B] text-white shadow-xs'
+                ? 'bg-[#13263D] text-white shadow-xs'
                 : 'text-gray-600 hover:bg-gray-100'
             }`}
           >
@@ -1028,7 +1028,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
             onClick={() => { stopAudio(); setStudioMode('whiteboard'); }}
             className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer ${
               studioMode === 'whiteboard'
-                ? 'bg-[#064E3B] text-white shadow-xs'
+                ? 'bg-[#13263D] text-white shadow-xs'
                 : 'text-gray-600 hover:bg-gray-100'
             }`}
           >
@@ -1040,7 +1040,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
             onClick={() => { stopAudio(); setStudioMode('duas'); }}
             className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer ${
               studioMode === 'duas'
-                ? 'bg-[#064E3B] text-white shadow-xs'
+                ? 'bg-[#13263D] text-white shadow-xs'
                 : 'text-gray-600 hover:bg-gray-100'
             }`}
           >
@@ -1052,7 +1052,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
             onClick={() => { stopAudio(); setStudioMode('salah'); }}
             className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer ${
               studioMode === 'salah'
-                ? 'bg-[#064E3B] text-white shadow-xs'
+                ? 'bg-[#13263D] text-white shadow-xs'
                 : 'text-gray-600 hover:bg-gray-100'
             }`}
           >
@@ -1064,7 +1064,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
             onClick={() => { stopAudio(); setStudioMode('tajweed'); }}
             className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer ${
               studioMode === 'tajweed'
-                ? 'bg-[#064E3B] text-white shadow-xs'
+                ? 'bg-[#13263D] text-white shadow-xs'
                 : 'text-gray-600 hover:bg-gray-100'
             }`}
           >
@@ -1076,7 +1076,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
             onClick={() => { stopAudio(); setStudioMode('books'); }}
             className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer ${
               studioMode === 'books'
-                ? 'bg-[#064E3B] text-white shadow-xs'
+                ? 'bg-[#13263D] text-white shadow-xs'
                 : 'text-gray-600 hover:bg-gray-100'
             }`}
           >
@@ -1088,7 +1088,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
             onClick={() => { stopAudio(); setStudioMode('tafsir'); }}
             className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer ${
               studioMode === 'tafsir'
-                ? 'bg-[#064E3B] text-white shadow-xs'
+                ? 'bg-[#13263D] text-white shadow-xs'
                 : 'text-gray-600 hover:bg-gray-100'
             }`}
           >
@@ -1131,7 +1131,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
                     resetHifzReveal();
                     setHighlightAyah(null);
                   }}
-                  className="bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 text-sm font-bold text-[#064E3B] focus:ring-2 focus:ring-[#D4A72C] outline-hidden cursor-pointer max-w-[240px]"
+                  className="bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 text-sm font-bold text-[#13263D] focus:ring-2 focus:ring-[#D4A72C] outline-hidden cursor-pointer max-w-[240px]"
                 >
                   {QURAN_SURAH_LIST.map((s) => (
                     <option key={s.number} value={s.number}>
@@ -1206,7 +1206,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
                   onClick={() => setShowTajweedColors(!showTajweedColors)}
                   className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 cursor-pointer ${
                     showTajweedColors
-                      ? 'bg-emerald-100 text-[#064E3B] border border-emerald-300'
+                      ? 'bg-emerald-100 text-[#13263D] border border-emerald-300'
                       : 'bg-gray-100 text-gray-600'
                   }`}
                 >
@@ -1230,7 +1230,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
                   onClick={() => { setHifzTestMode(!hifzTestMode); resetHifzReveal(); }}
                   className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 cursor-pointer ${
                     hifzTestMode
-                      ? 'bg-[#D4A72C] text-[#064E3B] border border-[#D4A72C]'
+                      ? 'bg-[#D4A72C] text-[#13263D] border border-[#D4A72C]'
                       : 'bg-gray-100 text-gray-600'
                   }`}
                   title="Hide Arabic text to test memorization — tap an ayah to reveal"
@@ -1244,7 +1244,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
                   onClick={() => setShowBookmarks(!showBookmarks)}
                   className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 cursor-pointer ${
                     showBookmarks
-                      ? 'bg-emerald-100 text-[#064E3B] border border-emerald-300'
+                      ? 'bg-emerald-100 text-[#13263D] border border-emerald-300'
                       : 'bg-gray-100 text-gray-600'
                   }`}
                   title="Saved bookmarks"
@@ -1257,7 +1257,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
                 <button
                   onClick={() => setRepeatMode(!repeatMode)}
                   className={`p-2 rounded-xl text-xs font-bold transition-colors cursor-pointer ${
-                    repeatMode ? 'bg-[#D4A72C] text-[#064E3B]' : 'bg-gray-100 text-gray-600'
+                    repeatMode ? 'bg-[#D4A72C] text-[#13263D]' : 'bg-gray-100 text-gray-600'
                   }`}
                   title="Repeat single ayah indefinitely for Hifz memorization"
                 >
@@ -1293,7 +1293,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
                 <button
                   onClick={runQuranSearch}
                   disabled={searchLoading || !searchQuery.trim()}
-                  className="px-4 py-2 rounded-xl text-xs font-bold bg-[#064E3B] text-white hover:bg-emerald-900 disabled:opacity-50 cursor-pointer"
+                  className="px-4 py-2 rounded-xl text-xs font-bold bg-[#13263D] text-white hover:bg-emerald-900 disabled:opacity-50 cursor-pointer"
                 >
                   {searchLoading ? 'Searching…' : 'Search'}
                 </button>
@@ -1320,7 +1320,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
                         onClick={() => jumpToSearchMatch(m)}
                         className="w-full text-left p-3 hover:bg-emerald-50/60 transition-colors cursor-pointer"
                       >
-                        <span className="text-xs font-bold text-[#064E3B]">
+                        <span className="text-xs font-bold text-[#13263D]">
                           {m.surahName} ({m.surahNumber}:{m.ayahNumber})
                         </span>
                         <p className="text-xs text-gray-600 mt-0.5 line-clamp-2">{m.text}</p>
@@ -1335,7 +1335,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
             {showBookmarks && (
               <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs">
                 <div className="flex items-center justify-between mb-2">
-                  <h4 className="text-sm font-bold text-[#064E3B] flex items-center gap-2">
+                  <h4 className="text-sm font-bold text-[#13263D] flex items-center gap-2">
                     <BookmarkSimple className="w-4 h-4 text-[#D4A72C]" weight="duotone" />
                     Saved Bookmarks
                   </h4>
@@ -1356,7 +1356,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
                         <button
                           key={i}
                           onClick={() => jumpToBookmark(b)}
-                          className="px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-50 text-[#064E3B] border border-emerald-200 hover:bg-emerald-100 cursor-pointer"
+                          className="px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-50 text-[#13263D] border border-emerald-200 hover:bg-emerald-100 cursor-pointer"
                         >
                           {meta ? meta.name : `Surah ${b.surah}`} {b.surah}:{b.ayah}
                         </button>
@@ -1372,7 +1372,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
               <div className="bg-gradient-to-r from-amber-50 to-emerald-50/60 border border-[#D4A72C]/40 p-4 rounded-2xl flex gap-3 items-start">
                 <Sun className="w-5 h-5 text-[#D4A72C] shrink-0 mt-0.5" weight="duotone" />
                 <div className="flex-1">
-                  <p className="text-[11px] font-extrabold uppercase tracking-widest text-[#064E3B] mb-1">
+                  <p className="text-[11px] font-extrabold uppercase tracking-widest text-[#13263D] mb-1">
                     Ayah of the Day • {aotd.ref}
                   </p>
                   <p className="font-arabic text-xl text-gray-900 text-right leading-relaxed" dir="rtl">{aotd.arabic}</p>
@@ -1384,7 +1384,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
             {/* Tajweed Color Legend (Interactive) */}
             {showTajweedColors && (
               <div className="bg-emerald-50/70 border border-emerald-200 p-3 rounded-2xl flex flex-wrap items-center justify-between text-xs gap-3">
-                <span className="font-bold text-[#064E3B] flex items-center gap-1.5">
+                <span className="font-bold text-[#13263D] flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full bg-[#D4A72C]"></span>
                   Tajweed Color Code:
                 </span>
@@ -1414,7 +1414,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
             )}
 
             {/* Surah Header Ornament */}
-            <div className="bg-gradient-to-r from-[#064E3B] via-[#043d2e] to-[#064E3B] text-white p-6 rounded-3xl text-center border-2 border-[#D4A72C]/50 shadow-md relative overflow-hidden">
+            <div className="bg-gradient-to-r from-[#13263D] via-[#043d2e] to-[#13263D] text-white p-6 rounded-3xl text-center border-2 border-[#D4A72C]/50 shadow-md relative overflow-hidden">
               <div className="absolute top-2 left-4 text-emerald-200/20 text-5xl font-arabic pointer-events-none">
                 ﷽
               </div>
@@ -1445,7 +1445,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
             {selectedJuz != null ? (
               <div className="space-y-6">
                 <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs flex items-center justify-between">
-                  <h3 className="text-base font-bold text-[#064E3B]">
+                  <h3 className="text-base font-bold text-[#13263D]">
                     Juz {selectedJuz} <span className="text-xs font-medium text-gray-500">— complete para with translation</span>
                   </h3>
                   <button
@@ -1484,7 +1484,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
                   });
                   return groups.map(g => (
                     <div key={g.surahNumber} className="space-y-3">
-                      <h4 className="text-sm font-extrabold text-[#064E3B] uppercase tracking-wider px-1">
+                      <h4 className="text-sm font-extrabold text-[#13263D] uppercase tracking-wider px-1">
                         Surah {g.surahName} ({g.surahNumber})
                       </h4>
                       {g.ayahs.map(a => {
@@ -1502,7 +1502,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
                         return (
                           <div key={`${g.surahNumber}-${a.numberInSurah}`} className="bg-white rounded-2xl p-5 border border-gray-200 shadow-xs">
                             <div className="flex items-center justify-between mb-3">
-                              <span className="text-xs font-bold text-[#064E3B] bg-emerald-100 px-2.5 py-1 rounded-lg border border-emerald-300">
+                              <span className="text-xs font-bold text-[#13263D] bg-emerald-100 px-2.5 py-1 rounded-lg border border-emerald-300">
                                 {g.surahNumber}:{a.numberInSurah}
                               </span>
                               <button
@@ -1510,7 +1510,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
                                   if (isActiveJ) stopAudio();
                                   else playAyahAudio(synthAyah, g.surahNumber, listForAudio);
                                 }}
-                                className="px-3 py-1.5 rounded-xl text-xs font-bold bg-[#064E3B] text-white hover:bg-emerald-900 flex items-center gap-1.5 cursor-pointer"
+                                className="px-3 py-1.5 rounded-xl text-xs font-bold bg-[#13263D] text-white hover:bg-emerald-900 flex items-center gap-1.5 cursor-pointer"
                               >
                                 {isActiveJ ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5 text-[#D4A72C]" />}
                                 <span>{isActiveJ ? 'Playing…' : 'Recite'}</span>
@@ -1573,7 +1573,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
                     {/* Ayah Action Row */}
                     <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-100">
                       <div className="flex items-center gap-3">
-                        <span className="w-8 h-8 rounded-xl bg-emerald-100 text-[#064E3B] font-bold text-xs flex items-center justify-center border border-emerald-300">
+                        <span className="w-8 h-8 rounded-xl bg-emerald-100 text-[#13263D] font-bold text-xs flex items-center justify-center border border-emerald-300">
                           {currentSurah.number}:{ayah.numberInSurah}
                         </span>
 
@@ -1588,7 +1588,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
                           className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
                             isActive && isPlayingAudio
                               ? 'bg-rose-600 text-white'
-                              : 'bg-[#064E3B] text-white hover:bg-emerald-900'
+                              : 'bg-[#13263D] text-white hover:bg-emerald-900'
                           }`}
                         >
                           {isActive && isPlayingAudio ? (
@@ -1638,7 +1638,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
                           className="font-arabic font-medium text-gray-900 selection:bg-[#D4A72C]/40"
                         >
                           {showTajweedColors ? highlightTajweed(ayah.arabic) : ayah.arabic}
-                          <span className="inline-flex items-center justify-center w-8 h-8 rounded-full border border-[#D4A72C] text-[#064E3B] text-xs font-bold mr-2 text-center align-middle font-sans bg-amber-50">
+                          <span className="inline-flex items-center justify-center w-8 h-8 rounded-full border border-[#D4A72C] text-[#13263D] text-xs font-bold mr-2 text-center align-middle font-sans bg-amber-50">
                             {ayah.numberInSurah}
                           </span>
                         </p>
@@ -1695,7 +1695,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
             {/* Lesson Navigation Selector */}
             <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs flex flex-wrap items-center justify-between gap-3">
               <div>
-                <h3 className="text-base font-bold text-[#064E3B]">
+                <h3 className="text-base font-bold text-[#13263D]">
                   Noorani Qaida Soundboard & Makharij Lab
                 </h3>
                 <p className="text-xs text-gray-500">
@@ -1711,7 +1711,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
                     onClick={() => setSelectedQaidaLessonId(l.id)}
                     className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
                       selectedQaidaLessonId === l.id
-                        ? 'bg-[#064E3B] text-white shadow-xs'
+                        ? 'bg-[#13263D] text-white shadow-xs'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                   >
@@ -1761,14 +1761,14 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
 
                     {/* Big Arabic Letter display */}
                     <div className="my-3 py-2">
-                      <span className="font-arabic text-4xl sm:text-5xl font-bold text-gray-900 group-hover:text-[#064E3B] transition-colors">
+                      <span className="font-arabic text-4xl sm:text-5xl font-bold text-gray-900 group-hover:text-[#13263D] transition-colors">
                         {item.arabic}
                       </span>
                     </div>
 
                     {/* Subtitle & phonetic guide */}
                     <div className="pt-2 border-t border-gray-100">
-                      <p className="text-xs font-bold text-[#064E3B]">
+                      <p className="text-xs font-bold text-[#13263D]">
                         {item.text || item.id}
                       </p>
                       {item.subText && (
@@ -1800,11 +1800,11 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
                 <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-[#D4A72C]/40 animate-scaleIn">
                   <div className="flex justify-between items-center pb-4 border-b border-gray-100">
                     <div className="flex items-center gap-3">
-                      <span className="w-12 h-12 rounded-2xl bg-[#064E3B] text-[#D4A72C] text-3xl font-arabic font-bold flex items-center justify-center">
+                      <span className="w-12 h-12 rounded-2xl bg-[#13263D] text-[#D4A72C] text-3xl font-arabic font-bold flex items-center justify-center">
                         {selectedLetterModal.arabic}
                       </span>
                       <div>
-                        <h3 className="text-lg font-bold text-[#064E3B]">
+                        <h3 className="text-lg font-bold text-[#13263D]">
                           Letter {selectedLetterModal.name} ({selectedLetterModal.transliteration})
                         </h3>
                         <span className="text-xs font-semibold text-[#D4A72C] bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
@@ -1823,7 +1823,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
 
                   <div className="space-y-4 my-5">
                     <div className="bg-emerald-50 p-3.5 rounded-2xl border border-emerald-200">
-                      <h4 className="text-xs font-bold uppercase tracking-wider text-[#064E3B] mb-1">
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-[#13263D] mb-1">
                         Makhraj Origin Area:
                       </h4>
                       <p className="text-sm font-bold text-emerald-950">
@@ -1847,7 +1847,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
                       </div>
                       <button
                         onClick={() => playSpeechPhonetic(selectedLetterModal.arabic)}
-                        className="px-4 py-2 bg-[#064E3B] text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-sm hover:bg-emerald-900 cursor-pointer"
+                        className="px-4 py-2 bg-[#13263D] text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-sm hover:bg-emerald-900 cursor-pointer"
                       >
                         <SpeakerHigh className="w-4 h-4 text-[#D4A72C]" weight="duotone" />
                         <span>Play Sound</span>
@@ -1881,7 +1881,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
               <div className="flex items-center gap-3">
                 <span className="w-3 h-3 rounded-full bg-emerald-500 animate-ping"></span>
                 <div>
-                  <h3 className="text-sm font-bold text-[#064E3B] flex items-center gap-2">
+                  <h3 className="text-sm font-bold text-[#13263D] flex items-center gap-2">
                     Live 1-on-1 Quran Lesson Room
                     <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full">
                       Connected (Audio/Video HD)
@@ -1895,7 +1895,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
 
               {/* Video Call Controls */}
               <div className="flex items-center gap-2">
-                <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 text-[#064E3B] border border-emerald-200 text-xs font-bold font-mono">
+                <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 text-[#13263D] border border-emerald-200 text-xs font-bold font-mono">
                   <Clock className="w-3.5 h-3.5 text-[#D4A72C]" weight="duotone" />
                   <span>{Math.floor(classTimer / 60).toString().padStart(2, '0')}:{(classTimer % 60).toString().padStart(2, '0')}</span>
                 </div>
@@ -1903,7 +1903,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
                 <button
                   onClick={toggleMic}
                   className={`p-2.5 rounded-xl text-xs font-bold transition-colors cursor-pointer ${
-                    micOn ? 'bg-emerald-100 text-[#064E3B]' : 'bg-rose-100 text-rose-700'
+                    micOn ? 'bg-emerald-100 text-[#13263D]' : 'bg-rose-100 text-rose-700'
                   }`}
                   title={micOn ? 'Mute Microphone' : 'Unmute Microphone'}
                 >
@@ -1913,7 +1913,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
                 <button
                   onClick={toggleCamera}
                   className={`p-2.5 rounded-xl text-xs font-bold transition-colors cursor-pointer ${
-                    cameraOn ? 'bg-emerald-100 text-[#064E3B]' : 'bg-rose-100 text-rose-700'
+                    cameraOn ? 'bg-emerald-100 text-[#13263D]' : 'bg-rose-100 text-rose-700'
                   }`}
                   title={cameraOn ? 'Turn Off Camera' : 'Turn On Camera'}
                 >
@@ -1923,7 +1923,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
                 <button
                   onClick={toggleScreenShare}
                   className={`px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer ${
-                    screenShared ? 'bg-[#D4A72C] text-[#064E3B]' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    screenShared ? 'bg-[#D4A72C] text-[#13263D]' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
                   <ArrowsOut className="w-3.5 h-3.5" weight="bold" />
@@ -2004,7 +2004,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
 
                 {/* In-Class Notes Box */}
                 <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-[#064E3B] mb-2 flex items-center gap-1.5">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-[#13263D] mb-2 flex items-center gap-1.5">
                     <span>Teacher Sabaq Notes:</span>
                   </h4>
                   <textarea
@@ -2029,7 +2029,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
                     <button
                       onClick={() => setToolMode('pen')}
                       className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 transition-colors cursor-pointer ${
-                        toolMode === 'pen' ? 'bg-[#064E3B] text-white' : 'bg-gray-100 text-gray-700'
+                        toolMode === 'pen' ? 'bg-[#13263D] text-white' : 'bg-gray-100 text-gray-700'
                       }`}
                     >
                       <Pencil className="w-3.5 h-3.5" weight="duotone" />
@@ -2039,7 +2039,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
                     <button
                       onClick={() => setToolMode('highlighter')}
                       className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 transition-colors cursor-pointer ${
-                        toolMode === 'highlighter' ? 'bg-[#D4A72C] text-[#064E3B]' : 'bg-gray-100 text-gray-700'
+                        toolMode === 'highlighter' ? 'bg-[#D4A72C] text-[#13263D]' : 'bg-gray-100 text-gray-700'
                       }`}
                     >
                       <ShieldCheck className="w-3.5 h-3.5" weight="duotone" />
@@ -2139,7 +2139,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
             {/* Category Filter Bar */}
             <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs flex flex-wrap justify-between items-center gap-3">
               <div>
-                <h3 className="text-base font-bold text-[#064E3B]">
+                <h3 className="text-base font-bold text-[#13263D]">
                   Daily Masnoon Duas & Prophetic Supplications
                 </h3>
                 <p className="text-xs text-gray-500">
@@ -2154,7 +2154,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
                     onClick={() => setDuaCategory(cat)}
                     className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                       duaCategory === cat
-                        ? 'bg-[#064E3B] text-white shadow-xs'
+                        ? 'bg-[#13263D] text-white shadow-xs'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                   >
@@ -2172,12 +2172,12 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
                   className="bg-white rounded-3xl p-6 border border-gray-200 shadow-xs hover:border-[#D4A72C] transition-all space-y-4"
                 >
                   <div className="flex justify-between items-start">
-                    <span className="text-xs font-bold text-[#064E3B] bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
+                    <span className="text-xs font-bold text-[#13263D] bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
                       {dua.category}
                     </span>
                     <button
                       onClick={() => playSpeechPhonetic(dua.arabic)}
-                      className="px-3 py-1.5 rounded-xl text-xs font-bold bg-[#064E3B] text-white hover:bg-emerald-900 flex items-center gap-1 cursor-pointer"
+                      className="px-3 py-1.5 rounded-xl text-xs font-bold bg-[#13263D] text-white hover:bg-emerald-900 flex items-center gap-1 cursor-pointer"
                     >
                       <SpeakerHigh className="w-3.5 h-3.5 text-[#D4A72C]" weight="duotone" />
                       <span>Listen</span>
@@ -2201,7 +2201,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
 
                   <div className="space-y-1.5 pt-2 border-t border-gray-100 text-xs">
                     <p className="text-gray-800">
-                      <strong className="text-[#064E3B]">English:</strong> {dua.english}
+                      <strong className="text-[#13263D]">English:</strong> {dua.english}
                     </p>
                     <p className="font-urdu text-base sm:text-lg text-gray-800 text-right leading-loose pt-1" dir="rtl">
                       <strong className="font-sans text-xs text-gray-400 ml-1">اردو ترجمہ:</strong> {dua.urdu}
@@ -2228,7 +2228,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
             {/* Salah Stepper Bar */}
             <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs flex flex-wrap items-center justify-between gap-3">
               <div>
-                <h3 className="text-base font-bold text-[#064E3B]">
+                <h3 className="text-base font-bold text-[#13263D]">
                   Step-by-Step Salah (Prayer / Namaz) Guide
                 </h3>
                 <p className="text-xs text-gray-500">
@@ -2244,7 +2244,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
                     onClick={() => setActiveSalahStep(s.stepNumber)}
                     className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                       activeSalahStep === s.stepNumber
-                        ? 'bg-[#064E3B] text-white shadow-xs'
+                        ? 'bg-[#13263D] text-white shadow-xs'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                   >
@@ -2262,7 +2262,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
                   <span className="text-xs font-bold text-[#D4A72C] uppercase tracking-wider">
                     Step {currentSalahStep.stepNumber} of {SALAH_STEPS.length}
                   </span>
-                  <h2 className="text-2xl font-bold text-[#064E3B]">
+                  <h2 className="text-2xl font-bold text-[#13263D]">
                     {currentSalahStep.title}
                   </h2>
                 </div>
@@ -2273,7 +2273,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
 
               {/* Posture Description */}
               <div className="bg-emerald-50 p-4 rounded-2xl border border-emerald-200">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-[#064E3B] mb-1">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-[#13263D] mb-1">
                   Physical Posture (Sunnah Manner):
                 </h4>
                 <p className="text-sm font-semibold text-emerald-950">
@@ -2289,7 +2289,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
                   </span>
                   <button
                     onClick={() => playSpeechPhonetic(currentSalahStep.arabicRecitation)}
-                    className="px-4 py-1.5 rounded-xl text-xs font-bold bg-[#064E3B] text-white hover:bg-emerald-900 flex items-center gap-1.5 shadow-xs cursor-pointer"
+                    className="px-4 py-1.5 rounded-xl text-xs font-bold bg-[#13263D] text-white hover:bg-emerald-900 flex items-center gap-1.5 shadow-xs cursor-pointer"
                   >
                     <SpeakerHigh className="w-4 h-4 text-[#D4A72C]" weight="duotone" />
                     <span>Recite Audio</span>
@@ -2342,7 +2342,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
                 <button
                   disabled={activeSalahStep === SALAH_STEPS.length}
                   onClick={() => setActiveSalahStep(activeSalahStep + 1)}
-                  className="px-4 py-2 rounded-xl text-xs font-bold bg-[#064E3B] hover:bg-emerald-900 text-white disabled:opacity-40 flex items-center gap-1 cursor-pointer"
+                  className="px-4 py-2 rounded-xl text-xs font-bold bg-[#13263D] hover:bg-emerald-900 text-white disabled:opacity-40 flex items-center gap-1 cursor-pointer"
                 >
                   <span>Next Step</span>
                   <CaretRight className="w-4 h-4" weight="bold" />
@@ -2361,7 +2361,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
           <div className="space-y-6">
 
             <div className="bg-white p-4 sm:p-5 rounded-2xl border border-gray-200 shadow-xs">
-              <h3 className="text-base font-bold text-[#064E3B] flex items-center gap-2">
+              <h3 className="text-base font-bold text-[#13263D] flex items-center gap-2">
                 <ShieldCheck className="w-5 h-5 text-[#D4A72C]" weight="duotone" />
                 Tajweed Rules Library
               </h3>
@@ -2375,7 +2375,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
                     onClick={() => setTajweedCategory(cat)}
                     className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-colors cursor-pointer ${
                       tajweedCategory === cat
-                        ? 'bg-[#064E3B] text-white shadow-xs'
+                        ? 'bg-[#13263D] text-white shadow-xs'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                   >
@@ -2396,7 +2396,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
                     >
                       <div>
                         <p className="text-[11px] font-bold uppercase tracking-widest text-[#D4A72C]">{rule.category}</p>
-                        <h4 className="text-sm sm:text-base font-bold text-[#064E3B] mt-0.5">{rule.title}</h4>
+                        <h4 className="text-sm sm:text-base font-bold text-[#13263D] mt-0.5">{rule.title}</h4>
                         <p className="font-arabic text-lg text-emerald-800 mt-0.5">{rule.arabicTitle}</p>
                       </div>
                       <CaretRight className={`w-5 h-5 text-gray-400 shrink-0 transition-transform ${expanded ? 'rotate-90' : ''}`} weight="bold" />
@@ -2440,7 +2440,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
           <div className="space-y-6">
 
             <div className="bg-white p-4 sm:p-5 rounded-2xl border border-gray-200 shadow-xs">
-              <h3 className="text-base font-bold text-[#064E3B] flex items-center gap-2">
+              <h3 className="text-base font-bold text-[#13263D] flex items-center gap-2">
                 <Books className="w-5 h-5 text-[#D4A72C]" weight="duotone" />
                 Islamic Books Library
               </h3>
@@ -2454,7 +2454,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
                     onClick={() => setBookCategory(cat)}
                     className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-colors cursor-pointer ${
                       bookCategory === cat
-                        ? 'bg-[#064E3B] text-white shadow-xs'
+                        ? 'bg-[#13263D] text-white shadow-xs'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                   >
@@ -2468,14 +2468,14 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
               {ISLAMIC_BOOKS.filter(b => bookCategory === 'All' || b.category === bookCategory).map(book => (
                 <div key={book.id} className="bg-white rounded-2xl border border-gray-200 shadow-xs p-5 flex flex-col">
                   <div className="flex items-start justify-between gap-2 mb-2">
-                    <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#064E3B] bg-emerald-100 px-2.5 py-1 rounded-full border border-emerald-200">
+                    <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#13263D] bg-emerald-100 px-2.5 py-1 rounded-full border border-emerald-200">
                       {book.category}
                     </span>
                     <span className="text-[10px] font-bold text-gray-500 bg-gray-100 px-2.5 py-1 rounded-full">
                       {book.language}
                     </span>
                   </div>
-                  <h4 className="text-sm sm:text-base font-bold text-[#064E3B]">{book.title}</h4>
+                  <h4 className="text-sm sm:text-base font-bold text-[#13263D]">{book.title}</h4>
                   {book.arabicTitle && (
                     <p className="font-arabic text-lg text-emerald-800 mt-0.5">{book.arabicTitle}</p>
                   )}
@@ -2485,7 +2485,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
                     href={book.link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mt-4 inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-[#064E3B] text-white hover:bg-emerald-900 transition-colors"
+                    className="mt-4 inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-[#13263D] text-white hover:bg-emerald-900 transition-colors"
                   >
                     <span>{book.linkLabel}</span>
                     <ArrowSquareOut className="w-3.5 h-3.5 text-[#D4A72C]" />
@@ -2504,7 +2504,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
           <div className="space-y-6">
 
             <div className="bg-white p-4 sm:p-5 rounded-2xl border border-gray-200 shadow-xs">
-              <h3 className="text-base font-bold text-[#064E3B] flex items-center gap-2">
+              <h3 className="text-base font-bold text-[#13263D] flex items-center gap-2">
                 <BookBookmark className="w-5 h-5 text-[#D4A72C]" weight="duotone" />
                 Urdu Tafsir Library
               </h3>
@@ -2515,17 +2515,17 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
 
             {URDU_TAFSIRS.filter(t => t.featured).map(tafsir => (
               <div key={tafsir.id} className="rounded-2xl border-2 border-[#D4A72C] bg-gradient-to-br from-amber-50 via-white to-emerald-50 p-5 sm:p-7 shadow-xs">
-                <span className="inline-block text-[10px] font-extrabold uppercase tracking-widest text-[#064E3B] bg-[#D4A72C] px-3 py-1 rounded-full mb-3">
+                <span className="inline-block text-[10px] font-extrabold uppercase tracking-widest text-[#13263D] bg-[#D4A72C] px-3 py-1 rounded-full mb-3">
                   ★ Featured Tafsir
                 </span>
-                <h4 className="font-editorial text-xl sm:text-2xl font-extrabold text-[#0B332D]">{tafsir.title}</h4>
+                <h4 className="font-editorial text-xl sm:text-2xl font-extrabold text-[#13263D]">{tafsir.title}</h4>
                 <p className="font-arabic text-2xl text-emerald-800 mt-1">{tafsir.arabicTitle}</p>
                 <p className="text-xs text-gray-600 font-medium mt-2">
                   by {tafsir.author} <span className="text-gray-400">• {tafsir.authorTitle}</span>
                 </p>
                 <p className="text-sm text-gray-700 leading-relaxed mt-3 max-w-3xl">{tafsir.description}</p>
                 <div className="flex flex-wrap gap-2 mt-4">
-                  <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#064E3B] bg-emerald-100 px-2.5 py-1 rounded-full border border-emerald-200">
+                  <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#13263D] bg-emerald-100 px-2.5 py-1 rounded-full border border-emerald-200">
                     {tafsir.volumes}
                   </span>
                   <span className="text-[10px] font-bold text-gray-500 bg-gray-100 px-2.5 py-1 rounded-full">
@@ -2536,7 +2536,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
                   href={tafsir.link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-5 inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl text-xs font-bold bg-[#0B332D] text-white hover:bg-emerald-900 transition-colors"
+                  className="mt-5 inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl text-xs font-bold bg-[#13263D] text-white hover:bg-emerald-900 transition-colors"
                 >
                   <span>{tafsir.linkLabel}</span>
                   <ArrowSquareOut className="w-3.5 h-3.5 text-[#D4A72C]" />
@@ -2547,14 +2547,14 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {URDU_TAFSIRS.filter(t => !t.featured).map(tafsir => (
                 <div key={tafsir.id} className="bg-white rounded-2xl border border-gray-200 shadow-xs p-5 flex flex-col">
-                  <h4 className="text-sm sm:text-base font-bold text-[#064E3B]">{tafsir.title}</h4>
+                  <h4 className="text-sm sm:text-base font-bold text-[#13263D]">{tafsir.title}</h4>
                   <p className="font-arabic text-lg text-emerald-800 mt-0.5">{tafsir.arabicTitle}</p>
                   <p className="text-xs text-gray-500 font-medium mt-1">
                     by {tafsir.author} <span className="text-gray-400">• {tafsir.authorTitle}</span>
                   </p>
                   <p className="text-xs text-gray-600 leading-relaxed mt-2 flex-1">{tafsir.description}</p>
                   <div className="flex flex-wrap gap-2 mt-3">
-                    <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#064E3B] bg-emerald-100 px-2.5 py-1 rounded-full border border-emerald-200">
+                    <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#13263D] bg-emerald-100 px-2.5 py-1 rounded-full border border-emerald-200">
                       {tafsir.volumes}
                     </span>
                     <span className="text-[10px] font-bold text-gray-500 bg-gray-100 px-2.5 py-1 rounded-full">
@@ -2565,7 +2565,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
                     href={tafsir.link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mt-4 inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-[#064E3B] text-white hover:bg-emerald-900 transition-colors"
+                    className="mt-4 inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-[#13263D] text-white hover:bg-emerald-900 transition-colors"
                   >
                     <span>{tafsir.linkLabel}</span>
                     <ArrowSquareOut className="w-3.5 h-3.5 text-[#D4A72C]" />
@@ -2581,15 +2581,15 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
       {callEnded && (
         <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl max-w-md w-full p-8 shadow-2xl border border-emerald-950/10 text-center space-y-5 animate-scaleIn">
-            <div className="w-16 h-16 rounded-3xl bg-emerald-50 border border-emerald-200 flex items-center justify-center mx-auto text-[#064E3B] shadow-xs">
-              <CheckCircle className="w-8 h-8 text-[#064E3B]" weight="fill" />
+            <div className="w-16 h-16 rounded-3xl bg-emerald-50 border border-emerald-200 flex items-center justify-center mx-auto text-[#13263D] shadow-xs">
+              <CheckCircle className="w-8 h-8 text-[#13263D]" weight="fill" />
             </div>
 
             <div>
-              <span className="text-[11px] font-extrabold uppercase tracking-widest text-[#064E3B] bg-emerald-100/80 px-3 py-1 rounded-full border border-emerald-300">
+              <span className="text-[11px] font-extrabold uppercase tracking-widest text-[#13263D] bg-emerald-100/80 px-3 py-1 rounded-full border border-emerald-300">
                 Lesson Completed
               </span>
-              <h2 className="text-2xl font-heading font-extrabold text-[#064E3B] mt-3">
+              <h2 className="text-2xl font-heading font-extrabold text-[#13263D] mt-3">
                 Live Video Class Ended
               </h2>
               <p className="text-xs sm:text-sm text-gray-600 mt-2 leading-relaxed">
@@ -2601,7 +2601,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
               {onReturnToPortal && (
                 <button
                   onClick={onReturnToPortal}
-                  className="w-full py-3.5 px-4 rounded-xl font-extrabold text-xs sm:text-sm gold-gradient-btn text-[#064E3B] shadow-md flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full py-3.5 px-4 rounded-xl font-extrabold text-xs sm:text-sm gold-gradient-btn text-[#13263D] shadow-md flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <span>Return to {portalOrigin === 'teacher' ? 'Teacher Portal' : 'Student Portal'}</span>
                 </button>
@@ -2609,7 +2609,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
 
               <button
                 onClick={handleRestartCall}
-                className="w-full py-3 px-4 rounded-xl text-xs font-bold bg-emerald-50 hover:bg-emerald-100 text-[#064E3B] border border-emerald-200 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                className="w-full py-3 px-4 rounded-xl text-xs font-bold bg-emerald-50 hover:bg-emerald-100 text-[#13263D] border border-emerald-200 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 <span>Re-Enter Live Classroom</span>
               </button>

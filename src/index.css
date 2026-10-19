@@ -25,16 +25,25 @@
     --font-arabic: 'Amiri', 'Traditional Arabic', serif;
     --font-urdu: 'Jameel Noori Nastaleeq', serif;
     
-    /* Premium Islamic Editorial Color System */
-    --color-ivory-primary: #F8F5EE;
-    --color-warm-white: #FCFBF8;
-    --color-emerald-deep: #0B332D;
-    --color-emerald-dark: #07221E;
-    --color-ink-deep: #12201D;
-    --color-brass-gold: #B79A62;
-    --color-brass-subtle: #D8C7A3;
-    --color-beige-soft: #E8E0D1;
-    --color-beige-border: #E5DFC9;
+    /* Design 3 — Hybrid Midnight + Ivory Color System */
+    --color-ivory-primary: #F5F0E6;
+    --color-warm-white: #FAF7F0;
+    --color-midnight: #13263D;
+    --color-midnight-deep: #0C1A2E;
+    --color-midnight-soft: #1E3A57;
+    --color-ink-deep: #152A45;
+    --color-bronze: #A47A46;
+    --color-bronze-deep: #8C6D37;
+    --color-bronze-subtle: #C9AE7E;
+    --color-pearl: #A9C4D3;
+    --color-pearl-light: #C7D6E3;
+    --color-beige-soft: #E7DBC2;
+    --color-beige-border: #E2D3B3;
+    /* Legacy aliases (kept for compatibility) */
+    --color-emerald-deep: #13263D;
+    --color-emerald-dark: #0C1A2E;
+    --color-brass-gold: #A47A46;
+    --color-brass-subtle: #C9AE7E;
   }
 
   body {
@@ -65,48 +74,60 @@
 
 /* Subtle Geometric Linework & Editorial Accents */
 .bg-editorial-ivory {
-  background-color: #F8F5EE;
+  background-color: #F5F0E6;
 }
 
 .bg-editorial-white {
-  background-color: #FCFBF8;
+  background-color: #FAF7F0;
 }
 
 .bg-editorial-emerald {
-  background-color: #0B332D;
+  background-color: #13263D;
 }
 
 .text-editorial-emerald {
-  color: #0B332D;
+  color: #13263D;
 }
 
 .text-editorial-brass {
-  color: #B79A62;
+  color: #A47A46;
+}
+
+.text-pearl {
+  color: #A9C4D3;
+}
+
+.bg-midnight {
+  background-color: #13263D;
+}
+
+.bg-midnight-deep {
+  background-color: #0C1A2E;
 }
 
 .border-editorial-hairline {
-  border-color: rgba(183, 154, 98, 0.25);
+  border-color: rgba(164, 122, 70, 0.25);
 }
 
 .border-editorial-subtle {
-  border-color: #E8E0D1;
+  border-color: #E7DBC2;
 }
 
 /* Subtle architectural Islamic geometry linework */
 .bg-islamic-pattern {
-  background-color: #0B332D;
-  background-image: radial-gradient(rgba(183, 154, 98, 0.18) 1px, transparent 0);
+  background-color: #13263D;
+  background-image: radial-gradient(rgba(164, 122, 70, 0.18) 1px, transparent 0);
   background-size: 28px 28px;
 }
 
 .bg-islamic-subtle {
-  background-color: #F8F5EE;
-  background-image: radial-gradient(rgba(11, 51, 45, 0.05) 1px, transparent 0);
+  background-color: #F5F0E6;
+  background-image: radial-gradient(rgba(19, 38, 61, 0.05) 1px, transparent 0);
   background-size: 24px 24px;
 }
 
 .bg-islamic-gold-pattern {
-  background-image: radial-gradient(rgba(212, 167, 44, 0.25) 1px, transparent 0);
+  background-image: radial-gradient(rgba(164, 122, 70, 0.25) 1px, transparent 0);
   background-size: 18px 18px;
 }
 
@@ -138,12 +159,12 @@
 
   /* 3. Borders & Specular Inner Highlights */
   --glass-border-light: 1px solid rgba(6, 78, 59, 0.09);
-  --glass-border-dark: 1px solid rgba(212, 167, 44, 0.28);
-  --glass-border-gold: 1px solid rgba(212, 167, 44, 0.38);
+  --glass-border-dark: 1px solid rgba(164, 122, 70, 0.28);
+  --glass-border-gold: 1px solid rgba(164, 122, 70, 0.38);
   --glass-border-emerald: 1px solid rgba(6, 78, 59, 0.20);
   
   --glass-inset-light: inset 0 1px 0 0 rgba(255, 255, 255, 0.85);
-  --glass-inset-dark: inset 0 1px 0 0 rgba(212, 167, 44, 0.25);
+  --glass-inset-dark: inset 0 1px 0 0 rgba(164, 122, 70, 0.25);
   --glass-inset-gold: inset 0 1px 0 0 rgba(255, 255, 255, 0.60);
 
   /* 4. Diffused Ambient Elevation Shadows */
@@ -248,7 +269,7 @@
 .gold-gradient-btn:hover {
   background: linear-gradient(135deg, #E6C25E 0%, #F5D77F 50%, #C49826 100%);
   transform: translateY(-1px);
-  box-shadow: 0 10px 20px -5px rgba(212, 167, 44, 0.35);
+  box-shadow: 0 10px 20px -5px rgba(164, 122, 70, 0.35);
 }
 
 /* Purposeful blank states for photography */
@@ -257,7 +278,7 @@
 }
 
 .academy-media-slot:hover {
-  border-color: rgba(212, 167, 44, 0.95);
+  border-color: rgba(164, 122, 70, 0.95);
 }
 
 /* Custom Scrollbars */
@@ -271,7 +292,7 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #064E3B;
+  background: #13263D;
   border-radius: 4px;
 }
 

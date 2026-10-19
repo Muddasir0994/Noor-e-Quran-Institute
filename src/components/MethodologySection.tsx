@@ -41,7 +41,7 @@ export const MethodologySection: React.FC<MethodologySectionProps> = ({ onOpenTr
   ];
 
   return (
-    <section id="how-it-works" className="py-20 lg:py-28 bg-[#FCFBF8] border-b border-[#E8E0D1]">
+    <section id="how-it-works" className="py-20 lg:py-28 bg-[#FAF7F0] border-b border-[#E7DBC2]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
@@ -49,7 +49,7 @@ export const MethodologySection: React.FC<MethodologySectionProps> = ({ onOpenTr
           <p className="text-[11px] font-sans font-bold text-[#8C6D37] uppercase tracking-widest mb-3">
             HOW IT WORKS
           </p>
-          <h2 className="font-editorial text-3xl sm:text-4xl lg:text-5xl text-[#0B332D] font-semibold tracking-tight">
+          <h2 className="font-editorial text-3xl sm:text-4xl lg:text-5xl text-[#13263D] font-semibold tracking-tight">
             Your Quran journey, made simple.
           </h2>
         </div>
@@ -58,7 +58,7 @@ export const MethodologySection: React.FC<MethodologySectionProps> = ({ onOpenTr
         <div className="relative">
           
           {/* Subtle Horizontal Connecting Hairline (Desktop) */}
-          <div className="hidden lg:block absolute top-6 left-0 right-0 h-[1px] bg-[#E8E0D1] z-0" />
+          <div className="hidden lg:block absolute top-6 left-0 right-0 h-[1px] bg-[#E7DBC2] z-0" />
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-8 relative z-10">
             {steps.map((step) => {
@@ -68,16 +68,16 @@ export const MethodologySection: React.FC<MethodologySectionProps> = ({ onOpenTr
                   
                   {/* Step Number & Minimal Icon */}
                   <div className="flex items-center gap-3">
-                    <span className="font-editorial text-2xl sm:text-3xl text-[#B79A62] font-light bg-[#FCFBF8] pr-2">
+                    <span className="font-editorial text-2xl sm:text-3xl text-[#A47A46] font-light bg-[#FAF7F0] pr-2">
                       {step.number}
                     </span>
-                    <div className="w-8 h-8 rounded-sm bg-[#F8F5EE] border border-[#E8E0D1] flex items-center justify-center text-[#0B332D]">
+                    <div className="w-8 h-8 rounded-sm bg-[#F5F0E6] border border-[#E7DBC2] flex items-center justify-center text-[#13263D]">
                       <Icon className="w-4 h-4" weight="regular" />
                     </div>
                   </div>
 
                   {/* Title & Description */}
-                  <h3 className="font-editorial text-xl text-[#0B332D] font-semibold">
+                  <h3 className="font-editorial text-xl text-[#13263D] font-semibold">
                     {step.title}
                   </h3>
 
@@ -97,7 +97,7 @@ export const MethodologySection: React.FC<MethodologySectionProps> = ({ onOpenTr
           <div className="mt-16 text-center">
             <button
               onClick={onOpenTrial}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-[#0B332D] text-[#F8F5EE] text-xs font-semibold uppercase tracking-wider rounded-sm hover:bg-[#07221E] transition-all shadow-xs cursor-pointer"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-[#13263D] text-[#F5F0E6] text-xs font-semibold uppercase tracking-wider rounded-sm hover:bg-[#0C1A2E] transition-all shadow-xs cursor-pointer"
             >
               <span>Get Started with a 3-Day Free Trial</span>
               <ArrowRight className="w-3.5 h-3.5" />
