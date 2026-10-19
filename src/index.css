@@ -25,6 +25,16 @@
     --font-arabic: 'Amiri', 'Traditional Arabic', serif;
     --font-urdu: 'Jameel Noori Nastaleeq', serif;
     
+    /* Teal Dark Design System (2026-10-19) */
+    --color-teal: #5EEAD4;
+    --color-teal-dim: #2DD4BF;
+    --color-teal-hover: #4FD1C5;
+    --color-gold: #D4A437;
+    --color-gold-dim: #B8933A;
+    --color-night: #0A1428;
+    --color-night-card: #0F1E35;
+    --color-night-border: #1E2D47;
+    --color-night-divider: #1B2A44;
     /* Design 3 — Hybrid Midnight + Ivory Color System */
     --color-ivory-primary: #F5F0E6;
     --color-warm-white: #FAF7F0;
@@ -299,3 +309,10 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #043629;
 }
+
+/* Teal Dark utilities */
+.bg-night { background-color: #0A1428; }
+.bg-night-card { background-color: #0F1E35; }
+.text-teal-bright { color: #5EEAD4; }
+.text-gold-warm { color: #D4A437; }
+.border-night { border-color: #1E2D47; }

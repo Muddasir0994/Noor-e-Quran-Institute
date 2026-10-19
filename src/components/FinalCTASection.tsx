@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowRight } from '@phosphor-icons/react';
+import { ArrowRight, BookOpen } from '@phosphor-icons/react';
 
 interface FinalCTASectionProps {
   onOpenTrial: () => void;
@@ -7,65 +7,43 @@ interface FinalCTASectionProps {
 }
 
 export const FinalCTASection: React.FC<FinalCTASectionProps> = ({
-  onOpenTrial,
-  onViewCourses
+  onOpenTrial
 }) => {
   return (
-    <section className="relative py-20 lg:py-28 bg-[#13263D] text-[#F5F0E6] overflow-hidden text-center">
-      
-      {/* Subtle Geometric Background */}
-      <div 
-        className="absolute inset-0 opacity-15 pointer-events-none"
-        style={{
-          backgroundImage: 'radial-gradient(#A47A46 1px, transparent 1px)',
-          backgroundSize: '28px 28px'
-        }}
-      />
+    <section className="bg-[#0A1428] py-20 lg:py-24">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div
+          className="rounded-2xl border border-[#5EEAD4]/40 px-8 py-10 sm:px-12 sm:py-12 flex flex-col lg:flex-row items-center gap-8"
+          style={{
+            background: 'radial-gradient(ellipse 70% 120% at 20% 50%, rgba(94,234,212,0.08) 0%, transparent 70%)'
+          }}
+        >
+          {/* Icon */}
+          <span className="shrink-0 w-16 h-16 rounded-full border border-[#5EEAD4]/40 flex items-center justify-center text-[#D4A437]">
+            <BookOpen className="w-8 h-8" weight="regular" />
+          </span>
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-6">
-        
-        {/* Subtle Decorative Arabic Monogram / Bismillah */}
-        <p className="font-arabic text-sm text-[#A47A46] font-normal tracking-wide" dir="rtl">
-          بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
-        </p>
+          {/* Text */}
+          <div className="flex-1 text-center lg:text-left">
+            <h2 className="text-2xl sm:text-3xl text-white font-bold tracking-tight mb-2">
+              Begin with a 3-day free trial.
+            </h2>
+            <p className="text-sm sm:text-base text-[#9AA7B8] leading-relaxed max-w-xl">
+              Experience our one-to-one Quran classes and see the difference
+              for yourself, with no commitment.
+            </p>
+          </div>
 
-        {/* Headline */}
-        <h2 className="font-editorial text-3xl sm:text-4xl lg:text-5xl text-[#F5F0E6] font-semibold leading-[1.15] tracking-tight">
-          Begin a journey that will<br />
-          <span className="italic font-normal text-[#E7DBC2]">stay with you forever.</span>
-        </h2>
-
-        {/* Supporting Line */}
-        <p className="text-sm sm:text-base text-[#E7DBC2]/85 font-sans leading-relaxed max-w-xl mx-auto">
-          Start learning with a qualified teacher and discover a more personal way to learn the Quran.
-        </p>
-
-        {/* Action Buttons */}
-        <div className="flex flex-wrap items-center justify-center gap-5 pt-4">
+          {/* Button */}
           <button
-            onClick={onOpenTrial}
-            className="px-7 py-3.5 bg-[#A47A46] text-[#0C1A2E] text-xs font-semibold uppercase tracking-wider rounded-sm hover:bg-[#C9AE7E] transition-colors shadow-xs cursor-pointer"
+            onClick={() => onOpenTrial()}
+            className="shrink-0 inline-flex items-center gap-2 px-8 py-4 bg-[#5EEAD4] text-[#0A1428] text-sm font-bold rounded-lg hover:bg-[#4FD1C5] transition-all cursor-pointer"
           >
-            Book Your Free Trial
+            <span>Start Your Free Trial</span>
+            <ArrowRight className="w-4 h-4" />
           </button>
-
-          {onViewCourses && (
-            <button
-              onClick={onViewCourses}
-              className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#F5F0E6] hover:text-[#A47A46] transition-colors py-3 px-4 border-b border-[#F5F0E6]/40 hover:border-[#A47A46] cursor-pointer"
-            >
-              <span>Explore Courses</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </button>
-          )}
         </div>
-
-        <p className="text-[11px] text-[#E7DBC2]/60 font-sans pt-3">
-          No payment details required • Cancel anytime • 3-Day risk-free trial
-        </p>
-
       </div>
-
     </section>
   );
 };
