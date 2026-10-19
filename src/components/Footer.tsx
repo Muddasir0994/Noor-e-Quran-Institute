@@ -202,6 +202,8 @@ export const Footer: React.FC<FooterProps> = ({
             <button onClick={() => onOpenLegal && onOpenLegal('terms')} className="hover:underline cursor-pointer">Terms</button>
             <span>•</span>
             <span>Worldwide Online Education</span>
+            <span>•</span>
+            <span className="opacity-75">Photos: <a href="https://unsplash.com/@abdu3h" target="_blank" rel="noopener noreferrer" className="hover:underline">Abdullah Arif</a>, <a href="https://unsplash.com/@alfasy" target="_blank" rel="noopener noreferrer" className="hover:underline">Mishary Alafasy</a>, <a href="https://unsplash.com/@lemonmelon" target="_blank" rel="noopener noreferrer" className="hover:underline">SR</a> / Unsplash</span>
           </div>
         </div>
 
