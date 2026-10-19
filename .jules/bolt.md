@@ -1,0 +1,3 @@
+## 2024-05-18 - Memoize derived lists to prevent synchronous re-evaluations
+**Learning:** Components that update frequently (e.g., via timers like in `ClassroomStudio.tsx`) will synchronously re-evaluate any derived arrays (like filtered lists) on every render tick if they are not memoized. This blocks the main thread and can lead to dropped frames or sluggish performance, especially with larger lists.
+**Action:** Always wrap derived list calculations (filtering, sorting, mapping) in `useMemo` with the correct dependency array, particularly in components that contain active intervals, timers, or fast-changing state.
