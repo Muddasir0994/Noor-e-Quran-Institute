@@ -241,13 +241,13 @@ export const Navbar: React.FC<NavbarProps> = ({
               )}
             </div>
 
-            {/* Primary Action Button: Squared, Editorial, Deep Emerald */}
+            {/* Primary Action Button: Teal */}
             <button
               onClick={() => onOpenTrial()}
-              className="px-5 py-2.5 bg-[#13263D] text-[#F5F0E6] text-xs font-sans font-semibold uppercase tracking-wider rounded-sm hover:bg-[#0C1A2E] transition-all shadow-xs flex items-center gap-2 cursor-pointer"
+              className="px-5 py-2.5 bg-[#5EEAD4] text-[#0A1428] text-xs font-sans font-bold uppercase tracking-wider rounded-lg hover:bg-[#4FD1C5] transition-all shadow-xs flex items-center gap-2 cursor-pointer"
             >
               <span>Book Free Trial</span>
-              <ArrowRight className="w-3.5 h-3.5 text-[#A47A46]" />
+              <ArrowRight className="w-3.5 h-3.5" />
             </button>
 
           </div>
