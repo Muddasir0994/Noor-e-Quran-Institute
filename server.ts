@@ -12,7 +12,7 @@ import {
   getFirestoreDb,
   loadCollectionFromFirestore,
 } from './server/firestore.js';
-import { startArticleSeoCache } from './server/seoCache.js';
+import { startArticleSeoCache, upsertArticleSeo, removeArticleSeo } from './server/seoCache.js';
 import { 
   resolveRouteMetadata, 
   injectSeoTagsIntoHtml, 
@@ -1994,6 +1994,10 @@ app.post('/api/admin/blog-posts', requireAdmin, async (req, res) => {
       clean.createdAt = new Date().toISOString();
     }
     await db.collection(BLOG_POSTS_COL).doc(id).set(clean, { merge: true });
+    // Keep the crawler-facing SEO cache + sitemap in sync immediately: the
+    // background refresh runs only every 15 minutes, so without this a newly
+    // published article would 404 for Googlebot until the next cycle.
+    upsertArticleSeo({ id, ...clean });
     res.status(201).json({ success: true, post: { id, ...clean } });
   } catch (err: any) {
     console.error('[api] POST /api/admin/blog-posts failed:', err.message);
@@ -2007,7 +2011,11 @@ app.delete('/api/admin/blog-posts/:id', requireAdmin, async (req, res) => {
   const id = String(req.params.id).slice(0, 100);
   if (!id) return res.status(400).json({ error: 'Invalid post ID' });
   try {
-    await db.collection(BLOG_POSTS_COL).doc(id).delete();
+    const docRef = db.collection(BLOG_POSTS_COL).doc(id);
+    const existing = await docRef.get();
+    const slug = existing.exists ? String(existing.data()?.slug || '') : '';
+    await docRef.delete();
+    if (slug) removeArticleSeo(slug);
     res.json({ success: true });
   } catch (err: any) {
     console.error('[api] DELETE /api/admin/blog-posts failed:', err.message);

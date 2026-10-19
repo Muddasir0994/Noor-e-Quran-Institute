@@ -142,9 +142,41 @@ export async function refreshArticleSeoCache(): Promise<number> {
   return cache.size;
 }
 
+/**
+ * Remove one article's SEO entry by slug (e.g. right after the admin panel
+ * deletes it). Never throws.
+ */
+export function removeArticleSeo(slug: string): void {
+  try {
+    if (slug && cache.delete(slug)) {
+      persistCacheToDisk();
+      console.log(`[seoCache] Removed article SEO entry for slug "${slug}".`);
+    }
+  } catch (e: any) {
+    console.warn('[seoCache] remove failed:', e.message);
+  }
+}
+
 /** Look up one article's SEO fields by slug (undefined on miss). */
 export function getArticleSeo(slug: string): ArticleSeoEntry | undefined {
   return cache.get(slug);
+}
+
+/**
+ * Immediately insert or replace one article's SEO entry (e.g. right after the
+ * admin panel publishes it). Makes the crawler path and sitemap correct
+ * without waiting for the next background refresh. Never throws.
+ */
+export function upsertArticleSeo(doc: any): void {
+  try {
+    const entry = entryFromDoc(doc);
+    if (!entry) return;
+    cache.set(entry.slug, entry);
+    persistCacheToDisk();
+    console.log(`[seoCache] Upserted article SEO entry for slug "${entry.slug}".`);
+  } catch (e: any) {
+    console.warn('[seoCache] upsert failed:', e.message);
+  }
 }
 
 /** All cached article SEO entries (for the sitemap generator). */
