@@ -187,6 +187,17 @@ function AppContent() {
   const [showLegalModal, setShowLegalModal] = useState<boolean>(false);
   const [legalModalType, setLegalModalType] = useState<'privacy' | 'terms'>('privacy');
 
+  // Enrollment + Free Trial are login-gated (user request 2026-10-20): an
+  // anonymous click first opens signup/login; the requested form opens right
+  // after successful authentication via this pending action.
+  const [pendingAfterAuth, setPendingAfterAuth] = useState<
+    | { type: 'trial'; courseName?: string; genderPref?: 'Male' | 'Female' | 'No Preference' }
+    | { type: 'enroll'; courseName?: string }
+    | { type: 'enroll-pkg'; pkg: PackagePlan }
+    | null
+  >(null);
+  const isLoggedIn = !!(currentUser || userProfile);
+
   // Scroll to top on route change
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -237,12 +248,22 @@ function AppContent() {
   }, []);
 
   const handleOpenTrial = (courseName?: string, genderPref?: 'Male' | 'Female' | 'No Preference') => {
+    if (!isLoggedIn) {
+      setPendingAfterAuth({ type: 'trial', courseName, genderPref });
+      handleOpenAuth('student', 'signup');
+      return;
+    }
     setSelectedCourseForTrial(courseName);
     if (genderPref) setSelectedGenderForTrial(genderPref);
     setShowTrialModal(true);
   };
 
   const handleOpenEnroll = (courseName?: string) => {
+    if (!isLoggedIn) {
+      setPendingAfterAuth({ type: 'enroll', courseName });
+      handleOpenAuth('student', 'signup');
+      return;
+    }
     if (courseName) {
       const foundPkg = packages.find(p => p.name.toLowerCase().includes(courseName.toLowerCase()));
       setSelectedPackageForEnroll(foundPkg || packages[0]);
@@ -251,6 +272,11 @@ function AppContent() {
   };
 
   const handleSelectPackage = (pkg: PackagePlan) => {
+    if (!isLoggedIn) {
+      setPendingAfterAuth({ type: 'enroll-pkg', pkg });
+      handleOpenAuth('student', 'signup');
+      return;
+    }
     setSelectedPackageForEnroll(pkg);
     setShowEnrollModal(true);
   };
@@ -709,10 +735,40 @@ function AppContent() {
         {showAuthModal && (
           <AuthModal
             isOpen={showAuthModal}
-            onClose={() => setShowAuthModal(false)}
+            onClose={() => {
+              setShowAuthModal(false);
+              // Cancelled login (no user): drop any pending enroll/trial intent.
+              // After a successful login currentUser is set, so the pending
+              // action (already handled in onSuccess) is left untouched.
+              if (!currentUser) setPendingAfterAuth(null);
+            }}
             initialRole={authRole}
             initialMode={authMode}
             onSuccess={() => {
+              // Login-gated flows: if the visitor clicked Enroll / Free Trial
+              // while logged out, open that form now instead of the portal.
+              if (pendingAfterAuth) {
+                const pending = pendingAfterAuth;
+                setPendingAfterAuth(null);
+                setShowAuthModal(false);
+                setTimeout(() => {
+                  if (pending.type === 'trial') {
+                    setSelectedCourseForTrial(pending.courseName);
+                    if (pending.genderPref) setSelectedGenderForTrial(pending.genderPref);
+                    setShowTrialModal(true);
+                  } else if (pending.type === 'enroll') {
+                    if (pending.courseName) {
+                      const foundPkg = packages.find(p => p.name.toLowerCase().includes(pending.courseName!.toLowerCase()));
+                      setSelectedPackageForEnroll(foundPkg || packages[0]);
+                    }
+                    setShowEnrollModal(true);
+                  } else if (pending.type === 'enroll-pkg') {
+                    setSelectedPackageForEnroll(pending.pkg);
+                    setShowEnrollModal(true);
+                  }
+                }, 900);
+                return;
+              }
               // BUG 2 fix: navigate to the correct portal after login.
               // Read the freshly-saved profile from localStorage (set synchronously
               // by AuthContext on login) to determine role by email.
