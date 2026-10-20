@@ -78,22 +78,22 @@ export const Footer: React.FC<FooterProps> = ({
             </p>
             <ul className="space-y-2 text-xs font-sans text-[#E7DBC2]/80">
               <li>
-                <Link to="/courses" className="hover:text-white transition-colors">
+                <Link to="/quran-reading-nazra" className="hover:text-white transition-colors">
                   Quran Reading
                 </Link>
               </li>
               <li>
-                <Link to="/courses" className="hover:text-white transition-colors">
+                <Link to="/quran-with-tajweed" className="hover:text-white transition-colors">
                   Tajweed
                 </Link>
               </li>
               <li>
-                <Link to="/courses" className="hover:text-white transition-colors">
+                <Link to="/quran-memorization-hifz" className="hover:text-white transition-colors">
                   Hifz-ul-Quran
                 </Link>
               </li>
               <li>
-                <Link to="/courses" className="hover:text-white transition-colors">
+                <Link to="/islamic-studies" className="hover:text-white transition-colors">
                   Islamic Studies
                 </Link>
               </li>
@@ -151,14 +151,14 @@ export const Footer: React.FC<FooterProps> = ({
                 </Link>
               </li>
               <li>
-                <button onClick={() => onOpenLegal && onOpenLegal('privacy')} className="hover:text-white transition-colors cursor-pointer text-left">
+                <Link to="/privacy-policy" className="hover:text-white transition-colors">
                   Privacy Policy
-                </button>
+                </Link>
               </li>
               <li>
-                <button onClick={() => onOpenLegal && onOpenLegal('terms')} className="hover:text-white transition-colors cursor-pointer text-left">
+                <Link to="/terms" className="hover:text-white transition-colors">
                   Terms & Conditions
-                </button>
+                </Link>
               </li>
             </ul>
           </div>
@@ -197,9 +197,9 @@ export const Footer: React.FC<FooterProps> = ({
         <div className="pt-8 border-t border-[#A47A46]/15 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-[#E7DBC2]/50 font-sans">
           <p>© {new Date().getFullYear()} Noor E Quran Institute. All rights reserved.</p>
           <div className="flex items-center gap-4">
-            <button onClick={() => onOpenLegal && onOpenLegal('privacy')} className="hover:underline cursor-pointer">Privacy</button>
+            <Link to="/privacy-policy" className="hover:underline">Privacy</Link>
             <span>•</span>
-            <button onClick={() => onOpenLegal && onOpenLegal('terms')} className="hover:underline cursor-pointer">Terms</button>
+            <Link to="/terms" className="hover:underline">Terms</Link>
             <span>•</span>
             <span>Worldwide Online Education</span>
             <span>•</span>

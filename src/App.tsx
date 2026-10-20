@@ -28,6 +28,7 @@ const BlogListPage = lazy(() => import('./pages/BlogListPage').then(m => ({ defa
 const BlogPostPage = lazy(() => import('./pages/BlogPostPage').then(m => ({ default: m.BlogPostPage })));
 const ContactPage = lazy(() => import('./pages/ContactPage').then(m => ({ default: m.ContactPage })));
 const FAQPage = lazy(() => import('./pages/FAQPage').then(m => ({ default: m.FAQPage })));
+const LegalPage = lazy(() => import('./pages/LegalPage').then(m => ({ default: m.LegalPage })));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage').then(m => ({ default: m.NotFoundPage })));
 
 // Lazy-loaded specialized landings & portals
@@ -474,6 +475,10 @@ function AppContent() {
 
             {/* 9. FAQ */}
             <Route path="/faq" element={<FAQPage onOpenTrial={() => handleOpenTrial()} />} />
+            <Route path="/privacy-policy" element={<LegalPage variant="privacy" />} />
+            <Route path="/privacy" element={<LegalPage variant="privacy" />} />
+            <Route path="/terms" element={<LegalPage variant="terms" />} />
+            <Route path="/terms-and-conditions" element={<LegalPage variant="terms" />} />
 
             {/* 10. Specialized Program Tracks */}
             <Route
