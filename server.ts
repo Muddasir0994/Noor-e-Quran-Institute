@@ -13,6 +13,7 @@ import {
   loadCollectionFromFirestore,
 } from './server/firestore.js';
 import { startArticleSeoCache, upsertArticleSeo, removeArticleSeo } from './server/seoCache.js';
+import { BLOG_BUNDLE } from './server/blogBundle.js';
 import { 
   resolveRouteMetadata, 
   injectSeoTagsIntoHtml, 
@@ -579,17 +580,39 @@ app.get('/api/articles', (req, res) => {
 // Public blog posts — served via the Admin SDK because the Firestore security
 // rules on the named database deny unauthenticated client reads (403), which
 // used to make the public /blog page silently fall back to 6 local articles.
+//
+// GitHub resilience (2026-10-20): the repo bundles a snapshot of every
+// published article (server/blog-data/<slug>.ts, see server/blogBundle.ts).
+// The endpoint merges Firestore docs with the bundle (dedupe by slug,
+// Firestore wins) so /blog keeps serving all articles when the Firestore read
+// flakes and returns []. NOTE: deleting an article in the admin panel does not
+// remove it from the repo bundle — also delete server/blog-data/<slug>.ts then.
 app.get('/api/blog-posts', async (req, res) => {
+  const slug = typeof req.query.slug === 'string' ? req.query.slug.trim() : '';
+  const finalize = (posts: any[]) => {
+    let out = posts;
+    if (slug) out = out.filter((d: any) => d.slug === slug);
+    out = [...out].sort((a: any, b: any) =>
+      String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
+    return out;
+  };
+  const withBundle = (posts: any[]) => {
+    const seen = new Set(posts.map((p: any) => p.slug));
+    for (const b of BLOG_BUNDLE) {
+      if (!seen.has(b.slug)) {
+        posts.push(b);
+        seen.add(b.slug);
+      }
+    }
+    return posts;
+  };
   try {
     const docs = await loadCollectionFromFirestore('blogPosts');
-    const slug = typeof req.query.slug === 'string' ? req.query.slug.trim() : '';
-    let posts = docs.filter((d: any) => d.published !== false && d.status !== 'draft');
-    if (slug) posts = posts.filter((d: any) => d.slug === slug);
-    posts = posts.sort((a: any, b: any) =>
-      String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
-    res.json({ success: true, posts });
+    const posts = docs.filter((d: any) => d.published !== false && d.status !== 'draft');
+    res.json({ success: true, posts: finalize(withBundle(posts)) });
   } catch (err: any) {
-    res.status(500).json({ error: 'Failed to fetch blog posts' });
+    console.error('[api] /api/blog-posts Firestore read failed, serving repo bundle:', err.message);
+    res.json({ success: true, posts: finalize([...BLOG_BUNDLE]), bundleFallback: true });
   }
 });
 

@@ -1,5 +1,6 @@
 import { dataStore } from './dataStore.js';
 import { getArticleSeo, getAllArticleSeo } from './seoCache.js';
+import { BLOG_BUNDLE } from './blogBundle.js';
 
 export const ACADEMY_BASE_URL = 'https://noorequraninstitute.me';
 
@@ -702,6 +703,14 @@ export function generateDynamicSitemapXml(): string {
       slug: cached.slug,
       lastmod: toDateOnly(cached.updatedAt) || toDateOnly(cached.createdAt) || today
     });
+  }
+  // 3b. Repo-bundled articles (GitHub resilience, 2026-10-20): list any bundle
+  // slug not already covered above, so articles published straight to the repo
+  // appear in the sitemap even before their first admin-panel publish.
+  for (const b of BLOG_BUNDLE) {
+    if (!articleEntries.has(b.slug)) {
+      articleEntries.set(b.slug, { slug: b.slug, lastmod: toDateOnly(b.updatedAt) || today });
+    }
   }
   for (const { slug, lastmod } of articleEntries.values()) {
     xml += `  <url>
