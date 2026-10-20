@@ -69,9 +69,7 @@ export const BlogListPage: React.FC<BlogListPageProps> = () => {
   const listPosts = filtered.length > 3 ? filtered.slice(3) : [];
 
   const stripHtml = (html: string) => {
-    const tmp = document.createElement('div');
-    tmp.innerHTML = html;
-    return tmp.textContent || tmp.innerText || '';
+    return new DOMParser().parseFromString(html, 'text/html').body.textContent || '';
   };
 
   const handleNavigate = (slug: string) => {
