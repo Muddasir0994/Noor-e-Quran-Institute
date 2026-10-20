@@ -122,13 +122,6 @@ export const Navbar: React.FC<NavbarProps> = ({
             <span>WhatsApp: +92 327 4496163</span>
           </a>
           <span className="text-[#A47A46]/40 hidden sm:inline">|</span>
-          <button
-            onClick={() => handlePortalNavigation('classroom')}
-            className="hover:text-white transition-colors cursor-pointer"
-          >
-            Classroom Studio
-          </button>
-          <span className="text-[#A47A46]/40">|</span>
           {currentUser ? (
             <button
               onClick={() => handlePortalNavigation(getPortalView())}
@@ -293,24 +286,14 @@ export const Navbar: React.FC<NavbarProps> = ({
               <ArrowRight className="w-3.5 h-3.5 text-[#A47A46]" />
             </button>
 
-            <div className="grid grid-cols-2 gap-2 text-center text-xs pt-1">
-              <button
-                onClick={() => {
-                  handlePortalNavigation('classroom');
-                  setMobileMenuOpen(false);
-                }}
-                className="py-2 px-3 border border-[#E7DBC2] rounded-sm text-[#13263D] hover:bg-[#F5F0E6]"
-              >
-                Classroom Studio
-              </button>
-
+            <div className="text-center text-xs pt-1">
               {currentUser ? (
                 <button
                   onClick={() => {
                     handlePortalNavigation(getPortalView());
                     setMobileMenuOpen(false);
                   }}
-                  className="py-2 px-3 bg-[#A47A46] text-[#0C1A2E] font-bold rounded-sm"
+                  className="w-full py-2 px-3 bg-[#A47A46] text-[#0C1A2E] font-bold rounded-sm"
                 >
                   My Portal
                 </button>
