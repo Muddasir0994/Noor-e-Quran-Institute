@@ -48,7 +48,7 @@ const stripTags = (s: string) => s.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ')
  * Extract FAQ Q&A pairs from article HTML — mirrors the client's extractFaqs
  * in src/pages/BlogPostPage.tsx so server JSON-LD matches client JSON-LD.
  */
-function extractFaqs(html: string): ArticleSeoFaq[] {
+export function extractFaqs(html: string): ArticleSeoFaq[] {
   const faqs: ArticleSeoFaq[] = [];
   if (!html) return faqs;
   const section = html.match(/<h2[^>]*>\s*Frequently Asked Questions\s*<\/h2>([\s\S]*?)(?=<h2|$)/i);

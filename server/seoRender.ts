@@ -1,5 +1,5 @@
 import { dataStore } from './dataStore.js';
-import { getArticleSeo, getAllArticleSeo } from './seoCache.js';
+import { getArticleSeo, getAllArticleSeo, extractFaqs } from './seoCache.js';
 import { BLOG_BUNDLE } from './blogBundle.js';
 
 export const ACADEMY_BASE_URL = 'https://noorequraninstitute.me';
@@ -585,6 +585,66 @@ export function resolveRouteMetadata(rawPath: string): RouteResolution {
         extraSchemas: faqSchema ? [articleSchema, faqSchema] : [articleSchema]
       };
       return { meta, is404: false };
+    }
+
+    // Repo-bundled articles (GitHub resilience, 2026-10-20): serve real SEO
+    // meta for bundle slugs so they return HTTP 200 (not 404+noindex) even
+    // before any admin-panel publish upserts them into the SEO cache.
+    const bundled = BLOG_BUNDLE.find(b => b.slug === slug);
+    if (bundled) {
+      const canonical = `${ACADEMY_BASE_URL}/blog/${bundled.slug}`;
+      const bundleFaqs = extractFaqs(bundled.content || '');
+      const bundleArticleSchema = {
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        headline: bundled.title,
+        description: bundled.metaDescription,
+        image: bundled.featuredImage || `${ACADEMY_BASE_URL}/branding/logo.png`,
+        author: {
+          '@type': 'Person',
+          name: bundled.author || 'Noor E Quran Institute Scholar'
+        },
+        publisher: {
+          '@type': 'EducationalOrganization',
+          name: 'Noor E Quran Institute',
+          logo: {
+            '@type': 'ImageObject',
+            url: `${ACADEMY_BASE_URL}/branding/logo.webp`
+          }
+        },
+        datePublished: bundled.createdAt,
+        dateModified: bundled.updatedAt || bundled.createdAt,
+        mainEntityOfPage: {
+          '@type': 'WebPage',
+          '@id': canonical
+        }
+      };
+      const bundleFaqSchema = bundleFaqs.length > 0 ? {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: bundleFaqs.map(f => ({
+          '@type': 'Question',
+          name: f.question,
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: f.answer
+          }
+        }))
+      } : undefined;
+      const bundleMeta: PageMeta = {
+        title: `${bundled.title} | Noor E Quran Institute`,
+        description: bundled.metaDescription || `Read educational article and Quran learning guide: ${bundled.title}.`,
+        canonical,
+        ogType: 'article',
+        ogImage: `${ACADEMY_BASE_URL}/logo.webp`,
+        breadcrumbs: [
+          { name: 'Home', item: `${ACADEMY_BASE_URL}/` },
+          { name: 'Blog', item: `${ACADEMY_BASE_URL}/blog` },
+          { name: bundled.title, item: canonical }
+        ],
+        extraSchemas: bundleFaqSchema ? [bundleArticleSchema, bundleFaqSchema] : [bundleArticleSchema]
+      };
+      return { meta: bundleMeta, is404: false };
     }
 
     // Dynamic article fallback for Firestore published posts.
