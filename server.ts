@@ -13,6 +13,7 @@ import {
   loadCollectionFromFirestore,
 } from './server/firestore.js';
 import { startArticleSeoCache } from './server/seoCache.js';
+import { getBlogSnapshot } from './server/blogSnapshot.js';
 import { 
   resolveRouteMetadata, 
   injectSeoTagsIntoHtml, 
@@ -606,7 +607,8 @@ app.get('/api/blog-image/:slug', async (req, res) => {
       return res.send(cached);
     }
     const docs = await loadCollectionFromFirestore('blogPosts');
-    const post: any = docs.find((d: any) => d.slug === slug);
+    const allDocs = docs.length > 0 ? docs : getBlogSnapshot();
+    const post: any = allDocs.find((d: any) => d.slug === slug);
     const img = post?.featuredImage;
     if (!img || typeof img !== 'string') {
       return res.status(404).json({ error: 'Image not found' });
@@ -633,7 +635,10 @@ app.get('/api/blog-image/:slug', async (req, res) => {
 
 app.get('/api/blog-posts', async (req, res) => {
   try {
-    const docs = await loadCollectionFromFirestore('blogPosts');
+    const liveDocs = await loadCollectionFromFirestore('blogPosts');
+    // Never serve an empty blog: fall back to the committed snapshot when
+    // the live Firestore read fails or returns nothing (quota/outage).
+    const docs = liveDocs.length > 0 ? liveDocs : getBlogSnapshot();
     const slug = typeof req.query.slug === 'string' ? req.query.slug.trim() : '';
     let posts = docs.filter((d: any) => d.published !== false && d.status !== 'draft');
     if (slug) {

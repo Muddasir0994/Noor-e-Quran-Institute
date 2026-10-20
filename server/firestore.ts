@@ -64,13 +64,30 @@ export async function deleteDocFromFirestore(collection: string, id: string): Pr
 }
 
 // Load an entire collection from Firestore into plain objects.
+// Resilience (2026-10-20): results are cached in memory for 2 minutes so
+// public endpoints don't burn a full collection read on every request, and
+// when a read fails (e.g. free-tier daily quota exhausted) or comes back
+// empty after a previously successful load, the last good copy is served —
+// a transient Firestore failure must never blank out public content.
+const collectionCache = new Map<string, { at: number; docs: any[] }>();
+const COLLECTION_CACHE_TTL_MS = 120_000;
+
 export async function loadCollectionFromFirestore(collection: string): Promise<any[]> {
-  if (!isFirestoreEnabled() || !db) return [];
+  const hit = collectionCache.get(collection);
+  if (hit && Date.now() - hit.at < COLLECTION_CACHE_TTL_MS) {
+    return hit.docs;
+  }
+  if (!isFirestoreEnabled() || !db) return hit?.docs ?? [];
   try {
     const snap = await db.collection(collection).get();
-    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    if (docs.length > 0) {
+      collectionCache.set(collection, { at: Date.now(), docs });
+      return docs;
+    }
+    return hit?.docs ?? docs;
   } catch (e: any) {
     console.error(`[firestore] load failed ${collection}:`, e.message);
-    return [];
+    return hit?.docs ?? [];
   }
 }
