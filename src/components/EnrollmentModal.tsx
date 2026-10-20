@@ -40,16 +40,6 @@ export const EnrollmentModal: React.FC<EnrollmentModalProps> = ({
 
   const currentPkg = ALL_PACKAGES.find(p => p.id === selectedPackageId) || ALL_PACKAGES[1];
 
-  const toggleDay = (day: string) => {
-    if (selectedDays.includes(day)) {
-      if (selectedDays.length > 1) {
-        setSelectedDays(selectedDays.filter(d => d !== day));
-      }
-    } else {
-      setSelectedDays([...selectedDays, day]);
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!studentName || !phone) {
@@ -107,11 +97,10 @@ export const EnrollmentModal: React.FC<EnrollmentModalProps> = ({
     onClose();
   };
 
-  const allDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md overflow-y-auto">
-      <div className="bg-white/95 backdrop-blur-xl w-full max-w-2xl rounded-3xl shadow-2xl border border-emerald-950/10 overflow-hidden relative my-8 animate-in fade-in zoom-in-95 duration-200">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-md">
+      <div className="flex min-h-full items-center justify-center p-4">
+      <div className="bg-white/95 backdrop-blur-xl w-full max-w-2xl rounded-3xl shadow-2xl border border-emerald-950/10 overflow-hidden relative animate-in fade-in zoom-in-95 duration-200">
         
         {/* Modal Header */}
         <div className="bg-[#13263D] text-white p-6 sm:p-8 relative">
@@ -142,7 +131,7 @@ export const EnrollmentModal: React.FC<EnrollmentModalProps> = ({
             </div>
           </div>
           <p className="text-xs sm:text-sm text-emerald-100 mt-1">
-            Complete your admission profile. Your designated tutor will be assigned with custom timing and learning pace.
+            Just a few basic details to get started. After login, you can set your package, tutor preference, class days and pace anytime in your student profile.
           </p>
         </div>
 
@@ -190,44 +179,24 @@ export const EnrollmentModal: React.FC<EnrollmentModalProps> = ({
                 </div>
               )}
 
-              {/* Package & Course */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                <div>
-                  <label htmlFor="enroll-course-select" className="block text-xs font-bold text-gray-700 mb-1">
-                    Select Course Program *
-                  </label>
-                  <select
-                    id="enroll-course-select"
-                    aria-label="Select Course Program"
-                    value={courseName}
-                    onChange={e => setCourseName(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-[#13263D] outline-hidden bg-[#FAFAF7]"
-                  >
-                    {ALL_COURSES.map(c => (
-                      <option key={c.id} value={c.name}>
-                        {c.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label htmlFor="enroll-package-select" className="block text-xs font-bold text-gray-700 mb-1">
-                    Select Tuition Package *
-                  </label>
-                  <select
-                    id="enroll-package-select"
-                    aria-label="Select Tuition Package"
-                    value={selectedPackageId}
-                    onChange={e => setSelectedPackageId(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-[#13263D] outline-hidden bg-[#FAFAF7]"
-                  >
-                    {ALL_PACKAGES.map(p => (
-                      <option key={p.id} value={p.id}>
-                        {p.name} ({p.daysPerWeek} - ${p.monthlyFeeUSD}/mo)
-                      </option>
-                    ))}
-                  </select>
-                </div>
+              {/* Course (package & preferences are set later in the student profile) */}
+              <div>
+                <label htmlFor="enroll-course-select" className="block text-xs font-bold text-gray-700 mb-1">
+                  Select Course Program *
+                </label>
+                <select
+                  id="enroll-course-select"
+                  aria-label="Select Course Program"
+                  value={courseName}
+                  onChange={e => setCourseName(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-[#13263D] outline-hidden bg-[#FAFAF7]"
+                >
+                  {ALL_COURSES.map(c => (
+                    <option key={c.id} value={c.name}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               {/* Student & Phone */}
@@ -300,93 +269,8 @@ export const EnrollmentModal: React.FC<EnrollmentModalProps> = ({
                 </div>
               </div>
 
-              {/* Tutor Gender & Learning Pace */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                <div>
-                  <label className="block text-xs font-bold text-gray-700 mb-1">
-                    Tutor Gender Preference
-                  </label>
-                  <div className="grid grid-cols-3 gap-1.5">
-                    {(['No Preference', 'Female', 'Male'] as const).map(g => (
-                      <button
-                        type="button"
-                        key={g}
-                        onClick={() => setTutorPreference(g)}
-                        className={`py-2 rounded-xl text-xs font-bold transition-all border ${
-                          tutorPreference === g
-                            ? 'bg-[#13263D] text-white border-[#13263D]'
-                            : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
-                        }`}
-                      >
-                        {g === 'Female' ? '👩 Female' : g === 'Male' ? '👨 Male' : 'Any'}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-gray-700 mb-1">
-                    Student Pace Profile
-                  </label>
-                  <div className="grid grid-cols-3 gap-1.5">
-                    {(['Slow', 'Normal', 'Fast'] as const).map(p => (
-                      <button
-                        type="button"
-                        key={p}
-                        onClick={() => setLearningPace(p)}
-                        className={`py-2 rounded-xl text-xs font-bold transition-all border ${
-                          learningPace === p
-                            ? 'bg-[#F3C64D] text-[#032B21] border-[#F3C64D]'
-                            : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
-                        }`}
-                      >
-                        {p === 'Slow' ? '🐢 Slow/Patient' : p === 'Normal' ? 'Normal' : '⚡ Fast'}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Days Selection */}
-              <div>
-                <label className="block text-xs font-bold text-gray-700 mb-1">
-                  Preferred Class Days
-                </label>
-                <div className="flex flex-wrap gap-1.5">
-                  {allDays.map(d => {
-                    const isSelected = selectedDays.includes(d);
-                    return (
-                      <button
-                        type="button"
-                        key={d}
-                        onClick={() => toggleDay(d)}
-                        className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                          isSelected
-                            ? 'bg-emerald-800 text-white font-bold'
-                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                        }`}
-                      >
-                        {d.substring(0, 3)}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Additional notes */}
-              <div>
-                <label htmlFor="enroll-notes" className="block text-xs font-bold text-gray-700 mb-1">
-                  Additional Notes / Goals
-                </label>
-                <textarea
-                  id="enroll-notes"
-                  rows={2}
-                  placeholder="e.g. Previous Quran learning history, specific goals, preferred class timing..."
-                  value={additionalNotes}
-                  onChange={e => setAdditionalNotes(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-[#13263D] outline-hidden bg-[#FAFAF7]"
-                />
-              </div>
+              {/* Package, tutor preference, pace, class days & goals moved to the
+                  student profile (set after login) — form kept simple per user request. */}
 
               {/* Submit CTA */}
               <div className="pt-2">
@@ -401,6 +285,7 @@ export const EnrollmentModal: React.FC<EnrollmentModalProps> = ({
             </form>
           )}
         </div>
+      </div>
       </div>
     </div>
   );

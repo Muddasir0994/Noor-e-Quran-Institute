@@ -343,6 +343,8 @@ export interface UserAccount {
   status: 'Active' | 'Pending' | 'Suspended';
   assignedStudentIds?: string[];
   bio?: string;
+  tutorPreference?: 'Male' | 'Female' | 'No Preference';
+  goals?: string;
   /** @deprecated Do not store passwords in plain text. This field is no longer used. */
   initialPassword?: string;
   createdAt: string;

@@ -7,7 +7,7 @@ import {
   Tutor
 } from '../types';
 import { useAuth } from '../context/AuthContext';
-import { saveProgressReportToFirebase } from '../lib/firestoreService';
+import { saveProgressReportToFirebase, saveUserAccountToFirebase } from '../lib/firestoreService';
 import { QuranReader } from './portal/QuranReader';
 import { Whiteboard } from './portal/Whiteboard';
 import { usePresence, usePresenceList, isOnline, lastSeenText } from './portal/usePresence';
@@ -16,7 +16,7 @@ import { StudentProfileBadge } from './portal/StudentProfileBadge';
 import { useLiveClasses } from './portal/useLiveClasses';
 import { submitHomework, useMyHomework } from './portal/useHomework';
 import { useMessageThread, useUnreadCount, sendPortalMessage, markThreadRead, threadIdFor } from './portal/useMessages';
-import { INITIAL_TUTORS } from '../data/academyData';
+import { INITIAL_TUTORS, ALL_COURSES, ALL_PACKAGES } from '../data/academyData';
 import {
   BookOpen,
   Calendar,
@@ -54,10 +54,79 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
   onOpenClassroom,
   onBackToLanding
 }) => {
-  const { currentUser, userProfile, logout } = useAuth();
+  const { currentUser, userProfile, logout, refreshProfile } = useAuth();
 
   // Active Tab
-  const [activeTab, setActiveTab] = useState<'overview' | 'sabaq' | 'schedule' | 'homework' | 'invoices' | 'quran' | 'liveclass' | 'whiteboard' | 'messages'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'sabaq' | 'schedule' | 'homework' | 'invoices' | 'quran' | 'liveclass' | 'whiteboard' | 'messages' | 'profile'>('overview');
+
+  // My Profile (learning preferences) — moved here from the public enrollment
+  // form per user request (2026-10-20): set after login, saved to users/{uid}.
+  const [pfName, setPfName] = useState('');
+  const [pfParent, setPfParent] = useState('');
+  const [pfPhone, setPfPhone] = useState('');
+  const [pfCountry, setPfCountry] = useState('Pakistan');
+  const [pfCourse, setPfCourse] = useState('');
+  const [pfPackageId, setPfPackageId] = useState('pkg-3days');
+  const [pfTutorPref, setPfTutorPref] = useState<'Male' | 'Female' | 'No Preference'>('No Preference');
+  const [pfTimeSlot, setPfTimeSlot] = useState<'Morning' | 'Afternoon' | 'Evening' | 'Night'>('Evening');
+  const [pfPace, setPfPace] = useState<'Slow' | 'Normal' | 'Fast'>('Normal');
+  const [pfDays, setPfDays] = useState<string[]>(['Monday', 'Wednesday', 'Friday']);
+  const [pfGoals, setPfGoals] = useState('');
+  const [pfSaving, setPfSaving] = useState(false);
+  const [pfMsg, setPfMsg] = useState<'saved' | 'error' | ''>('');
+  const pfInitRef = React.useRef(false);
+
+  useEffect(() => {
+    if (!userProfile || pfInitRef.current) return;
+    pfInitRef.current = true;
+    setPfName(userProfile.displayName || '');
+    setPfParent(userProfile.parentName || '');
+    setPfPhone(userProfile.phone || '');
+    setPfCountry(userProfile.country || 'Pakistan');
+    setPfCourse(userProfile.courseName || '');
+    setPfPackageId(userProfile.packageId || 'pkg-3days');
+    setPfTutorPref(userProfile.tutorPreference || 'No Preference');
+    setPfTimeSlot(userProfile.preferredTime || 'Evening');
+    setPfPace(userProfile.learningPace || 'Normal');
+    setPfDays(userProfile.preferredDays && userProfile.preferredDays.length > 0 ? userProfile.preferredDays : ['Monday', 'Wednesday', 'Friday']);
+    setPfGoals(userProfile.goals || '');
+  }, [userProfile]);
+
+  const togglePfDay = (day: string) => {
+    setPfDays(prev => prev.includes(day) ? (prev.length > 1 ? prev.filter(d => d !== day) : prev) : [...prev, day]);
+  };
+
+  const handleSaveProfile = async () => {
+    if (!userProfile) return;
+    setPfSaving(true);
+    setPfMsg('');
+    try {
+      const course = ALL_COURSES.find(c => c.name === pfCourse);
+      const pkg = ALL_PACKAGES.find(p => p.id === pfPackageId);
+      await saveUserAccountToFirebase({
+        ...userProfile,
+        displayName: pfName.trim() || userProfile.displayName,
+        parentName: pfParent,
+        phone: pfPhone,
+        country: pfCountry,
+        courseName: pfCourse || userProfile.courseName,
+        courseId: course?.id || userProfile.courseId,
+        packageId: pfPackageId,
+        packageName: pkg?.name || userProfile.packageName,
+        tutorPreference: pfTutorPref,
+        preferredTime: pfTimeSlot,
+        learningPace: pfPace,
+        preferredDays: pfDays,
+        goals: pfGoals
+      });
+      await refreshProfile();
+      setPfMsg('saved');
+    } catch {
+      setPfMsg('error');
+    } finally {
+      setPfSaving(false);
+    }
+  };
   
   // Homework recording state
   const [recordingHomework, setRecordingHomework] = useState(false);
@@ -298,6 +367,7 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
             { id: 'homework', label: 'Audio Homework & Recorder', icon: Microphone },
             { id: 'messages', label: 'Messages', icon: ChatCircleText, badge: unreadCount },
             { id: 'schedule', label: 'Weekly Timetable', icon: Calendar },
+            { id: 'profile', label: 'My Profile', icon: User },
             { id: 'invoices', label: 'Fee Invoices & Receipts', icon: FileText }
           ].map(tab => {
             const Icon = tab.icon;
@@ -586,6 +656,126 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
 
             </div>
 
+          </div>
+        )}
+
+        {/* ============================================================== */}
+        {/* TAB: MY PROFILE & LEARNING PREFERENCES */}
+        {/* ============================================================== */}
+        {activeTab === 'profile' && (
+          <div className="space-y-6">
+            <div className="bg-white p-6 rounded-3xl border border-gray-200 shadow-xs">
+              <h3 className="text-lg font-bold text-[#13263D] mb-1">My Profile &amp; Learning Preferences</h3>
+              <p className="text-xs text-gray-500 mb-6">
+                Keep your details up to date. Your course, package, tutor preference, class days and pace are set here — your coordinator uses them to arrange your classes.
+              </p>
+
+              {pfMsg === 'saved' && (
+                <div className="mb-4 p-3 rounded-xl bg-emerald-50 text-emerald-800 text-xs font-semibold border border-emerald-200 flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4" weight="fill" /> Profile saved successfully.
+                </div>
+              )}
+              {pfMsg === 'error' && (
+                <div className="mb-4 p-3 rounded-xl bg-red-50 text-red-700 text-xs font-semibold border border-red-200">
+                  Could not save. Please check your connection and try again.
+                </div>
+              )}
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="pf-name" className="block text-xs font-bold text-gray-700 mb-1">Student Name</label>
+                  <input id="pf-name" type="text" value={pfName} onChange={e => setPfName(e.target.value)} className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-[#13263D] outline-hidden bg-[#FAFAF7]" />
+                </div>
+                <div>
+                  <label htmlFor="pf-phone" className="block text-xs font-bold text-gray-700 mb-1">WhatsApp / Phone Number</label>
+                  <input id="pf-phone" type="tel" value={pfPhone} onChange={e => setPfPhone(e.target.value)} className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-[#13263D] outline-hidden bg-[#FAFAF7]" />
+                </div>
+                <div>
+                  <label htmlFor="pf-parent" className="block text-xs font-bold text-gray-700 mb-1">Parent / Guardian Name</label>
+                  <input id="pf-parent" type="text" value={pfParent} onChange={e => setPfParent(e.target.value)} className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-[#13263D] outline-hidden bg-[#FAFAF7]" />
+                </div>
+                <div>
+                  <label htmlFor="pf-country" className="block text-xs font-bold text-gray-700 mb-1">Country / Timezone</label>
+                  <select id="pf-country" value={pfCountry} onChange={e => setPfCountry(e.target.value)} className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-[#13263D] outline-hidden bg-[#FAFAF7]">
+                    <option value="Pakistan">Pakistan (PKT)</option>
+                    <option value="United Kingdom">United Kingdom (GMT / BST)</option>
+                    <option value="United States">United States (EST / CST / PST)</option>
+                    <option value="Canada">Canada (EST / MST)</option>
+                    <option value="Australia">Australia (AEST)</option>
+                    <option value="UAE / Saudi Arabia">UAE / Saudi Arabia (GST / AST)</option>
+                    <option value="Europe">Europe (CET)</option>
+                    <option value="Other Country">Other Country</option>
+                  </select>
+                </div>
+                <div>
+                  <label htmlFor="pf-course" className="block text-xs font-bold text-gray-700 mb-1">Course Program</label>
+                  <select id="pf-course" value={pfCourse} onChange={e => setPfCourse(e.target.value)} className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-[#13263D] outline-hidden bg-[#FAFAF7]">
+                    <option value="">Select a course…</option>
+                    {ALL_COURSES.map(c => (
+                      <option key={c.id} value={c.name}>{c.name}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label htmlFor="pf-package" className="block text-xs font-bold text-gray-700 mb-1">Tuition Package</label>
+                  <select id="pf-package" value={pfPackageId} onChange={e => setPfPackageId(e.target.value)} className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-[#13263D] outline-hidden bg-[#FAFAF7]">
+                    {ALL_PACKAGES.map(p => (
+                      <option key={p.id} value={p.id}>{p.name} ({p.daysPerWeek} - ${p.monthlyFeeUSD}/mo)</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 mb-1">Tutor Gender Preference</label>
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {(['No Preference', 'Female', 'Male'] as const).map(g => (
+                      <button type="button" key={g} onClick={() => setPfTutorPref(g)} className={`py-2 rounded-xl text-xs font-bold transition-all border cursor-pointer ${pfTutorPref === g ? 'bg-[#13263D] text-white border-[#13263D]' : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'}`}>
+                        {g === 'Female' ? '👩 Female' : g === 'Male' ? '👨 Male' : 'Any'}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 mb-1">Learning Pace</label>
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {(['Slow', 'Normal', 'Fast'] as const).map(p => (
+                      <button type="button" key={p} onClick={() => setPfPace(p)} className={`py-2 rounded-xl text-xs font-bold transition-all border cursor-pointer ${pfPace === p ? 'bg-[#F3C64D] text-[#032B21] border-[#F3C64D]' : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'}`}>
+                        {p === 'Slow' ? '🐢 Slow/Patient' : p === 'Normal' ? 'Normal' : '⚡ Fast'}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <label htmlFor="pf-timeslot" className="block text-xs font-bold text-gray-700 mb-1">Preferred Time Slot</label>
+                  <select id="pf-timeslot" value={pfTimeSlot} onChange={e => setPfTimeSlot(e.target.value as any)} className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-[#13263D] outline-hidden bg-[#FAFAF7]">
+                    <option value="Morning">Morning</option>
+                    <option value="Afternoon">Afternoon</option>
+                    <option value="Evening">Evening</option>
+                    <option value="Night">Night</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 mb-1">Preferred Class Days</label>
+                  <div className="flex flex-wrap gap-1.5">
+                    {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map(d => (
+                      <button type="button" key={d} onClick={() => togglePfDay(d)} className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${pfDays.includes(d) ? 'bg-emerald-800 text-white font-bold' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
+                        {d.substring(0, 3)}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-4">
+                <label htmlFor="pf-goals" className="block text-xs font-bold text-gray-700 mb-1">Additional Notes / Goals</label>
+                <textarea id="pf-goals" rows={3} value={pfGoals} onChange={e => setPfGoals(e.target.value)} placeholder="e.g. Previous Quran learning history, specific goals, preferred class timing..." className="w-full px-3.5 py-2 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-[#13263D] outline-hidden bg-[#FAFAF7]" />
+              </div>
+
+              <div className="pt-5">
+                <button type="button" onClick={handleSaveProfile} disabled={pfSaving || !userProfile} className="px-6 py-3 bg-[#13263D] text-white hover:bg-[#0C1A2E] rounded-xl font-bold text-xs uppercase tracking-wider transition-all shadow-md disabled:opacity-50 cursor-pointer">
+                  {pfSaving ? 'Saving...' : 'Save Profile'}
+                </button>
+              </div>
+            </div>
           </div>
         )}
 
