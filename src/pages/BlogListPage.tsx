@@ -27,6 +27,13 @@ const postImage = (post: BlogPost): string =>
     ? post.featuredImage
     : CATEGORY_IMAGES[post.category] || '/images/unsplash/hero-quran-dark.webp';
 
+/** Reading time is always shown as 2–5 minutes (user request 2026-10-20). */
+const clampReadTime = (rt?: string): string => {
+  const n = parseInt(String(rt || ''), 10);
+  if (!n || Number.isNaN(n)) return '3 min read';
+  return `${Math.min(5, Math.max(2, n))} min read`;
+};
+
 const imgFallback = (post: BlogPost) => (e: React.SyntheticEvent<HTMLImageElement>) => {
   const el = e.currentTarget;
   const fb = CATEGORY_IMAGES[post.category] || '/images/unsplash/hero-quran-dark.webp';
@@ -56,7 +63,7 @@ export const BlogListPage: React.FC<BlogListPageProps> = () => {
         category: (a.category === 'Tajweed' || a.category === 'Kids' || a.category === 'Hifz') ? a.category as any : 'Quran Learning',
         tags: [a.category, 'Quran', 'Islamic Education'],
         author: a.author,
-        readTime: a.readTime,
+        readTime: clampReadTime(a.readTime),
         published: true,
         createdAt: a.publishedAt || '2026-02-01',
         updatedAt: a.publishedAt || '2026-02-01'

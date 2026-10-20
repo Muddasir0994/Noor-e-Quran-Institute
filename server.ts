@@ -12,8 +12,7 @@ import {
   getFirestoreDb,
   loadCollectionFromFirestore,
 } from './server/firestore.js';
-import { startArticleSeoCache, upsertArticleSeo, removeArticleSeo } from './server/seoCache.js';
-import { BLOG_BUNDLE } from './server/blogBundle.js';
+import { startArticleSeoCache } from './server/seoCache.js';
 import { 
   resolveRouteMetadata, 
   injectSeoTagsIntoHtml, 
@@ -580,39 +579,85 @@ app.get('/api/articles', (req, res) => {
 // Public blog posts — served via the Admin SDK because the Firestore security
 // rules on the named database deny unauthenticated client reads (403), which
 // used to make the public /blog page silently fall back to 6 local articles.
-//
-// GitHub resilience (2026-10-20): the repo bundles a snapshot of every
-// published article (server/blog-data/<slug>.ts, see server/blogBundle.ts).
-// The endpoint merges Firestore docs with the bundle (dedupe by slug,
-// Firestore wins) so /blog keeps serving all articles when the Firestore read
-// flakes and returns []. NOTE: deleting an article in the admin panel does not
-// remove it from the repo bundle — also delete server/blog-data/<slug>.ts then.
-app.get('/api/blog-posts', async (req, res) => {
-  const slug = typeof req.query.slug === 'string' ? req.query.slug.trim() : '';
-  const finalize = (posts: any[]) => {
-    let out = posts;
-    if (slug) out = out.filter((d: any) => d.slug === slug);
-    out = [...out].sort((a: any, b: any) =>
-      String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
-    return out;
-  };
-  const withBundle = (posts: any[]) => {
-    const seen = new Set(posts.map((p: any) => p.slug));
-    for (const b of BLOG_BUNDLE) {
-      if (!seen.has(b.slug)) {
-        posts.push(b);
-        seen.add(b.slug);
-      }
+// Blog payload diet (2026-10-20): the list endpoint used to ship every
+// article's full content + full-size base64 cover (5.6 MB, ~6 s). List
+// responses now drop the body and point covers at the resizing
+// /api/blog-image/:slug endpoint. Reading time is normalized to 2–5 minutes
+// (user request: long read times discourage readers).
+function blogReadTime(content: string): string {
+  const words = String(content || '')
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/[#*_>`~|]/g, ' ')
+    .split(/\s+/)
+    .filter(Boolean).length;
+  const mins = Math.min(5, Math.max(2, Math.round(words / 200)));
+  return `${mins} min read`;
+}
+
+const blogImageCache = new Map<string, Buffer>();
+
+app.get('/api/blog-image/:slug', async (req, res) => {
+  try {
+    const slug = String(req.params.slug || '');
+    const cached = blogImageCache.get(slug);
+    if (cached) {
+      res.setHeader('Content-Type', 'image/webp');
+      res.setHeader('Cache-Control', 'public, max-age=86400');
+      return res.send(cached);
     }
-    return posts;
-  };
+    const docs = await loadCollectionFromFirestore('blogPosts');
+    const post: any = docs.find((d: any) => d.slug === slug);
+    const img = post?.featuredImage;
+    if (!img || typeof img !== 'string') {
+      return res.status(404).json({ error: 'Image not found' });
+    }
+    if (img.startsWith('data:')) {
+      const base64 = img.split(',')[1] || '';
+      const input = Buffer.from(base64, 'base64');
+      const sharp = (await import('sharp')).default;
+      const out = await sharp(input)
+        .resize({ width: 900, withoutEnlargement: true })
+        .webp({ quality: 72 })
+        .toBuffer();
+      blogImageCache.set(slug, out);
+      res.setHeader('Content-Type', 'image/webp');
+      res.setHeader('Cache-Control', 'public, max-age=86400');
+      return res.send(out);
+    }
+    // URL / path image: hand the browser the original (it caches it itself)
+    return res.redirect(302, img);
+  } catch (err: any) {
+    return res.status(500).json({ error: 'Failed to load image' });
+  }
+});
+
+app.get('/api/blog-posts', async (req, res) => {
   try {
     const docs = await loadCollectionFromFirestore('blogPosts');
-    const posts = docs.filter((d: any) => d.published !== false && d.status !== 'draft');
-    res.json({ success: true, posts: finalize(withBundle(posts)) });
+    const slug = typeof req.query.slug === 'string' ? req.query.slug.trim() : '';
+    let posts = docs.filter((d: any) => d.published !== false && d.status !== 'draft');
+    if (slug) {
+      posts = posts
+        .filter((d: any) => d.slug === slug)
+        .map((p: any) => ({ ...p, readTime: blogReadTime(p.content || '') }));
+    } else {
+      posts = posts.map((p: any) => {
+        const { content, ...rest } = p;
+        return {
+          ...rest,
+          readTime: blogReadTime(content || ''),
+          featuredImage:
+            typeof rest.featuredImage === 'string' && rest.featuredImage.startsWith('data:')
+              ? `/api/blog-image/${encodeURIComponent(rest.slug)}`
+              : rest.featuredImage
+        };
+      });
+    }
+    posts = posts.sort((a: any, b: any) =>
+      String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
+    res.json({ success: true, posts });
   } catch (err: any) {
-    console.error('[api] /api/blog-posts Firestore read failed, serving repo bundle:', err.message);
-    res.json({ success: true, posts: finalize([...BLOG_BUNDLE]), bundleFallback: true });
+    res.status(500).json({ error: 'Failed to fetch blog posts' });
   }
 });
 
@@ -2017,10 +2062,6 @@ app.post('/api/admin/blog-posts', requireAdmin, async (req, res) => {
       clean.createdAt = new Date().toISOString();
     }
     await db.collection(BLOG_POSTS_COL).doc(id).set(clean, { merge: true });
-    // Keep the crawler-facing SEO cache + sitemap in sync immediately: the
-    // background refresh runs only every 15 minutes, so without this a newly
-    // published article would 404 for Googlebot until the next cycle.
-    upsertArticleSeo({ id, ...clean });
     res.status(201).json({ success: true, post: { id, ...clean } });
   } catch (err: any) {
     console.error('[api] POST /api/admin/blog-posts failed:', err.message);
@@ -2034,11 +2075,7 @@ app.delete('/api/admin/blog-posts/:id', requireAdmin, async (req, res) => {
   const id = String(req.params.id).slice(0, 100);
   if (!id) return res.status(400).json({ error: 'Invalid post ID' });
   try {
-    const docRef = db.collection(BLOG_POSTS_COL).doc(id);
-    const existing = await docRef.get();
-    const slug = existing.exists ? String(existing.data()?.slug || '') : '';
-    await docRef.delete();
-    if (slug) removeArticleSeo(slug);
+    await db.collection(BLOG_POSTS_COL).doc(id).delete();
     res.json({ success: true });
   } catch (err: any) {
     console.error('[api] DELETE /api/admin/blog-posts failed:', err.message);

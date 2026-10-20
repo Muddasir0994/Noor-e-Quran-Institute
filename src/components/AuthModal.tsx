@@ -694,29 +694,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 <ArrowRight className="w-3.5 h-3.5 text-[#A47A46]" />
               </button>
 
-              {/* Quick Demo Fill Shortcut */}
-              <div className="pt-2 border-t border-[#E7DBC2]/60 flex items-center justify-between text-[11px] text-gray-500 font-sans">
-                <span>Quick Demo:</span>
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (activeRole === 'student') {
-                      setEmail('student@noorequraninstitute.me');
-                      setPassword('student123');
-                    } else if (activeRole === 'teacher') {
-                      setEmail('maryam@noorequraninstitute.me');
-                      setPassword('teacher123');
-                    } else {
-                      setEmail('admin@noorequraninstitute.me');
-                      setPassword('7860');
-                    }
-                  }}
-                  className="text-[#13263D] font-bold hover:underline cursor-pointer"
-                >
-                  Fill {activeRole === 'student' ? 'Student' : activeRole === 'teacher' ? 'Faculty' : 'Admin'} Credentials
-                </button>
-              </div>
-
               {activeRole === 'student' && (
                 <div className="text-center pt-1">
                   <span className="text-xs text-gray-500 font-sans">New student? </span>

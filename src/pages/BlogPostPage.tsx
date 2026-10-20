@@ -53,8 +53,14 @@ const markdownComponents = {
   ),
 };
 
-interface BlogPostPageProps {
-  onOpenTrial?: () => void;
+/** Reading time is always shown as 2–5 minutes (user request 2026-10-20). */
+const clampReadTime = (rt?: string): string => {
+  const n = parseInt(String(rt || ''), 10);
+  if (!n || Number.isNaN(n)) return '3 min read';
+  return `${Math.min(5, Math.max(2, n))} min read`;
+};
+
+interface BlogPostPageProps {  onOpenTrial?: () => void;
 }
 
 /** Extract FAQ Q&A pairs from the article HTML (the "Frequently Asked Questions" section). */
@@ -310,7 +316,7 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({ onOpenTrial }) => {
             <span>•</span>
             <span className="flex items-center gap-1.5">
               <Clock className="w-3.5 h-3.5 text-[#A47A46]" />
-              <span>{post.readTime}</span>
+              <span>{clampReadTime(post.readTime)}</span>
             </span>
           </div>
         </header>
@@ -389,7 +395,7 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({ onOpenTrial }) => {
                   <h4 className="font-editorial text-lg text-[#13263D] font-semibold line-clamp-2 group-hover:text-[#0C1A2E]">
                     {rel.title}
                   </h4>
-                  <span className="text-xs text-gray-500 font-sans block pt-1">{rel.readTime}</span>
+                  <span className="text-xs text-gray-500 font-sans block pt-1">{clampReadTime(rel.readTime)}</span>
                 </div>
               ))}
             </div>
