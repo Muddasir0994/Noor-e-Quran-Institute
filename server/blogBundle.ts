@@ -35,6 +35,7 @@ import a_etiquettes_of_learning_quran_adaab_guide from './blog-data/etiquettes-o
 import a_free_trial_quran_class_what_to_expect from './blog-data/free-trial-quran-class-what-to-expect';
 import a_how_much_do_online_quran_classes_cost from './blog-data/how-much-do-online-quran-classes-cost';
 import a_new_muslim_guide_learning_quran from './blog-data/new-muslim-guide-learning-quran';
+import a_online_quran_classes_for_adults_learn_at_any_age from './blog-data/online-quran-classes-for-adults-learn-at-any-age';
 import a_short_surahs_every_child_should_memorize_first from './blog-data/short-surahs-every-child-should-memorize-first';
 
 export interface BundleArticle {
@@ -70,5 +71,6 @@ export const BLOG_BUNDLE: BundleArticle[] = [
   a_free_trial_quran_class_what_to_expect as BundleArticle,
   a_how_much_do_online_quran_classes_cost as BundleArticle,
   a_new_muslim_guide_learning_quran as BundleArticle,
+  a_online_quran_classes_for_adults_learn_at_any_age as BundleArticle,
   a_short_surahs_every_child_should_memorize_first as BundleArticle,
 ];
