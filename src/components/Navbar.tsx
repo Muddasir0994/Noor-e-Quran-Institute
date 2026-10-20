@@ -228,13 +228,13 @@ export const Navbar: React.FC<NavbarProps> = ({
               )}
             </div>
 
-            {/* Primary Action Button: Teal */}
+            {/* Primary Action Button: Midnight + Bronze (matches Design 3 palette) */}
             <button
               onClick={() => onOpenTrial()}
-              className="px-5 py-2.5 bg-[#5EEAD4] text-[#0A1428] text-xs font-sans font-bold uppercase tracking-wider rounded-lg hover:bg-[#4FD1C5] transition-all shadow-xs flex items-center gap-2 cursor-pointer"
+              className="group px-5 py-2.5 bg-[#13263D] text-[#F5F0E6] text-xs font-sans font-bold uppercase tracking-wider rounded-md hover:bg-[#A47A46] transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-0.5 flex items-center gap-2 cursor-pointer"
             >
               <span>Book Free Trial</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+              <ArrowRight className="w-3.5 h-3.5 text-[#A47A46] group-hover:text-[#F5F0E6] group-hover:translate-x-0.5 transition-all duration-300" />
             </button>
 
           </div>

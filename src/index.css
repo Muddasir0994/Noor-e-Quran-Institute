@@ -68,6 +68,8 @@
     font-family: var(--font-heading);
     letter-spacing: -0.02em;
     font-weight: 600;
+    /* Clean uniform digits in prices/titles (Cormorant old-style figures looked broken) */
+    font-variant-numeric: lining-nums;
   }
 
   .font-arabic, [lang="ar"] {
