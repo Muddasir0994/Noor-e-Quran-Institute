@@ -787,9 +787,13 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
   // 4. MASNOON DUAS STATE
   // ------------------------------------------
   const [duaCategory, setDuaCategory] = useState<string>('All');
-  const filteredDuas = duaCategory === 'All'
-    ? MASNOON_DUAS
-    : MASNOON_DUAS.filter(d => d.category === duaCategory);
+
+  // ⚡ Bolt: Memoize filtered duas to prevent unnecessary array filtering on re-renders
+  const filteredDuas = useMemo(() => {
+    return duaCategory === 'All'
+      ? MASNOON_DUAS
+      : MASNOON_DUAS.filter(d => d.category === duaCategory);
+  }, [duaCategory]);
 
   // ------------------------------------------
   // 5. SALAH GUIDE STATE
