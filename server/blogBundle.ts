@@ -33,6 +33,7 @@ import a_balancing_school_and_hifz_parents_guide from './blog-data/balancing-sch
 import a_child_loses_interest_quran_class_parents_guide from './blog-data/child-loses-interest-quran-class-parents-guide';
 import a_etiquettes_of_learning_quran_adaab_guide from './blog-data/etiquettes-of-learning-quran-adaab-guide';
 import a_free_trial_quran_class_what_to_expect from './blog-data/free-trial-quran-class-what-to-expect';
+import a_how_much_do_online_quran_classes_cost from './blog-data/how-much-do-online-quran-classes-cost';
 import a_new_muslim_guide_learning_quran from './blog-data/new-muslim-guide-learning-quran';
 import a_short_surahs_every_child_should_memorize_first from './blog-data/short-surahs-every-child-should-memorize-first';
 
@@ -67,6 +68,7 @@ export const BLOG_BUNDLE: BundleArticle[] = [
   a_child_loses_interest_quran_class_parents_guide as BundleArticle,
   a_etiquettes_of_learning_quran_adaab_guide as BundleArticle,
   a_free_trial_quran_class_what_to_expect as BundleArticle,
+  a_how_much_do_online_quran_classes_cost as BundleArticle,
   a_new_muslim_guide_learning_quran as BundleArticle,
   a_short_surahs_every_child_should_memorize_first as BundleArticle,
 ];
