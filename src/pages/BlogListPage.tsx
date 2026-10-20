@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BlogPost } from '../types';
 import { INITIAL_ARTICLES } from '../data/academyData';
@@ -10,6 +10,28 @@ interface BlogListPageProps {
 }
 
 const CATEGORIES = ['All', 'Tajweed', 'Quran Learning', 'Kids', 'Hifz', 'Islamic Studies'];
+
+/** Category fallback pictures so EVERY blog card always shows a picture. */
+const CATEGORY_IMAGES: Record<string, string> = {
+  'Tajweed': '/images/unsplash/course-tajweed.webp',
+  'Hifz': '/images/unsplash/course-hifz.webp',
+  'Kids': '/images/unsplash/child-reading-quran.webp',
+  'Islamic Studies': '/images/unsplash/course-islamic-studies.webp',
+  'Duas & Salah': '/images/unsplash/mosque-interior.webp',
+  'Parenting': '/images/unsplash/child-reading-quran.webp',
+  'Quran Learning': '/images/unsplash/course-quran-reading.webp',
+};
+
+const postImage = (post: BlogPost): string =>
+  post.featuredImage && post.featuredImage.trim() !== ''
+    ? post.featuredImage
+    : CATEGORY_IMAGES[post.category] || '/images/unsplash/hero-quran-dark.webp';
+
+const imgFallback = (post: BlogPost) => (e: React.SyntheticEvent<HTMLImageElement>) => {
+  const el = e.currentTarget;
+  const fb = CATEGORY_IMAGES[post.category] || '/images/unsplash/hero-quran-dark.webp';
+  if (el.src !== window.location.origin + fb) el.src = fb;
+};
 
 export const BlogListPage: React.FC<BlogListPageProps> = () => {
   const navigate = useNavigate();
@@ -58,19 +80,20 @@ export const BlogListPage: React.FC<BlogListPageProps> = () => {
     })();
   }, []);
 
-  // ⚡ Bolt: Memoize filtered posts to prevent expensive string matching on every render
-  const filtered = useMemo(() => posts.filter(p => {
+  const filtered = posts.filter(p => {
     const matchCat = activeCategory === 'All' || p.category === activeCategory;
     const matchSearch = !searchQuery || p.title.toLowerCase().includes(searchQuery.toLowerCase()) || p.metaDescription.toLowerCase().includes(searchQuery.toLowerCase());
     return matchCat && matchSearch;
-  }), [posts, activeCategory, searchQuery]);
+  });
 
   const featuredPost = filtered.length > 0 ? filtered[0] : null;
   const secondaryPosts = filtered.length > 1 ? filtered.slice(1, 3) : [];
   const listPosts = filtered.length > 3 ? filtered.slice(3) : [];
 
   const stripHtml = (html: string) => {
-    return new DOMParser().parseFromString(html, 'text/html').body.textContent || '';
+    const tmp = document.createElement('div');
+    tmp.innerHTML = html;
+    return tmp.textContent || tmp.innerText || '';
   };
 
   const handleNavigate = (slug: string) => {
@@ -112,10 +135,10 @@ export const BlogListPage: React.FC<BlogListPageProps> = () => {
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
-                className={`px-3 py-1.5 rounded-sm text-xs font-sans transition-all cursor-pointer ${
+                className={`px-3 py-1.5 rounded-sm text-xs font-sans transition-all duration-200 cursor-pointer ${
                   activeCategory === cat
-                    ? 'bg-[#13263D] text-[#F5F0E6] font-semibold'
-                    : 'bg-[#F5F0E6] text-gray-600 hover:text-[#13263D] border border-[#E7DBC2]/70'
+                    ? 'bg-[#13263D] text-[#F5F0E6] font-semibold shadow-md'
+                    : 'bg-[#F5F0E6] text-gray-600 hover:text-[#13263D] hover:border-[#A47A46] hover:-translate-y-0.5 border border-[#E7DBC2]/70'
                 }`}
               >
                 {cat}
@@ -146,21 +169,17 @@ export const BlogListPage: React.FC<BlogListPageProps> = () => {
             {featuredPost && (
               <article
                 onClick={() => handleNavigate(featuredPost.slug)}
-                className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center group cursor-pointer p-6 sm:p-10 bg-[#F5F0E6] border border-[#E7DBC2]/80 rounded-sm hover:border-[#A47A46] transition-colors"
+                className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center group cursor-pointer p-6 sm:p-10 bg-[#F5F0E6] border border-[#E7DBC2]/80 rounded-md transition-all duration-300 hover:border-[#A47A46] hover:shadow-[0_24px_48px_-16px_rgba(19,38,61,0.28)] hover:-translate-y-1"
               >
-                <div className="lg:col-span-6 relative aspect-[16/10] overflow-hidden rounded-sm bg-[#FAF7F0] border border-[#E7DBC2]/60">
-                  {featuredPost.featuredImage ? (
-                    <img
-                      src={featuredPost.featuredImage}
-                      alt={featuredPost.title}
-                      className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-500"
-                      loading="eager"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-[#13263D] text-[#A47A46]">
-                      <BookOpen className="w-12 h-12" weight="regular" />
-                    </div>
-                  )}
+                <div className="lg:col-span-6 relative aspect-[16/10] overflow-hidden rounded-md bg-[#FAF7F0] border border-[#E7DBC2]/60">
+                  <img
+                    src={postImage(featuredPost)}
+                    onError={imgFallback(featuredPost)}
+                    alt={featuredPost.title}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
+                    loading="eager"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#13263D]/35 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                   <span className="absolute top-3 left-3 px-2.5 py-1 text-[10px] font-sans font-bold uppercase tracking-wider bg-[#13263D] text-[#A47A46]">
                     Featured • {featuredPost.category}
                   </span>
@@ -173,7 +192,7 @@ export const BlogListPage: React.FC<BlogListPageProps> = () => {
                     <span>{featuredPost.readTime}</span>
                   </div>
 
-                  <h2 className="font-editorial text-2xl sm:text-3xl lg:text-4xl text-[#13263D] font-semibold leading-[1.18] group-hover:text-[#0C1A2E] transition-colors">
+                  <h2 className="font-editorial text-2xl sm:text-3xl lg:text-4xl text-[#13263D] font-semibold leading-[1.18] group-hover:text-[#A47A46] transition-colors duration-300">
                     {featuredPost.title}
                   </h2>
 
@@ -182,9 +201,9 @@ export const BlogListPage: React.FC<BlogListPageProps> = () => {
                   </p>
 
                   <div className="pt-2">
-                    <span className="inline-flex items-center gap-1.5 text-xs font-sans font-bold text-[#13263D] group-hover:text-[#A47A46] transition-colors border-b border-[#13263D]/20 pb-0.5">
+                    <span className="inline-flex items-center gap-1.5 text-xs font-sans font-bold text-[#13263D] group-hover:text-[#A47A46] transition-colors border-b-2 border-[#A47A46]/40 group-hover:border-[#A47A46] pb-0.5">
                       <span>Read Full Article</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
+                      <ArrowRight className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-1.5" />
                     </span>
                   </div>
                 </div>
@@ -203,43 +222,40 @@ export const BlogListPage: React.FC<BlogListPageProps> = () => {
                     <article
                       key={post.id}
                       onClick={() => handleNavigate(post.slug)}
-                      className="group flex flex-col justify-between space-y-5 p-6 bg-[#F5F0E6] border border-[#E7DBC2]/70 rounded-sm cursor-pointer hover:border-[#A47A46] transition-colors"
+                      className="group flex flex-col overflow-hidden bg-[#F5F0E6] border border-[#E7DBC2]/70 rounded-md cursor-pointer transition-all duration-300 hover:border-[#A47A46] hover:shadow-[0_20px_40px_-14px_rgba(19,38,61,0.28)] hover:-translate-y-1.5"
                     >
-                      <div className="space-y-4">
-                        <div className="aspect-[16/9] overflow-hidden rounded-sm bg-[#FAF7F0] border border-[#E7DBC2]/60">
-                          {post.featuredImage ? (
-                            <img
-                              src={post.featuredImage}
-                              alt={post.title}
-                              className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-500"
-                              loading="lazy"
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center bg-[#F5F0E6] text-[#13263D]">
-                              <BookOpen className="w-8 h-8 text-[#A47A46]" />
-                            </div>
-                          )}
-                        </div>
-
-                        <span className="text-[10px] font-sans font-bold uppercase tracking-wider text-[#A47A46]">
+                      <div className="relative aspect-[16/9] overflow-hidden bg-[#FAF7F0]">
+                        <img
+                          src={postImage(post)}
+                          onError={imgFallback(post)}
+                          alt={post.title}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
+                          loading="lazy"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#13263D]/35 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                        <span className="absolute top-3 left-3 px-2.5 py-1 text-[10px] font-sans font-bold uppercase tracking-wider bg-[#13263D]/90 text-[#F5F0E6]">
                           {post.category}
                         </span>
-
-                        <h3 className="font-editorial text-2xl text-[#13263D] font-semibold leading-snug group-hover:text-[#0C1A2E] transition-colors line-clamp-2">
-                          {post.title}
-                        </h3>
-
-                        <p className="text-xs text-gray-600 font-sans line-clamp-2 leading-relaxed">
-                          {post.metaDescription || stripHtml(post.content).slice(0, 120) + '...'}
-                        </p>
                       </div>
 
-                      <div className="flex items-center justify-between text-xs font-sans text-gray-500 pt-3 border-t border-[#E7DBC2]/50">
-                        <span>{post.readTime}</span>
-                        <span className="inline-flex items-center gap-1 font-bold text-[#13263D] group-hover:text-[#A47A46] transition-colors">
-                          <span>Read</span>
-                          <ArrowRight className="w-3 h-3" />
-                        </span>
+                      <div className="flex flex-col flex-1 justify-between gap-4 p-6">
+                        <div className="space-y-3">
+                          <h3 className="font-editorial text-2xl text-[#13263D] font-semibold leading-snug group-hover:text-[#A47A46] transition-colors duration-300 line-clamp-2">
+                            {post.title}
+                          </h3>
+
+                          <p className="text-xs text-gray-600 font-sans line-clamp-2 leading-relaxed">
+                            {post.metaDescription || stripHtml(post.content).slice(0, 120) + '...'}
+                          </p>
+                        </div>
+
+                        <div className="flex items-center justify-between text-xs font-sans text-gray-500 pt-3 border-t border-[#E7DBC2]/50">
+                          <span>{post.readTime}</span>
+                          <span className="inline-flex items-center gap-1 font-bold text-[#13263D] group-hover:text-[#A47A46] transition-colors">
+                            <span>Read</span>
+                            <ArrowRight className="w-3 h-3 transition-transform duration-300 group-hover:translate-x-1" />
+                          </span>
+                        </div>
                       </div>
                     </article>
                   ))}
@@ -247,39 +263,51 @@ export const BlogListPage: React.FC<BlogListPageProps> = () => {
               </div>
             )}
 
-            {/* LAYER 3: List Posts (Clean Editorial Rows) */}
+            {/* LAYER 3: All Articles (Picture Card Grid — every blog has a picture) */}
             {listPosts.length > 0 && (
               <div className="space-y-6">
                 <p className="text-[11px] font-sans font-bold text-[#A47A46] uppercase tracking-widest">
                   RECENT ARTICLES
                 </p>
 
-                <div className="divide-y divide-[#E7DBC2]/60 border-t border-b border-[#E7DBC2]/60">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                   {listPosts.map(post => (
                     <article
                       key={post.id}
                       onClick={() => handleNavigate(post.slug)}
-                      className="py-6 grid grid-cols-1 md:grid-cols-12 gap-4 items-center group cursor-pointer hover:bg-[#F5F0E6]/40 transition-colors px-3"
+                      className="group flex flex-col overflow-hidden bg-[#F5F0E6] border border-[#E7DBC2]/70 rounded-md cursor-pointer transition-all duration-300 hover:border-[#A47A46] hover:shadow-[0_20px_40px_-14px_rgba(19,38,61,0.28)] hover:-translate-y-1.5"
                     >
-                      <div className="md:col-span-2">
-                        <span className="text-[10px] font-sans font-bold uppercase tracking-wider text-[#A47A46]">
+                      <div className="relative aspect-[16/9] overflow-hidden bg-[#FAF7F0]">
+                        <img
+                          src={postImage(post)}
+                          onError={imgFallback(post)}
+                          alt={post.title}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
+                          loading="lazy"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#13263D]/35 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                        <span className="absolute top-3 left-3 px-2.5 py-1 text-[10px] font-sans font-bold uppercase tracking-wider bg-[#13263D]/90 text-[#F5F0E6]">
                           {post.category}
                         </span>
                       </div>
 
-                      <div className="md:col-span-7">
-                        <h4 className="font-editorial text-xl text-[#13263D] font-semibold group-hover:text-[#A47A46] transition-colors line-clamp-1">
-                          {post.title}
-                        </h4>
-                      </div>
+                      <div className="flex flex-col flex-1 justify-between gap-3 p-5">
+                        <div className="space-y-2">
+                          <h4 className="font-editorial text-lg text-[#13263D] font-semibold leading-snug group-hover:text-[#A47A46] transition-colors duration-300 line-clamp-2">
+                            {post.title}
+                          </h4>
+                          <p className="text-xs text-gray-600 font-sans line-clamp-2 leading-relaxed">
+                            {post.metaDescription || stripHtml(post.content).slice(0, 110) + '...'}
+                          </p>
+                        </div>
 
-                      <div className="md:col-span-3 flex md:justify-end items-center gap-3 text-xs text-gray-500 font-sans">
-                        <span>{post.readTime}</span>
-                        <span>•</span>
-                        <span className="font-semibold text-[#13263D] group-hover:text-[#A47A46] inline-flex items-center gap-1">
-                          <span>Read</span>
-                          <ArrowRight className="w-3 h-3" />
-                        </span>
+                        <div className="flex items-center justify-between text-xs font-sans text-gray-500 pt-3 border-t border-[#E7DBC2]/50">
+                          <span>{post.readTime}</span>
+                          <span className="inline-flex items-center gap-1 font-bold text-[#13263D] group-hover:text-[#A47A46] transition-colors">
+                            <span>Read</span>
+                            <ArrowRight className="w-3 h-3 transition-transform duration-300 group-hover:translate-x-1" />
+                          </span>
+                        </div>
                       </div>
                     </article>
                   ))}
