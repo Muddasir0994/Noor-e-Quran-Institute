@@ -11,6 +11,7 @@ import {
   isFirestoreEnabled,
   getFirestoreDb,
   loadCollectionFromFirestore,
+  syncDocToFirestore,
 } from './server/firestore.js';
 import { startArticleSeoCache } from './server/seoCache.js';
 import { getBlogSnapshot } from './server/blogSnapshot.js';
@@ -597,6 +598,25 @@ function blogReadTime(content: string): string {
 
 const blogImageCache = new Map<string, Buffer>();
 
+// Self-heal (2026-10-20): three published posts vanished from the Firestore
+// collection without the owner deleting them. Any snapshot post missing from
+// the live collection is served immediately AND written back to Firestore
+// (once per process per slug), so the public blog is always complete.
+const blogRestoredSlugs = new Set<string>();
+function mergeBlogDocsWithSnapshot(liveDocs: any[]): any[] {
+  const snap = getBlogSnapshot();
+  if (!snap.length) return liveDocs;
+  const liveSlugs = new Set(liveDocs.map((d: any) => d.slug));
+  const missing = snap.filter((p: any) => p.slug && !liveSlugs.has(p.slug));
+  for (const p of missing) {
+    if (p.id && !blogRestoredSlugs.has(p.slug)) {
+      blogRestoredSlugs.add(p.slug);
+      syncDocToFirestore('blogPosts', String(p.id), p).catch(() => {});
+    }
+  }
+  return missing.length > 0 ? [...liveDocs, ...missing] : liveDocs;
+}
+
 app.get('/api/blog-image/:slug', async (req, res) => {
   try {
     const slug = String(req.params.slug || '');
@@ -607,7 +627,7 @@ app.get('/api/blog-image/:slug', async (req, res) => {
       return res.send(cached);
     }
     const docs = await loadCollectionFromFirestore('blogPosts');
-    const allDocs = docs.length > 0 ? docs : getBlogSnapshot();
+    const allDocs = mergeBlogDocsWithSnapshot(docs);
     const post: any = allDocs.find((d: any) => d.slug === slug);
     const img = post?.featuredImage;
     if (!img || typeof img !== 'string') {
@@ -636,9 +656,9 @@ app.get('/api/blog-image/:slug', async (req, res) => {
 app.get('/api/blog-posts', async (req, res) => {
   try {
     const liveDocs = await loadCollectionFromFirestore('blogPosts');
-    // Never serve an empty blog: fall back to the committed snapshot when
-    // the live Firestore read fails or returns nothing (quota/outage).
-    const docs = liveDocs.length > 0 ? liveDocs : getBlogSnapshot();
+    // Never serve an incomplete blog: merge in any snapshot posts missing
+    // from the live collection (they are also restored to Firestore).
+    const docs = mergeBlogDocsWithSnapshot(liveDocs);
     const slug = typeof req.query.slug === 'string' ? req.query.slug.trim() : '';
     let posts = docs.filter((d: any) => d.published !== false && d.status !== 'draft');
     if (slug) {
