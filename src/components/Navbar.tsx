@@ -108,14 +108,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   return (
     <header ref={navRef} className="sticky top-0 z-40 w-full transition-all duration-200">
       
-      {/* 1. Top Utility Ribbon: Clean & Restrained */}
-      <div className="bg-[#13263D] text-[#F5F0E6] py-1.5 px-4 sm:px-8 flex justify-between items-center text-xs border-b border-[#A47A46]/20 font-sans">
-        <div className="flex items-center gap-3">
-          <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#A47A46]"></span>
-          <span className="text-[#E7DBC2] text-[11px] sm:text-xs font-normal tracking-wide">
-            1-on-1 Certified Online Quran Academy • <span className="text-[#A47A46] font-semibold">3-Day Free Trial</span>
-          </span>
-        </div>
+      {/* 1. Top Utility Ribbon: portal links only (announcement text removed 2026-10-20 per user — it crowded the bar on mobile) */}
+      <div className="bg-[#13263D] text-[#F5F0E6] py-1.5 px-4 sm:px-8 flex justify-end items-center text-xs border-b border-[#A47A46]/20 font-sans">
 
         {/* Right Utility: Portals & Contact */}
         <div className="flex items-center gap-4 text-[11px] text-[#E7DBC2]">
