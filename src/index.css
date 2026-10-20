@@ -64,6 +64,14 @@
     letter-spacing: -0.01em;
   }
 
+  /* Desktop scale: site felt oversized on large screens (user feedback 2026-10-20).
+     Slightly smaller root size shrinks all rem-based sizing proportionally on desktop only. */
+  @media (min-width: 1024px) {
+    html {
+      font-size: 15px;
+    }
+  }
+
   h1, h2, h3, h4, .font-editorial, .font-heading {
     font-family: var(--font-heading);
     letter-spacing: -0.02em;

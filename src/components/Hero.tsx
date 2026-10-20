@@ -69,7 +69,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenTrial, onViewCourses }) => {
         }}
       />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pt-14 pb-10 lg:pt-20 lg:pb-14">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pt-10 pb-8 lg:pt-14 lg:pb-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-10 items-center">
 
           {/* Left: headline + CTAs */}
@@ -78,12 +78,12 @@ export const Hero: React.FC<HeroProps> = ({ onOpenTrial, onViewCourses }) => {
               Online Quran Classes &nbsp;•&nbsp; One to One
             </p>
 
-            <h1 className="font-editorial text-4xl sm:text-5xl lg:text-[3.4rem] leading-[1.1] tracking-tight font-semibold text-white">
+            <h1 className="font-editorial text-3xl sm:text-4xl lg:text-[2.75rem] leading-[1.12] tracking-tight font-semibold text-white">
               Let the <span className="text-[#5EEAD4]">light</span> of the
               Quran guide your journey.
             </h1>
 
-            <p className="text-base sm:text-lg text-[#F5F0E6]/75 leading-relaxed max-w-xl font-sans">
+            <p className="text-sm sm:text-base text-[#F5F0E6]/75 leading-relaxed max-w-xl font-sans">
               Personal Quran lessons for children and adults. Learn with caring
               teachers, wherever you are.
             </p>
@@ -91,7 +91,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenTrial, onViewCourses }) => {
             <div className="flex flex-wrap items-center gap-5 pt-2">
               <button
                 onClick={() => onOpenTrial()}
-                className="inline-flex items-center gap-2 px-7 py-3.5 bg-[#5EEAD4] text-[#13263D] text-sm font-bold tracking-wide rounded-sm hover:bg-[#4FD1C5] transition-all shadow-[0_0_30px_rgba(94,234,212,0.25)] cursor-pointer"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-[#5EEAD4] text-[#13263D] text-sm font-bold tracking-wide rounded-sm hover:bg-[#4FD1C5] transition-all shadow-[0_0_30px_rgba(94,234,212,0.25)] cursor-pointer"
               >
                 <span>Start Your Free Trial</span>
                 <ArrowRight className="w-4 h-4" />

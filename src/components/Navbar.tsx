@@ -141,7 +141,7 @@ export const Navbar: React.FC<NavbarProps> = ({
       </div>
 
       {/* 2. Main Editorial Navbar */}
-      <div className={`w-full bg-[#FAF7F0] border-b border-[#E7DBC2] transition-all duration-300 ${isScrolled ? 'shadow-xs py-3' : 'py-4'}`}>
+      <div className={`w-full bg-[#FAF7F0] border-b border-[#E7DBC2] transition-all duration-300 ${isScrolled ? 'shadow-xs py-2' : 'py-2.5'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
           
           {/* Brand Logo: Official Academy Seal + Typography */}
@@ -153,14 +153,14 @@ export const Navbar: React.FC<NavbarProps> = ({
               src="/branding/logo.webp?v=2"
               onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/branding/logo.png?v=2'; }}
               alt="Noor E Quran Institute"
-              className="w-16 h-16 sm:w-20 sm:h-20 lg:w-22 lg:h-22 object-contain rounded-xl border-2 border-[#A47A46]/60 bg-white p-1.5 shadow-lg group-hover:border-[#A47A46] group-hover:shadow-xl transition-all group-hover:scale-105 shrink-0"
-              width="88"
-              height="88"
+              className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 object-contain rounded-xl border-2 border-[#A47A46]/60 bg-white p-1.5 shadow-lg group-hover:border-[#A47A46] group-hover:shadow-xl transition-all group-hover:scale-105 shrink-0"
+              width="64"
+              height="64"
             />
 
             <div>
               <div className="flex items-baseline gap-2">
-                <span className="font-editorial text-2xl sm:text-3xl font-bold tracking-tight text-[#13263D]">
+                <span className="font-editorial text-xl sm:text-2xl font-bold tracking-tight text-[#13263D]">
                   Noor E Quran
                 </span>
                 <span className="text-[11px] sm:text-xs tracking-widest uppercase text-[#A47A46] font-bold">
