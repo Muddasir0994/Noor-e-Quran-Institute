@@ -188,6 +188,8 @@ export const Footer: React.FC<FooterProps> = ({
             <p className="text-[11px] text-[#E7DBC2]/50 font-sans pt-2">
               WhatsApp Support: <br />
               <span className="text-[#A47A46]">+92 327 4496163</span>
+              <br />
+              <span className="text-[#A47A46]">+92 336 0796786</span>
             </p>
           </div>
 
