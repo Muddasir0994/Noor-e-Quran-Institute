@@ -21,7 +21,8 @@ import {
   injectNoindexIntoHtml,
   generate404Html,
   generateDynamicSitemapXml,
-  generateRobotsTxt
+  generateRobotsTxt,
+  isCrawlerBot
 } from './server/seoRender.js';
 
 // PROMPT-3: requireAdmin attaches the session's admin email here so audit
@@ -2372,7 +2373,24 @@ async function startServer() {
     // Cache template HTML in memory to eliminate redundant disk I/O and reduce document response latency
     let cachedBaseHtml: string | null = null;
 
+    // Cache fully injected HTML strings to bypass expensive synchronous string replacements
+    // TTL is short to avoid serving stale dynamic content (e.g., SEO metadata)
+    const ssrCache = new Map<string, { html: string; expiresAt: number; spaFallback404?: boolean }>();
+    const SSR_CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+
     app.get('*', async (req, res) => {
+      const userAgent = (req.headers['user-agent'] as string) || '';
+      // Only differentiate cache by crawler vs human since SEO injection logic only cares about bots
+      const isBot = isCrawlerBot(userAgent);
+      const cacheKey = `${req.path}_${isBot}`;
+
+      const cached = ssrCache.get(cacheKey);
+      if (cached && Date.now() < cached.expiresAt) {
+        res.status(cached.spaFallback404 ? 404 : 200).setHeader('Content-Type', 'text/html; charset=utf-8');
+        res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
+        return res.send(cached.html);
+      }
+
       const { meta, is404, redirect, spaFallback404 } = resolveRouteMetadata(req.path);
 
       // Canonical 301 redirects for legacy / duplicate URLs.
@@ -2394,7 +2412,6 @@ async function startServer() {
         }
       }
 
-      const userAgent = (req.headers['user-agent'] as string) || '';
       let html = cachedBaseHtml;
       if (meta) {
         html = injectSeoTagsIntoHtml(html, meta, req.path, userAgent);
@@ -2403,6 +2420,18 @@ async function startServer() {
       // crawlers don't index the fallback page.
       if (spaFallback404) {
         html = injectNoindexIntoHtml(html);
+      }
+
+      ssrCache.set(cacheKey, {
+        html,
+        expiresAt: Date.now() + SSR_CACHE_TTL_MS,
+        spaFallback404
+      });
+
+      // Prevent the cache from growing indefinitely
+      if (ssrCache.size > 1000) {
+        const oldestKey = ssrCache.keys().next().value;
+        if (oldestKey) ssrCache.delete(oldestKey);
       }
 
       res.status(spaFallback404 ? 404 : 200).setHeader('Content-Type', 'text/html; charset=utf-8');
