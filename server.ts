@@ -15,6 +15,7 @@ import {
 } from './server/firestore.js';
 import { startArticleSeoCache } from './server/seoCache.js';
 import { getBlogSnapshot } from './server/blogSnapshot.js';
+import { BLOG_BUNDLE } from './server/blogBundle.js';
 import { 
   resolveRouteMetadata, 
   injectSeoTagsIntoHtml, 
@@ -603,19 +604,32 @@ const blogImageCache = new Map<string, Buffer>();
 // collection without the owner deleting them. Any snapshot post missing from
 // the live collection is served immediately AND written back to Firestore
 // (once per process per slug), so the public blog is always complete.
+// GitHub resilience (2026-10-20, user directive): repo-bundled articles
+// (server/blog-data/<slug>.ts via BLOG_BUNDLE) are merged in as a final
+// read-only layer — served when missing from both Firestore and the
+// snapshot, never written back (a bundle file is the source of truth).
 const blogRestoredSlugs = new Set<string>();
 function mergeBlogDocsWithSnapshot(liveDocs: any[]): any[] {
+  const seen = new Set(liveDocs.map((d: any) => d.slug));
+  const merged = [...liveDocs];
   const snap = getBlogSnapshot();
-  if (!snap.length) return liveDocs;
-  const liveSlugs = new Set(liveDocs.map((d: any) => d.slug));
-  const missing = snap.filter((p: any) => p.slug && !liveSlugs.has(p.slug));
-  for (const p of missing) {
-    if (p.id && !blogRestoredSlugs.has(p.slug)) {
-      blogRestoredSlugs.add(p.slug);
-      syncDocToFirestore('blogPosts', String(p.id), p).catch(() => {});
+  for (const p of snap) {
+    if (p.slug && !seen.has(p.slug)) {
+      seen.add(p.slug);
+      merged.push(p);
+      if (p.id && !blogRestoredSlugs.has(p.slug)) {
+        blogRestoredSlugs.add(p.slug);
+        syncDocToFirestore('blogPosts', String(p.id), p).catch(() => {});
+      }
     }
   }
-  return missing.length > 0 ? [...liveDocs, ...missing] : liveDocs;
+  for (const b of BLOG_BUNDLE) {
+    if (b.slug && !seen.has(b.slug)) {
+      seen.add(b.slug);
+      merged.push(b);
+    }
+  }
+  return merged;
 }
 
 app.get('/api/blog-image/:slug', async (req, res) => {

@@ -115,27 +115,49 @@ function persistCacheToDisk(): void {
 /**
  * Re-read `blogPosts` from Firestore and rebuild the cache.
  * Never throws; on any failure the previous copy keeps serving.
+ *
+ * Quota-outage fallback (2026-10-21): when the live Firestore read comes
+ * back empty (free-tier quota exhausted — same failure that blanks
+ * /api/blog-posts), rebuild from the committed repo snapshot
+ * (server/blogPostsSnapshot.json), the same last-resort source the public
+ * blog API uses, so the sitemap keeps listing every article.
  */
 export async function refreshArticleSeoCache(): Promise<number> {
   if (!isFirestoreEnabled()) {
     console.log('[seoCache] Firestore not enabled — keeping existing article SEO cache.');
     return cache.size;
   }
-  try {
-    const docs = await loadCollectionFromFirestore('blogPosts');
+  const fromDocs = (docs: any[]): Map<string, ArticleSeoEntry> => {
     const next = new Map<string, ArticleSeoEntry>();
     for (const d of docs) {
       const entry = entryFromDoc(d);
       if (entry) next.set(entry.slug, entry);
     }
+    return next;
+  };
+  const fromSnapshotFile = (): Map<string, ArticleSeoEntry> => {
+    try {
+      const file = path.join(process.cwd(), 'server', 'blogPostsSnapshot.json');
+      const parsed = JSON.parse(fs.readFileSync(file, 'utf-8'));
+      const docs: any[] = Array.isArray(parsed) ? parsed : [];
+      console.log(`[seoCache] Falling back to committed blog snapshot (${docs.length} docs).`);
+      return fromDocs(docs);
+    } catch (e: any) {
+      console.warn('[seoCache] Snapshot fallback failed:', e.message);
+      return new Map();
+    }
+  };
+  try {
+    const docs = await loadCollectionFromFirestore('blogPosts');
+    const next = docs.length > 0 ? fromDocs(docs) : fromSnapshotFile();
     if (next.size === 0) {
-      console.warn('[seoCache] Firestore returned 0 usable articles — keeping previous cache.');
+      console.warn('[seoCache] Firestore and snapshot both empty — keeping previous cache.');
       return cache.size;
     }
     cache = next;
     lastRefreshAt = Date.now();
     persistCacheToDisk();
-    console.log(`[seoCache] Refreshed ${cache.size} article SEO entries from Firestore.`);
+    console.log(`[seoCache] Refreshed ${cache.size} article SEO entries.`);
   } catch (e: any) {
     console.error('[seoCache] Refresh failed — keeping previous cache:', e.message);
   }
