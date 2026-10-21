@@ -38,6 +38,7 @@ import a_how_to_revise_quran_murajaah_guide from './blog-data/how-to-revise-qura
 import a_new_muslim_guide_learning_quran from './blog-data/new-muslim-guide-learning-quran';
 import a_online_quran_classes_for_adults_learn_at_any_age from './blog-data/online-quran-classes-for-adults-learn-at-any-age';
 import a_short_surahs_every_child_should_memorize_first from './blog-data/short-surahs-every-child-should-memorize-first';
+import a_why_quran_revealed_arabic_language_guide from './blog-data/why-quran-revealed-arabic-language-guide';
 
 export interface BundleArticle {
   id: string; slug: string; title: string; metaDescription: string;
@@ -75,4 +76,5 @@ export const BLOG_BUNDLE: BundleArticle[] = [
   a_new_muslim_guide_learning_quran as BundleArticle,
   a_online_quran_classes_for_adults_learn_at_any_age as BundleArticle,
   a_short_surahs_every_child_should_memorize_first as BundleArticle,
+  a_why_quran_revealed_arabic_language_guide as BundleArticle,
 ];
