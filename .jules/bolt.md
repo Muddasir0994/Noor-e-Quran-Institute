@@ -1,0 +1,4 @@
+
+## 2025-03-08 - Asynchronous I/O Optimization in DataStore
+**Learning:** The backend's custom `DataStore` singleton used synchronous `fs.writeFileSync` for file saves, which blocked the Node.js event loop during rapid concurrent saves and could theoretically lead to data loss or latency spikes under load. Optimizing this to asynchronous `fs.promises.writeFile` required an asynchronous queue with `this.pendingData` lock and `writePromise` to safely handle rapid concurrent saves.
+**Action:** Always wrap concurrent, asynchronous file writes behind a queuing and state management mechanism (`while (this.pendingData)` loop) in singletons rather than directly changing it to `fs.promises.writeFile` and abandoning it, to ensure writes do not overlap. Implement proper graceful shutdown hooks catching `SIGTERM`/`SIGINT` to invoke `flush()` and await in-progress writes before exit to prevent file corruption.
