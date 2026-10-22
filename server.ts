@@ -38,6 +38,11 @@ declare global {
 
 dotenv.config();
 
+// HTML-escape user input to prevent HTML injection in emails
+function escapeHtml(s: string): string {
+  return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
 // Helper to send email alerts to Admin if SMTP is configured
 async function sendAdminNotificationEmail(subject: string, htmlContent: string) {
   try {
@@ -780,17 +785,17 @@ app.post('/api/book-trial', checkPublicRateLimit, (req, res) => {
     sendAdminNotificationEmail(
       `New 3-Day Free Trial: ${lead.studentName} (${lead.courseName})`,
       `<h2>New Free Trial Request - Noor-e-Quran Institute</h2>
-      <p><strong>Student Name:</strong> ${lead.studentName}</p>
-      <p><strong>Parent/Guardian:</strong> ${lead.parentName || 'N/A'}</p>
-      <p><strong>WhatsApp / Phone:</strong> ${lead.phone}</p>
-      <p><strong>Email:</strong> ${lead.email || 'N/A'}</p>
-      <p><strong>Course:</strong> ${lead.courseName}</p>
-      <p><strong>Tutor Preference:</strong> ${lead.tutorGender}</p>
-      <p><strong>Preferred Time:</strong> ${lead.timeSlot} (${lead.preferredTimeRange || 'Standard'})</p>
-      <p><strong>Preferred Days:</strong> ${(lead.preferredDays || []).join(', ')}</p>
-      <p><strong>Learning Pace:</strong> ${lead.learningPace || 'Normal'}</p>
-      <p><strong>Country:</strong> ${lead.country}</p>
-      <p><strong>Notes:</strong> ${lead.notes?.[0]?.text || 'None'}</p>
+      <p><strong>Student Name:</strong> ${escapeHtml(lead.studentName)}</p>
+      <p><strong>Parent/Guardian:</strong> ${escapeHtml(lead.parentName || 'N/A')}</p>
+      <p><strong>WhatsApp / Phone:</strong> ${escapeHtml(lead.phone)}</p>
+      <p><strong>Email:</strong> ${escapeHtml(lead.email || 'N/A')}</p>
+      <p><strong>Course:</strong> ${escapeHtml(lead.courseName)}</p>
+      <p><strong>Tutor Preference:</strong> ${escapeHtml(lead.tutorGender)}</p>
+      <p><strong>Preferred Time:</strong> ${escapeHtml(lead.timeSlot)} (${escapeHtml(lead.preferredTimeRange || 'Standard')})</p>
+      <p><strong>Preferred Days:</strong> ${escapeHtml((lead.preferredDays || []).join(', '))}</p>
+      <p><strong>Learning Pace:</strong> ${escapeHtml(lead.learningPace || 'Normal')}</p>
+      <p><strong>Country:</strong> ${escapeHtml(lead.country)}</p>
+      <p><strong>Notes:</strong> ${escapeHtml(lead.notes?.[0]?.text || 'None')}</p>
       <hr/>
       <p><a href="${whatsappUrl}">Click here to message student on WhatsApp</a></p>`
     );
@@ -872,18 +877,18 @@ app.post('/api/enroll', checkPublicRateLimit, (req, res) => {
     sendAdminNotificationEmail(
       `New Student Enrollment: ${application.studentName} (${application.courseName})`,
       `<h2>New Enrollment Application - Noor-e-Quran Institute</h2>
-      <p><strong>Student Name:</strong> ${application.studentName}</p>
-      <p><strong>Parent/Guardian:</strong> ${application.parentName || 'N/A'}</p>
-      <p><strong>WhatsApp / Phone:</strong> ${application.phone}</p>
-      <p><strong>Email:</strong> ${application.studentEmail || application.parentEmail || 'N/A'}</p>
-      <p><strong>Course:</strong> ${application.courseName}</p>
-      <p><strong>Package:</strong> ${application.packageName}</p>
-      <p><strong>Tutor Preference:</strong> ${application.tutorPreference}</p>
-      <p><strong>Preferred Time:</strong> ${application.timeSlot} (${application.preferredTimeRange || 'Standard'})</p>
-      <p><strong>Days:</strong> ${(application.preferredDays || []).join(', ')}</p>
-      <p><strong>Learning Pace:</strong> ${application.learningPace || 'Normal'}</p>
-      <p><strong>Country:</strong> ${application.country}</p>
-      <p><strong>Additional Notes:</strong> ${application.additionalNotes || 'None'}</p>
+      <p><strong>Student Name:</strong> ${escapeHtml(application.studentName)}</p>
+      <p><strong>Parent/Guardian:</strong> ${escapeHtml(application.parentName || 'N/A')}</p>
+      <p><strong>WhatsApp / Phone:</strong> ${escapeHtml(application.phone)}</p>
+      <p><strong>Email:</strong> ${escapeHtml(application.studentEmail || application.parentEmail || 'N/A')}</p>
+      <p><strong>Course:</strong> ${escapeHtml(application.courseName)}</p>
+      <p><strong>Package:</strong> ${escapeHtml(application.packageName)}</p>
+      <p><strong>Tutor Preference:</strong> ${escapeHtml(application.tutorPreference)}</p>
+      <p><strong>Preferred Time:</strong> ${escapeHtml(application.timeSlot)} (${escapeHtml(application.preferredTimeRange || 'Standard')})</p>
+      <p><strong>Days:</strong> ${escapeHtml((application.preferredDays || []).join(', '))}</p>
+      <p><strong>Learning Pace:</strong> ${escapeHtml(application.learningPace || 'Normal')}</p>
+      <p><strong>Country:</strong> ${escapeHtml(application.country)}</p>
+      <p><strong>Additional Notes:</strong> ${escapeHtml(application.additionalNotes || 'None')}</p>
       <hr/>
       <p><a href="${whatsappUrl}">Click here to message student on WhatsApp</a></p>`
     );
@@ -917,18 +922,15 @@ app.post('/api/contact', checkPublicRateLimit, (req, res) => {
       message
     });
 
-    // HTML-escape user input to prevent HTML injection in admin email
-    const esc = (s: string) => String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-
     sendAdminNotificationEmail(
-      `New Inquiry: ${esc(msg.name)} - ${esc(msg.subject)}`,
+      `New Inquiry: ${msg.name} - ${msg.subject}`,
       `<h2>New Contact Inquiry - Noor-e-Quran Institute</h2>
-      <p><strong>Name:</strong> ${esc(msg.name)}</p>
-      <p><strong>WhatsApp / Phone:</strong> ${esc(msg.phone) || 'N/A'}</p>
-      <p><strong>Country:</strong> ${esc(msg.country) || 'N/A'}</p>
-      <p><strong>Email:</strong> ${esc(msg.email) || 'N/A'}</p>
-      <p><strong>Subject:</strong> ${esc(msg.subject)}</p>
-      <p><strong>Message:</strong><br/>${esc(msg.message).replace(/\n/g, '<br/>')}</p>`
+      <p><strong>Name:</strong> ${escapeHtml(msg.name)}</p>
+      <p><strong>WhatsApp / Phone:</strong> ${escapeHtml(msg.phone) || 'N/A'}</p>
+      <p><strong>Country:</strong> ${escapeHtml(msg.country) || 'N/A'}</p>
+      <p><strong>Email:</strong> ${escapeHtml(msg.email) || 'N/A'}</p>
+      <p><strong>Subject:</strong> ${escapeHtml(msg.subject)}</p>
+      <p><strong>Message:</strong><br/>${escapeHtml(msg.message).replace(/\n/g, '<br/>')}</p>`
     );
 
     res.status(201).json({
