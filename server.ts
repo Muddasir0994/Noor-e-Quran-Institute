@@ -614,9 +614,27 @@ const blogImageCache = new Map<string, Buffer>();
 // read-only layer — served when missing from both Firestore and the
 // snapshot, never written back (a bundle file is the source of truth).
 const blogRestoredSlugs = new Set<string>();
+// Repair guard (2026-10-22): Firestore docs restored from content-less
+// snapshots (written from the list-view API response) are missing their
+// bodies. The repo bundle is the source of truth for their content.
+const blogRepairedSlugs = new Set<string>();
+const bundleBySlug = new Map<string, any>(BLOG_BUNDLE.map((b: any) => [b.slug, b]));
 function mergeBlogDocsWithSnapshot(liveDocs: any[]): any[] {
   const seen = new Set(liveDocs.map((d: any) => d.slug));
   const merged = [...liveDocs];
+  // Repair pass: a Firestore doc that lost its content (restored from a
+  // content-less snapshot) gets its body back from the repo bundle, and the
+  // repaired doc is written back to Firestore (once per process per slug).
+  for (const d of merged) {
+    const b = d.slug ? bundleBySlug.get(d.slug) : undefined;
+    if (b && b.content && !d.content) {
+      d.content = b.content;
+      if (d.id && !blogRepairedSlugs.has(d.slug)) {
+        blogRepairedSlugs.add(d.slug);
+        syncDocToFirestore('blogPosts', String(d.id), d).catch(() => {});
+      }
+    }
+  }
   const snap = getBlogSnapshot();
   for (const p of snap) {
     if (p.slug && !seen.has(p.slug)) {
