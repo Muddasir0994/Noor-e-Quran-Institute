@@ -37,6 +37,7 @@ import a_common_tajweed_mistakes_and_how_to_fix_them from './blog-data/common-ta
 import a_etiquettes_of_learning_quran_adaab_guide from './blog-data/etiquettes-of-learning-quran-adaab-guide';
 import a_free_trial_quran_class_what_to_expect from './blog-data/free-trial-quran-class-what-to-expect';
 import a_help_your_child_understand_quran_tafseer_guide from './blog-data/help-your-child-understand-quran-tafseer-guide';
+import a_homeschooling_quran_plan_muslim_families from './blog-data/homeschooling-quran-plan-muslim-families';
 import a_how_much_do_online_quran_classes_cost from './blog-data/how-much-do-online-quran-classes-cost';
 import a_how_to_memorize_quran_fast from './blog-data/how-to-memorize-quran-fast';
 import a_how_to_revise_quran_murajaah_guide from './blog-data/how-to-revise-quran-murajaah-guide';
@@ -87,6 +88,7 @@ export const BLOG_BUNDLE: BundleArticle[] = [
   a_etiquettes_of_learning_quran_adaab_guide as BundleArticle,
   a_free_trial_quran_class_what_to_expect as BundleArticle,
   a_help_your_child_understand_quran_tafseer_guide as BundleArticle,
+  a_homeschooling_quran_plan_muslim_families as BundleArticle,
   a_how_much_do_online_quran_classes_cost as BundleArticle,
   a_how_to_memorize_quran_fast as BundleArticle,
   a_how_to_revise_quran_murajaah_guide as BundleArticle,
