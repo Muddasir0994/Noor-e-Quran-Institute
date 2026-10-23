@@ -30,12 +30,17 @@ import a_6_kalimas from './blog-data/6-kalimas';
 import a_improve_quran_recitation_tips from './blog-data/improve-quran-recitation-tips';
 import a_online_vs_mosque_quran_classes from './blog-data/online-vs-mosque-quran-classes';
 import a_balancing_school_and_hifz_parents_guide from './blog-data/balancing-school-and-hifz-parents-guide';
+import a_benefits_of_learning_quran_online from './blog-data/benefits-of-learning-quran-online';
+import a_best_age_to_start_quran_learning from './blog-data/best-age-to-start-quran-learning';
 import a_child_loses_interest_quran_class_parents_guide from './blog-data/child-loses-interest-quran-class-parents-guide';
+import a_common_tajweed_mistakes_and_how_to_fix_them from './blog-data/common-tajweed-mistakes-and-how-to-fix-them';
 import a_etiquettes_of_learning_quran_adaab_guide from './blog-data/etiquettes-of-learning-quran-adaab-guide';
 import a_free_trial_quran_class_what_to_expect from './blog-data/free-trial-quran-class-what-to-expect';
 import a_help_your_child_understand_quran_tafseer_guide from './blog-data/help-your-child-understand-quran-tafseer-guide';
 import a_how_much_do_online_quran_classes_cost from './blog-data/how-much-do-online-quran-classes-cost';
+import a_how_to_memorize_quran_fast from './blog-data/how-to-memorize-quran-fast';
 import a_how_to_revise_quran_murajaah_guide from './blog-data/how-to-revise-quran-murajaah-guide';
+import a_how_to_teach_quran_to_kids_at_home from './blog-data/how-to-teach-quran-to-kids-at-home';
 import a_is_learning_quran_online_safe_parents_checklist from './blog-data/is-learning-quran-online-safe-parents-checklist';
 import a_new_muslim_guide_learning_quran from './blog-data/new-muslim-guide-learning-quran';
 import a_online_quran_classes_for_adults_learn_at_any_age from './blog-data/online-quran-classes-for-adults-learn-at-any-age';
@@ -44,6 +49,7 @@ import a_quran_bedtime_stories_prophets_tales_kids_guide from './blog-data/quran
 import a_rewards_of_learning_quran_10_hadith_parents_guide from './blog-data/rewards-of-learning-quran-10-hadith-parents-guide';
 import a_screen_time_vs_quran_time_parents_guide from './blog-data/screen-time-vs-quran-time-parents-guide';
 import a_short_surahs_every_child_should_memorize_first from './blog-data/short-surahs-every-child-should-memorize-first';
+import a_tajweed_rules_for_beginners from './blog-data/tajweed-rules-for-beginners';
 import a_why_quran_revealed_arabic_language_guide from './blog-data/why-quran-revealed-arabic-language-guide';
 
 export interface BundleArticle {
@@ -74,12 +80,17 @@ export const BLOG_BUNDLE: BundleArticle[] = [
   a_improve_quran_recitation_tips as BundleArticle,
   a_online_vs_mosque_quran_classes as BundleArticle,
   a_balancing_school_and_hifz_parents_guide as BundleArticle,
+  a_benefits_of_learning_quran_online as BundleArticle,
+  a_best_age_to_start_quran_learning as BundleArticle,
   a_child_loses_interest_quran_class_parents_guide as BundleArticle,
+  a_common_tajweed_mistakes_and_how_to_fix_them as BundleArticle,
   a_etiquettes_of_learning_quran_adaab_guide as BundleArticle,
   a_free_trial_quran_class_what_to_expect as BundleArticle,
   a_help_your_child_understand_quran_tafseer_guide as BundleArticle,
   a_how_much_do_online_quran_classes_cost as BundleArticle,
+  a_how_to_memorize_quran_fast as BundleArticle,
   a_how_to_revise_quran_murajaah_guide as BundleArticle,
+  a_how_to_teach_quran_to_kids_at_home as BundleArticle,
   a_is_learning_quran_online_safe_parents_checklist as BundleArticle,
   a_new_muslim_guide_learning_quran as BundleArticle,
   a_online_quran_classes_for_adults_learn_at_any_age as BundleArticle,
@@ -88,5 +99,6 @@ export const BLOG_BUNDLE: BundleArticle[] = [
   a_rewards_of_learning_quran_10_hadith_parents_guide as BundleArticle,
   a_screen_time_vs_quran_time_parents_guide as BundleArticle,
   a_short_surahs_every_child_should_memorize_first as BundleArticle,
+  a_tajweed_rules_for_beginners as BundleArticle,
   a_why_quran_revealed_arabic_language_guide as BundleArticle,
 ];

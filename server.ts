@@ -142,6 +142,19 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   next();
 });
 
+// Canonical URLs: 301-strip trailing slashes on page routes (e.g. /blog/<slug>/, /packages/)
+// so slash variants don't serve duplicate 200 content. API routes, the root path,
+// and file URLs (with an extension, e.g. /sitemap.xml) are left untouched.
+app.use((req: Request, res: Response, next: NextFunction) => {
+  const p = req.path;
+  if (req.method === 'GET' && p.length > 1 && p.endsWith('/') && !p.startsWith('/api') && !/\.[a-zA-Z0-9]+$/.test(p)) {
+    const qi = req.url.indexOf('?');
+    const qs = qi >= 0 ? req.url.slice(qi) : '';
+    return res.redirect(301, p.replace(/\/+$/, '') + qs);
+  }
+  next();
+});
+
 // Comprehensive Security Headers Middleware
 app.use((req: Request, res: Response, next: NextFunction) => {
   // 1. Content Security Policy (Hardened for Production with Clarity, Jitsi, Google Auth, and IndexNow support)
