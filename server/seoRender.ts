@@ -1,5 +1,6 @@
 import { dataStore } from './dataStore.js';
-import { getArticleSeo, getAllArticleSeo } from './seoCache.js';
+import { getArticleSeo, getAllArticleSeo, extractFaqs, type ArticleSeoEntry } from './seoCache.js';
+import { BLOG_BUNDLE } from './blogBundle.js';
 
 export const ACADEMY_BASE_URL = 'https://noorequraninstitute.me';
 
@@ -553,7 +554,30 @@ export function resolveRouteMetadata(rawPath: string): RouteResolution {
     // `blogPosts` collection are mirrored locally by server/seoCache.ts, so
     // crawlers get the real title, description, and Article + FAQPage JSON-LD
     // instead of the generic slug-derived fallback below.
-    const cached = getArticleSeo(slug);
+    let cached = getArticleSeo(slug);
+    if (!cached) {
+      // Repo-bundle fallback: every published article is committed under
+      // server/blog-data/, so a crawler must never hit the 404 fallback below
+      // just because the Firestore mirror (seoCache) is stale or its sync was
+      // blocked by the Firestore free-tier read quota. Build the same SEO
+      // entry shape from the bundle copy of the article.
+      const bundlePost = BLOG_BUNDLE.find(a => a.slug === slug && a.published !== false);
+      if (bundlePost) {
+        const entry: ArticleSeoEntry = {
+          slug: bundlePost.slug,
+          title: bundlePost.title,
+          description: bundlePost.metaDescription || '',
+          author: bundlePost.author,
+          featuredImage: bundlePost.featuredImage
+            ? (bundlePost.featuredImage.startsWith('/') ? `${ACADEMY_BASE_URL}${bundlePost.featuredImage}` : bundlePost.featuredImage)
+            : undefined,
+          createdAt: bundlePost.createdAt,
+          updatedAt: bundlePost.updatedAt || bundlePost.createdAt,
+          faqs: extractFaqs(bundlePost.content || '')
+        };
+        cached = entry;
+      }
+    }
     if (cached) {
       const canonical = `${ACADEMY_BASE_URL}/blog/${cached.slug}`;
       const articleSchema = {
