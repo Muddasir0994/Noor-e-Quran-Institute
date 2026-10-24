@@ -14,7 +14,7 @@ export default {
     "teach quran to children",
     "kids hifz program"
   ],
-  "author": "Noor E Quran Institute",
+  "author": "M Muddasir Hameed",
   "readTime": "9 min read",
   "published": true,
   "createdAt": "2026-10-19",

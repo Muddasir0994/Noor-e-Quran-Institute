@@ -14,7 +14,7 @@ export default {
     "fix tajweed mistakes",
     "quran recitation mistakes"
   ],
-  "author": "Noor E Quran Institute",
+  "author": "M Muddasir Hameed",
   "readTime": "2 min read",
   "published": true,
   "createdAt": "2025-12-01",

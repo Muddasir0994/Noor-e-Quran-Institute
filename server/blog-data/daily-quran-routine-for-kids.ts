@@ -13,7 +13,7 @@ export default {
     "quran study routine",
     "help kids read quran daily"
   ],
-  "author": "Noor E Quran Institute",
+  "author": "M Muddasir Hameed",
   "readTime": "7 min read",
   "published": true,
   "createdAt": "2026-10-17",

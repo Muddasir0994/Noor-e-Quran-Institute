@@ -14,7 +14,7 @@ export default {
     "1-on-1 quran classes",
     "quran learning online"
   ],
-  "author": "Noor E Quran Institute",
+  "author": "M Muddasir Hameed",
   "readTime": "2 min read",
   "published": true,
   "createdAt": "2025-12-01",

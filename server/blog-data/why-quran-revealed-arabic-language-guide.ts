@@ -15,7 +15,7 @@ export default {
     "quran translation vs arabic",
     "arabic for muslim kids"
   ],
-  "author": "Noor E Quran Institute",
+  "author": "M Muddasir Hameed",
   "readTime": "8 min read",
   "published": true,
   "createdAt": "2026-10-21",

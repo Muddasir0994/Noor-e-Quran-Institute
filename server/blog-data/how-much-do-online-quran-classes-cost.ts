@@ -14,7 +14,7 @@ export default {
     "parents guide",
     "quran academy"
   ],
-  "author": "Noor E Quran Institute",
+  "author": "M Muddasir Hameed",
   "readTime": "8 min read",
   "published": true,
   "createdAt": "2026-10-20",

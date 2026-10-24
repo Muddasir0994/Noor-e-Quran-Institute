@@ -16,7 +16,7 @@ export default {
     "muslim parenting",
     "quran learning stages"
   ],
-  "author": "Noor E Quran Institute",
+  "author": "M Muddasir Hameed",
   "readTime": "11 min read",
   "published": true,
   "createdAt": "2026-10-24",

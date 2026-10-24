@@ -638,14 +638,24 @@ function mergeBlogDocsWithSnapshot(liveDocs: any[]): any[] {
   // Repair pass: a Firestore doc that lost its content (restored from a
   // content-less snapshot) gets its body back from the repo bundle, and the
   // repaired doc is written back to Firestore (once per process per slug).
+  // Author sync (2026-10-24): the bundle is also the source of truth for the
+  // author byline — every article is by M Muddasir Hameed, so a stale
+  // Firestore author is corrected the same way and written back once.
   for (const d of merged) {
     const b = d.slug ? bundleBySlug.get(d.slug) : undefined;
-    if (b && b.content && !d.content) {
+    if (!b) continue;
+    let dirty = false;
+    if (b.content && !d.content) {
       d.content = b.content;
-      if (d.id && !blogRepairedSlugs.has(d.slug)) {
-        blogRepairedSlugs.add(d.slug);
-        syncDocToFirestore('blogPosts', String(d.id), d).catch(() => {});
-      }
+      dirty = true;
+    }
+    if (b.author && d.author !== b.author) {
+      d.author = b.author;
+      dirty = true;
+    }
+    if (dirty && d.id && !blogRepairedSlugs.has(d.slug)) {
+      blogRepairedSlugs.add(d.slug);
+      syncDocToFirestore('blogPosts', String(d.id), d).catch(() => {});
     }
   }
   const snap = getBlogSnapshot();

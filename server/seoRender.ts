@@ -297,7 +297,7 @@ export const KNOWN_STATIC_ROUTES: Record<string, PageMeta> = {
   },
   '/author/m-muddasir-hameed': {
     title: 'M Muddasir Hameed — Founder & Author | Noor E Quran Institute',
-    description: 'M Muddasir Hameed is the founder of Noor E Quran Institute and the author of its daily Quran learning guides for parents, kids and new Muslims.',
+    description: 'M Muddasir Hameed is an Islamic scholar, researcher, and founder of Noor E Quran Institute. He holds a Bachelor of Islamic Studies, an M.A.-equivalent (Aalmia) in Islamic & Arabic Studies, and a post-graduate specialization in Islamic Jurisprudence (Takhassus fil Fiqh).',
     canonical: `${ACADEMY_BASE_URL}/author/m-muddasir-hameed`,
     ogType: 'profile',
     ogImage: `${ACADEMY_BASE_URL}/images/author/m-muddasir-hameed.jpg`,
@@ -313,7 +313,8 @@ export const KNOWN_STATIC_ROUTES: Record<string, PageMeta> = {
       name: 'M Muddasir Hameed',
       url: `${ACADEMY_BASE_URL}/author/m-muddasir-hameed`,
       image: `${ACADEMY_BASE_URL}/images/author/m-muddasir-hameed.jpg`,
-      jobTitle: 'Founder & Author',
+      jobTitle: 'Islamic Scholar, Researcher & Founder',
+      description: 'M Muddasir Hameed is an Islamic scholar, researcher, and founder of Noor E Quran Institute. He holds a Bachelor of Islamic Studies, an M.A.-equivalent (Aalmia) in Islamic & Arabic Studies, and a post-graduate specialization in Islamic Jurisprudence (Takhassus fil Fiqh).',
       worksFor: {
         '@type': 'EducationalOrganization',
         name: 'Noor E Quran Institute',

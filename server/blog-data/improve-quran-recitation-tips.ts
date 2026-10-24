@@ -13,7 +13,7 @@ export default {
     "quran fluency",
     "practice quran recitation"
   ],
-  "author": "Noor E Quran Institute",
+  "author": "M Muddasir Hameed",
   "readTime": "8 min read",
   "published": true,
   "createdAt": "2026-10-17",

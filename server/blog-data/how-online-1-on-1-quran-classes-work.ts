@@ -13,7 +13,7 @@ export default {
     "online vs group quran class",
     "virtual quran learning"
   ],
-  "author": "Noor E Quran Institute",
+  "author": "M Muddasir Hameed",
   "readTime": "7 min read",
   "published": true,
   "createdAt": "2026-10-17",

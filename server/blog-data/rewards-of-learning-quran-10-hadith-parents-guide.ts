@@ -16,7 +16,7 @@ export default {
     "crown of light hadith parents",
     "quran motivation for kids parents"
   ],
-  "author": "Noor E Quran Institute",
+  "author": "M Muddasir Hameed",
   "readTime": "11 min read",
   "published": true,
   "createdAt": "2026-10-21",

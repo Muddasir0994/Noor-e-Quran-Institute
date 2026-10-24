@@ -15,7 +15,7 @@ export default {
     "sabaq sabqi manzil revision",
     "quran memorization for kids"
   ],
-  "author": "Noor E Quran Institute",
+  "author": "M Muddasir Hameed",
   "readTime": "9 min read",
   "published": true,
   "createdAt": "2026-10-21",

@@ -14,7 +14,7 @@ export default {
     "makharij articulation points",
     "learn tajweed online"
   ],
-  "author": "Noor E Quran Institute",
+  "author": "M Muddasir Hameed",
   "readTime": "3 min read",
   "published": true,
   "createdAt": "2026-02-01",

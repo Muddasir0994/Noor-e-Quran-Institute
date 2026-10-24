@@ -15,7 +15,7 @@ export default {
     "quran meaning kids",
     "quran translation for families"
   ],
-  "author": "Noor E Quran Institute",
+  "author": "M Muddasir Hameed",
   "readTime": "9 min read",
   "published": true,
   "createdAt": "2026-10-22",

@@ -14,7 +14,7 @@ export default {
     "book free quran trial",
     "what to expect quran trial class"
   ],
-  "author": "Noor E Quran Institute",
+  "author": "M Muddasir Hameed",
   "readTime": "9 min read",
   "published": true,
   "createdAt": "2026-10-19",

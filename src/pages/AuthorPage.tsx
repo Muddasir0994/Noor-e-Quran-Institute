@@ -5,6 +5,8 @@ import { BookOpen, Clock, ArrowRight } from '@phosphor-icons/react';
 export const AUTHOR_NAME = 'M Muddasir Hameed';
 export const AUTHOR_PROFILE_PATH = '/author/m-muddasir-hameed';
 export const AUTHOR_PROFILE_URL = `https://noorequraninstitute.me${AUTHOR_PROFILE_PATH}`;
+export const AUTHOR_BIO =
+  'M Muddasir Hameed is an Islamic scholar, researcher, and founder of Noor E Quran Institute. He holds a Bachelor of Islamic Studies, an M.A.-equivalent (Aalmia) in Islamic & Arabic Studies, and a post-graduate specialization in Islamic Jurisprudence (Takhassus fil Fiqh).';
 
 interface AuthorArticle {
   slug: string;
@@ -24,15 +26,14 @@ const personSchema = {
   name: AUTHOR_NAME,
   url: AUTHOR_PROFILE_URL,
   image: 'https://noorequraninstitute.me/images/author/m-muddasir-hameed.jpg',
-  jobTitle: 'Founder & Author',
+  jobTitle: 'Islamic Scholar, Researcher & Founder',
   worksFor: {
     '@type': 'EducationalOrganization',
     name: 'Noor E Quran Institute',
     url: 'https://noorequraninstitute.me/'
   },
   sameAs: ['https://www.linkedin.com/in/muddasir-hameed'],
-  description:
-    'Founder of Noor E Quran Institute. Writes and refines the institute\u2019s daily guides on Quran learning for parents, kids and new Muslims.'
+  description: AUTHOR_BIO
 };
 
 const AuthorPage: React.FC = () => {
@@ -59,7 +60,7 @@ const AuthorPage: React.FC = () => {
         <title>{`${AUTHOR_NAME} — Founder & Author | Noor E Quran Institute`}</title>
         <meta
           name="description"
-          content="M Muddasir Hameed is the founder of Noor E Quran Institute and the author of its daily Quran learning guides for parents, kids and new Muslims."
+          content={AUTHOR_BIO}
         />
         <link rel="canonical" href={AUTHOR_PROFILE_URL} />
         <meta property="og:type" content="profile" />
@@ -67,7 +68,7 @@ const AuthorPage: React.FC = () => {
         <meta property="og:title" content={`${AUTHOR_NAME} — Founder & Author | Noor E Quran Institute`} />
         <meta
           property="og:description"
-          content="Founder of Noor E Quran Institute. Author of the institute's daily guides on Quran learning."
+          content={AUTHOR_BIO}
         />
         <meta property="og:image" content="https://noorequraninstitute.me/images/author/m-muddasir-hameed.jpg" />
         <meta property="og:site_name" content="Noor E Quran Institute" />
@@ -90,15 +91,7 @@ const AuthorPage: React.FC = () => {
               {AUTHOR_NAME}
             </h1>
             <p className="font-sans text-sm sm:text-[15px] leading-relaxed text-gray-600 mt-4">
-              M Muddasir Hameed is the founder of Noor E Quran Institute, an online academy offering
-              personalised 1-on-1 Quran classes to children, sisters and adults in the UK, USA, Canada
-              and Australia. He writes and refines the institute&rsquo;s daily guides on Quran
-              learning — covering Noorani Qaida, Nazra, Tajweed, Hifz and Islamic studies for parents
-              and students.
-            </p>
-            <p className="font-sans text-sm leading-relaxed text-gray-600 mt-3">
-              He holds a BS from Green International University, Lahore, alongside advanced Islamic
-              scholarship qualifications (Aalmia) earned with A+ grades.
+              {AUTHOR_BIO}
             </p>
             <a
               href="https://www.linkedin.com/in/muddasir-hameed"

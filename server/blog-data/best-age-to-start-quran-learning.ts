@@ -14,7 +14,7 @@ export default {
     "noorani qaida age",
     "kids quran learning"
   ],
-  "author": "Noor E Quran Institute",
+  "author": "M Muddasir Hameed",
   "readTime": "2 min read",
   "published": true,
   "createdAt": "2026-01-01",

@@ -4,6 +4,7 @@ import { Helmet } from 'react-helmet-async';
 import { BlogPost } from '../types';
 import { INITIAL_ARTICLES } from '../data/academyData';
 import { getBlogPostBySlug, getPublishedBlogPosts } from '../lib/firestoreService';
+import { AUTHOR_NAME, AUTHOR_BIO, AUTHOR_PROFILE_PATH } from './AuthorPage';
 import { Clock, User, ArrowLeft, BookOpen } from '@phosphor-icons/react';
 import DOMPurify from 'dompurify';
 import ReactMarkdown from 'react-markdown';
@@ -350,6 +351,29 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({ onOpenTrial }) => {
               </ReactMarkdown>
             </div>
           )}
+        </div>
+
+        {/* Author Box */}
+        <div className="mt-14 p-8 bg-white border border-[#E7DBC2] rounded-sm flex flex-col sm:flex-row gap-6 items-center sm:items-start shadow-sm">
+          <img
+            src="/images/author/m-muddasir-hameed.jpg"
+            alt={AUTHOR_NAME}
+            className="w-24 h-24 rounded-full object-cover border-4 border-[#F5F0E6] shrink-0"
+          />
+          <div className="text-center sm:text-left">
+            <span className="text-[11px] font-sans font-bold uppercase tracking-widest text-[#A47A46]">
+              Written by
+            </span>
+            <a
+              href={AUTHOR_PROFILE_PATH}
+              className="block font-editorial text-2xl text-[#13263D] font-semibold mt-1 hover:text-[#A47A46] transition-colors"
+            >
+              {AUTHOR_NAME}
+            </a>
+            <p className="font-sans text-sm leading-relaxed text-gray-600 mt-3">
+              {AUTHOR_BIO}
+            </p>
+          </div>
         </div>
 
         {/* In-Article Conversion Callout Banner */}

@@ -16,7 +16,7 @@ export default {
     "child nervous quran recitation stage",
     "mock runs quran competition practice"
   ],
-  "author": "Noor E Quran Institute",
+  "author": "M Muddasir Hameed",
   "readTime": "10 min read",
   "published": true,
   "createdAt": "2026-10-22",

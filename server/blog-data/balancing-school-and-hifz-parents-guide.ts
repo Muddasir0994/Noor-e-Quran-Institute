@@ -14,7 +14,7 @@ export default {
     "online hifz classes",
     "hifz tips for parents"
   ],
-  "author": "Noor E Quran Institute",
+  "author": "M Muddasir Hameed",
   "readTime": "8 min read",
   "published": true,
   "createdAt": "2026-10-19",

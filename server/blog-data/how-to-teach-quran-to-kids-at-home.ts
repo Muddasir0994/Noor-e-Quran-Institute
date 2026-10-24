@@ -14,7 +14,7 @@ export default {
     "kids quran learning",
     "muslim parenting quran"
   ],
-  "author": "Noor E Quran Institute",
+  "author": "M Muddasir Hameed",
   "readTime": "3 min read",
   "published": true,
   "createdAt": "2026-02-01",

@@ -14,7 +14,7 @@ export default {
     "new muslim quran lessons",
     "online quran classes for adults"
   ],
-  "author": "Noor E Quran Institute",
+  "author": "M Muddasir Hameed",
   "readTime": "7 min read",
   "published": true,
   "createdAt": "2026-10-19",
