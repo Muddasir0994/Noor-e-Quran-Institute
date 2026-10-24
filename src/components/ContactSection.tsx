@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Phone, Envelope, Globe, WhatsappLogo, PaperPlaneTilt, CheckCircle, MapPin, Clock, YoutubeLogo, InstagramLogo, FacebookLogo } from '@phosphor-icons/react';
+import { Phone, Envelope, Globe, WhatsappLogo, PaperPlaneTilt, CheckCircle, MapPin, Clock, YoutubeLogo, InstagramLogo, FacebookLogo, LinkedinLogo } from '@phosphor-icons/react';
 
 export const ContactSection: React.FC = () => {
   const [name, setName] = useState('');
@@ -183,6 +183,15 @@ export const ContactSection: React.FC = () => {
                     className="w-8 h-8 rounded-lg bg-emerald-950/90 hover:bg-emerald-800 border border-emerald-700/60 flex items-center justify-center text-emerald-200 hover:text-[#F3C64D] transition-all"
                   >
                     <FacebookLogo className="w-4 h-4" weight="duotone" />
+                  </a>
+                  <a
+                    href="https://www.linkedin.com/in/m-muddasir-hameed"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="LinkedIn Profile"
+                    className="w-8 h-8 rounded-lg bg-emerald-950/90 hover:bg-emerald-800 border border-emerald-700/60 flex items-center justify-center text-emerald-200 hover:text-[#F3C64D] transition-all"
+                  >
+                    <LinkedinLogo className="w-4 h-4" weight="duotone" />
                   </a>
                 </div>
               </div>

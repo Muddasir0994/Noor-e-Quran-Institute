@@ -197,7 +197,14 @@ export const Footer: React.FC<FooterProps> = ({
 
         {/* Bottom Minimal Copyright Bar */}
         <div className="pt-8 border-t border-[#A47A46]/15 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-[#E7DBC2]/50 font-sans">
-          <p>© {new Date().getFullYear()} Noor E Quran Institute. All rights reserved.</p>
+          <p>
+            © {new Date().getFullYear()} Noor E Quran Institute. All rights reserved.
+            <span className="mx-2">•</span>
+            Founded by{' '}
+            <Link to="/author/m-muddasir-hameed" className="text-[#A47A46] hover:underline">
+              M Muddasir Hameed
+            </Link>
+          </p>
           <div className="flex items-center gap-4">
             <Link to="/privacy-policy" className="hover:underline">Privacy</Link>
             <span>•</span>

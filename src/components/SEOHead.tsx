@@ -38,12 +38,13 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
       '@type': 'Person',
       name: 'M Muddasir Hameed',
       url: `${ACADEMY_BASE_URL}/author/m-muddasir-hameed`,
-      sameAs: ['https://noorequraninstitute.blogspot.com']
+      sameAs: ['https://noorequraninstitute.blogspot.com', 'https://www.linkedin.com/in/m-muddasir-hameed']
     },
     sameAs: [
       'https://www.youtube.com/@NooreQuranInstitute',
       'https://www.instagram.com/noore_quraninstitute',
       'https://www.facebook.com/share/14pNXeMTM7o/',
+      'https://www.linkedin.com/in/m-muddasir-hameed',
     ],
     contactPoint: {
       '@type': 'ContactPoint',
