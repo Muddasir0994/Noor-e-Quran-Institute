@@ -236,7 +236,8 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({ onOpenTrial }) => {
     image: post.featuredImage || 'https://noorequraninstitute.me/branding/logo.png',
     author: {
       '@type': 'Person',
-      name: post.author || 'Noor E Quran Institute Scholar'
+      name: 'M Muddasir Hameed',
+      url: 'https://noorequraninstitute.me/author/m-muddasir-hameed'
     },
     publisher: {
       '@type': 'EducationalOrganization',
@@ -311,7 +312,9 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({ onOpenTrial }) => {
           <div className="flex flex-wrap items-center gap-4 text-xs text-gray-500 font-sans pt-1">
             <span className="flex items-center gap-1.5 font-medium text-gray-700">
               <User className="w-3.5 h-3.5 text-[#A47A46]" />
-              <span>{post.author}</span>
+              <a href="/author/m-muddasir-hameed" className="hover:text-[#A47A46] transition-colors">
+                M Muddasir Hameed
+              </a>
             </span>
             <span>•</span>
             <span className="flex items-center gap-1.5">

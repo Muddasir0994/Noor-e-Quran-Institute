@@ -26,6 +26,7 @@ const HowItWorksPage = lazy(() => import('./pages/HowItWorksPage').then(m => ({ 
 const AboutPage = lazy(() => import('./pages/AboutPage').then(m => ({ default: m.AboutPage })));
 const BlogListPage = lazy(() => import('./pages/BlogListPage').then(m => ({ default: m.BlogListPage })));
 const BlogPostPage = lazy(() => import('./pages/BlogPostPage').then(m => ({ default: m.BlogPostPage })));
+const AuthorPage = lazy(() => import('./pages/AuthorPage').then(m => ({ default: m.AuthorPage })));
 const ContactPage = lazy(() => import('./pages/ContactPage').then(m => ({ default: m.ContactPage })));
 const FAQPage = lazy(() => import('./pages/FAQPage').then(m => ({ default: m.FAQPage })));
 const LegalPage = lazy(() => import('./pages/LegalPage').then(m => ({ default: m.LegalPage })));
@@ -492,6 +493,7 @@ function AppContent() {
             <Route path="/blog" element={<BlogListPage onOpenTrial={() => handleOpenTrial()} />} />
             <Route path="/blogs" element={<BlogListPage onOpenTrial={() => handleOpenTrial()} />} />
             <Route path="/articles" element={<BlogListPage onOpenTrial={() => handleOpenTrial()} />} />
+            <Route path="/author/m-muddasir-hameed" element={<AuthorPage />} />
             <Route path="/blog/:slug" element={<BlogPostPage onOpenTrial={() => handleOpenTrial()} />} />
             <Route path="/articles/:slug" element={<BlogPostPage onOpenTrial={() => handleOpenTrial()} />} />
 

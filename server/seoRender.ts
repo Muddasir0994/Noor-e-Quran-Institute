@@ -295,6 +295,33 @@ export const KNOWN_STATIC_ROUTES: Record<string, PageMeta> = {
       { name: 'Contact Us', item: `${ACADEMY_BASE_URL}/contact` }
     ]
   },
+  '/author/m-muddasir-hameed': {
+    title: 'M Muddasir Hameed — Founder & Author | Noor E Quran Institute',
+    description: 'M Muddasir Hameed is the founder of Noor E Quran Institute and the author of its daily Quran learning guides for parents, kids and new Muslims.',
+    canonical: `${ACADEMY_BASE_URL}/author/m-muddasir-hameed`,
+    ogType: 'profile',
+    ogImage: `${ACADEMY_BASE_URL}/images/author/m-muddasir-hameed.jpg`,
+    breadcrumbs: [
+      { name: 'Home', item: `${ACADEMY_BASE_URL}/` },
+      { name: 'Blog', item: `${ACADEMY_BASE_URL}/blog` },
+      { name: 'M Muddasir Hameed', item: `${ACADEMY_BASE_URL}/author/m-muddasir-hameed` }
+    ],
+    extraSchema: {
+      '@context': 'https://schema.org',
+      '@type': 'Person',
+      '@id': `${ACADEMY_BASE_URL}/author/m-muddasir-hameed#person`,
+      name: 'M Muddasir Hameed',
+      url: `${ACADEMY_BASE_URL}/author/m-muddasir-hameed`,
+      image: `${ACADEMY_BASE_URL}/images/author/m-muddasir-hameed.jpg`,
+      jobTitle: 'Founder & Author',
+      worksFor: {
+        '@type': 'EducationalOrganization',
+        name: 'Noor E Quran Institute',
+        url: `${ACADEMY_BASE_URL}/`
+      },
+      sameAs: ['https://www.linkedin.com/in/muddasir-hameed']
+    }
+  },
   '/faq': {
     title: 'Frequently Asked Questions | Noor E Quran Institute',
     description: 'Clear answers regarding trial lessons, female scholars, tuition schedules, technical requirements, and curriculum structure.',
@@ -529,8 +556,9 @@ export function resolveRouteMetadata(rawPath: string): RouteResolution {
           headline: article.title,
           description: article.summary,
           author: {
-            '@type': article.author ? 'Person' : 'EducationalOrganization',
-            name: article.author || 'Noor E Quran Institute Editorial Team'
+            '@type': 'Person',
+            name: 'M Muddasir Hameed',
+            url: `${ACADEMY_BASE_URL}/author/m-muddasir-hameed`
           },
           publisher: {
             '@type': 'EducationalOrganization',
@@ -588,7 +616,8 @@ export function resolveRouteMetadata(rawPath: string): RouteResolution {
         image: cached.featuredImage || `${ACADEMY_BASE_URL}/branding/logo.png`,
         author: {
           '@type': 'Person',
-          name: cached.author || 'Noor E Quran Institute Scholar'
+          name: 'M Muddasir Hameed',
+          url: `${ACADEMY_BASE_URL}/author/m-muddasir-hameed`
         },
         publisher: {
           '@type': 'EducationalOrganization',
@@ -702,7 +731,8 @@ export function generateDynamicSitemapXml(): string {
     { loc: `${ACADEMY_BASE_URL}/online-quran-classes-usa`, priority: '0.9', changefreq: 'weekly' },
     { loc: `${ACADEMY_BASE_URL}/online-quran-classes-canada`, priority: '0.85', changefreq: 'weekly' },
     { loc: `${ACADEMY_BASE_URL}/online-quran-classes-australia`, priority: '0.85', changefreq: 'weekly' },
-    { loc: `${ACADEMY_BASE_URL}/online-quran-classes-pakistan`, priority: '0.85', changefreq: 'weekly' }
+    { loc: `${ACADEMY_BASE_URL}/online-quran-classes-pakistan`, priority: '0.85', changefreq: 'weekly' },
+    { loc: `${ACADEMY_BASE_URL}/author/m-muddasir-hameed`, priority: '0.7', changefreq: 'weekly' }
   ];
 
   let xml = `<?xml version="1.0" encoding="UTF-8"?>
