@@ -44,6 +44,7 @@ import a_how_to_memorize_quran_fast from './blog-data/how-to-memorize-quran-fast
 import a_how_to_revise_quran_murajaah_guide from './blog-data/how-to-revise-quran-murajaah-guide';
 import a_how_to_teach_quran_to_kids_at_home from './blog-data/how-to-teach-quran-to-kids-at-home';
 import a_is_learning_quran_online_safe_parents_checklist from './blog-data/is-learning-quran-online-safe-parents-checklist';
+import a_is_my_child_ready_for_hifz_signs_guide from './blog-data/is-my-child-ready-for-hifz-signs-guide';
 import a_new_muslim_guide_learning_quran from './blog-data/new-muslim-guide-learning-quran';
 import a_online_quran_classes_for_adults_learn_at_any_age from './blog-data/online-quran-classes-for-adults-learn-at-any-age';
 import a_preparing_child_quran_competition_musabaqa_guide from './blog-data/preparing-child-quran-competition-musabaqa-guide';
@@ -97,6 +98,7 @@ export const BLOG_BUNDLE: BundleArticle[] = [
   a_how_to_revise_quran_murajaah_guide as BundleArticle,
   a_how_to_teach_quran_to_kids_at_home as BundleArticle,
   a_is_learning_quran_online_safe_parents_checklist as BundleArticle,
+  a_is_my_child_ready_for_hifz_signs_guide as BundleArticle,
   a_new_muslim_guide_learning_quran as BundleArticle,
   a_online_quran_classes_for_adults_learn_at_any_age as BundleArticle,
   a_preparing_child_quran_competition_musabaqa_guide as BundleArticle,
