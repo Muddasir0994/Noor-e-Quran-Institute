@@ -36,7 +36,7 @@ const NotFoundPage = lazy(() => import('./pages/NotFoundPage').then(m => ({ defa
 const InternationalLanding = lazy(() => import('./components/InternationalLanding').then(m => ({ default: m.InternationalLanding })));
 const KidsProgramLanding = lazy(() => import('./components/KidsProgramLanding').then(m => ({ default: m.KidsProgramLanding })));
 const AdultsProgramLanding = lazy(() => import('./components/AdultsProgramLanding').then(m => ({ default: m.AdultsProgramLanding })));
-const FemaleTutorLanding = lazy(() => import('./components/FemaleTutorLanding').then(m => ({ default: m.FemaleTutorLanding })));
+
 
 const ClassroomStudio = lazy(() => import('./components/ClassroomStudio').then(m => ({ default: m.ClassroomStudio })));
 const StudentPortal = lazy(() => import('./components/StudentPortal').then(m => ({ default: m.StudentPortal })));
@@ -530,26 +530,8 @@ function AppContent() {
               }
             />
 
-            <Route
-              path="/female-tutor"
-              element={
-                <FemaleTutorLanding
-                  onOpenTrial={handleOpenTrial}
-                  onOpenEnroll={handleOpenEnroll}
-                  onNavClick={(tab) => navigate(`/${tab}`)}
-                />
-              }
-            />
-            <Route
-              path="/female-quran-teacher"
-              element={
-                <FemaleTutorLanding
-                  onOpenTrial={handleOpenTrial}
-                  onOpenEnroll={handleOpenEnroll}
-                  onNavClick={(tab) => navigate(`/${tab}`)}
-                />
-              }
-            />
+            <Route path="/female-tutor" element={<Navigate to="/teachers" replace />} />
+            <Route path="/female-quran-teacher" element={<Navigate to="/teachers" replace />} />
 
             <Route
               path="/slow-learners"

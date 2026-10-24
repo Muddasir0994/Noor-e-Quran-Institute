@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { BlogPost } from '../types';
 import { INITIAL_ARTICLES } from '../data/academyData';
@@ -216,6 +216,17 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({ onOpenTrial }) => {
   }
 
   const canonicalUrl = `https://noorequraninstitute.me/blog/${post.slug}`;
+  // Mid-article CTA: split the sanitized HTML after the second section
+  // heading so a trial-class box can sit inside the article body.
+  const sanitizedContent = isHtmlContent(post.content) ? DOMPurify.sanitize(post.content) : '';
+  const midCtaParts = (() => {
+    if (!sanitizedContent) return null;
+    const matches = [...sanitizedContent.matchAll(/<\/h2>/gi)];
+    if (matches.length < 2) return null;
+    const cut = (matches[1].index ?? 0) + matches[1][0].length;
+    if (sanitizedContent.length - cut < 500) return null;
+    return [sanitizedContent.slice(0, cut), sanitizedContent.slice(cut)] as const;
+  })();
   const faqs = post ? extractFaqs(post.content) : [];
   const faqSchema = {
     '@context': 'https://schema.org',
@@ -340,10 +351,52 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({ onOpenTrial }) => {
         {/* Article Body Content */}
         <div className="prose prose-lg max-w-none text-gray-700 font-sans leading-relaxed space-y-6">
           {isHtmlContent(post.content) ? (
-            <div
-              className="whitespace-pre-line text-sm sm:text-base leading-relaxed"
-              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.content) }}
-            />
+            midCtaParts ? (
+              <>
+                <div
+                  className="whitespace-pre-line text-sm sm:text-base leading-relaxed"
+                  dangerouslySetInnerHTML={{ __html: midCtaParts[0] }}
+                />
+                {/* Mid-article CTA */}
+                <div className="my-10 bg-[#13263D] text-[#F5F0E6] rounded-sm p-7 sm:p-8 text-center border border-[#A47A46]/30">
+                  <p className="text-[11px] font-sans font-bold text-[#A47A46] uppercase tracking-widest mb-2">
+                    Free Trial Classes
+                  </p>
+                  <h3 className="font-editorial text-xl sm:text-2xl font-semibold mb-2">
+                    Give Your Child a Free Quran Trial Class
+                  </h3>
+                  <p className="text-sm text-[#E7DBC2]/90 max-w-xl mx-auto mb-5">
+                    Book 3 free one-to-one trial classes with M Muddasir Hameed, founder of Noor E
+                    Quran Institute. No card, no obligation.
+                  </p>
+                  <div className="flex flex-wrap justify-center gap-3">
+                    <a
+                      href="https://wa.me/923274496163?text=Assalamu%20Alaikum%2C%20I%20want%20to%20book%20free%20trial%20Quran%20classes."
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-5 py-2.5 rounded-sm bg-[#A47A46] text-white text-xs font-bold uppercase tracking-wider hover:bg-[#8C6636] transition-colors"
+                    >
+                      Book on WhatsApp
+                    </a>
+                    <Link
+                      to="/packages"
+                      className="px-5 py-2.5 rounded-sm border border-[#F5F0E6]/40 text-[#F5F0E6] text-xs font-bold uppercase tracking-wider hover:bg-white/10 transition-colors"
+                    >
+                      View Packages
+                    </Link>
+                  </div>
+                </div>
+                <div
+                  className="whitespace-pre-line text-sm sm:text-base leading-relaxed"
+                  dangerouslySetInnerHTML={{ __html: midCtaParts[1] }}
+                />
+              </>
+            ) : (
+              <div
+                className="whitespace-pre-line text-sm sm:text-base leading-relaxed"
+                dangerouslySetInnerHTML={{ __html: sanitizedContent }}
+              />
+            )
           ) : (
             <div className="text-sm sm:text-base leading-relaxed">
               <ReactMarkdown components={markdownComponents}>

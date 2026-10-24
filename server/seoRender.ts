@@ -477,6 +477,9 @@ export const CANONICAL_REDIRECTS: Record<string, string> = {
   '/terms-and-conditions': '/terms',
   '/blog/the6kalimas': '/blog/6-kalimas',
   '/articles/the6kalimas': '/blog/6-kalimas',
+  '/female-tutor': '/teachers',
+  '/female-quran-teacher': '/teachers',
+  '/female-tutors': '/teachers',
 };
 
 export function resolveRouteMetadata(rawPath: string): RouteResolution {
@@ -716,9 +719,7 @@ export function generateDynamicSitemapXml(): string {
     { loc: `${ACADEMY_BASE_URL}/islamic-studies`, priority: '0.85', changefreq: 'weekly' },
     { loc: `${ACADEMY_BASE_URL}/quran-classes-for-kids`, priority: '0.9', changefreq: 'weekly' },
     { loc: `${ACADEMY_BASE_URL}/quran-classes-for-adults`, priority: '0.85', changefreq: 'weekly' },
-    { loc: `${ACADEMY_BASE_URL}/female-quran-teacher`, priority: '0.9', changefreq: 'weekly' },
     { loc: `${ACADEMY_BASE_URL}/kids-program`, priority: '0.9', changefreq: 'weekly' },
-    { loc: `${ACADEMY_BASE_URL}/female-tutor`, priority: '0.9', changefreq: 'weekly' },
     { loc: `${ACADEMY_BASE_URL}/slow-learners`, priority: '0.85', changefreq: 'weekly' },
     { loc: `${ACADEMY_BASE_URL}/packages`, priority: '0.9', changefreq: 'weekly' },
     { loc: `${ACADEMY_BASE_URL}/how-it-works`, priority: '0.8', changefreq: 'monthly' },
@@ -970,7 +971,7 @@ export function generateRoutePrerenderHtml(routePath: string, meta: PageMeta): s
           <a href="/quran-with-tajweed" style="color:#ffffff;text-decoration:none;">Tajweed Rules</a>
           <a href="/quran-memorization-hifz" style="color:#ffffff;text-decoration:none;">Hifz Program</a>
           <a href="/islamic-studies" style="color:#ffffff;text-decoration:none;">Islamic Studies</a>
-          <a href="/female-quran-teacher" style="color:#ffffff;text-decoration:none;">Female Tutors</a>
+          <a href="/teachers" style="color:#ffffff;text-decoration:none;">Our Teacher</a>
           <a href="/pricing" style="color:#ffffff;text-decoration:none;">Fee Packages</a>
           <a href="/faculty" style="color:#ffffff;text-decoration:none;">Scholars</a>
           <a href="/blog" style="color:#ffffff;text-decoration:none;">Blog</a>
@@ -1044,9 +1045,9 @@ export function generateRoutePrerenderHtml(routePath: string, meta: PageMeta): s
 
           <!-- Course Card 6 -->
           <article style="background:#ffffff;border:1px solid #E5E7EB;border-radius:12px;padding:24px;box-shadow:0 4px 12px rgba(0,0,0,0.03);">
-            <h3 style="font-size:20px;color:#064E3B;margin-top:0;"><a href="/female-quran-teacher" style="color:#064E3B;text-decoration:none;">Female Quran Tutors for Sisters</a></h3>
-            <p style="color:#4B5563;font-size:15px;line-height:1.6;">Private, comfortable 1-on-1 learning environment with qualified female Alimah and Hafiza tutors dedicated to sisters and young girls worldwide.</p>
-            <a href="/female-quran-teacher" style="color:#064E3B;font-weight:700;font-size:14px;text-decoration:none;">Course Details & Syllabus →</a>
+            <h3 style="font-size:20px;color:#064E3B;margin-top:0;"><a href="/teachers" style="color:#064E3B;text-decoration:none;">Learn Directly from the Founder</a></h3>
+            <p style="color:#4B5563;font-size:15px;line-height:1.6;">Private, comfortable 1-on-1 learning environment. Every lesson is taught personally by the founder, M Muddasir Hameed, for sisters, children and adults worldwide.</p>
+            <a href="/teachers" style="color:#064E3B;font-weight:700;font-size:14px;text-decoration:none;">Meet Your Teacher →</a>
           </article>
         </div>
       </section>
@@ -1115,7 +1116,7 @@ export function generateRoutePrerenderHtml(routePath: string, meta: PageMeta): s
           </div>
           <div>
             <h3 style="font-size:17px;color:#064E3B;margin-bottom:6px;">Can I request a female Quran tutor for my daughter or wife?</h3>
-            <p style="color:#4B5563;font-size:15px;line-height:1.6;margin:0;">Yes, we have certified female Quran teachers available for sisters, young girls, and toddlers to guarantee total comfort and Islamic etiquette.</p>
+            <p style="color:#4B5563;font-size:15px;line-height:1.6;margin:0;">All lessons are taught one-to-one by the institute’s founder, M Muddasir Hameed, in a private and comfortable setting that respects Islamic etiquette for sisters and young girls.</p>
           </div>
           <div>
             <h3 style="font-size:17px;color:#064E3B;margin-bottom:6px;">How does the 3-day free trial work?</h3>
@@ -1146,7 +1147,7 @@ export function generateRoutePrerenderHtml(routePath: string, meta: PageMeta): s
       <div style="max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:30px;margin-bottom:30px;">
         <div>
           <h3 style="color:#D4A72C;font-size:18px;margin-top:0;">Noor E Quran Institute</h3>
-          <p style="color:#9CA3AF;font-size:14px;line-height:1.6;">Dedicated to providing authentic Quranic education to Muslim children and adults worldwide with qualified male and female tutors.</p>
+          <p style="color:#9CA3AF;font-size:14px;line-height:1.6;">Dedicated to providing authentic Quranic education to Muslim children and adults worldwide through personal one-to-one teaching.</p>
           <p style="color:#D4A72C;font-weight:700;font-size:14px;">WhatsApp: +92 327 4496163<br>Email: contact.noorequraninstitute@gmail.com</p>
         </div>
         <div>
@@ -1164,7 +1165,7 @@ export function generateRoutePrerenderHtml(routePath: string, meta: PageMeta): s
           <ul style="list-style:none;padding:0;margin:0;font-size:14px;line-height:2;">
             <li><a href="/quran-classes-for-kids" style="color:#9CA3AF;text-decoration:none;">Kids Quran Program</a></li>
             <li><a href="/quran-classes-for-adults" style="color:#9CA3AF;text-decoration:none;">Adults Quran Learning</a></li>
-            <li><a href="/female-quran-teacher" style="color:#9CA3AF;text-decoration:none;">Female Quran Tutors</a></li>
+            <li><a href="/teachers" style="color:#9CA3AF;text-decoration:none;">Our Teacher</a></li>
             <li><a href="/faculty" style="color:#9CA3AF;text-decoration:none;">Our Islamic Scholars</a></li>
             <li><a href="/pricing" style="color:#9CA3AF;text-decoration:none;">Tuition & Fee Packages</a></li>
           </ul>

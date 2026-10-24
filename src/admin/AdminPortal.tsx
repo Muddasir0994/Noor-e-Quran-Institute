@@ -5009,7 +5009,7 @@ Thank you for trusting Noor E Quran Institute with your child's sacred education
                   <input
                     type="text"
                     required
-                    placeholder="e.g. Qari Muhammad Bilal"
+                    placeholder="e.g. M Muddasir Hameed"
                     value={tutorForm.name}
                     onChange={e => setTutorForm({ ...tutorForm, name: e.target.value })}
                     className="w-full px-3 py-2 border border-[#E7DBC2] bg-[#F5F0E6] rounded-sm focus:outline-none focus:border-[#13263D]"

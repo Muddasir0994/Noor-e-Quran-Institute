@@ -160,7 +160,7 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
     packageId: 'pkg-3days',
     packageName: 'Standard Learning (3 Days/Week)',
     tutorId: directoryStudent?.tutorId || 'tut-1',
-    tutorName: assignedTutorInfo?.name || 'Ustadha Maryam Siddiqa',
+    tutorName: assignedTutorInfo?.name || 'M Muddasir Hameed',
     preferredTime: 'Evening',
     preferredDays: ['Monday', 'Wednesday', 'Friday'],
     learningPace: 'Normal' as const,
@@ -170,11 +170,11 @@ export const StudentPortal: React.FC<StudentPortalProps> = ({
     updatedAt: new Date().toISOString(),
     notes: [],
     assignedTutorDetails: {
-      name: assignedTutorInfo?.name || 'Ustadha Maryam Siddiqa',
+      name: assignedTutorInfo?.name || 'M Muddasir Hameed',
       title: assignedTutorInfo ? `${assignedTutorInfo.specialization}` : 'Ijazah Holder (Al-Azhar University) | Senior Tajweed Faculty',
       phone: '+92 327 4496163',
-      whatsapp: `https://wa.me/923274496163?text=${encodeURIComponent(`Salam ${assignedTutorInfo?.name || 'Ustadha Maryam Siddiqa'}, this is ${directoryStudent?.studentName || userProfile?.displayName || 'Student'}.`)}`,
-      photoInitials: (assignedTutorInfo?.name || 'Ustadha Maryam Siddiqa').split(' ').map(w => w[0]).filter(Boolean).slice(0, 2).join('').toUpperCase()
+      whatsapp: `https://wa.me/923274496163?text=${encodeURIComponent(`Salam ${assignedTutorInfo?.name || 'M Muddasir Hameed'}, this is ${directoryStudent?.studentName || userProfile?.displayName || 'Student'}.`)}`,
+      photoInitials: (assignedTutorInfo?.name || 'M Muddasir Hameed').split(' ').map(w => w[0]).filter(Boolean).slice(0, 2).join('').toUpperCase()
     },
     nextClassTime: 'Today at 6:00 PM (In 45 mins)',
     attendanceRate: 98,

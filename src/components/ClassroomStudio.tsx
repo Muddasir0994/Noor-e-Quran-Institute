@@ -103,7 +103,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
 
   // Assigned student & teacher details
   const studentDisplayName = userProfile?.displayName || currentUser?.displayName || (currentUser?.email ? currentUser.email.split('@')[0] : 'Enrolled Student');
-  const assignedTutorName = userProfile?.tutorName || userProfile?.assignedTutorName || 'Ustadha Maryam Siddiqa';
+  const assignedTutorName = userProfile?.tutorName || userProfile?.assignedTutorName || 'M Muddasir Hameed';
   const assignedCourseName = userProfile?.courseName || 'Quran Recitation with Tajweed';
   const assignedScheduleDays = userProfile?.preferredDays && userProfile.preferredDays.length > 0 ? userProfile.preferredDays.join(', ') : 'Mon, Wed, Fri';
   const assignedScheduleTime = userProfile?.preferredTime || '06:00 PM UK GMT';
@@ -580,7 +580,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
       duration: durationText,
       durationSeconds: classTimer,
       lessonCovered: currentSurah ? `${currentSurah.name} (Surah ${currentSurah.number})` : 'Quran Recitation & Tajweed Drill',
-      tutorName: 'Ustadha Maryam Siddiqa',
+      tutorName: 'M Muddasir Hameed',
       studentName: 'Ayaan Mahmood',
       status: 'Completed',
       notes: classNotes,
@@ -596,8 +596,8 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
     saveProgressReportToFirebase({
       studentId: 'stu-live',
       studentName: 'Ayaan Mahmood',
-      tutorId: 'tut-1',
-      tutorName: 'Ustadha Maryam Siddiqa',
+      tutorId: 'tut-muddasir',
+      tutorName: 'M Muddasir Hameed',
       date: `${dateStr} at ${timeStr}`,
       lessonCovered: callRecord.lessonCovered,
       pronunciationScore: 9,
@@ -1892,7 +1892,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
                     </span>
                   </h3>
                   <p className="text-xs text-gray-500">
-                    Tutor: <strong className="text-gray-700">Ustadha Maryam Siddiqa</strong> | Student: <strong className="text-gray-700">Ayaan Mahmood</strong> | Course: <strong className="text-gray-700">Nazra with Tajweed</strong>
+                    Tutor: <strong className="text-gray-700">M Muddasir Hameed</strong> | Student: <strong className="text-gray-700">Ayaan Mahmood</strong> | Course: <strong className="text-gray-700">Nazra with Tajweed</strong>
                   </p>
                 </div>
               </div>

@@ -125,8 +125,63 @@ class DataStore {
     this.ensureDataDirectory();
     this.seedData = this.buildSeedData();
     this.data = this.loadDatabase();
+    this.repairSampleTutors(false);
     // Fire-and-forget: overlay Firestore data when the service account is configured.
     this.initialize().catch(() => {});
+  }
+
+  // One-time migration (2026-10-24, owner's order): the five seeded tutors
+  // (tut-1..tut-5) were sample data. Remove them, keep only the founder as
+  // the institute's teacher, and re-link every student record to him.
+  // Id-driven, so it converges seed data, the local JSON cache and Firestore.
+  private repairSampleTutors(sync: boolean): void {
+    const SAMPLE_TUTOR_IDS = ['tut-1', 'tut-2', 'tut-3', 'tut-4', 'tut-5'];
+    const founderTemplate: any = (INITIAL_TUTORS as any[])[0];
+    if (!founderTemplate) return;
+    const LINKED = ['students', 'enrollments', 'classes', 'assessments', 'progressReports', 'hifzLogs', 'attendance', 'availability', 'reportCards', 'payroll'];
+    const referencesSample = (d: any) => !!d && (SAMPLE_TUTOR_IDS.includes(String(d.tutorId)) || SAMPLE_TUTOR_IDS.includes(String(d.assignedTutorId)));
+    const hasSampleTutor = (this.data.tutors || []).some((t: any) => SAMPLE_TUTOR_IDS.includes(String(t.id)));
+    const hasFounder = (this.data.tutors || []).some((t: any) => String(t.id) === String(founderTemplate.id));
+    let linkedDirty = false;
+    for (const coll of LINKED) {
+      if (((this.data as any)[coll] || []).some(referencesSample)) { linkedDirty = true; break; }
+    }
+    if (!hasSampleTutor && hasFounder && !linkedDirty) return;
+
+    const founder: any = { ...founderTemplate, activeStudentsCount: (this.data.students || []).length };
+    this.data.tutors = [founder];
+
+    const changedDocs: Record<string, any[]> = {};
+    const removedPayrollIds: string[] = [];
+    for (const coll of LINKED) {
+      const docs: any[] = (this.data as any)[coll] || [];
+      if (coll === 'payroll') {
+        const kept = docs.filter((d: any) => !SAMPLE_TUTOR_IDS.includes(String(d.tutorId)));
+        if (kept.length !== docs.length) {
+          for (const d of docs) if (SAMPLE_TUTOR_IDS.includes(String(d.tutorId)) && d.id) removedPayrollIds.push(String(d.id));
+          (this.data as any)[coll] = kept;
+        }
+        continue;
+      }
+      for (const d of docs) {
+        if (!referencesSample(d)) continue;
+        if (SAMPLE_TUTOR_IDS.includes(String(d.tutorId))) d.tutorId = founder.id;
+        if (SAMPLE_TUTOR_IDS.includes(String(d.assignedTutorId))) d.assignedTutorId = founder.id;
+        if ('tutorName' in d) d.tutorName = founder.name;
+        if ('assignedTutorName' in d) d.assignedTutorName = founder.name;
+        (changedDocs[coll] = changedDocs[coll] || []).push(d);
+      }
+    }
+
+    this.saveDatabase();
+    if (sync) {
+      for (const id of SAMPLE_TUTOR_IDS) deleteDocFromFirestore('tutors', id).catch(() => {});
+      syncDocToFirestore('tutors', String(founder.id), founder).catch(() => {});
+      for (const id of removedPayrollIds) deleteDocFromFirestore('payroll', id).catch(() => {});
+      for (const [coll, docs] of Object.entries(changedDocs)) {
+        for (const d of docs) if (d && d.id) syncDocToFirestore(coll, String(d.id), d).catch(() => {});
+      }
+    }
   }
 
   // Load Firestore collections over the local JSON data (Firestore wins for
@@ -186,6 +241,8 @@ class DataStore {
     } catch { /* keep local settings on failure */ }
     // Refresh the local JSON cache with the merged dataset.
     this.saveDatabase();
+    // Converge any Firestore-served sample tutors after the overlay.
+    this.repairSampleTutors(true);
   }
 
   // Write-through: persist to the local JSON cache AND sync the single
@@ -336,9 +393,9 @@ class DataStore {
           learningPace: 'Normal',
           additionalNotes: 'Completed Qaida recently, ready for Juz 1 recitation.',
           status: 'Approved',
-          assignedTutorId: 'tut-1',
-          assignedTutorName: 'Ustadha Maryam Siddiqa',
-          notes: [{ id: 'n-3', text: 'Assigned to Ustadha Maryam. Classes starting Monday.', author: 'Admin', createdAt: new Date().toISOString() }],
+          assignedTutorId: 'tut-muddasir',
+          assignedTutorName: 'M Muddasir Hameed',
+          notes: [{ id: 'n-3', text: 'Assigned to M Muddasir Hameed. Classes starting Monday.', author: 'Admin', createdAt: new Date().toISOString() }],
           createdAt: new Date(Date.now() - 3600000 * 48).toISOString(),
           updatedAt: new Date(Date.now() - 3600000 * 6).toISOString()
         }
@@ -355,8 +412,8 @@ class DataStore {
           courseName: 'Quran Reading / Nazra',
           packageId: 'pkg-3days',
           packageName: 'Standard Learning (3 Days/Week)',
-          tutorId: 'tut-1',
-          tutorName: 'Ustadha Maryam Siddiqa',
+          tutorId: 'tut-muddasir',
+          tutorName: 'M Muddasir Hameed',
           preferredTime: 'Evening',
           preferredDays: ['Monday', 'Wednesday', 'Friday'],
           learningPace: 'Normal',
@@ -377,14 +434,14 @@ class DataStore {
           courseName: 'Quran Memorization / Hifz',
           packageId: 'pkg-5days',
           packageName: 'Intensive Track (5 Days/Week)',
-          tutorId: 'tut-2',
-          tutorName: 'Qari Hafiz Muhammad Bilal',
+          tutorId: 'tut-muddasir',
+          tutorName: 'M Muddasir Hameed',
           preferredTime: 'Morning',
           preferredDays: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
           learningPace: 'Fast',
           status: 'Active',
           currentSurahOrLesson: 'Juz 6 (La Yuhibbullah)',
-          notes: [{ id: 'n-5', text: 'Daily Sabaq 1 page, Sabqi 5 pages, Manzil 1/2 Juz.', author: 'Qari Bilal', createdAt: new Date().toISOString() }],
+          notes: [{ id: 'n-5', text: 'Daily Sabaq 1 page, Sabqi 5 pages, Manzil 1/2 Juz.', author: 'M Muddasir Hameed', createdAt: new Date().toISOString() }],
           createdAt: new Date(Date.now() - 3600000 * 120).toISOString(),
           updatedAt: new Date(Date.now() - 3600000 * 2).toISOString()
         },
@@ -399,8 +456,8 @@ class DataStore {
           courseName: 'Noorani Qaida',
           packageId: 'pkg-2days',
           packageName: 'Starter Track (2 Days/Week)',
-          tutorId: 'tut-1',
-          tutorName: 'Ustadha Maryam Siddiqa',
+          tutorId: 'tut-muddasir',
+          tutorName: 'M Muddasir Hameed',
           preferredTime: 'Afternoon',
           preferredDays: ['Tuesday', 'Thursday'],
           learningPace: 'Normal',
@@ -421,8 +478,8 @@ class DataStore {
           courseName: 'Quran with Tajweed',
           packageId: 'pkg-3days',
           packageName: 'Standard Learning (3 Days/Week)',
-          tutorId: 'tut-4',
-          tutorName: 'Shaykh Tariq Al-Azhari',
+          tutorId: 'tut-muddasir',
+          tutorName: 'M Muddasir Hameed',
           preferredTime: 'Evening',
           preferredDays: ['Monday', 'Wednesday', 'Friday'],
           learningPace: 'Slow',
@@ -443,8 +500,8 @@ class DataStore {
           courseName: 'Quran Reading / Nazra',
           packageId: 'pkg-2days',
           packageName: 'Starter Track (2 Days/Week)',
-          tutorId: 'tut-5',
-          tutorName: 'Qari Abdul Rehman Farooqi',
+          tutorId: 'tut-muddasir',
+          tutorName: 'M Muddasir Hameed',
           preferredTime: 'Morning',
           preferredDays: ['Saturday', 'Sunday'],
           learningPace: 'Normal',
@@ -461,8 +518,8 @@ class DataStore {
           id: 'cls-1',
           studentId: 'stu-301',
           studentName: 'Ayaan Mahmood',
-          tutorId: 'tut-1',
-          tutorName: 'Ustadha Maryam Siddiqa',
+          tutorId: 'tut-muddasir',
+          tutorName: 'M Muddasir Hameed',
           courseName: 'Quran Reading / Nazra',
           days: ['Monday', 'Wednesday', 'Friday'],
           time: '6:00 PM',
@@ -476,8 +533,8 @@ class DataStore {
           id: 'cls-2',
           studentId: 'stu-302',
           studentName: 'Hamza Farhan',
-          tutorId: 'tut-2',
-          tutorName: 'Qari Hafiz Muhammad Bilal',
+          tutorId: 'tut-muddasir',
+          tutorName: 'M Muddasir Hameed',
           courseName: 'Quran Memorization / Hifz',
           days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
           time: '7:30 AM',
@@ -493,8 +550,8 @@ class DataStore {
           id: 'pr-1',
           studentId: 'stu-301',
           studentName: 'Ayaan Mahmood',
-          tutorId: 'tut-1',
-          tutorName: 'Ustadha Maryam Siddiqa',
+          tutorId: 'tut-muddasir',
+          tutorName: 'M Muddasir Hameed',
           date: new Date().toISOString().split('T')[0],
           lessonCovered: 'Surah Al-Baqarah Verses 142 - 150',
           pronunciationScore: 9,
@@ -520,7 +577,7 @@ class DataStore {
           overallGrade: 'A',
           learningPace: 'Normal',
           teacherRemarks: 'Ayaan is progressing with dedication. His Makharij on throat letters is completely clear.',
-          assessedBy: 'Ustadha Maryam Siddiqa',
+          assessedBy: 'M Muddasir Hameed',
           assessedAt: new Date().toISOString()
         }
       ],

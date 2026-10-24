@@ -1548,8 +1548,6 @@ app.post('/api/indexnow/submit', requireAdmin, async (req, res) => {
     'https://noorequraninstitute.me/quran-classes-for-kids',
     'https://noorequraninstitute.me/adults-program',
     'https://noorequraninstitute.me/quran-classes-for-adults',
-    'https://noorequraninstitute.me/female-tutors',
-    'https://noorequraninstitute.me/female-quran-teacher',
     'https://noorequraninstitute.me/online-quran-classes-uk',
     'https://noorequraninstitute.me/online-quran-classes-usa',
     'https://noorequraninstitute.me/online-quran-classes-canada',
