@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { BookOpen, Clock } from '@phosphor-icons/react';
+import { BookOpen, Clock, Globe } from '@phosphor-icons/react';
 
 export const AUTHOR_NAME = 'M Muddasir Hameed';
 export const AUTHOR_PROFILE_PATH = '/author/m-muddasir-hameed';
 export const AUTHOR_PROFILE_URL = `https://noorequraninstitute.me${AUTHOR_PROFILE_PATH}`;
+export const AUTHOR_BLOGGER_URL = 'https://noorequraninstitute.blogspot.com';
 export const AUTHOR_BIO =
   'M Muddasir Hameed is an Islamic scholar, researcher, and founder of Noor E Quran Institute. He holds a Bachelor of Islamic Studies, an M.A.-equivalent (Aalmia) in Islamic & Arabic Studies, and a post-graduate specialization in Islamic Jurisprudence (Takhassus fil Fiqh).';
 
@@ -25,6 +26,7 @@ const personSchema = {
   '@id': `${AUTHOR_PROFILE_URL}#person`,
   name: AUTHOR_NAME,
   url: AUTHOR_PROFILE_URL,
+  sameAs: [AUTHOR_BLOGGER_URL],
   image: 'https://noorequraninstitute.me/images/author/m-muddasir-hameed.jpg',
   jobTitle: 'Islamic Scholar, Researcher & Founder',
   worksFor: {
@@ -92,6 +94,17 @@ const AuthorPage: React.FC = () => {
             <p className="font-sans text-sm sm:text-[15px] leading-relaxed text-gray-600 mt-4">
               {AUTHOR_BIO}
             </p>
+            <div className="mt-5 flex flex-wrap gap-3 justify-center sm:justify-start">
+              <a
+                href={AUTHOR_BLOGGER_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-4 py-2 border border-[#A47A46] text-[#13263D] text-xs font-sans font-semibold uppercase tracking-wider rounded-sm hover:bg-[#F5F0E6] transition-colors"
+              >
+                <Globe className="w-4 h-4 text-[#A47A46]" />
+                My Blog on Blogger
+              </a>
+            </div>
           </div>
         </div>
 

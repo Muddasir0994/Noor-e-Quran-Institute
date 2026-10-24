@@ -4,7 +4,7 @@ import { Helmet } from 'react-helmet-async';
 import { BlogPost } from '../types';
 import { INITIAL_ARTICLES } from '../data/academyData';
 import { getBlogPostBySlug, getPublishedBlogPosts } from '../lib/firestoreService';
-import { AUTHOR_NAME, AUTHOR_BIO, AUTHOR_PROFILE_PATH } from './AuthorPage';
+import { AUTHOR_NAME, AUTHOR_BIO, AUTHOR_PROFILE_PATH, AUTHOR_BLOGGER_URL } from './AuthorPage';
 import { Clock, User, ArrowLeft, BookOpen } from '@phosphor-icons/react';
 import DOMPurify from 'dompurify';
 import ReactMarkdown from 'react-markdown';
@@ -372,6 +372,16 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({ onOpenTrial }) => {
             </a>
             <p className="font-sans text-sm leading-relaxed text-gray-600 mt-3">
               {AUTHOR_BIO}
+            </p>
+            <p className="mt-4">
+              <a
+                href={AUTHOR_BLOGGER_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-sans text-xs font-semibold uppercase tracking-wider text-[#A47A46] underline underline-offset-4 hover:text-[#13263D] transition-colors"
+              >
+                Follow my writing on Blogger
+              </a>
             </p>
           </div>
         </div>

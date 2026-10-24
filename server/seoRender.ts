@@ -312,6 +312,7 @@ export const KNOWN_STATIC_ROUTES: Record<string, PageMeta> = {
       '@id': `${ACADEMY_BASE_URL}/author/m-muddasir-hameed#person`,
       name: 'M Muddasir Hameed',
       url: `${ACADEMY_BASE_URL}/author/m-muddasir-hameed`,
+      sameAs: ['https://noorequraninstitute.blogspot.com'],
       image: `${ACADEMY_BASE_URL}/images/author/m-muddasir-hameed.jpg`,
       jobTitle: 'Islamic Scholar, Researcher & Founder',
       description: 'M Muddasir Hameed is an Islamic scholar, researcher, and founder of Noor E Quran Institute. He holds a Bachelor of Islamic Studies, an M.A.-equivalent (Aalmia) in Islamic & Arabic Studies, and a post-graduate specialization in Islamic Jurisprudence (Takhassus fil Fiqh).',
