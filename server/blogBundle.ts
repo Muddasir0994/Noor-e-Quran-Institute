@@ -51,6 +51,7 @@ import a_quran_bedtime_stories_prophets_tales_kids_guide from './blog-data/quran
 import a_rewards_of_learning_quran_10_hadith_parents_guide from './blog-data/rewards-of-learning-quran-10-hadith-parents-guide';
 import a_screen_time_vs_quran_time_parents_guide from './blog-data/screen-time-vs-quran-time-parents-guide';
 import a_short_surahs_every_child_should_memorize_first from './blog-data/short-surahs-every-child-should-memorize-first';
+import a_surah_al_fatihah_explained_families_guide from './blog-data/surah-al-fatihah-explained-families-guide';
 import a_tajweed_rules_for_beginners from './blog-data/tajweed-rules-for-beginners';
 import a_why_quran_revealed_arabic_language_guide from './blog-data/why-quran-revealed-arabic-language-guide';
 
@@ -103,6 +104,7 @@ export const BLOG_BUNDLE: BundleArticle[] = [
   a_rewards_of_learning_quran_10_hadith_parents_guide as BundleArticle,
   a_screen_time_vs_quran_time_parents_guide as BundleArticle,
   a_short_surahs_every_child_should_memorize_first as BundleArticle,
+  a_surah_al_fatihah_explained_families_guide as BundleArticle,
   a_tajweed_rules_for_beginners as BundleArticle,
   a_why_quran_revealed_arabic_language_guide as BundleArticle,
 ];
