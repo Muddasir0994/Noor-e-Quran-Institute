@@ -33,26 +33,38 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
     ],
     url: ACADEMY_BASE_URL,
     logo: `${ACADEMY_BASE_URL}/logo.webp`,
-    description: 'Premier international online Quran academy providing 1-on-1 live classes with certified male and female scholars.',
+    description: 'International online Quran academy providing personalized 1-on-1 live Quran classes (Noorani Qaida, Nazra, Tajweed, Hifz and Islamic Studies) for kids and adults worldwide.',
     founder: {
       '@type': 'Person',
+      '@id': 'https://noorequraninstitute.me/author/m-muddasir-hameed#person',
       name: 'M Muddasir Hameed',
       alternateName: 'Muhammad Muddasir Hameed',
+      birthDate: '2005-02-03',
+      jobTitle: 'Founder & Islamic Scholar',
       url: `${ACADEMY_BASE_URL}/author/m-muddasir-hameed`,
-      sameAs: ['https://noorequraninstitute.blogspot.com', 'https://www.linkedin.com/in/m-muddasir-hameed']
+      sameAs: ['https://noorequraninstitute.blogspot.com', 'https://www.linkedin.com/in/m-muddasir-hameed', 'https://noorequraninstitute.blogspot.com/2026/10/meet-m-muddasir-hameed-islamic-scholar.html']
     },
     sameAs: [
       'https://www.youtube.com/@NooreQuranInstitute',
       'https://www.instagram.com/noore_quraninstitute',
       'https://www.facebook.com/share/14pNXeMTM7o/',
       'https://www.linkedin.com/in/m-muddasir-hameed',
+      'https://noorequraninstitute.blogspot.com',
     ],
-    contactPoint: {
-      '@type': 'ContactPoint',
-      telephone: '+92-327-4496163',
-      contactType: 'Academic Support & Admissions',
-      availableLanguage: ['English', 'Urdu', 'Arabic']
-    }
+    contactPoint: [
+      {
+        '@type': 'ContactPoint',
+        telephone: '+92-327-4496163',
+        contactType: 'Academic Support & Admissions',
+        availableLanguage: ['English', 'Urdu', 'Arabic']
+      },
+      {
+        '@type': 'ContactPoint',
+        telephone: '+92-336-0796786',
+        contactType: 'Academic Support & Admissions',
+        availableLanguage: ['English', 'Urdu']
+      }
+    ]
   };
 
   const activeSchema = schemaData || defaultOrgSchema;
