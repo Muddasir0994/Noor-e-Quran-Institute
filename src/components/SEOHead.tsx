@@ -34,6 +34,12 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
     url: ACADEMY_BASE_URL,
     logo: `${ACADEMY_BASE_URL}/logo.webp`,
     description: 'Premier international online Quran academy providing 1-on-1 live classes with certified male and female scholars.',
+    founder: {
+      '@type': 'Person',
+      name: 'M Muddasir Hameed',
+      url: `${ACADEMY_BASE_URL}/author/m-muddasir-hameed`,
+      sameAs: ['https://noorequraninstitute.blogspot.com']
+    },
     sameAs: [
       'https://www.youtube.com/@NooreQuranInstitute',
       'https://www.instagram.com/noore_quraninstitute',
