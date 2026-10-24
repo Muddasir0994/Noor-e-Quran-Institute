@@ -1,0 +1,3 @@
+## 2024-10-24 - TeacherPortal sampleTutors Optimization
+**Learning:** The TeacherPortal was re-calculating the `sampleTutors` array on every single render by iterating over `TUTOR_DIRECTORY` and filtering `STUDENT_DIRECTORY`. This is an expensive synchronous operation that runs inside a large component that re-renders frequently (due to live presence, timers, and UI interactions).
+**Action:** Always memoize computationally expensive derived state arrays (especially those involving array iterations like `.map` and `.filter`) in React components using `useMemo` with an empty dependency array (if the data source is static, like a directory) to prevent them from blocking the main thread during high-frequency re-renders.
