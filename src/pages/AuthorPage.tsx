@@ -26,6 +26,7 @@ const personSchema = {
   '@type': 'Person',
   '@id': `${AUTHOR_PROFILE_URL}#person`,
   name: AUTHOR_NAME,
+  alternateName: 'Muhammad Muddasir Hameed',
   url: AUTHOR_PROFILE_URL,
   sameAs: [AUTHOR_BLOGGER_URL, AUTHOR_LINKEDIN_URL],
   image: 'https://noorequraninstitute.me/images/author/m-muddasir-hameed.jpg',

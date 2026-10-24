@@ -311,6 +311,7 @@ export const KNOWN_STATIC_ROUTES: Record<string, PageMeta> = {
       '@type': 'Person',
       '@id': `${ACADEMY_BASE_URL}/author/m-muddasir-hameed#person`,
       name: 'M Muddasir Hameed',
+      alternateName: 'Muhammad Muddasir Hameed',
       url: `${ACADEMY_BASE_URL}/author/m-muddasir-hameed`,
       sameAs: ['https://noorequraninstitute.blogspot.com', 'https://www.linkedin.com/in/m-muddasir-hameed'],
       image: `${ACADEMY_BASE_URL}/images/author/m-muddasir-hameed.jpg`,
@@ -562,6 +563,7 @@ export function resolveRouteMetadata(rawPath: string): RouteResolution {
           author: {
             '@type': 'Person',
             name: 'M Muddasir Hameed',
+            alternateName: 'Muhammad Muddasir Hameed',
             url: `${ACADEMY_BASE_URL}/author/m-muddasir-hameed`
           },
           publisher: {
@@ -621,6 +623,7 @@ export function resolveRouteMetadata(rawPath: string): RouteResolution {
         author: {
           '@type': 'Person',
           name: 'M Muddasir Hameed',
+          alternateName: 'Muhammad Muddasir Hameed',
           url: `${ACADEMY_BASE_URL}/author/m-muddasir-hameed`
         },
         publisher: {

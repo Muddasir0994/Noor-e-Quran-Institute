@@ -37,6 +37,7 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
     founder: {
       '@type': 'Person',
       name: 'M Muddasir Hameed',
+      alternateName: 'Muhammad Muddasir Hameed',
       url: `${ACADEMY_BASE_URL}/author/m-muddasir-hameed`,
       sameAs: ['https://noorequraninstitute.blogspot.com', 'https://www.linkedin.com/in/m-muddasir-hameed']
     },
