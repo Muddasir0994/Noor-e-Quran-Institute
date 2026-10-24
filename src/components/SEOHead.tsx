@@ -38,7 +38,6 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
       'https://www.youtube.com/@NooreQuranInstitute',
       'https://www.instagram.com/noore_quraninstitute',
       'https://www.facebook.com/share/14pNXeMTM7o/',
-      'https://www.linkedin.com/in/muddasir-hameed'
     ],
     contactPoint: {
       '@type': 'ContactPoint',

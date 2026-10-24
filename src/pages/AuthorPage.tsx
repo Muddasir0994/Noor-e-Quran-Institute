@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { BookOpen, Clock, ArrowRight } from '@phosphor-icons/react';
+import { BookOpen, Clock } from '@phosphor-icons/react';
 
 export const AUTHOR_NAME = 'M Muddasir Hameed';
 export const AUTHOR_PROFILE_PATH = '/author/m-muddasir-hameed';
@@ -32,7 +32,6 @@ const personSchema = {
     name: 'Noor E Quran Institute',
     url: 'https://noorequraninstitute.me/'
   },
-  sameAs: ['https://www.linkedin.com/in/muddasir-hameed'],
   description: AUTHOR_BIO
 };
 
@@ -93,15 +92,6 @@ const AuthorPage: React.FC = () => {
             <p className="font-sans text-sm sm:text-[15px] leading-relaxed text-gray-600 mt-4">
               {AUTHOR_BIO}
             </p>
-            <a
-              href="https://www.linkedin.com/in/muddasir-hameed"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 mt-5 text-xs font-sans font-semibold text-[#13263D] hover:text-[#A47A46] transition-colors"
-            >
-              Connect on LinkedIn
-              <ArrowRight className="w-3.5 h-3.5" />
-            </a>
           </div>
         </div>
 

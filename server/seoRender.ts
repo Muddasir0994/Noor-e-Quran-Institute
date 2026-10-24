@@ -320,7 +320,6 @@ export const KNOWN_STATIC_ROUTES: Record<string, PageMeta> = {
         name: 'Noor E Quran Institute',
         url: `${ACADEMY_BASE_URL}/`
       },
-      sameAs: ['https://www.linkedin.com/in/muddasir-hameed']
     }
   },
   '/faq': {
