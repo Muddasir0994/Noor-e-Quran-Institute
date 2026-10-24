@@ -29,6 +29,7 @@ import a_wudu_and_salah_step_by_step_guide from './blog-data/wudu-and-salah-step
 import a_6_kalimas from './blog-data/6-kalimas';
 import a_improve_quran_recitation_tips from './blog-data/improve-quran-recitation-tips';
 import a_online_vs_mosque_quran_classes from './blog-data/online-vs-mosque-quran-classes';
+import a_after_noorani_qaida_what_comes_next_guide from './blog-data/after-noorani-qaida-what-comes-next-guide';
 import a_balancing_school_and_hifz_parents_guide from './blog-data/balancing-school-and-hifz-parents-guide';
 import a_benefits_of_learning_quran_online from './blog-data/benefits-of-learning-quran-online';
 import a_best_age_to_start_quran_learning from './blog-data/best-age-to-start-quran-learning';
@@ -80,6 +81,7 @@ export const BLOG_BUNDLE: BundleArticle[] = [
   a_6_kalimas as BundleArticle,
   a_improve_quran_recitation_tips as BundleArticle,
   a_online_vs_mosque_quran_classes as BundleArticle,
+  a_after_noorani_qaida_what_comes_next_guide as BundleArticle,
   a_balancing_school_and_hifz_parents_guide as BundleArticle,
   a_benefits_of_learning_quran_online as BundleArticle,
   a_best_age_to_start_quran_learning as BundleArticle,
