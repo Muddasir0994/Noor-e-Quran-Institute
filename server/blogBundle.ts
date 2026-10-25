@@ -47,6 +47,7 @@ import a_is_learning_quran_online_safe_parents_checklist from './blog-data/is-le
 import a_is_my_child_ready_for_hifz_signs_guide from './blog-data/is-my-child-ready-for-hifz-signs-guide';
 import a_new_muslim_guide_learning_quran from './blog-data/new-muslim-guide-learning-quran';
 import a_online_quran_classes_for_adults_learn_at_any_age from './blog-data/online-quran-classes-for-adults-learn-at-any-age';
+import a_online_quran_classes_for_teenagers_guide from './blog-data/online-quran-classes-for-teenagers-guide';
 import a_preparing_child_quran_competition_musabaqa_guide from './blog-data/preparing-child-quran-competition-musabaqa-guide';
 import a_quran_bedtime_stories_prophets_tales_kids_guide from './blog-data/quran-bedtime-stories-prophets-tales-kids-guide';
 import a_rewards_of_learning_quran_10_hadith_parents_guide from './blog-data/rewards-of-learning-quran-10-hadith-parents-guide';
@@ -102,6 +103,7 @@ export const BLOG_BUNDLE: BundleArticle[] = [
   a_is_my_child_ready_for_hifz_signs_guide as BundleArticle,
   a_new_muslim_guide_learning_quran as BundleArticle,
   a_online_quran_classes_for_adults_learn_at_any_age as BundleArticle,
+  a_online_quran_classes_for_teenagers_guide as BundleArticle,
   a_preparing_child_quran_competition_musabaqa_guide as BundleArticle,
   a_quran_bedtime_stories_prophets_tales_kids_guide as BundleArticle,
   a_rewards_of_learning_quran_10_hadith_parents_guide as BundleArticle,
