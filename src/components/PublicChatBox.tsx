@@ -153,7 +153,7 @@ export const PublicChatBox: React.FC = () => {
   const pasteIntoInput = async () => {
     try {
       const t = await navigator.clipboard.readText();
-      if (t) setInput(prev => (prev + t).slice(0, 500));
+      if (t) setInput(prev => (prev + t).slice(0, 4000));
     } catch {
       setHint('Paste is blocked here. You can still paste with Ctrl+V or long-press.');
       setTimeout(() => setHint(''), 3500);
@@ -249,28 +249,29 @@ export const PublicChatBox: React.FC = () => {
               const own = m.cid && m.cid === clientIdRef.current;
               return (
                 <div key={m.id} className={`flex ${own ? 'justify-end' : 'justify-start'}`}>
-                  <div className={`relative max-w-[80%] rounded-xl px-3 py-2 ${own ? 'bg-[#13263D] text-[#F5F0E6]' : 'bg-white border border-[#A47A46]/25 text-[#13263D]'}`}>
+                  <div className={`max-w-[85%] rounded-xl px-3 py-2 ${own ? 'bg-[#13263D] text-[#F5F0E6]' : 'bg-white border border-[#A47A46]/25 text-[#13263D]'}`}>
                     {!own && <p className="text-[10px] font-bold text-[#A47A46] mb-0.5">{m.name}</p>}
-                    <p className="text-[13px] leading-snug whitespace-pre-wrap break-words pr-5">{m.text}</p>
-                    <button
-                      type="button"
-                      onClick={() => copyText(m)}
-                      aria-label="Copy message"
-                      title="Copy"
-                      className={`absolute top-1.5 right-1.5 ${own ? 'text-[#F5F0E6]/60 hover:text-[#F5F0E6]' : 'text-[#13263D]/40 hover:text-[#13263D]'}`}
-                    >
-                      {copiedId === m.id ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-                    </button>
-                    <p className={`text-[9px] mt-1 text-right ${own ? 'text-[#F5F0E6]/50' : 'text-[#13263D]/40'}`}>
-                      {new Date(m.ts).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
-                    </p>
+                    <p className="text-[12.5px] font-mono leading-snug whitespace-pre-wrap break-words">{m.text}</p>
+                    <div className="flex items-center justify-between gap-3 mt-1.5">
+                      <span className={`text-[9px] ${own ? 'text-[#F5F0E6]/50' : 'text-[#13263D]/40'}`}>
+                        {new Date(m.ts).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => copyText(m)}
+                        className={`flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold transition-colors ${own ? 'bg-white/10 text-[#F5F0E6] hover:bg-white/20' : 'bg-[#13263D]/5 text-[#13263D] hover:bg-[#13263D]/10'}`}
+                      >
+                        {copiedId === m.id ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                        {copiedId === m.id ? 'Copied' : 'Copy'}
+                      </button>
+                    </div>
                   </div>
                 </div>
               );
             })}
           </div>
           {hint && <p className="px-3 py-1 text-[10px] text-[#8F683A] bg-[#F5F0E6] border-t border-[#A47A46]/20">{hint}</p>}
-          <form onSubmit={send} className="shrink-0 border-t border-[#A47A46]/25 bg-white px-2.5 py-2.5 flex items-center gap-2">
+          <form onSubmit={send} className="shrink-0 border-t border-[#A47A46]/25 bg-white px-2.5 py-2.5 flex items-end gap-2">
             <button
               type="button"
               onClick={pasteIntoInput}
@@ -280,12 +281,13 @@ export const PublicChatBox: React.FC = () => {
             >
               <ClipboardText className="w-4 h-4" />
             </button>
-            <input
+            <textarea
               value={input}
               onChange={e => setInput(e.target.value)}
-              placeholder="Type a message..."
-              maxLength={500}
-              className="flex-1 rounded-full border border-[#A47A46]/40 px-3.5 py-2 text-sm text-[#13263D] outline-none focus:border-[#A47A46]"
+              placeholder="Type or paste commands here..."
+              maxLength={4000}
+              rows={2}
+              className="flex-1 rounded-xl border border-[#A47A46]/40 px-3.5 py-2 text-[13px] font-mono text-[#13263D] outline-none focus:border-[#A47A46] resize-none"
             />
             <button
               type="submit"
