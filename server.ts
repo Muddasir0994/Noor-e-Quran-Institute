@@ -12,6 +12,7 @@ import {
   getFirestoreDb,
   loadCollectionFromFirestore,
   syncDocToFirestore,
+  deleteDocFromFirestore,
 } from './server/firestore.js';
 import { startArticleSeoCache } from './server/seoCache.js';
 import { getBlogSnapshot } from './server/blogSnapshot.js';
@@ -985,38 +986,67 @@ app.post('/api/contact', checkPublicRateLimit, (req, res) => {
 });
 
 // -------------------------------------------------------------
-// PUBLIC CHAT (TEMPORARY, session-only)
-// Anyone with the shared 4-digit code can chat without an account.
-// Messages live only in server memory: nothing is written to disk
-// or the database, the buffer is capped, old messages expire, and
-// a server restart clears everything. Clients start empty on every
-// page load, so a reload ends the visitor's chat session.
+// PUBLIC CHAT (TEMPORARY) — two rooms, no accounts.
+// CODE room: entry needs the shared 4-digit code. Session-only:
+//   messages live only in server memory, expire, and clients start
+//   empty on every page load, so a reload ends the session.
+// OPEN room: fully open, no code at all. Messages PERSIST (memory
+//   + Firestore write-through, reloaded on first request after a
+//   restart) and stay until someone clears the room.
 // -------------------------------------------------------------
 const PUBLIC_CHAT_PIN = process.env.PUBLIC_CHAT_PIN || '7860';
 interface PublicChatMessage { id: number; name: string; text: string; ts: number; cid: string; }
-const publicChatMessages: PublicChatMessage[] = [];
+const codeChatMessages: PublicChatMessage[] = [];
+let openChatMessages: PublicChatMessage[] = [];
 let publicChatSeq = 0;
-const PUBLIC_CHAT_MAX = 100;
-const PUBLIC_CHAT_TTL_MS = 2 * 60 * 60 * 1000;
+let openChatLoaded = false;
+const CODE_CHAT_MAX = 100;
+const OPEN_CHAT_MAX = 200;
+const CODE_CHAT_TTL_MS = 2 * 60 * 60 * 1000;
 
-function prunePublicChat() {
-  const cutoff = Date.now() - PUBLIC_CHAT_TTL_MS;
-  while (publicChatMessages.length && publicChatMessages[0].ts < cutoff) publicChatMessages.shift();
-  while (publicChatMessages.length > PUBLIC_CHAT_MAX) publicChatMessages.shift();
+function pruneCodeChat() {
+  const cutoff = Date.now() - CODE_CHAT_TTL_MS;
+  while (codeChatMessages.length && codeChatMessages[0].ts < cutoff) codeChatMessages.shift();
+  while (codeChatMessages.length > CODE_CHAT_MAX) codeChatMessages.shift();
 }
 
-app.get('/api/public-chat/messages', (req, res) => {
-  if (String(req.query.pin || '') !== PUBLIC_CHAT_PIN) {
-    return res.status(401).json({ error: 'Invalid chat code.' });
+async function ensureOpenChatLoaded() {
+  if (openChatLoaded) return;
+  openChatLoaded = true;
+  try {
+    const rows = await loadCollectionFromFirestore('publicChatOpen');
+    if (Array.isArray(rows)) {
+      openChatMessages = rows
+        .filter((r: any) => r && typeof r.ts === 'number' && typeof r.text === 'string')
+        .map((r: any) => ({ id: Number(r.id) || 0, name: String(r.name || 'Guest'), text: r.text, ts: r.ts, cid: String(r.cid || '') }))
+        .sort((a, b) => a.ts - b.ts)
+        .slice(-OPEN_CHAT_MAX);
+      for (const m of openChatMessages) if (m.id > publicChatSeq) publicChatSeq = m.id;
+    }
+  } catch {
+    // Firestore unavailable: the open room simply starts empty.
   }
-  prunePublicChat();
+}
+
+app.get('/api/public-chat/messages', async (req, res) => {
+  const room = req.query.room === 'open' ? 'open' : 'code';
+  if (room === 'code') {
+    if (String(req.query.pin || '') !== PUBLIC_CHAT_PIN) {
+      return res.status(401).json({ error: 'Invalid chat code.' });
+    }
+    pruneCodeChat();
+    const since = Number(req.query.since || 0);
+    return res.json({ messages: codeChatMessages.filter(m => m.ts > since) });
+  }
+  await ensureOpenChatLoaded();
   const since = Number(req.query.since || 0);
-  res.json({ messages: publicChatMessages.filter(m => m.ts > since) });
+  res.json({ messages: openChatMessages.filter(m => m.ts > since) });
 });
 
-app.post('/api/public-chat/messages', checkPublicRateLimit, (req, res) => {
-  const { pin, name, text, cid } = req.body || {};
-  if (String(pin || '') !== PUBLIC_CHAT_PIN) {
+app.post('/api/public-chat/messages', checkPublicRateLimit, async (req, res) => {
+  const { pin, name, text, cid, room: rawRoom } = req.body || {};
+  const room = rawRoom === 'open' ? 'open' : 'code';
+  if (room === 'code' && String(pin || '') !== PUBLIC_CHAT_PIN) {
     return res.status(401).json({ error: 'Invalid chat code.' });
   }
   const cleanName = String(name || '').trim().slice(0, 30);
@@ -1024,7 +1054,6 @@ app.post('/api/public-chat/messages', checkPublicRateLimit, (req, res) => {
   if (!cleanName || !cleanText) {
     return res.status(400).json({ error: 'Name and message are required.' });
   }
-  prunePublicChat();
   const msg: PublicChatMessage = {
     id: ++publicChatSeq,
     name: cleanName,
@@ -1032,8 +1061,33 @@ app.post('/api/public-chat/messages', checkPublicRateLimit, (req, res) => {
     ts: Date.now(),
     cid: String(cid || '').slice(0, 40)
   };
-  publicChatMessages.push(msg);
+  if (room === 'code') {
+    pruneCodeChat();
+    codeChatMessages.push(msg);
+  } else {
+    await ensureOpenChatLoaded();
+    openChatMessages.push(msg);
+    while (openChatMessages.length > OPEN_CHAT_MAX) openChatMessages.shift();
+    syncDocToFirestore('publicChatOpen', String(msg.id), msg);
+  }
   res.status(201).json({ message: msg });
+});
+
+app.post('/api/public-chat/clear', checkPublicRateLimit, async (req, res) => {
+  const { pin, room: rawRoom } = req.body || {};
+  const room = rawRoom === 'open' ? 'open' : 'code';
+  if (room === 'code') {
+    if (String(pin || '') !== PUBLIC_CHAT_PIN) {
+      return res.status(401).json({ error: 'Invalid chat code.' });
+    }
+    codeChatMessages.length = 0;
+    return res.json({ ok: true });
+  }
+  await ensureOpenChatLoaded();
+  const ids = openChatMessages.map(m => String(m.id));
+  openChatMessages = [];
+  for (const id of ids) deleteDocFromFirestore('publicChatOpen', id);
+  res.json({ ok: true });
 });
 
 // -------------------------------------------------------------

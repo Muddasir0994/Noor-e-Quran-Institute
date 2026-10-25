@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { ChatsCircle, X, PaperPlaneRight } from '@phosphor-icons/react';
+import { ChatsCircle, X, PaperPlaneRight, Copy, Check, ClipboardText, Trash } from '@phosphor-icons/react';
 
 interface ChatMsg {
   id: number;
@@ -9,16 +9,20 @@ interface ChatMsg {
   cid?: string;
 }
 
+type Room = 'code' | 'open';
+
 /**
- * Temporary public chat box (no account needed).
- * Opens from the footer "Public Chat" link. A shared 4-digit code
- * gates entry. The chat is session-only: it starts empty on every
- * page load and a reload ends the session. Nothing is stored in
- * the browser; messages live only in server memory.
+ * Temporary public group chat (no account needed), opened from the
+ * footer "Public Chat" link. Two rooms:
+ * - Open room: fully open, no code. Messages stay until cleared.
+ * - Code room: shared 4-digit code. Session-only, a reload ends it.
+ * Nothing is asked from the visitor: no name, no link, no sign-up.
+ * Each session is auto-labelled (Guest AB12) so people can tell
+ * each other apart.
  */
 export const PublicChatBox: React.FC = () => {
   const [open, setOpen] = useState(false);
-  const [joined, setJoined] = useState(false);
+  const [room, setRoom] = useState<Room | null>(null);
   const [pin, setPin] = useState('');
   const [activePin, setActivePin] = useState('');
   const [error, setError] = useState('');
@@ -26,11 +30,11 @@ export const PublicChatBox: React.FC = () => {
   const [messages, setMessages] = useState<ChatMsg[]>([]);
   const [input, setInput] = useState('');
   const [sending, setSending] = useState(false);
+  const [copiedId, setCopiedId] = useState<number | null>(null);
+  const [hint, setHint] = useState('');
 
   const sessionStartRef = useRef<number>(0);
   const clientIdRef = useRef<string>(Math.random().toString(36).slice(2) + Date.now().toString(36));
-  // No name is asked: each session is auto-labelled (Guest AB12) so
-  // people can still tell each other apart inside the group chat.
   const guestRef = useRef<string>('Guest ' + Math.random().toString(36).slice(2, 6).toUpperCase());
   const listRef = useRef<HTMLDivElement>(null);
 
@@ -43,45 +47,61 @@ export const PublicChatBox: React.FC = () => {
     return () => window.removeEventListener('open-public-chat', handler);
   }, []);
 
-  const fetchMessages = async (code: string) => {
+  const fetchMessages = async (r: Room, code: string): Promise<ChatMsg[] | null> => {
     try {
-      const r = await fetch(`/api/public-chat/messages?pin=${encodeURIComponent(code)}&since=${sessionStartRef.current}`);
-      if (!r.ok) return false;
-      const data = await r.json();
-      setMessages(Array.isArray(data.messages) ? data.messages : []);
-      return true;
+      const since = r === 'open' ? 0 : sessionStartRef.current;
+      const pinPart = r === 'code' ? `&pin=${encodeURIComponent(code)}` : '';
+      const resp = await fetch(`/api/public-chat/messages?room=${r}&since=${since}${pinPart}`);
+      if (!resp.ok) return null;
+      const data = await resp.json();
+      return Array.isArray(data.messages) ? data.messages : [];
     } catch {
-      return false;
+      return null;
     }
   };
 
   useEffect(() => {
-    if (!joined || !open) return;
-    const t = setInterval(() => { fetchMessages(activePin); }, 2500);
+    if (!room || !open) return;
+    const t = setInterval(async () => {
+      const msgs = await fetchMessages(room, activePin);
+      if (msgs) setMessages(msgs);
+    }, 2500);
     return () => clearInterval(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [joined, open, activePin]);
+  }, [room, open, activePin]);
 
   useEffect(() => {
     const el = listRef.current;
     if (el) el.scrollTop = el.scrollHeight;
-  }, [messages, open, joined]);
+  }, [messages, open, room]);
 
-  const join = async (e: React.FormEvent) => {
+  const joinOpen = async () => {
+    setError('');
+    setJoining(true);
+    const msgs = await fetchMessages('open', '');
+    setJoining(false);
+    if (!msgs) { setError('Could not open the chat. Please try again.'); return; }
+    setMessages(msgs);
+    setRoom('open');
+  };
+
+  const joinCode = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     const cleanPin = pin.trim();
     if (!/^\d{4}$/.test(cleanPin)) { setError('Please enter the 4-digit chat code.'); return; }
     setJoining(true);
-    const ok = await fetchMessages(cleanPin);
+    const msgs = await fetchMessages('code', cleanPin);
     setJoining(false);
-    if (!ok) { setError('Wrong chat code. Please check and try again.'); return; }
+    if (!msgs) { setError('Wrong chat code. Please check and try again.'); return; }
     setActivePin(cleanPin);
-    setJoined(true);
+    setMessages(msgs);
+    setRoom('code');
   };
 
   const send = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!room) return;
     const text = input.trim();
     if (!text || sending) return;
     setSending(true);
@@ -89,7 +109,7 @@ export const PublicChatBox: React.FC = () => {
       const r = await fetch('/api/public-chat/messages', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ pin: activePin, name: guestRef.current, text, cid: clientIdRef.current })
+        body: JSON.stringify({ room, pin: activePin, name: guestRef.current, text, cid: clientIdRef.current })
       });
       if (r.ok) {
         const data = await r.json();
@@ -99,12 +119,54 @@ export const PublicChatBox: React.FC = () => {
         setInput('');
       }
     } catch {
-      // Next poll will resync; keep the text out of the box only on success.
+      // Next poll will resync.
     }
     setSending(false);
   };
 
+  const clearChat = async () => {
+    if (!room) return;
+    if (!window.confirm('Clear all messages in this chat for everyone?')) return;
+    try {
+      await fetch('/api/public-chat/clear', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ room, pin: activePin })
+      });
+      setMessages([]);
+    } catch {
+      // Poll will resync if the clear did not go through.
+    }
+  };
+
+  const copyText = async (m: ChatMsg) => {
+    try {
+      await navigator.clipboard.writeText(m.text);
+      setCopiedId(m.id);
+      setTimeout(() => setCopiedId(cur => (cur === m.id ? null : cur)), 1500);
+    } catch {
+      setHint('Copy is blocked by the browser.');
+      setTimeout(() => setHint(''), 3000);
+    }
+  };
+
+  const pasteIntoInput = async () => {
+    try {
+      const t = await navigator.clipboard.readText();
+      if (t) setInput(prev => (prev + t).slice(0, 500));
+    } catch {
+      setHint('Paste is blocked here. You can still paste with Ctrl+V or long-press.');
+      setTimeout(() => setHint(''), 3500);
+    }
+  };
+
   if (!open) return null;
+
+  const subtitle = room === 'open'
+    ? 'Open chat. Messages stay here until cleared.'
+    : room === 'code'
+      ? 'Code chat. It clears when you reload the page.'
+      : 'Group chat. No account, no link needed.';
 
   return (
     <div className="fixed bottom-4 right-4 z-[10000] w-[min(92vw,380px)] h-[min(72vh,560px)] flex flex-col rounded-2xl overflow-hidden shadow-2xl border border-[#A47A46]/50 bg-[#F5F0E6] font-sans">
@@ -112,9 +174,20 @@ export const PublicChatBox: React.FC = () => {
       <div className="bg-[#13263D] text-[#F5F0E6] px-4 py-3 flex items-center gap-2.5 shrink-0">
         <ChatsCircle className="w-5 h-5 text-[#A47A46]" weight="fill" />
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-bold leading-tight">Public Chat</p>
-          <p className="text-[10px] text-[#F5F0E6]/60 leading-tight">Temporary chat. It clears when you reload the page.</p>
+          <p className="text-sm font-bold leading-tight">Public Chat{room ? (room === 'open' ? ' · Open' : ' · Code') : ''}</p>
+          <p className="text-[10px] text-[#F5F0E6]/60 leading-tight">{subtitle}</p>
         </div>
+        {room && (
+          <button
+            type="button"
+            onClick={clearChat}
+            aria-label="Clear chat"
+            title="Clear chat for everyone"
+            className="w-7 h-7 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors"
+          >
+            <Trash className="w-4 h-4" />
+          </button>
+        )}
         <button
           type="button"
           onClick={() => setOpen(false)}
@@ -125,28 +198,45 @@ export const PublicChatBox: React.FC = () => {
         </button>
       </div>
 
-      {!joined ? (
-        <form onSubmit={join} className="flex-1 flex flex-col justify-center px-5 py-6 gap-3">
+      {!room ? (
+        <div className="flex-1 flex flex-col justify-center px-5 py-6 gap-3 overflow-y-auto">
           <p className="text-xs text-[#13263D]/70 leading-relaxed">
-            This is a group chat. Just enter the 4-digit chat code and you are in. No account, no link, nothing else needed.
+            This is a group chat on our website. Choose how to enter. Nothing else is needed.
           </p>
-          <input
-            value={pin}
-            onChange={e => setPin(e.target.value.replace(/\D/g, '').slice(0, 4))}
-            placeholder="4-digit chat code"
-            inputMode="numeric"
-            maxLength={4}
-            className="w-full rounded-lg border border-[#A47A46]/40 bg-white px-3 py-2.5 text-sm text-[#13263D] outline-none focus:border-[#A47A46] tracking-[0.3em]"
-          />
-          {error && <p className="text-xs text-red-700">{error}</p>}
           <button
-            type="submit"
+            type="button"
+            onClick={joinOpen}
             disabled={joining}
             className="w-full rounded-lg bg-[#13263D] text-[#F5F0E6] py-2.5 text-sm font-semibold hover:bg-[#1B3555] transition-colors disabled:opacity-60"
           >
-            {joining ? 'Joining...' : 'Join Chat'}
+            {joining ? 'Opening...' : 'Enter Open Chat'}
           </button>
-        </form>
+          <p className="text-[10px] text-[#13263D]/50 text-center -mt-1">Fully open, no code. Messages stay until cleared.</p>
+          <div className="flex items-center gap-3 py-1">
+            <span className="flex-1 border-t border-[#A47A46]/30" />
+            <span className="text-[10px] uppercase tracking-wider text-[#13263D]/40">or</span>
+            <span className="flex-1 border-t border-[#A47A46]/30" />
+          </div>
+          <form onSubmit={joinCode} className="flex flex-col gap-3">
+            <input
+              value={pin}
+              onChange={e => setPin(e.target.value.replace(/\D/g, '').slice(0, 4))}
+              placeholder="4-digit chat code"
+              inputMode="numeric"
+              maxLength={4}
+              className="w-full rounded-lg border border-[#A47A46]/40 bg-white px-3 py-2.5 text-sm text-[#13263D] outline-none focus:border-[#A47A46] tracking-[0.3em]"
+            />
+            <button
+              type="submit"
+              disabled={joining}
+              className="w-full rounded-lg border-2 border-[#13263D] text-[#13263D] py-2 text-sm font-semibold hover:bg-[#13263D] hover:text-[#F5F0E6] transition-colors disabled:opacity-60"
+            >
+              Join with Code
+            </button>
+            <p className="text-[10px] text-[#13263D]/50 text-center -mt-1">Code chat is temporary and clears on reload.</p>
+          </form>
+          {error && <p className="text-xs text-red-700 text-center">{error}</p>}
+        </div>
       ) : (
         <>
           <div ref={listRef} className="flex-1 overflow-y-auto px-3 py-3 space-y-2.5">
@@ -159,9 +249,18 @@ export const PublicChatBox: React.FC = () => {
               const own = m.cid && m.cid === clientIdRef.current;
               return (
                 <div key={m.id} className={`flex ${own ? 'justify-end' : 'justify-start'}`}>
-                  <div className={`max-w-[80%] rounded-xl px-3 py-2 ${own ? 'bg-[#13263D] text-[#F5F0E6]' : 'bg-white border border-[#A47A46]/25 text-[#13263D]'}`}>
+                  <div className={`relative max-w-[80%] rounded-xl px-3 py-2 ${own ? 'bg-[#13263D] text-[#F5F0E6]' : 'bg-white border border-[#A47A46]/25 text-[#13263D]'}`}>
                     {!own && <p className="text-[10px] font-bold text-[#A47A46] mb-0.5">{m.name}</p>}
-                    <p className="text-[13px] leading-snug whitespace-pre-wrap break-words">{m.text}</p>
+                    <p className="text-[13px] leading-snug whitespace-pre-wrap break-words pr-5">{m.text}</p>
+                    <button
+                      type="button"
+                      onClick={() => copyText(m)}
+                      aria-label="Copy message"
+                      title="Copy"
+                      className={`absolute top-1.5 right-1.5 ${own ? 'text-[#F5F0E6]/60 hover:text-[#F5F0E6]' : 'text-[#13263D]/40 hover:text-[#13263D]'}`}
+                    >
+                      {copiedId === m.id ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                    </button>
                     <p className={`text-[9px] mt-1 text-right ${own ? 'text-[#F5F0E6]/50' : 'text-[#13263D]/40'}`}>
                       {new Date(m.ts).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
                     </p>
@@ -170,7 +269,17 @@ export const PublicChatBox: React.FC = () => {
               );
             })}
           </div>
+          {hint && <p className="px-3 py-1 text-[10px] text-[#8F683A] bg-[#F5F0E6] border-t border-[#A47A46]/20">{hint}</p>}
           <form onSubmit={send} className="shrink-0 border-t border-[#A47A46]/25 bg-white px-2.5 py-2.5 flex items-center gap-2">
+            <button
+              type="button"
+              onClick={pasteIntoInput}
+              aria-label="Paste from clipboard"
+              title="Paste from clipboard"
+              className="w-9 h-9 rounded-full border border-[#A47A46]/40 text-[#A47A46] flex items-center justify-center hover:bg-[#F5F0E6] transition-colors shrink-0"
+            >
+              <ClipboardText className="w-4 h-4" />
+            </button>
             <input
               value={input}
               onChange={e => setInput(e.target.value)}
