@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   Tutor,
   Student,
@@ -73,7 +73,8 @@ export const TeacherPortal: React.FC<TeacherPortalProps> = ({
 
   // Tutor profiles built from the real directory (NOT sample/fake data).
   // Each tutor's classes show their ACTUALLY assigned students.
-  const sampleTutors = TUTOR_DIRECTORY.map(t => {
+  // ⚡ Bolt: Memoize the computationally expensive sampleTutors array to prevent synchronous re-calculations on every render
+  const sampleTutors = useMemo(() => TUTOR_DIRECTORY.map(t => {
     const assignedStudentEmails = getAssignedStudentEmails(t.email);
     const assignedStudents = STUDENT_DIRECTORY.filter(s =>
       assignedStudentEmails.includes(s.email.toLowerCase())
@@ -100,7 +101,7 @@ export const TeacherPortal: React.FC<TeacherPortalProps> = ({
         surahNum: 2
       }))
     };
-  });
+  }), []);
 
   const currentTutor = sampleTutors.find(t => t.id === selectedTutorId) || sampleTutors[0];
 
