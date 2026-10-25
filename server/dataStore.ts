@@ -613,12 +613,41 @@ class DataStore {
     return Array.isArray(docs) ? docs : [];
   }
 
+  private writePromise: Promise<void> | null = null;
+  private pendingData: DatabaseSchema | null = null;
+
   private saveDatabase(dataToSave?: DatabaseSchema) {
-    try {
-      const payload = dataToSave || this.data;
-      fs.writeFileSync(DB_FILE, JSON.stringify(payload, null, 2), 'utf-8');
-    } catch (err) {
-      console.error('Failed to write academy_db.json:', err);
+    this.pendingData = dataToSave || this.data;
+    if (!this.writePromise) {
+      this.processQueue();
+    }
+  }
+
+  private async processQueue() {
+    while (this.pendingData) {
+      const payload = this.pendingData;
+      this.pendingData = null; // Clear lock before write
+
+      this.writePromise = (async () => {
+        try {
+          await fs.promises.writeFile(DB_FILE, JSON.stringify(payload, null, 2), 'utf-8');
+        } catch (err) {
+          console.error('Failed to write academy_db.json:', err);
+        }
+      })();
+
+      await this.writePromise;
+    }
+    this.writePromise = null;
+  }
+
+  /**
+   * Ensure any pending asynchronous file writes are completed.
+   * Useful during graceful shutdown to avoid data loss.
+   */
+  public async flush(): Promise<void> {
+    while (this.writePromise) {
+      await this.writePromise;
     }
   }
 

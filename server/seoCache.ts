@@ -100,15 +100,42 @@ export function loadCacheFromDisk(): number {
   return cache.size;
 }
 
+let writePromise: Promise<void> | null = null;
+let pendingData: any | null = null;
+
+async function processQueue() {
+  while (pendingData) {
+    const payload = pendingData;
+    pendingData = null;
+
+    writePromise = (async () => {
+      try {
+        await fs.promises.mkdir(path.dirname(CACHE_FILE), { recursive: true });
+        await fs.promises.writeFile(CACHE_FILE, JSON.stringify(payload));
+      } catch (e: any) {
+        console.warn('[seoCache] Could not persist disk cache:', e.message);
+      }
+    })();
+
+    await writePromise;
+  }
+  writePromise = null;
+}
+
 function persistCacheToDisk(): void {
-  try {
-    fs.mkdirSync(path.dirname(CACHE_FILE), { recursive: true });
-    fs.writeFileSync(
-      CACHE_FILE,
-      JSON.stringify({ refreshedAt: Date.now(), entries: [...cache.values()] })
-    );
-  } catch (e: any) {
-    console.warn('[seoCache] Could not persist disk cache:', e.message);
+  pendingData = { refreshedAt: Date.now(), entries: [...cache.values()] };
+  if (!writePromise) {
+    processQueue();
+  }
+}
+
+/**
+ * Ensure any pending asynchronous file writes are completed.
+ * Useful during graceful shutdown to avoid data loss.
+ */
+export async function flushArticleSeoCache(): Promise<void> {
+  while (writePromise) {
+    await writePromise;
   }
 }
 

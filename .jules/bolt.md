@@ -1,0 +1,3 @@
+## 2024-10-25 - Async File Writing with Concurrency Queue
+**Learning:** Optimizing synchronous file writes (`fs.writeFileSync`) to asynchronous writes (`fs.promises.writeFile`) in singletons like `DataStore` and `seoCache` requires a concurrency queue loop (`while (pendingData)` lock) to avoid data loss from overlapping writes, and assigning the latest data to the cache within the lock. Additionally, this pattern mandates properly awaiting these asynchronous queues during a server shutdown callback.
+**Action:** When converting blocking IO to async IO in critical application singletons, always implement a `pendingData` queue to handle rapid fire writes safely, and hook the queue's `flush()` into the application's `SIGTERM/SIGINT` lifecycle.
