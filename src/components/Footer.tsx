@@ -7,6 +7,7 @@ import {
   WhatsappLogo,
   Envelope
 } from '@phosphor-icons/react';
+import { PublicChatBox } from './PublicChatBox';
 
 interface FooterProps {
   onOpenTrial?: (courseName?: string) => void;
@@ -25,6 +26,7 @@ export const Footer: React.FC<FooterProps> = ({
   ];
 
   return (
+    <>
     <footer className="bg-[#0C1A2E] text-[#E7DBC2] pt-16 pb-12 border-t border-[#A47A46]/20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
@@ -131,6 +133,15 @@ export const Footer: React.FC<FooterProps> = ({
                   Blog & Guides
                 </Link>
               </li>
+              <li>
+                <button
+                  type="button"
+                  onClick={() => window.dispatchEvent(new Event('open-public-chat'))}
+                  className="hover:text-white transition-colors"
+                >
+                  Public Chat
+                </button>
+              </li>
             </ul>
           </div>
 
@@ -218,5 +229,7 @@ export const Footer: React.FC<FooterProps> = ({
 
       </div>
     </footer>
+    <PublicChatBox />
+    </>
   );
 };

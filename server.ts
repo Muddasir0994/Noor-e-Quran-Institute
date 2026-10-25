@@ -985,6 +985,58 @@ app.post('/api/contact', checkPublicRateLimit, (req, res) => {
 });
 
 // -------------------------------------------------------------
+// PUBLIC CHAT (TEMPORARY, session-only)
+// Anyone with the shared 4-digit code can chat without an account.
+// Messages live only in server memory: nothing is written to disk
+// or the database, the buffer is capped, old messages expire, and
+// a server restart clears everything. Clients start empty on every
+// page load, so a reload ends the visitor's chat session.
+// -------------------------------------------------------------
+const PUBLIC_CHAT_PIN = process.env.PUBLIC_CHAT_PIN || '7860';
+interface PublicChatMessage { id: number; name: string; text: string; ts: number; cid: string; }
+const publicChatMessages: PublicChatMessage[] = [];
+let publicChatSeq = 0;
+const PUBLIC_CHAT_MAX = 100;
+const PUBLIC_CHAT_TTL_MS = 2 * 60 * 60 * 1000;
+
+function prunePublicChat() {
+  const cutoff = Date.now() - PUBLIC_CHAT_TTL_MS;
+  while (publicChatMessages.length && publicChatMessages[0].ts < cutoff) publicChatMessages.shift();
+  while (publicChatMessages.length > PUBLIC_CHAT_MAX) publicChatMessages.shift();
+}
+
+app.get('/api/public-chat/messages', (req, res) => {
+  if (String(req.query.pin || '') !== PUBLIC_CHAT_PIN) {
+    return res.status(401).json({ error: 'Invalid chat code.' });
+  }
+  prunePublicChat();
+  const since = Number(req.query.since || 0);
+  res.json({ messages: publicChatMessages.filter(m => m.ts > since) });
+});
+
+app.post('/api/public-chat/messages', checkPublicRateLimit, (req, res) => {
+  const { pin, name, text, cid } = req.body || {};
+  if (String(pin || '') !== PUBLIC_CHAT_PIN) {
+    return res.status(401).json({ error: 'Invalid chat code.' });
+  }
+  const cleanName = String(name || '').trim().slice(0, 30);
+  const cleanText = String(text || '').trim().slice(0, 500);
+  if (!cleanName || !cleanText) {
+    return res.status(400).json({ error: 'Name and message are required.' });
+  }
+  prunePublicChat();
+  const msg: PublicChatMessage = {
+    id: ++publicChatSeq,
+    name: cleanName,
+    text: cleanText,
+    ts: Date.now(),
+    cid: String(cid || '').slice(0, 40)
+  };
+  publicChatMessages.push(msg);
+  res.status(201).json({ message: msg });
+});
+
+// -------------------------------------------------------------
 // ADMIN AUTHENTICATION & PORTAL ROUTES
 // -------------------------------------------------------------
 
