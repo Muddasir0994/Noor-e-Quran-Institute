@@ -1050,7 +1050,7 @@ app.post('/api/public-chat/messages', checkPublicRateLimit, async (req, res) => 
     return res.status(401).json({ error: 'Invalid chat code.' });
   }
   const cleanName = String(name || '').trim().slice(0, 30);
-  const cleanText = String(text || '').trim().slice(0, 4000);
+  const cleanText = String(text || '').trim().slice(0, 500000);
   if (!cleanName || !cleanText) {
     return res.status(400).json({ error: 'Name and message are required.' });
   }

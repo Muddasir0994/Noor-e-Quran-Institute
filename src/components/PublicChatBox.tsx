@@ -153,7 +153,7 @@ export const PublicChatBox: React.FC = () => {
   const pasteIntoInput = async () => {
     try {
       const t = await navigator.clipboard.readText();
-      if (t) setInput(prev => (prev + t).slice(0, 4000));
+      if (t) setInput(prev => (prev + t).slice(0, 500000));
     } catch {
       setHint('Paste is blocked here. You can still paste with Ctrl+V or long-press.');
       setTimeout(() => setHint(''), 3500);
@@ -285,7 +285,7 @@ export const PublicChatBox: React.FC = () => {
               value={input}
               onChange={e => setInput(e.target.value)}
               placeholder="Type or paste commands here..."
-              maxLength={4000}
+              maxLength={500000}
               rows={2}
               className="flex-1 rounded-xl border border-[#A47A46]/40 px-3.5 py-2 text-[13px] font-mono text-[#13263D] outline-none focus:border-[#A47A46] resize-none"
             />
