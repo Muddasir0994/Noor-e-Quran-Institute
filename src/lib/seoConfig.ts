@@ -17,7 +17,7 @@ export const SEO_PAGE_MAP: Record<string, SEORouteMeta> = {
   home: {
     path: '/',
     title: 'Learn Quran Online | 1-on-1 Online Quran Classes for Kids & Adults',
-    description: 'Learn Quran online with certified male & female tutors. 1-on-1 Tajweed, Hifz & Qaida classes for kids and adults. Book a free 3-day trial today!',
+    description: 'Learn Quran online in 1-on-1 live classes taught personally by the founder, M Muddasir Hameed. Tajweed, Hifz & Noorani Qaida for kids and adults. Book a free 3-day trial today!',
     h1: 'Learn Holy Quran with Tajweed From Certified Tutors',
     primaryKeyword: 'Online Quran Classes',
     secondaryKeywords: [
@@ -37,7 +37,7 @@ export const SEO_PAGE_MAP: Record<string, SEORouteMeta> = {
   courses: {
     path: '/online-quran-classes',
     title: 'Online Quran Courses: Qaida, Nazra, Tajweed & Hifz Programs',
-    description: 'Explore online Quran courses: Noorani Qaida, Nazra, Tajweed & Hifz memorization with certified male & female tutors. 1-on-1 classes for kids & adults.',
+    description: 'Explore online Quran courses: Noorani Qaida, Nazra, Tajweed & Hifz memorization. 1-on-1 live classes for kids & adults, taught personally by the founder.',
     h1: 'Comprehensive Online Quran Learning Programs',
     primaryKeyword: 'Online Quran Courses',
     secondaryKeywords: [
@@ -212,9 +212,9 @@ export const SEO_PAGE_MAP: Record<string, SEORouteMeta> = {
   },
   tutors: {
     path: '/faculty',
-    title: 'Certified Online Quran Teachers | Male & Female Tutors',
-    description: 'Meet certified male & female Quran teachers — qualified Huffaz and Ijazah holders with years of online teaching experience. Book a free trial class!',
-    h1: 'Certified Male & Female Quran Teachers',
+    title: 'Meet Your Quran Teacher | M Muddasir Hameed',
+    description: 'Meet M Muddasir Hameed, founder of Noor E Quran Institute and your personal teacher for every 1-on-1 Quran class. Book a free trial class!',
+    h1: 'Meet Your Quran Teacher',
     primaryKeyword: 'Online Quran Teacher',
     secondaryKeywords: [
       'Certified Quran Tutors',

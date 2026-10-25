@@ -14,7 +14,7 @@ export interface SEOHeadProps {
 
 export const SEOHead: React.FC<SEOHeadProps> = ({
   title = 'Noor E Quran Institute | 1-on-1 Online Quran Classes with Certified Tutors',
-  description = 'Learn Quran online with certified male & female tutors at Noor E Quran Institute. 1-on-1 Tajweed, Qaida & Hifz classes for kids & adults worldwide.',
+  description = 'Learn Quran online at Noor E Quran Institute in 1-on-1 live classes taught personally by the founder. Tajweed, Qaida & Hifz for kids & adults worldwide.',
   canonicalUrl = 'https://noorequraninstitute.me/',
   ogType = 'website',
   ogImage = `${ACADEMY_BASE_URL}/logo.webp`,

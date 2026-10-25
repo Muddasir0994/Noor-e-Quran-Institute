@@ -1,6 +1,7 @@
 import { dataStore } from './dataStore.js';
 import { getArticleSeo, getAllArticleSeo, extractFaqs, type ArticleSeoEntry } from './seoCache.js';
 import { BLOG_BUNDLE } from './blogBundle.js';
+import { INITIAL_FAQS } from '../src/data/academyData.js';
 
 export const ACADEMY_BASE_URL = 'https://noorequraninstitute.me';
 
@@ -17,14 +18,64 @@ export interface PageMeta {
   extraSchemas?: any[];
 }
 
+/**
+ * Homepage FAQPage JSON-LD built from the site's real FAQ data
+ * (INITIAL_FAQS in src/data/academyData.ts, the same list the homepage FAQ
+ * section renders). Question and answer wording is copied faithfully; the
+ * only edits are founder-only adjustments where the old copy claimed
+ * multiple or female tutors, plus punctuation cleanup.
+ */
+const FOUNDER_ONLY_FAQ_ANSWERS: Record<string, string> = {
+  'faq-3': 'All lessons are taught one-to-one by the institute\u2019s founder, M Muddasir Hameed. Sisters and young girls learn in a private and comfortable setting that respects Islamic etiquette.',
+  'faq-4': 'Yes, we specialize in teaching children from 4 years and older. Every lesson is gentle, engaging, and patient, using interactive Noorani Qaida lessons and positive reinforcement.'
+};
+
+export const HOMEPAGE_FAQ_SCHEMA = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [...INITIAL_FAQS]
+    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+    .map(f => ({
+      '@type': 'Question',
+      name: f.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: (FOUNDER_ONLY_FAQ_ANSWERS[f.id] || f.answer).replace(/\u2014/g, ', ')
+      }
+    }))
+};
+
+/** Real course images actually rendered on the site (CoursesSection cards). */
+export const COURSE_SCHEMA_IMAGES: Record<string, string> = {
+  'noorani-qaida': '/images/unsplash/course-noorani-qaida.webp',
+  'quran-reading-nazra': '/images/unsplash/course-quran-reading.webp',
+  'quran-with-tajweed': '/images/unsplash/course-tajweed.webp',
+  'quran-memorization-hifz': '/images/unsplash/course-hifz.webp',
+  'islamic-studies': '/images/unsplash/course-islamic-studies.webp'
+};
+
+/**
+ * Prerequisites exactly as stated on the site itself: the course comparison
+ * matrix on the Courses page and the Nazra course audience line in the
+ * course data ("Students who completed Qaida").
+ */
+export const COURSE_PREREQUISITES: Record<string, string> = {
+  'noorani-qaida': 'None (Starts from Alif)',
+  'quran-reading-nazra': 'Students who have completed Noorani Qaida (basic Arabic letter recognition)',
+  'quran-with-tajweed': 'Fluent Nazra Quran Reading',
+  'quran-memorization-hifz': 'Flawless Nazra Quran Reading',
+  'islamic-studies': 'None'
+};
+
 export const KNOWN_STATIC_ROUTES: Record<string, PageMeta> = {
   '/': {
     title: 'Learn Quran Online | 1-on-1 Online Quran Classes for Kids & Adults',
-    description: 'Learn Quran online with certified male & female tutors. 1-on-1 Tajweed, Hifz & Qaida classes for kids and adults. Book a free 3-day trial today!',
+    description: 'Learn Quran online in 1-on-1 live classes taught personally by the founder, M Muddasir Hameed. Tajweed, Hifz & Noorani Qaida for kids and adults. Book a free 3-day trial today!',
     canonical: `${ACADEMY_BASE_URL}/`,
     ogType: 'website',
     ogImage: `${ACADEMY_BASE_URL}/logo.webp`,
-    breadcrumbs: [{ name: 'Home', item: `${ACADEMY_BASE_URL}/` }]
+    breadcrumbs: [{ name: 'Home', item: `${ACADEMY_BASE_URL}/` }],
+    extraSchemas: [HOMEPAGE_FAQ_SCHEMA]
   },
   '/online-quran-classes': {
     title: 'Online Quran Courses & Curriculum | Noor E Quran Institute',
@@ -503,6 +554,12 @@ export function resolveRouteMetadata(rawPath: string): RouteResolution {
     const course = dataStore.getCourseBySlug(slug) || dataStore.getCourses().find(c => c.id === slug);
     if (course) {
       const canonical = `${ACADEMY_BASE_URL}/courses/${course.slug || course.id}`;
+      const courseKey = course.slug || course.id;
+      const rawCourseImage = COURSE_SCHEMA_IMAGES[courseKey] || course.imageUrl;
+      const courseImage = rawCourseImage
+        ? (rawCourseImage.startsWith('http') ? rawCourseImage : `${ACADEMY_BASE_URL}${rawCourseImage}`)
+        : undefined;
+      const coursePrerequisites = COURSE_PREREQUISITES[courseKey];
       const meta: PageMeta = {
         title: `${course.name} Online Course with Tajweed | Noor E Quran Institute`,
         description: course.shortDescription || `Learn ${course.name} online with 1-on-1 certified tutors. Flexible timings and 3-day free trial.`,
@@ -519,6 +576,13 @@ export function resolveRouteMetadata(rawPath: string): RouteResolution {
           '@type': 'Course',
           name: course.name,
           description: course.description || course.shortDescription,
+          ...(courseImage ? { image: courseImage } : {}),
+          hasCourseInstance: {
+            '@type': 'CourseInstance',
+            courseMode: 'online',
+            ...(course.duration ? { courseWorkload: course.duration } : {})
+          },
+          ...(coursePrerequisites ? { coursePrerequisites } : {}),
           provider: {
             '@type': 'EducationalOrganization',
             name: 'Noor E Quran Institute',
@@ -894,7 +958,7 @@ export function generateRoutePrerenderHtml(routePath: string, meta: PageMeta): s
             <section style="background:#F9FAFB;border:1px solid #E5E7EB;border-radius:12px;padding:24px;margin-bottom:30px;">
               <h2 style="font-size:22px;color:#064E3B;margin-top:0;">Course Curriculum & Highlights</h2>
               <ul style="padding-left:20px;color:#4B5563;">
-                ${(course.highlights || ['1-on-1 Personalized Live Tuition', 'Qualified Male & Female Scholars', 'Interactive Digital Whiteboard', 'Flexible Timings & Recorded Lessons', 'Monthly Progress Evaluation Reports']).map(f => `<li style="margin-bottom:8px;">${f}</li>`).join('')}
+                ${(course.highlights || ['1-on-1 Personalized Live Tuition', 'Taught Personally by the Founder', 'Interactive Digital Whiteboard', 'Flexible Timings & Recorded Lessons', 'Monthly Progress Evaluation Reports']).map(f => `<li style="margin-bottom:8px;">${f}</li>`).join('')}
               </ul>
               <div style="margin-top:16px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;">
                 <span style="font-weight:700;color:#064E3B;">Tuition Fee: $${course.feeUSD || 35}/Month</span>
@@ -905,7 +969,7 @@ export function generateRoutePrerenderHtml(routePath: string, meta: PageMeta): s
 
             <section style="margin-bottom:30px;">
               <h2 style="font-size:22px;color:#064E3B;">Why Enroll in This Course at Noor E Quran Institute?</h2>
-              <p>Our online ${course.name} provides students with individual one-on-one attention from certified tutors who specialize in Makharij, Tajweed rules, and interactive pedagogy. Whether starting from the basics or mastering advanced recitation, each student progresses at their own comfortable pace.</p>
+              <p>Our online ${course.name} provides students with individual one-on-one attention from the institute's founder, M Muddasir Hameed, who specializes in Makharij, Tajweed rules, and interactive pedagogy. Whether starting from the basics or mastering advanced recitation, each student progresses at their own comfortable pace.</p>
               <p>Classes are held over Zoom or Google Meet with screen sharing of high-resolution digital Quran pages, ensuring clear visual and auditory learning.</p>
             </section>
 
@@ -1068,8 +1132,8 @@ export function generateRoutePrerenderHtml(routePath: string, meta: PageMeta): s
             <p style="color:#4B5563;font-size:14px;line-height:1.6;">Unlike crowded group settings, our teachers dedicate their full 30 to 45-minute lesson solely to your child, rectifying pronunciation mistakes instantly.</p>
           </div>
           <div>
-            <h3 style="font-size:18px;color:#064E3B;margin-bottom:8px;">2. Verified Male & Female Scholars</h3>
-            <p style="color:#4B5563;font-size:14px;line-height:1.6;">Our educators hold Ijazah certificates and degrees from renowned Islamic universities, passing rigorous background checks and pedagogical training.</p>
+            <h3 style="font-size:18px;color:#064E3B;margin-bottom:8px;">2. A Qualified Scholar as Your Teacher</h3>
+            <p style="color:#4B5563;font-size:14px;line-height:1.6;">Every class is taught personally by the founder, M Muddasir Hameed, an Islamic scholar and researcher with a Bachelor of Islamic Studies, an Aalmia (M.A. equivalent) in Islamic &amp; Arabic Studies, and a specialization in Islamic Jurisprudence.</p>
           </div>
           <div>
             <h3 style="font-size:18px;color:#064E3B;margin-bottom:8px;">3. 24/7 Flexible Timetable</h3>
@@ -1082,28 +1146,19 @@ export function generateRoutePrerenderHtml(routePath: string, meta: PageMeta): s
         </div>
       </section>
 
-      <!-- Section: Certified Tutors -->
+      <!-- Section: Meet Your Teacher -->
       <section style="margin-bottom:50px;">
         <div style="text-align:center;max-width:700px;margin:0 auto 30px;">
-          <h2 style="font-size:28px;color:#064E3B;margin-bottom:8px;">Meet Our Certified Quran Faculty</h2>
-          <p style="color:#4B5563;">Experienced Islamic scholars dedicated to nurturing love and understanding of the Holy Quran.</p>
+          <h2 style="font-size:28px;color:#064E3B;margin-bottom:8px;">Meet Your Teacher</h2>
+          <p style="color:#4B5563;">Every lesson at Noor E Quran Institute is taught personally by the founder. No substitutes and no rotating tutors.</p>
         </div>
 
-        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(250px, 1fr));gap:20px;">
-          <div style="background:#ffffff;border:1px solid #E5E7EB;border-radius:12px;padding:20px;">
-            <h3 style="font-size:18px;color:#064E3B;margin-top:0;">Qari Muhammad Usman</h3>
-            <p style="color:#6B7280;font-size:13px;margin-bottom:8px;">Senior Tajweed & Qira'at Specialist (Ijazah Holder)</p>
-            <p style="color:#4B5563;font-size:14px;">12+ years of international teaching experience specializing in advanced Tajweed rules and Makhaarij correction.</p>
-          </div>
-          <div style="background:#ffffff;border:1px solid #E5E7EB;border-radius:12px;padding:20px;">
-            <h3 style="font-size:18px;color:#064E3B;margin-top:0;">Ustadha Fatima Noor</h3>
-            <p style="color:#6B7280;font-size:13px;margin-bottom:8px;">Head of Female Quran & Children's Department</p>
-            <p style="color:#4B5563;font-size:14px;">Certified Alimah and Hafiza specializing in child psychology, gentle Noorani Qaida tutoring, and sisters' Tajweed circles.</p>
-          </div>
-          <div style="background:#ffffff;border:1px solid #E5E7EB;border-radius:12px;padding:20px;">
-            <h3 style="font-size:18px;color:#064E3B;margin-top:0;">Hafiz Abdul Rehman</h3>
-            <p style="color:#6B7280;font-size:13px;margin-bottom:8px;">Hifz Program Lead Coordinator</p>
-            <p style="color:#4B5563;font-size:14px;">Experienced Quran memorization mentor who has guided over 80 students to complete their full Quran Hifz successfully.</p>
+        <div style="max-width:560px;margin:0 auto;">
+          <div style="background:#ffffff;border:1px solid #E5E7EB;border-radius:12px;padding:24px;text-align:center;">
+            <h3 style="font-size:18px;color:#064E3B;margin-top:0;">M Muddasir Hameed</h3>
+            <p style="color:#6B7280;font-size:13px;margin-bottom:8px;">Founder &amp; Lead Tutor, Noor E Quran Institute</p>
+            <p style="color:#4B5563;font-size:14px;">Islamic scholar and researcher holding a Bachelor of Islamic Studies, an M.A.-equivalent (Aalmia) in Islamic &amp; Arabic Studies, and a post-graduate specialization in Islamic Jurisprudence (Takhassus fil Fiqh). He teaches Noorani Qaida, Nazra, Tajweed and Hifz to children and adults worldwide.</p>
+            <a href="/author/m-muddasir-hameed" style="color:#064E3B;font-weight:700;font-size:14px;text-decoration:none;">About M Muddasir Hameed →</a>
           </div>
         </div>
       </section>

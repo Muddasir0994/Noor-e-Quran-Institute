@@ -20,35 +20,45 @@ const CARDS = [
     title: 'Noorani Qaida',
     desc: 'Build a strong foundation with correct pronunciation.',
     image: '/images/unsplash/course-noorani-qaida.webp',
-    imageAlt: 'Young student learning Noorani Qaida on a wooden rehal'
+    imageAlt: 'Young student learning Noorani Qaida on a wooden rehal',
+    imageWidth: 800,
+    imageHeight: 601
   },
   {
     icon: BookOpen,
     title: 'Quran Reading',
     desc: 'Read the Quran fluently with confidence.',
     image: '/images/unsplash/course-quran-reading.webp',
-    imageAlt: 'Student reading the Holy Quran with focus'
+    imageAlt: 'Student reading the Holy Quran with focus',
+    imageWidth: 800,
+    imageHeight: 601
   },
   {
     icon: Certificate,
     title: 'Tajweed',
     desc: 'Learn the rules and beauty of correct recitation.',
     image: '/images/unsplash/course-tajweed.webp',
-    imageAlt: 'Two children in white caps reciting the Quran on rehals'
+    imageAlt: 'Two children in white caps reciting the Quran on rehals',
+    imageWidth: 800,
+    imageHeight: 450
   },
   {
     icon: GraduationCap,
     title: 'Hifz',
     desc: 'Memorize the Quran with expert guidance and support.',
     image: '/images/unsplash/course-hifz.webp',
-    imageAlt: 'Dedicated student memorizing the Holy Quran'
+    imageAlt: 'Dedicated student memorizing the Holy Quran',
+    imageWidth: 800,
+    imageHeight: 601
   },
   {
     icon: Church,
     title: 'Islamic Studies',
     desc: 'Explore Islamic knowledge and values for everyday life.',
     image: '/images/unsplash/course-islamic-studies.webp',
-    imageAlt: 'Beautiful mosque interior filled with light'
+    imageAlt: 'Beautiful mosque interior filled with light',
+    imageWidth: 800,
+    imageHeight: 547
   }
 ];
 
@@ -83,6 +93,8 @@ export const CoursesSection: React.FC<CoursesSectionProps> = ({ onOpenTrial }) =
                   <img
                     src={card.image}
                     alt={card.imageAlt}
+                    width={card.imageWidth}
+                    height={card.imageHeight}
                     loading="lazy"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />

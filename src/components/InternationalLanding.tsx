@@ -51,7 +51,7 @@ const COUNTRY_DATA: Record<CountryKey, CountryDetail> = {
     },
     features: [
       'Tailored for British Muslim school schedules',
-      'Vetted, gentle male & female tutors',
+      'Every class taught personally by the founder',
       'Interactive Noorani Qaida & Tajweed software',
       'Full 3-Day Free Trial with zero advance payment'
     ],

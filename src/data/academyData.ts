@@ -894,7 +894,7 @@ export const INITIAL_SEO_CONFIGS: PageSeoConfig[] = [
     pagePath: '/',
     pageName: 'Homepage',
     metaTitle: 'Learn Quran Online | 1-on-1 Online Quran Classes for Kids & Adults',
-    metaDescription: 'Learn Quran online with certified male & female tutors. 1-on-1 Tajweed, Hifz & Qaida classes for kids and adults. Book a free 3-day trial today!',
+    metaDescription: 'Learn Quran online in 1-on-1 live classes taught personally by the founder, M Muddasir Hameed. Tajweed, Hifz & Noorani Qaida for kids and adults. Book a free 3-day trial today!',
     keywords: ['online quran classes', 'learn quran online', 'female quran tutor', 'noor e quran institute', 'tajweed classes'],
     canonicalUrl: 'https://noorequraninstitute.me/'
   },
@@ -902,7 +902,7 @@ export const INITIAL_SEO_CONFIGS: PageSeoConfig[] = [
     pagePath: '/courses',
     pageName: 'Courses & Curricula',
     metaTitle: 'Online Quran Courses: Qaida, Nazra, Tajweed & Hifz Programs',
-    metaDescription: 'Explore online Quran courses: Noorani Qaida, Nazra, Tajweed & Hifz memorization with certified male & female tutors. 1-on-1 classes for kids & adults.',
+    metaDescription: 'Explore online Quran courses: Noorani Qaida, Nazra, Tajweed & Hifz memorization. 1-on-1 live classes for kids & adults, taught personally by the founder.',
     keywords: ['quran courses', 'noorani qaida course', 'hifz program online', 'tajweed course online'],
     canonicalUrl: 'https://noorequraninstitute.me/courses'
   },
@@ -917,8 +917,8 @@ export const INITIAL_SEO_CONFIGS: PageSeoConfig[] = [
   {
     pagePath: '/teachers',
     pageName: 'Faculty & Tutors',
-    metaTitle: 'Certified Online Quran Teachers | Male & Female Tutors',
-    metaDescription: 'Meet certified male & female Quran teachers — qualified Huffaz and Ijazah holders with years of online teaching experience. Book a free trial class!',
+    metaTitle: 'Meet Your Quran Teacher | M Muddasir Hameed',
+    metaDescription: 'Meet M Muddasir Hameed, founder of Noor E Quran Institute and your personal teacher for every 1-on-1 Quran class. Book a free trial class!',
     keywords: ['female quran teachers', 'certified quran tutor', 'online quran faculty', 'hafiz tutor'],
     canonicalUrl: 'https://noorequraninstitute.me/teachers'
   },

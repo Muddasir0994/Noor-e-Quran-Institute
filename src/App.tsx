@@ -336,7 +336,7 @@ function AppContent() {
   };
   const defaultSeo = {
     title: 'Learn Quran Online | 1-on-1 Online Quran Classes for Kids & Adults',
-    description: 'Learn Quran online with certified male & female tutors. 1-on-1 Tajweed, Hifz & Qaida classes for kids and adults. Book a free 3-day trial today!',
+    description: 'Learn Quran online in 1-on-1 live classes taught personally by the founder, M Muddasir Hameed. Tajweed, Hifz & Noorani Qaida for kids and adults. Book a free 3-day trial today!',
     canonicalUrl: `https://noorequraninstitute.me${currentPath === '/' ? '' : currentPath}`,
     structuredDataType: 'EducationalOrganization' as const
   };
