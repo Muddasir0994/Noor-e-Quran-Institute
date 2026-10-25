@@ -56,6 +56,7 @@ import a_short_surahs_every_child_should_memorize_first from './blog-data/short-
 import a_surah_al_fatihah_explained_families_guide from './blog-data/surah-al-fatihah-explained-families-guide';
 import a_tajweed_rules_for_beginners from './blog-data/tajweed-rules-for-beginners';
 import a_why_quran_revealed_arabic_language_guide from './blog-data/why-quran-revealed-arabic-language-guide';
+import a_how_to_enrol_child_online_quran_classes_guide from './blog-data/how-to-enrol-child-online-quran-classes-guide';
 import a_how_long_until_child_reads_quran_fluently from './blog-data/how-long-until-child-reads-quran-fluently';
 
 export interface BundleArticle {
@@ -113,4 +114,5 @@ export const BLOG_BUNDLE: BundleArticle[] = [
   a_tajweed_rules_for_beginners as BundleArticle,
   a_why_quran_revealed_arabic_language_guide as BundleArticle,
   a_how_long_until_child_reads_quran_fluently as BundleArticle,
+  a_how_to_enrol_child_online_quran_classes_guide as BundleArticle,
 ];
