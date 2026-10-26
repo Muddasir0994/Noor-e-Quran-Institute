@@ -60,6 +60,8 @@ import a_how_to_enrol_child_online_quran_classes_guide from './blog-data/how-to-
 import a_one_on_one_vs_group_quran_classes_parents_guide from './blog-data/one-on-one-vs-group-quran-classes-parents-guide';
 import a_how_long_until_child_reads_quran_fluently from './blog-data/how-long-until-child-reads-quran-fluently';
 
+import a_flexible_quran_class_timings_busy_families_guide from './blog-data/flexible-quran-class-timings-busy-families-guide';
+
 export interface BundleArticle {
   id: string; slug: string; title: string; metaDescription: string;
   featuredImage: string; content: string; category: string;
@@ -117,4 +119,5 @@ export const BLOG_BUNDLE: BundleArticle[] = [
   a_how_long_until_child_reads_quran_fluently as BundleArticle,
   a_how_to_enrol_child_online_quran_classes_guide as BundleArticle,
   a_one_on_one_vs_group_quran_classes_parents_guide as BundleArticle,
+  a_flexible_quran_class_timings_busy_families_guide as BundleArticle,
 ];
