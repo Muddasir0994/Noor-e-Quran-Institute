@@ -123,12 +123,21 @@ export const TeacherPortal: React.FC<TeacherPortalProps> = ({
   const todayAttendance = useTodayAttendance();
   const [attSaving, setAttSaving] = useState<string | null>(null);
 
+  // ⚡ Bolt: Memoize assigned student collections to avoid O(N*M) filtering on every render
+  const assignedEmails = useMemo(() => getAssignedStudentEmails(teacherEmail), [teacherEmail]);
+
+  const assignedKnownStudents = useMemo(() =>
+    KNOWN_STUDENTS.filter(s => assignedEmails.includes(s.email.toLowerCase())),
+  [assignedEmails]);
+
+  const assignedDirectoryStudents = useMemo(() =>
+    STUDENT_DIRECTORY.filter(s => assignedEmails.includes(s.email.toLowerCase())),
+  [assignedEmails]);
+
   // Messages (only assigned students)
   const unreadCount = useUnreadCount(teacherEmail || undefined);
-  const assignedEmails = getAssignedStudentEmails(teacherEmail);
-  const assignedStudents = KNOWN_STUDENTS.filter(s => assignedEmails.includes(s.email.toLowerCase()));
-  const [msgStudentEmail, setMsgStudentEmail] = useState<string>(assignedStudents[0]?.email || '');
-  const msgStudent = KNOWN_STUDENTS.find(s => s.email === msgStudentEmail) || assignedStudents[0];
+  const [msgStudentEmail, setMsgStudentEmail] = useState<string>(assignedKnownStudents[0]?.email || '');
+  const msgStudent = KNOWN_STUDENTS.find(s => s.email === msgStudentEmail) || assignedKnownStudents[0];
   const thread = useMessageThread(teacherEmail || undefined, msgStudentEmail || undefined);
   const [msgDraft, setMsgDraft] = useState('');
   const [msgSending, setMsgSending] = useState(false);
@@ -407,12 +416,10 @@ export const TeacherPortal: React.FC<TeacherPortalProps> = ({
               <p className="text-xs text-gray-500 mb-4">Live presence — green means the student is online right now.</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {(() => {
-                  const myStudentEmails = getAssignedStudentEmails(teacherEmail);
-                  const myStudents = KNOWN_STUDENTS.filter(s => myStudentEmails.includes(s.email.toLowerCase()));
-                  if (myStudents.length === 0) {
+                  if (assignedKnownStudents.length === 0) {
                     return <p className="text-xs text-gray-500 col-span-full">No students assigned to you yet.</p>;
                   }
-                  return myStudents.map(s => {
+                  return assignedKnownStudents.map(s => {
                   const entry = presenceList.find(p => p.email.toLowerCase() === s.email.toLowerCase());
                   const online = isOnline(entry);
                   const att = todayAttendance[s.email.toLowerCase()];
@@ -477,12 +484,10 @@ export const TeacherPortal: React.FC<TeacherPortalProps> = ({
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {(() => {
-                  const rosterEmails = getAssignedStudentEmails(teacherEmail);
-                  const roster = STUDENT_DIRECTORY.filter(s => rosterEmails.includes(s.email.toLowerCase()));
-                  if (roster.length === 0) {
+                  if (assignedDirectoryStudents.length === 0) {
                     return <p className="text-xs text-gray-500 col-span-full">No students assigned to you yet.</p>;
                   }
-                  return roster.map((s, idx) => (
+                  return assignedDirectoryStudents.map((s, idx) => (
                   <div key={s.id} className="bg-gray-50 p-5 rounded-2xl border border-gray-200 space-y-3">
                     <div className="flex justify-between items-start">
                       <div>
@@ -630,7 +635,7 @@ export const TeacherPortal: React.FC<TeacherPortalProps> = ({
             <p className="text-xs text-gray-500 mb-4">Chat directly with your students about lessons, homework and schedules.</p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
-                {KNOWN_STUDENTS.filter(s => getAssignedStudentEmails(teacherEmail).includes(s.email.toLowerCase())).map(s => (
+                {assignedKnownStudents.map(s => (
                   <button
                     key={s.email}
                     onClick={() => { setMsgStudentEmail(s.email); setMsgDraft(''); }}
