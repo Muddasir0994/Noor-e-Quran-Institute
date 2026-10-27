@@ -63,6 +63,7 @@ import a_how_long_until_child_reads_quran_fluently from './blog-data/how-long-un
 import a_flexible_quran_class_timings_busy_families_guide from './blog-data/flexible-quran-class-timings-busy-families-guide';
 import a_how_many_quran_classes_per_week_parents_guide from './blog-data/how-many-quran-classes-per-week-parents-guide';
 import a_does_child_need_arabic_to_learn_quran_guide from './blog-data/does-child-need-arabic-to-learn-quran-guide';
+import a_when_to_change_child_quran_teacher_guide from './blog-data/when-to-change-child-quran-teacher-guide';
 
 export interface BundleArticle {
   id: string; slug: string; title: string; metaDescription: string;
@@ -124,4 +125,5 @@ export const BLOG_BUNDLE: BundleArticle[] = [
   a_flexible_quran_class_timings_busy_families_guide as BundleArticle,
   a_how_many_quran_classes_per_week_parents_guide as BundleArticle,
   a_does_child_need_arabic_to_learn_quran_guide as BundleArticle,
+  a_when_to_change_child_quran_teacher_guide as BundleArticle,
 ];
