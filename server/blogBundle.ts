@@ -66,6 +66,7 @@ import a_does_child_need_arabic_to_learn_quran_guide from './blog-data/does-chil
 import a_when_to_change_child_quran_teacher_guide from './blog-data/when-to-change-child-quran-teacher-guide';
 import a_inside_one_on_one_quran_lesson_parents_guide from './blog-data/inside-one-on-one-quran-lesson-parents-guide';
 import a_first_30_days_quran_learning_parents_guide from './blog-data/first-30-days-quran-learning-parents-guide';
+import a_questions_to_ask_before_hiring_online_quran_teacher_guide from './blog-data/questions-to-ask-before-hiring-online-quran-teacher-guide';
 
 export interface BundleArticle {
   id: string; slug: string; title: string; metaDescription: string;
@@ -130,4 +131,5 @@ export const BLOG_BUNDLE: BundleArticle[] = [
   a_when_to_change_child_quran_teacher_guide as BundleArticle,
   a_inside_one_on_one_quran_lesson_parents_guide as BundleArticle,
   a_first_30_days_quran_learning_parents_guide as BundleArticle,
+  a_questions_to_ask_before_hiring_online_quran_teacher_guide as BundleArticle,
 ];
