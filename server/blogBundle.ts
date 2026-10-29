@@ -68,6 +68,7 @@ import a_inside_one_on_one_quran_lesson_parents_guide from './blog-data/inside-o
 import a_first_30_days_quran_learning_parents_guide from './blog-data/first-30-days-quran-learning-parents-guide';
 import a_questions_to_ask_before_hiring_online_quran_teacher_guide from './blog-data/questions-to-ask-before-hiring-online-quran-teacher-guide';
 import a_how_to_track_child_quran_progress_parents_guide from './blog-data/how-to-track-child-quran-progress-parents-guide';
+import a_preparing_child_first_quran_class_parents_checklist from './blog-data/preparing-child-first-quran-class-parents-checklist';
 
 export interface BundleArticle {
   id: string; slug: string; title: string; metaDescription: string;
@@ -134,4 +135,5 @@ export const BLOG_BUNDLE: BundleArticle[] = [
   a_first_30_days_quran_learning_parents_guide as BundleArticle,
   a_questions_to_ask_before_hiring_online_quran_teacher_guide as BundleArticle,
   a_how_to_track_child_quran_progress_parents_guide as BundleArticle,
+  a_preparing_child_first_quran_class_parents_checklist as BundleArticle,
 ];
