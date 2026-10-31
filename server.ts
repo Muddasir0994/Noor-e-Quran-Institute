@@ -14,7 +14,7 @@ import {
   syncDocToFirestore,
   deleteDocFromFirestore,
 } from './server/firestore.js';
-import { startArticleSeoCache } from './server/seoCache.js';
+import { startArticleSeoCache, flushArticleSeoCache } from './server/seoCache.js';
 import { getBlogSnapshot } from './server/blogSnapshot.js';
 import { BLOG_BUNDLE } from './server/blogBundle.js';
 import { 
@@ -2412,7 +2412,7 @@ app.post('/api/upload-image', requireAdmin, async (req: Request, res: Response) 
         const buffer = Buffer.from(matches[2], 'base64');
         const localFileName = `${fileName}.${ext}`;
         const filePath = path.join(process.cwd(), 'public', 'uploads', localFileName);
-        fs.writeFileSync(filePath, buffer);
+        await fs.promises.writeFile(filePath, buffer);
         return res.json({ success: true, imageUrl: `/uploads/${localFileName}` });
       }
     }
@@ -2601,7 +2601,7 @@ async function startServer() {
     });
   }
 
-  app.listen(PORT, '0.0.0.0', () => {
+  const server = app.listen(PORT, '0.0.0.0', () => {
     console.log(`Noor-e-Quran Institute Server running on http://0.0.0.0:${PORT}`);
 
     // Article SEO synced cache (BUG-1/BUG-5): warm from disk, refresh from
@@ -2630,6 +2630,36 @@ async function startServer() {
       }
     }, PING_INTERVAL_MS);
   });
+
+  const gracefulShutdown = async (signal: string) => {
+    console.log(`\nReceived ${signal}. Shutting down gracefully...`);
+    // Fallback timeout to ensure process exits even if server fails to close or flush hangs
+    setTimeout(() => {
+      console.error('Graceful shutdown timeout. Forcing exit.');
+      process.exit(1);
+    }, 10000);
+
+    if (typeof server.closeAllConnections === 'function') {
+      server.closeAllConnections();
+    }
+    server.close(async () => {
+      console.log('HTTP server closed.');
+      try {
+        await Promise.all([
+          dataStore.flush(),
+          flushArticleSeoCache()
+        ]);
+        console.log('DataStore and SEO Cache flushed to disk.');
+        process.exit(0);
+      } catch (err) {
+        console.error('Error during shutdown:', err);
+        process.exit(1);
+      }
+    });
+  };
+
+  process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+  process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 }
 
 startServer();

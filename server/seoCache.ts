@@ -41,6 +41,8 @@ const DEFAULT_REFRESH_MINUTES = 15;
 let cache = new Map<string, ArticleSeoEntry>();
 let lastRefreshAt: number | null = null;
 let timer: NodeJS.Timeout | null = null;
+let pendingSeoData: { refreshedAt: number; entries: ArticleSeoEntry[] } | null = null;
+let writeSeoPromise: Promise<void> | null = null;
 
 const stripTags = (s: string) => s.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
 
@@ -100,15 +102,30 @@ export function loadCacheFromDisk(): number {
   return cache.size;
 }
 
+async function processSeoWriteQueue() {
+  while (pendingSeoData) {
+    const payload = pendingSeoData;
+    pendingSeoData = null; // Clear so new saves can queue up
+    try {
+      fs.mkdirSync(path.dirname(CACHE_FILE), { recursive: true });
+      await fs.promises.writeFile(CACHE_FILE, JSON.stringify(payload));
+    } catch (e: any) {
+      console.warn('[seoCache] Could not persist disk cache:', e.message);
+    }
+  }
+  writeSeoPromise = null;
+}
+
 function persistCacheToDisk(): void {
-  try {
-    fs.mkdirSync(path.dirname(CACHE_FILE), { recursive: true });
-    fs.writeFileSync(
-      CACHE_FILE,
-      JSON.stringify({ refreshedAt: Date.now(), entries: [...cache.values()] })
-    );
-  } catch (e: any) {
-    console.warn('[seoCache] Could not persist disk cache:', e.message);
+  pendingSeoData = { refreshedAt: Date.now(), entries: [...cache.values()] };
+  if (!writeSeoPromise) {
+    writeSeoPromise = processSeoWriteQueue();
+  }
+}
+
+export async function flushArticleSeoCache(): Promise<void> {
+  while (writeSeoPromise) {
+    await writeSeoPromise;
   }
 }
 
