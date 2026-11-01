@@ -14,7 +14,7 @@ import {
   syncDocToFirestore,
   deleteDocFromFirestore,
 } from './server/firestore.js';
-import { startArticleSeoCache } from './server/seoCache.js';
+import { startArticleSeoCache, flushArticleSeoCache } from './server/seoCache.js';
 import { getBlogSnapshot } from './server/blogSnapshot.js';
 import { BLOG_BUNDLE } from './server/blogBundle.js';
 import { 
@@ -2601,7 +2601,7 @@ async function startServer() {
     });
   }
 
-  app.listen(PORT, '0.0.0.0', () => {
+  const server = app.listen(PORT, '0.0.0.0', () => {
     console.log(`Noor-e-Quran Institute Server running on http://0.0.0.0:${PORT}`);
 
     // Article SEO synced cache (BUG-1/BUG-5): warm from disk, refresh from
@@ -2630,6 +2630,43 @@ async function startServer() {
       }
     }, PING_INTERVAL_MS);
   });
+
+  // Graceful shutdown handling
+  const handleShutdown = () => {
+    console.log('Received shutdown signal, initiating graceful shutdown...');
+
+    const timeout = setTimeout(() => {
+      console.error('Graceful shutdown timeout exceeded, forcing exit.');
+      process.exit(1);
+    }, 10000);
+
+    if (typeof server.closeAllConnections === 'function') {
+      server.closeAllConnections();
+    }
+    server.close(async (err) => {
+      if (err) {
+        console.error('Error during server close:', err);
+      }
+
+      try {
+        console.log('Awaiting pending file writes...');
+        await Promise.all([
+          dataStore.flush(),
+          flushArticleSeoCache()
+        ]);
+        console.log('All pending file writes completed.');
+      } catch (flushErr) {
+        console.error('Error during flush operations:', flushErr);
+      } finally {
+        clearTimeout(timeout);
+        console.log('Graceful shutdown complete. Exiting.');
+        process.exit(0);
+      }
+    });
+  };
+
+  process.on('SIGINT', handleShutdown);
+  process.on('SIGTERM', handleShutdown);
 }
 
 startServer();

@@ -100,15 +100,35 @@ export function loadCacheFromDisk(): number {
   return cache.size;
 }
 
+let pendingSeoData: string | null = null;
+let writeSeoPromise: Promise<void> | null = null;
+
+async function asyncPersistCacheToDisk() {
+  while (pendingSeoData) {
+    const payload = pendingSeoData;
+    pendingSeoData = null;
+    try {
+      if (!fs.existsSync(path.dirname(CACHE_FILE))) {
+        fs.mkdirSync(path.dirname(CACHE_FILE), { recursive: true });
+      }
+      await fs.promises.writeFile(CACHE_FILE, payload);
+    } catch (e: any) {
+      console.warn('[seoCache] Could not async persist disk cache:', e.message);
+    }
+  }
+  writeSeoPromise = null;
+}
+
 function persistCacheToDisk(): void {
-  try {
-    fs.mkdirSync(path.dirname(CACHE_FILE), { recursive: true });
-    fs.writeFileSync(
-      CACHE_FILE,
-      JSON.stringify({ refreshedAt: Date.now(), entries: [...cache.values()] })
-    );
-  } catch (e: any) {
-    console.warn('[seoCache] Could not persist disk cache:', e.message);
+  pendingSeoData = JSON.stringify({ refreshedAt: Date.now(), entries: [...cache.values()] });
+  if (!writeSeoPromise) {
+    writeSeoPromise = asyncPersistCacheToDisk();
+  }
+}
+
+export async function flushArticleSeoCache(): Promise<void> {
+  while (writeSeoPromise) {
+    await writeSeoPromise;
   }
 }
 
