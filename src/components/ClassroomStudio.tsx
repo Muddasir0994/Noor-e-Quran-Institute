@@ -796,6 +796,28 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
   }, [duaCategory]);
 
   // ------------------------------------------
+  // LIBRARY MEMOIZATION
+  // ------------------------------------------
+  // ⚡ Bolt: Memoize filtered libraries to prevent O(N) array filtering on every render
+  // especially critical during audio playback where state changes frequently
+  const filteredTajweedRules = useMemo(() => {
+    return TAJWEED_RULES.filter(r => tajweedCategory === 'All' || r.category === tajweedCategory);
+  }, [tajweedCategory]);
+
+  const filteredIslamicBooks = useMemo(() => {
+    return ISLAMIC_BOOKS.filter(b => bookCategory === 'All' || b.category === bookCategory);
+  }, [bookCategory]);
+
+  const featuredUrduTafsirs = useMemo(() => {
+    return URDU_TAFSIRS.filter(t => t.featured);
+  }, []); // Static filter, depends on nothing
+
+  const regularUrduTafsirs = useMemo(() => {
+    return URDU_TAFSIRS.filter(t => !t.featured);
+  }, []); // Static filter, depends on nothing
+
+
+  // ------------------------------------------
   // 5. SALAH GUIDE STATE
   // ------------------------------------------
   // 5. SALAH GUIDE STATE
@@ -2390,7 +2412,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
             </div>
 
             <div className="space-y-3">
-              {TAJWEED_RULES.filter(r => tajweedCategory === 'All' || r.category === tajweedCategory).map(rule => {
+              {filteredTajweedRules.map(rule => {
                 const expanded = expandedTajweedRule === rule.id;
                 return (
                   <div key={rule.id} className="bg-white rounded-2xl border border-gray-200 shadow-xs overflow-hidden">
@@ -2469,7 +2491,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
             </div>
 
             <div className="grid sm:grid-cols-2 gap-4">
-              {ISLAMIC_BOOKS.filter(b => bookCategory === 'All' || b.category === bookCategory).map(book => (
+              {filteredIslamicBooks.map(book => (
                 <div key={book.id} className="bg-white rounded-2xl border border-gray-200 shadow-xs p-5 flex flex-col">
                   <div className="flex items-start justify-between gap-2 mb-2">
                     <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#13263D] bg-emerald-100 px-2.5 py-1 rounded-full border border-emerald-200">
@@ -2517,7 +2539,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
               </p>
             </div>
 
-            {URDU_TAFSIRS.filter(t => t.featured).map(tafsir => (
+            {featuredUrduTafsirs.map(tafsir => (
               <div key={tafsir.id} className="rounded-2xl border-2 border-[#D4A72C] bg-gradient-to-br from-amber-50 via-white to-emerald-50 p-5 sm:p-7 shadow-xs">
                 <span className="inline-block text-[10px] font-extrabold uppercase tracking-widest text-[#13263D] bg-[#D4A72C] px-3 py-1 rounded-full mb-3">
                   ★ Featured Tafsir
@@ -2549,7 +2571,7 @@ export const ClassroomStudio: React.FC<ClassroomStudioProps> = ({
             ))}
 
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {URDU_TAFSIRS.filter(t => !t.featured).map(tafsir => (
+              {regularUrduTafsirs.map(tafsir => (
                 <div key={tafsir.id} className="bg-white rounded-2xl border border-gray-200 shadow-xs p-5 flex flex-col">
                   <h4 className="text-sm sm:text-base font-bold text-[#13263D]">{tafsir.title}</h4>
                   <p className="font-arabic text-lg text-emerald-800 mt-0.5">{tafsir.arabicTitle}</p>
