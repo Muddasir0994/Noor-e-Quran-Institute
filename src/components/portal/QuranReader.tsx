@@ -218,7 +218,7 @@ export const QuranReader: React.FC = () => {
 
             {/* Ayah display */}
             <div className="bg-[#F5F0E6] rounded-2xl border border-[#E7DBC2] p-6 space-y-4">
-              <p dir="rtl" lang="ar" className="text-3xl leading-[2.2] text-right text-gray-900 font-[Amiri]">
+              <p dir="rtl" lang="ar" className="text-3xl leading-[2.2] text-right text-gray-900 font-arabic">
                 {ayah.arabic}
               </p>
               <p className="text-sm text-gray-700 leading-relaxed border-t border-[#E7DBC2] pt-4">
