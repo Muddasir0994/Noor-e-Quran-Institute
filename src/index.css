@@ -9,11 +9,20 @@
   font-display: swap;
 }
 
+/* Self-hosted Arabic Quran font: Al Qalam Quran Majeed Web (bundled with the site, never loaded from a CDN) */
+@font-face {
+  font-family: 'Al Qalam Quran Majeed Web';
+  src: url('/fonts/al-qalam-quran.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 @theme {
   --font-editorial: 'Cormorant Garamond', Georgia, serif;
   --font-heading: 'Cormorant Garamond', Georgia, serif;
   --font-sans: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-arabic: 'Amiri', 'Traditional Arabic', serif;
+  --font-arabic: 'Al Qalam Quran Majeed Web', 'Amiri', 'Traditional Arabic', serif;
   --font-urdu: 'Jameel Noori Nastaleeq', serif;
 }
 
@@ -22,7 +31,7 @@
     --font-heading: 'Cormorant Garamond', Georgia, serif;
     --font-editorial: 'Cormorant Garamond', Georgia, serif;
     --font-body: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    --font-arabic: 'Amiri', 'Traditional Arabic', serif;
+    --font-arabic: 'Al Qalam Quran Majeed Web', 'Amiri', 'Traditional Arabic', serif;
     --font-urdu: 'Jameel Noori Nastaleeq', serif;
     
     /* Teal Dark Design System (2026-10-19) */
@@ -82,7 +91,7 @@
 
   .font-arabic, [lang="ar"] {
     font-family: var(--font-arabic);
-    line-height: 1.8;
+    line-height: 2;
   }
 
   .font-urdu, [lang="ur"] {
