@@ -134,6 +134,11 @@ export const Footer: React.FC<FooterProps> = ({
                 </Link>
               </li>
               <li>
+                <Link to="/hyperbeam-demo" className="hover:text-white transition-colors">
+                  Shared Browser Demo
+                </Link>
+              </li>
+              <li>
                 <button
                   type="button"
                   onClick={() => window.dispatchEvent(new Event('open-public-chat'))}

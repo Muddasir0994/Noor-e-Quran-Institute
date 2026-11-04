@@ -386,6 +386,17 @@ export const KNOWN_STATIC_ROUTES: Record<string, PageMeta> = {
       { name: 'FAQ', item: `${ACADEMY_BASE_URL}/faq` }
     ]
   },
+  '/hyperbeam-demo': {
+    title: 'Shared Browser Demo | Learn Quran Together Online, Hyperbeam | Noor E Quran Institute',
+    description: 'Try our Hyperbeam shared browser demo: teacher and student open one cloud browser together to read Quran, hadith and lesson videos in sync during live 1-on-1 classes.',
+    canonical: `${ACADEMY_BASE_URL}/hyperbeam-demo`,
+    ogType: 'website',
+    ogImage: `${ACADEMY_BASE_URL}/logo.webp`,
+    breadcrumbs: [
+      { name: 'Home', item: `${ACADEMY_BASE_URL}/` },
+      { name: 'Shared Browser Demo', item: `${ACADEMY_BASE_URL}/hyperbeam-demo` }
+    ]
+  },
   '/privacy-policy': {
     title: 'Privacy Policy | Noor E Quran Institute',
     description: 'How Noor E Quran Institute collects, uses and protects student and family information — including child privacy and safe 1-on-1 learning.',

@@ -537,6 +537,129 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', academy: 'Noor-e-Quran Institute', timestamp: new Date().toISOString() });
 });
 
+// ---------------------------------------------------------------------------
+// Hyperbeam shared browser demo (/hyperbeam-demo)
+// The API key stays on the server (Render env var HYPERBEAM_API_KEY) and is
+// never sent to the browser. Clients only receive the session embed_url.
+// The admin_token returned by Hyperbeam is deliberately NOT forwarded.
+// ---------------------------------------------------------------------------
+const HYPERBEAM_ALLOWED_START_HOSTS = new Set([
+  'quran.com',
+  'www.quran.com',
+  'sunnah.com',
+  'www.sunnah.com',
+  'noorequraninstitute.me',
+  'www.noorequraninstitute.me',
+  'youtube.com',
+  'www.youtube.com',
+  'm.youtube.com',
+]);
+
+const hyperbeamCreateLimits = new Map<string, { count: number; resetAt: number }>();
+const HYPERBEAM_CREATE_WINDOW_MS = 15 * 60 * 1000;
+const HYPERBEAM_CREATE_MAX = 5; // 5 session starts per IP per 15 minutes
+
+function checkHyperbeamCreateLimit(req: Request, res: Response, next: NextFunction) {
+  const ip = clientIp(req);
+  const now = Date.now();
+  let rec = hyperbeamCreateLimits.get(ip);
+  if (!rec || now > rec.resetAt) {
+    rec = { count: 0, resetAt: now + HYPERBEAM_CREATE_WINDOW_MS };
+    hyperbeamCreateLimits.set(ip, rec);
+  }
+  rec.count += 1;
+  if (rec.count > HYPERBEAM_CREATE_MAX) {
+    const retryAfter = Math.max(1, Math.ceil((rec.resetAt - now) / 1000));
+    res.setHeader('Retry-After', retryAfter.toString());
+    return res.status(429).json({ error: 'Too many demo sessions started. Please wait a few minutes and try again.' });
+  }
+  next();
+}
+
+app.get('/api/hyperbeam/status', (req, res) => {
+  res.json({ success: true, configured: !!process.env.HYPERBEAM_API_KEY });
+});
+
+app.post('/api/hyperbeam/session', checkHyperbeamCreateLimit, async (req, res) => {
+  const apiKey = process.env.HYPERBEAM_API_KEY || '';
+  if (!apiKey) {
+    return res.status(503).json({
+      success: false,
+      configured: false,
+      error: 'Hyperbeam is not connected yet. Add HYPERBEAM_API_KEY in the Render dashboard to activate this demo.',
+    });
+  }
+
+  let startUrl = 'https://quran.com';
+  const requested = typeof req.body?.start_url === 'string' ? req.body.start_url.trim() : '';
+  if (requested) {
+    try {
+      const parsed = new URL(requested);
+      if (parsed.protocol !== 'https:' || !HYPERBEAM_ALLOWED_START_HOSTS.has(parsed.hostname.toLowerCase())) {
+        return res.status(400).json({ error: 'That start page is not on the demo allowlist. Pick one of the preset lesson pages.' });
+      }
+      startUrl = parsed.toString();
+    } catch {
+      return res.status(400).json({ error: 'Invalid start URL.' });
+    }
+  }
+
+  try {
+    const hbRes = await fetch('https://engine.hyperbeam.com/v0/vm', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        start_url: startUrl,
+        quality: { mode: 'sharp' },
+        width: 1280,
+        height: 720,
+        timeout: {
+          absolute: 3600,
+          inactive: 900,
+          offline: 300,
+        },
+      }),
+      signal: AbortSignal.timeout(20000),
+    });
+    const data: any = await hbRes.json().catch(() => ({}));
+    if (!hbRes.ok || !data?.embed_url || !data?.session_id) {
+      console.warn('Hyperbeam session start failed:', hbRes.status, data?.message || data?.error || '');
+      return res.status(502).json({ error: 'Hyperbeam could not start a session right now. Please try again in a moment.' });
+    }
+    return res.json({ success: true, configured: true, session_id: data.session_id, embed_url: data.embed_url });
+  } catch (err: any) {
+    console.warn('Hyperbeam session start error:', err?.message || err);
+    return res.status(502).json({ error: 'Could not reach Hyperbeam. Please try again in a moment.' });
+  }
+});
+
+app.delete('/api/hyperbeam/session/:sessionId', checkPublicRateLimit, async (req, res) => {
+  const apiKey = process.env.HYPERBEAM_API_KEY || '';
+  const sessionId = req.params.sessionId || '';
+  if (!/^[A-Za-z0-9-]{8,80}$/.test(sessionId)) {
+    return res.status(400).json({ error: 'Invalid session id.' });
+  }
+  if (!apiKey) {
+    return res.status(503).json({ success: false, configured: false, error: 'Hyperbeam is not connected yet.' });
+  }
+  try {
+    const hbRes = await fetch(`https://engine.hyperbeam.com/v0/vm/${encodeURIComponent(sessionId)}`, {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${apiKey}` },
+      signal: AbortSignal.timeout(15000),
+    });
+    if (!hbRes.ok && hbRes.status !== 404) {
+      return res.status(502).json({ error: 'Hyperbeam could not end that session. It will end on its own timeout.' });
+    }
+    return res.json({ success: true });
+  } catch (err: any) {
+    return res.status(502).json({ error: 'Could not reach Hyperbeam. The session will end on its own timeout.' });
+  }
+});
+
 // Courses
 app.get('/api/courses', (req, res) => {
   try {

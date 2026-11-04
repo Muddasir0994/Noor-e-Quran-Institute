@@ -29,6 +29,7 @@ const BlogPostPage = lazy(() => import('./pages/BlogPostPage').then(m => ({ defa
 const AuthorPage = lazy(() => import('./pages/AuthorPage').then(m => ({ default: m.AuthorPage })));
 const ContactPage = lazy(() => import('./pages/ContactPage').then(m => ({ default: m.ContactPage })));
 const FAQPage = lazy(() => import('./pages/FAQPage').then(m => ({ default: m.FAQPage })));
+const HyperbeamDemoPage = lazy(() => import('./pages/HyperbeamDemoPage').then(m => ({ default: m.HyperbeamDemoPage })));
 const LegalPage = lazy(() => import('./pages/LegalPage').then(m => ({ default: m.LegalPage })));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage').then(m => ({ default: m.NotFoundPage })));
 
@@ -326,6 +327,7 @@ function AppContent() {
     '/about': 'about',
     '/about-us': 'about',
     '/faq': 'faq',
+    '/hyperbeam-demo': 'hyperbeam-demo',
     '/blog': 'blogs',
     '/blogs': 'blogs',
     '/articles': 'blogs',
@@ -560,6 +562,10 @@ function AppContent() {
             <Route path="/online-quran-classes-canada" element={<InternationalLanding countryKey="canada" onOpenTrial={handleOpenTrial} onOpenEnroll={handleOpenEnroll} onSelectCountry={(c) => navigate(`/online-quran-classes-${c}`)} />} />
             <Route path="/online-quran-classes-australia" element={<InternationalLanding countryKey="australia" onOpenTrial={handleOpenTrial} onOpenEnroll={handleOpenEnroll} onSelectCountry={(c) => navigate(`/online-quran-classes-${c}`)} />} />
             <Route path="/online-quran-classes-pakistan" element={<InternationalLanding countryKey="pakistan" onOpenTrial={handleOpenTrial} onOpenEnroll={handleOpenEnroll} onSelectCountry={(c) => navigate(`/online-quran-classes-${c}`)} />} />
+
+            {/* Hyperbeam shared browser demo */}
+            <Route path="/hyperbeam-demo" element={<HyperbeamDemoPage />} />
+            <Route path="/shared-browser-demo" element={<Navigate to="/hyperbeam-demo" replace />} />
 
             {/* 12. Interactive Classroom Studio */}
             <Route

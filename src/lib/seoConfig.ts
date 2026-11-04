@@ -267,6 +267,24 @@ export const SEO_PAGE_MAP: Record<string, SEORouteMeta> = {
       { name: 'FAQ', item: `${ACADEMY_BASE_URL}/faq` }
     ]
   },
+  'hyperbeam-demo': {
+    path: '/hyperbeam-demo',
+    title: 'Shared Browser Demo | Learn Quran Together Online, Hyperbeam',
+    description: 'Try our Hyperbeam shared browser demo: teacher and student open one cloud browser together to read Quran, hadith and lesson videos in sync during live 1-on-1 classes.',
+    h1: 'Learn Together in One Shared Browser',
+    primaryKeyword: 'Shared Browser Quran Class',
+    secondaryKeywords: [
+      'Hyperbeam Demo',
+      'Online Quran Class Technology',
+      'Learn Quran Together Online'
+    ],
+    canonical: `${ACADEMY_BASE_URL}/hyperbeam-demo`,
+    ogType: 'website',
+    breadcrumbs: [
+      { name: 'Home', item: `${ACADEMY_BASE_URL}/` },
+      { name: 'Shared Browser Demo', item: `${ACADEMY_BASE_URL}/hyperbeam-demo` }
+    ]
+  },
   articles: {
     path: '/blog',
     title: 'Islamic Educational Blog & Quran Learning Guides | Noor E Quran Institute',
