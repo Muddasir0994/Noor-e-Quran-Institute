@@ -635,9 +635,20 @@ app.post('/api/hyperbeam/session', checkHyperbeamCreateLimit, async (req, res) =
       }),
       signal: AbortSignal.timeout(20000),
     });
-    const data: any = await hbRes.json().catch(() => ({}));
+    const rawBody = await hbRes.text().catch(() => '');
+    let data: any = {};
+    try {
+      data = JSON.parse(rawBody);
+    } catch {
+      data = {};
+    }
     if (!hbRes.ok || !data?.embed_url || !data?.session_id) {
-      console.warn('Hyperbeam session start failed:', hbRes.status, data?.message || data?.error || '');
+      // Log the provider body (never the API key) so failures are diagnosable:
+      // a 401 points at the key, a 500 with a body points at the account/plan.
+      const detail = String(data?.message || data?.error || rawBody || '')
+        .replace(/\s+/g, ' ')
+        .slice(0, 300);
+      console.warn('Hyperbeam session start failed:', hbRes.status, detail);
       return res.status(502).json({ error: 'Hyperbeam could not start a session right now. Please try again in a moment.' });
     }
     return res.json({ success: true, configured: true, session_id: data.session_id, embed_url: data.embed_url });
