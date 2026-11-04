@@ -2746,7 +2746,7 @@ async function startServer() {
     });
   }
 
-  app.listen(PORT, '0.0.0.0', () => {
+  const server = app.listen(PORT, '0.0.0.0', () => {
     console.log(`Noor-e-Quran Institute Server running on http://0.0.0.0:${PORT}`);
 
     // Article SEO synced cache (BUG-1/BUG-5): warm from disk, refresh from
@@ -2775,6 +2775,24 @@ async function startServer() {
       }
     }, PING_INTERVAL_MS);
   });
+
+  const shutdown = async () => {
+    console.log('Gracefully shutting down...');
+    if (typeof server.closeAllConnections === 'function') server.closeAllConnections();
+    server.close(async () => {
+      try {
+        const timeout = setTimeout(() => process.exit(1), 10000);
+        await dataStore.flush();
+        clearTimeout(timeout);
+        process.exit(0);
+      } catch (e) {
+        process.exit(1);
+      }
+    });
+  };
+
+  process.on('SIGTERM', shutdown);
+  process.on('SIGINT', shutdown);
 }
 
 startServer();

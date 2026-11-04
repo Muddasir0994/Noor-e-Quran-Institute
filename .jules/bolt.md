@@ -1,0 +1,3 @@
+## 2024-03-20 - Asynchronous non-blocking concurrency file writes for Singletons
+**Learning:** For singletons executing continuous file writes on highly concurrent routes, using `fs.writeFileSync` blocks the entire Node.js main thread loop causing severe performance problems. Changing to `fs.promises.writeFile` without concurrency checks will cause massive data overwrites and file corruption under race conditions.
+**Action:** Always implement a lock and queue via a `while (this.pendingData)` loop, unconditionally assigning latest cache values, and gracefully drain it asynchronously. Ensure graceful shutdown flushing hooks are added for data integrity using `server.closeAllConnections()`.
