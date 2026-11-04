@@ -614,8 +614,19 @@ app.post('/api/hyperbeam/session', checkHyperbeamCreateLimit, async (req, res) =
       body: JSON.stringify({
         start_url: startUrl,
         quality: { mode: 'sharp' },
-        width: 1280,
-        height: 720,
+        width: 1600,
+        height: 900,
+        // Full control for every participant: mouse/keyboard, tabs, resize,
+        // copy out of the shared browser, file upload/download, live cursors.
+        default_roles: [
+          'control',
+          'chrome_apis',
+          'resize',
+          'clipboard_copy',
+          'file_upload',
+          'file_download',
+          'cursor_data',
+        ],
         timeout: {
           absolute: 3600,
           inactive: 900,
