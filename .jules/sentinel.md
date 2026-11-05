@@ -7,3 +7,7 @@
 **Vulnerability:** Various backend endpoints (`/api/book-trial`, `/api/enroll`, `/api/contact`) collected unvalidated user inputs (such as names, messages, notes) and directly interpolated them into HTML strings sent as emails via Nodemailer to the admin.
 **Learning:** Even though the content is rendered in an email client and not a web browser, unescaped user input in HTML emails constitutes an HTML Injection vulnerability. This could allow an attacker to inject malicious links, tracking pixels, or misleading content that appears legitimate within an administrative alert.
 **Prevention:** Always globally define and apply an HTML escaping utility (e.g., `escapeHtml`) to all user-supplied data before interpolating it into HTML email bodies.
+## 2024-05-18 - DOM-based XSS in Text Extraction
+**Vulnerability:** Untrusted HTML content was assigned directly to a dynamically created DOM element's `innerHTML` property to extract text context.
+**Learning:** Assigning untrusted input to `element.innerHTML` evaluates and executes malicious scripts present in the input, leading to a DOM-based XSS vulnerability even when the element is never appended to the document's body.
+**Prevention:** When extracting text from an HTML string without rendering it, use `new DOMParser().parseFromString(html, 'text/html').body.textContent` instead of creating an element and setting its `innerHTML`.
