@@ -14,7 +14,7 @@ import {
   syncDocToFirestore,
   deleteDocFromFirestore,
 } from './server/firestore.js';
-import { startArticleSeoCache } from './server/seoCache.js';
+import { startArticleSeoCache, flushArticleSeoCache } from './server/seoCache.js';
 import { getBlogSnapshot } from './server/blogSnapshot.js';
 import { BLOG_BUNDLE } from './server/blogBundle.js';
 import { 
@@ -2746,7 +2746,7 @@ async function startServer() {
     });
   }
 
-  app.listen(PORT, '0.0.0.0', () => {
+  const server = app.listen(PORT, '0.0.0.0', () => {
     console.log(`Noor-e-Quran Institute Server running on http://0.0.0.0:${PORT}`);
 
     // Article SEO synced cache (BUG-1/BUG-5): warm from disk, refresh from
@@ -2775,6 +2775,41 @@ async function startServer() {
       }
     }, PING_INTERVAL_MS);
   });
+
+  const gracefulShutdown = (signal: string) => {
+    console.log(`\nReceived ${signal}. Starting graceful shutdown...`);
+    if (typeof server.closeAllConnections === 'function') {
+      server.closeAllConnections();
+    }
+    server.close(async () => {
+      console.log('HTTP server closed. Flushing asynchronous operations...');
+      // Fallback timeout to ensure we actually exit if callbacks hang
+      setTimeout(() => {
+        console.error('Graceful shutdown timed out (10s). Forcing exit.');
+        process.exit(1);
+      }, 10000).unref();
+
+      try {
+        await dataStore.flush();
+        console.log('DataStore flushed.');
+      } catch (e) {
+        console.error('Error flushing dataStore:', e);
+      }
+
+      try {
+        await flushArticleSeoCache();
+        console.log('SEO Cache flushed.');
+      } catch (e) {
+        console.error('Error flushing seoCache:', e);
+      }
+
+      console.log('Graceful shutdown completed.');
+      process.exit(0);
+    });
+  };
+
+  process.on('SIGTERM', gracefulShutdown);
+  process.on('SIGINT', gracefulShutdown);
 }
 
 startServer();

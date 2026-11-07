@@ -100,16 +100,32 @@ export function loadCacheFromDisk(): number {
   return cache.size;
 }
 
-function persistCacheToDisk(): void {
-  try {
-    fs.mkdirSync(path.dirname(CACHE_FILE), { recursive: true });
-    fs.writeFileSync(
-      CACHE_FILE,
-      JSON.stringify({ refreshedAt: Date.now(), entries: [...cache.values()] })
-    );
-  } catch (e: any) {
-    console.warn('[seoCache] Could not persist disk cache:', e.message);
+let seoWritePromise: Promise<void> | null = null;
+let pendingSeoData: { refreshedAt: number, entries: ArticleSeoEntry[] } | null = null;
+
+export async function flushArticleSeoCache(): Promise<void> {
+  while (seoWritePromise) {
+    await seoWritePromise;
   }
+}
+
+function persistCacheToDisk(): void {
+  pendingSeoData = { refreshedAt: Date.now(), entries: [...cache.values()] };
+  if (seoWritePromise) return;
+
+  seoWritePromise = (async () => {
+    while (pendingSeoData) {
+      const payload = pendingSeoData;
+      pendingSeoData = null;
+      try {
+        await fs.promises.mkdir(path.dirname(CACHE_FILE), { recursive: true });
+        await fs.promises.writeFile(CACHE_FILE, JSON.stringify(payload));
+      } catch (e: any) {
+        console.warn('[seoCache] Could not persist disk cache:', e.message);
+      }
+    }
+    seoWritePromise = null;
+  })();
 }
 
 /**
