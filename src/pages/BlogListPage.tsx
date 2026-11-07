@@ -101,9 +101,10 @@ export const BlogListPage: React.FC<BlogListPageProps> = () => {
   const listPosts = filtered.length > 3 ? filtered.slice(3) : [];
 
   const stripHtml = (html: string) => {
-    const tmp = document.createElement('div');
-    tmp.innerHTML = html;
-    return tmp.textContent || tmp.innerText || '';
+    // SECURITY: Use DOMParser to safely extract text without executing embedded scripts or
+    // fetching resources (e.g. img onerror), preventing DOM-based XSS attacks.
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    return doc.body.textContent || '';
   };
 
   const handleNavigate = (slug: string) => {
