@@ -2746,7 +2746,7 @@ async function startServer() {
     });
   }
 
-  app.listen(PORT, '0.0.0.0', () => {
+  const server = app.listen(PORT, '0.0.0.0', () => {
     console.log(`Noor-e-Quran Institute Server running on http://0.0.0.0:${PORT}`);
 
     // Article SEO synced cache (BUG-1/BUG-5): warm from disk, refresh from
@@ -2767,7 +2767,7 @@ async function startServer() {
         if (res.ok) {
           console.log(`[KeepAlive] Heartbeat ping successful to ${pingTarget} at ${new Date().toLocaleTimeString()}`);
         }
-      } catch (err: any) {
+      } catch (err) {
         // Fallback local ping if outbound DNS is not ready
         try {
           await fetch(`http://127.0.0.1:${PORT}/api/health`);
@@ -2775,6 +2775,32 @@ async function startServer() {
       }
     }, PING_INTERVAL_MS);
   });
+
+  const gracefulShutdown = async () => {
+    console.log('Received shutdown signal. Closing server...');
+    if (typeof server.closeAllConnections === 'function') {
+      server.closeAllConnections();
+    }
+    server.close(async () => {
+      console.log('HTTP server closed.');
+      let timeout;
+      try {
+        const fallback = new Promise<void>((resolve) => {
+          timeout = setTimeout(() => resolve(), 10000);
+        });
+        await Promise.race([dataStore.flush(), fallback]);
+        clearTimeout(timeout);
+        console.log('DataStore flushed.');
+        process.exit(0);
+      } catch (err) {
+        console.error('Error during flush:', err);
+        process.exit(1);
+      }
+    });
+  };
+
+  process.on('SIGTERM', gracefulShutdown);
+  process.on('SIGINT', gracefulShutdown);
 }
 
 startServer();

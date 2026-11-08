@@ -1,0 +1,3 @@
+## 2024-05-19 - [DataStore Synchronous I/O Optimization]
+**Learning:** Found a performance bottleneck where `fs.writeFileSync` is used in `server/dataStore.ts` inside a singleton which gets called quite often, meaning all concurrent operations are blocked. This can slow down requests noticeably when under load.
+**Action:** The memory tells us to "optimize synchronous file writes (`fs.writeFileSync`) to asynchronous writes (`fs.promises.writeFile`) in singletons like `DataStore`. Use a concurrency queue loop (`while (this.pendingData)`) to avoid data loss from overlapping writes, and unconditionally assign the latest data to the cache (`this.pendingData = dataToSave || this.data`) during a lock."
