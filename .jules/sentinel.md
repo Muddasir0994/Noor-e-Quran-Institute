@@ -7,3 +7,7 @@
 **Vulnerability:** Various backend endpoints (`/api/book-trial`, `/api/enroll`, `/api/contact`) collected unvalidated user inputs (such as names, messages, notes) and directly interpolated them into HTML strings sent as emails via Nodemailer to the admin.
 **Learning:** Even though the content is rendered in an email client and not a web browser, unescaped user input in HTML emails constitutes an HTML Injection vulnerability. This could allow an attacker to inject malicious links, tracking pixels, or misleading content that appears legitimate within an administrative alert.
 **Prevention:** Always globally define and apply an HTML escaping utility (e.g., `escapeHtml`) to all user-supplied data before interpolating it into HTML email bodies.
+## 2026-10-25 - Fix Unsafe DOM Pattern in BlogListPage
+**Vulnerability:** XSS vulnerability through direct assignment of untrusted HTML to `innerHTML` when trying to extract text content in `BlogListPage.tsx`.
+**Learning:** Using `document.createElement('div').innerHTML` to extract text from an HTML string executes any scripts present in the string.
+**Prevention:** Use `new DOMParser().parseFromString(html, 'text/html').body.textContent` to safely extract text without executing scripts.
