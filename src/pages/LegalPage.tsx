@@ -50,6 +50,16 @@ export const LegalPage: React.FC<LegalPageProps> = ({ variant }) => {
               <p>
                 Our 1-on-1 teaching sessions are strictly monitored for pedagogical excellence and child safety. Parents are always encouraged and welcome to observe their child's online Quran classes at any time.
               </p>
+              <h2 className="font-editorial font-bold text-[#13263D] text-lg pt-3">Advertising and Cookies</h2>
+              <p>
+                Our website uses cookies. Some cookies are necessary for the site to function properly, and others help us understand how visitors use the site so that we can improve it.
+              </p>
+              <p>
+                We also display advertisements served by Google. Third-party vendors, including Google, use cookies to serve ads based on a user's prior visits to this website and other websites. Google's use of advertising cookies enables Google and its partners to serve ads to our users based on their visits to this site and other sites on the Internet.
+              </p>
+              <p>
+                You may opt out of personalised advertising at any time by visiting Google Ads Settings at <code>https://www.google.com/settings/ads</code>. You can also opt out of some third-party vendors' use of cookies for personalised advertising by visiting <code>https://www.aboutads.info</code>.
+              </p>
               <h2 className="font-editorial font-bold text-[#13263D] text-lg pt-3">4. Contact Us</h2>
               <p>
                 For questions regarding your data privacy, contact our coordinator at <code>contact.noorequraninstitute@gmail.com</code> or on WhatsApp at <code>+92 327 4496163</code>.

@@ -161,12 +161,12 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   // 1. Content Security Policy (Hardened for Production with Clarity, Jitsi, Google Auth, and IndexNow support)
   const cspDirectives = [
     "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' https://www.clarity.ms https://*.clarity.ms https://*.firebaseapp.com https://*.googleapis.com https://apis.google.com https://meet.jit.si https://*.jitsi.net https://8x8.vc https://*.8x8.vc",
+    "script-src 'self' 'unsafe-inline' https://www.clarity.ms https://*.clarity.ms https://*.firebaseapp.com https://*.googleapis.com https://apis.google.com https://meet.jit.si https://*.jitsi.net https://8x8.vc https://*.8x8.vc https://pagead2.googlesyndication.com https://*.googlesyndication.com https://www.googleadservices.com https://googleads.g.doubleclick.net",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com data:",
     "img-src 'self' data: blob: https: https://*.googleusercontent.com https://images.unsplash.com https://*.jitsi.net https://res.cloudinary.com https://c.bing.com https://*.clarity.ms",
-    "connect-src 'self' https://*.clarity.ms https://c.bing.com https://*.firebaseio.com https://*.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com wss://*.firebaseio.com https://meet.jit.si https://*.jitsi.net wss://meet.jit.si wss://*.jitsi.net https://8x8.vc https://*.8x8.vc wss://8x8.vc wss://*.8x8.vc https://api.ipify.org https://api.cloudinary.com https://api.indexnow.org",
-    "frame-src 'self' https://*.firebaseapp.com https://accounts.google.com https://meet.jit.si https://*.jitsi.net https://8x8.vc https://*.8x8.vc",
+    "connect-src 'self' https://*.clarity.ms https://c.bing.com https://*.firebaseio.com https://*.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com wss://*.firebaseio.com https://meet.jit.si https://*.jitsi.net wss://meet.jit.si wss://*.jitsi.net https://8x8.vc https://*.8x8.vc wss://8x8.vc wss://*.8x8.vc https://api.ipify.org https://api.cloudinary.com https://api.indexnow.org https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://*.googlesyndication.com",
+    "frame-src 'self' https://*.firebaseapp.com https://accounts.google.com https://meet.jit.si https://*.jitsi.net https://8x8.vc https://*.8x8.vc https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://pagead2.googlesyndication.com",
     "media-src 'self' blob: data: https: https://meet.jit.si https://*.jitsi.net",
     "object-src 'none'",
     "base-uri 'self'",
