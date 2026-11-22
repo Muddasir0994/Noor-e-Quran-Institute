@@ -106,7 +106,7 @@ async function sendStudentOtpEmail(toEmail: string, studentName: string, otpCode
             <p style="color: #666; font-size: 13px; margin-top: 4px;">Online Quran Learning & Islamic Education</p>
           </div>
           <div style="background-color: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 20px; text-align: center; margin-bottom: 20px;">
-            <p style="color: #166534; font-size: 15px; margin: 0 0 10px 0;">Assalam-o-Alaikum <strong>${studentName || 'Student'}</strong>,</p>
+            <p style="color: #166534; font-size: 15px; margin: 0 0 10px 0;">Assalam-o-Alaikum <strong>${escapeHtml(studentName) || 'Student'}</strong>,</p>
             <p style="color: #374151; font-size: 14px; margin: 0 0 15px 0;">Your verification OTP code for creating your student account is:</p>
             <div style="font-size: 32px; font-weight: bold; letter-spacing: 6px; color: #064E3B; background: #ffffff; padding: 12px 24px; border-radius: 8px; display: inline-block; border: 2px dashed #059669;">
               ${otpCode}
