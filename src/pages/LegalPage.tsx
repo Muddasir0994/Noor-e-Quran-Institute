@@ -50,6 +50,9 @@ export const LegalPage: React.FC<LegalPageProps> = ({ variant }) => {
               <p>
                 Our 1-on-1 teaching sessions are strictly monitored for pedagogical excellence and child safety. Parents are always encouraged and welcome to observe their child's online Quran classes at any time.
               </p>
+              <p>
+                All classes at Noor E Quran Institute are booked by a parent or legal guardian. Accounts, bookings and payments are always made by adults, and we do not knowingly collect personal information directly from children under the age of 13. Any student details we hold, such as the student's name, age and learning level, are provided to us by the parent or guardian so that we can plan and deliver the lessons.
+              </p>
               <h2 className="font-editorial font-bold text-[#13263D] text-lg pt-3">Advertising and Cookies</h2>
               <p>
                 Our website uses cookies. Some cookies are necessary for the site to function properly, and others help us understand how visitors use the site so that we can improve it.
