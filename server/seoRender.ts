@@ -1044,7 +1044,7 @@ const COURSE_DEEP_DIVE: Record<string, CourseDeepDive> = {
     heading: 'Inside the Hifz Memorisation Course: Curriculum, Milestones and How Classes Run',
     intro: [
       'The Hifz course is a long term, structured programme for memorising the Holy Quran, in full or in part, with retention as its first priority. Memorising quickly is easy; memorising in a way that stays for life is the real work, and the whole course is built around that goal.',
-      'Every Hifz student at Noor E Quran Institute follows the classical three part system of Sabaq, Sabqi and Manzil, supervised one-to-one by the founder in every lesson. Targets are personal: some students aim for the complete Quran, others for selected Juz or Surahs.'
+      'Every Hifz student at Noor E Quran Institute follows the classical three part system of Sabaq, Sabqi and Manzil, supervised one-to-one by the founder in every lesson. Targets are personal: some students aim for the complete Quran, others for selected Juz or Surahs. Children, teenagers and adults all follow the same system, with the daily portion and the pace adjusted to each student.'
     ],
     curriculum: [
       { title: 'Step 1: Assessment and a Personal Memorisation Plan', text: 'Before memorisation begins, the student\u2019s recitation and Tajweed are checked, because verses memorised with mistakes are hard to repair. A daily portion is then set according to age, ability and available time.' },
@@ -1057,10 +1057,11 @@ const COURSE_DEEP_DIVE: Record<string, CourseDeepDive> = {
     milestones: [
       'First Juz memorised and retained through its revision cycles',
       'Five Juz held with a stable daily Manzil routine',
+      'Ten Juz memorised, with older Surahs still passing spot checks',
       'Half the Quran memorised, with monthly tests passed',
       'Full memorisation completed and verified in final revision rounds'
     ],
-    classRuns: 'A Hifz lesson is divided into three parts. First the student recites the new Sabaq from memory while the teacher follows in the Mushaf and logs every error. Then comes Sabqi, the revision of recent pages, and finally Manzil, the day\u2019s portion from the older memorisation. Nothing is left to memory alone: portions, errors and test results are recorded after every class, and parents receive a monthly report covering new memorisation, retention strength and the plan for the month ahead. Lessons last 30 to 45 minutes.',
+    classRuns: 'A Hifz lesson is divided into three parts. First the student recites the new Sabaq from memory while the teacher follows in the Mushaf and logs every error. Then comes Sabqi, the revision of recent pages, and finally Manzil, the day\u2019s portion from the older memorisation. Nothing is left to memory alone: portions, errors and test results are recorded after every class, and parents receive a monthly report covering new memorisation, retention strength and the plan for the month ahead. Lessons last 30 to 45 minutes. Between lessons, students follow a written daily revision timetable, repeating the same three part structure at home in miniature, so memorisation is strengthened on the days when there is no class as well as on class days.',
     faqs: [
       { q: 'How much does a student memorise each day?', a: 'The portion is set individually. A young beginner may start with a few lines a day, while an older student with strong recitation memorises more. The portion grows only when retention stays perfect.' },
       { q: 'How long does it take to memorise the whole Quran?', a: 'At a steady, sustainable pace, full Hifz usually takes between two and three and a half years. Rushing produces weak memorisation, so the course protects retention first and speed second.' },
