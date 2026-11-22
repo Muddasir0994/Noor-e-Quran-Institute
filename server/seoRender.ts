@@ -934,6 +934,168 @@ Sitemap: ${ACADEMY_BASE_URL}/sitemap.xml
  * Generates rich, semantic, crawlable prerendered HTML content for bots & SEO crawlers.
  * Contains visible H1, descending H2/H3 hierarchy, 1000+ words of authentic copy, and internal links.
  */
+interface CourseDeepDive {
+  heading: string;
+  intro: string[];
+  curriculum: { title: string; text: string }[];
+  milestones: string[];
+  classRuns: string;
+  faqs: { q: string; a: string }[];
+}
+
+/**
+ * Course-specific depth content for the four core course landing routes.
+ * Added 2026-11-22 for the AdSense review: these routes previously carried
+ * only a title and a one-line description of course-specific copy on top of
+ * the shared generic template. Each entry adds a curriculum outline,
+ * learning milestones, how a class runs, and a short FAQ (roughly 750 words).
+ */
+const COURSE_DEEP_DIVE: Record<string, CourseDeepDive> = {
+  '/noorani-qaida': {
+    heading: 'Inside the Noorani Qaida Course: Curriculum, Milestones and How Classes Run',
+    intro: [
+      'Noorani Qaida is the foundation course of Noor E Quran Institute. It takes a student who may not know a single Arabic letter and builds, step by step, the ability to read the Quran correctly. Every lesson is one-to-one and taught personally by the founder, M Muddasir Hameed, so the pace is set by the student, never by a group.',
+      'The course follows the classical Qaida sequence used in traditional madrasas, taught with a digital Qaida on screen so parents can see exactly what their child is learning. Children usually start from age four, and the same course is taken by adult beginners and new Muslims who want to begin reading the Quran properly.'
+    ],
+    curriculum: [
+      { title: 'Step 1: The Arabic Alphabet', text: 'Students learn all 29 Arabic letters, their names, their sounds and their written forms: isolated, and joined at the beginning, middle and end of a word. Letter recognition games and repetition drills make the shapes familiar within the first few weeks.' },
+      { title: 'Step 2: Makharij, Where Each Sound Comes From', text: 'Correct pronunciation starts here. Students learn the articulation points of the throat, tongue, lips and nasal cavity, and practise each letter from its exact point, so mistakes that are hard to fix later never become habits.' },
+      { title: 'Step 3: Harakaat, the Short Vowels', text: 'Fatha, Kasra and Dammah are introduced, and students read every letter with each vowel until the sounds are instant. This is the stage where separate letters begin to turn into real reading.' },
+      { title: 'Step 4: Joining Letters and Building Words', text: 'Students learn how letters connect, which letters join only from one side, and how two and three letter combinations are read as one unit. Short words from the Quran begin to appear in the lessons.' },
+      { title: 'Step 5: Tanween, Sukoon and Madd', text: 'The double vowels (Tanween), the silent letter (Sukoon) and the basic elongation rules (Madd) are taught with plenty of drill lines, so students can handle the markings they will meet on every page of the Mushaf.' },
+      { title: 'Step 6: Reading Practice and the Bridge to Nazra', text: 'The final lessons of the Qaida are read aloud in full, followed by short Surahs such as Al-Fatiha and Al-Ikhlas read directly from the Quran. When a student reads these fluently, the Qaida is complete and Nazra begins.' }
+    ],
+    milestones: [
+      'Recognises every Arabic letter in all of its written forms',
+      'Pronounces each letter from its correct articulation point',
+      'Reads joined words with Harakaat without spelling them out letter by letter',
+      'Completes the full Noorani Qaida book with its rules',
+      'Reads short Surahs from the Mushaf independently'
+    ],
+    classRuns: 'A Qaida lesson lasts about 30 minutes for young children and up to 45 minutes for older students and adults. The teacher shares a high resolution digital Qaida on screen over Zoom or Google Meet. The student reads each line aloud, and every mistake is corrected on the spot, with the correct sound modelled and repeated until it is right. The last few minutes of each class revise the previous lesson, and a small amount of home practice is set. Parents are welcome to sit in at any time, and a written progress report is shared every month covering letters covered, pronunciation accuracy and the next target.',
+    faqs: [
+      { q: 'How long does Noorani Qaida take to complete?', a: 'Most children finish in three to five months with regular classes and a few minutes of daily practice. Adults who practise daily often finish sooner. The course ends when the reading is correct, not when a fixed number of weeks has passed.' },
+      { q: 'My child has never read Arabic. Is that a problem?', a: 'Not at all. The course assumes no background at all. It starts from the very first letter, Alif, and every new idea is built on the one before it.' },
+      { q: 'Can adults and new Muslims take this course?', a: 'Yes. Many of our Qaida students are adults, including new Muslims and parents who want to read the Quran themselves instead of relying on transliteration.' },
+      { q: 'What does my child need for each class?', a: 'A laptop, tablet or phone with a stable internet connection and a microphone. We share the Qaida pages on screen, although a printed Qaida book is a helpful extra for home practice.' }
+    ]
+  },
+  '/quran-reading-nazra': {
+    heading: 'Inside the Nazra Quran Reading Course: Curriculum, Milestones and How Classes Run',
+    intro: [
+      'Nazra is the course in which a student reads the entire Holy Quran, from the first page to the last, in front of the teacher. It begins after Noorani Qaida, when the student can join letters and read words, and it turns that basic skill into fluent, confident reading of the Mushaf itself.',
+      'At Noor E Quran Institute the Nazra course is taught one-to-one by the founder. The student reads aloud in every lesson while the teacher listens to each word, corrects mistakes as they happen, and records exactly how far the student has read.',
+      'For most Muslim families abroad, this is the course that changes daily life at home. A child who completes Nazra can open the Mushaf at any page and read, join the family recitation after Maghrib, and follow along in Taraweeh during Ramadan. That independence, reading the words of Allah directly instead of through a transliteration, is the goal every lesson works towards.'
+    ],
+    curriculum: [
+      { title: 'Step 1: From Qaida Rules to the Mushaf', text: 'The first lessons apply everything learned in Qaida, joining, vowels, Sukoon and Madd, to real Quranic text. Students adjust to the script of the Mushaf and the layout of its lines and pages.' },
+      { title: 'Step 2: A Structured Juz by Juz Plan', text: 'Reading follows a clear plan with a set portion in every class. The teacher tracks the student\u2019s place in the Mushaf precisely, so no page is skipped and the journey through all 30 Juz stays organised.' },
+      { title: 'Step 3: Fluency and Flow', text: 'Students learn to read in phrases instead of word by word, to join verses smoothly, and to manage their breath at the stopping signs, so recitation becomes continuous and pleasant to listen to.' },
+      { title: 'Step 4: Live Pronunciation Correction', text: 'Every lesson includes real time correction of Makharij and letter characteristics. Recurring mistakes are noted and deliberately revisited, so the same error is not repeated from one Juz to the next.' },
+      { title: 'Step 5: Tajweed Awareness While Reading', text: 'Without turning the course into a theory class, students begin applying the rules they can hear: Ghunnah, the main Madd elongations and Qalqalah, inside their regular reading. Formal Tajweed theory is the next course.' },
+      { title: 'Step 6: Khatm, Completing the Whole Quran', text: 'The course ends with the completion of the entire Quran, cover to cover, followed by a revision of the pages the student found hardest. The student is then ready for the Tajweed course or for Hifz.' }
+    ],
+    milestones: [
+      'Reads a page never seen before without spelling out the words',
+      'Sustains 15 to 20 minutes of continuous, flowing recitation',
+      'Recognises and corrects his or her own common mistakes',
+      'Completes all 30 Juz of the Holy Quran with the teacher',
+      'Reads confidently enough to join family and mosque recitation'
+    ],
+    classRuns: 'Nazra lessons run for 30 to 45 minutes. The student reads aloud from a screen shared Mushaf, or from a personal copy of the Quran at home, while the teacher follows the same page and corrects pronunciation, stopping points and pace in real time. Each lesson\u2019s portion is logged, and a short daily reading assignment keeps the fluency growing between classes. Parents receive a monthly progress report showing how many pages and Juz have been completed, the student\u2019s fluency level, and the mistakes currently being worked on.',
+    faqs: [
+      { q: 'How long does it take to finish the whole Quran?', a: 'At a steady pace of regular classes, most students complete the Nazra Khatm in six to twelve months. The exact time depends on the student\u2019s starting level and how much daily reading is done at home.' },
+      { q: 'Should my child learn Tajweed before Nazra?', a: 'No. Nazra comes first. It builds accurate, fluent reading. Tajweed theory is far easier to learn once a student can already read the whole Quran comfortably.' },
+      { q: 'Which script of the Mushaf is used?', a: 'The script your family is most comfortable with, whether the 15 line Indo Pak script common in South Asia or the Madani script. Consistency with one script helps fluency.' },
+      { q: 'How do parents follow progress?', a: 'Every lesson\u2019s reading is recorded in the student\u2019s progress log, and parents receive a monthly report with pages completed, fluency notes and the next milestone. Parents are also welcome to sit in on any lesson and hear the reading for themselves, which many families do at the start of each new Juz.' }
+    ]
+  },
+  '/quran-with-tajweed': {
+    heading: 'Inside the Quran with Tajweed Course: Curriculum, Milestones and How Classes Run',
+    intro: [
+      'The Tajweed course is for students who can already read the Quran and want to recite it the way it was revealed: every letter from its correct point, every rule applied, and every verse given its proper measure. It combines the theory of the rules with intensive applied practice.',
+      'Lessons are one-to-one with the founder, whose teaching focuses on precise recitation and careful correction. Students work from the Mushaf in every class, applying each rule to real verses rather than memorising definitions alone. The course suits older children, teenagers and adults.',
+      'Many students come to this course after years of reading with the same uncorrected habits: swallowing the Ghunnah, shortening the Madd, or stopping in the middle of a meaning. Tajweed training replaces those habits one rule at a time, and because every lesson is private, the correction is aimed at the individual student\u2019s own recitation, not at a class average.'
+    ],
+    curriculum: [
+      { title: 'Step 1: Makharij and Sifaat, the Foundations', text: 'The course opens with the 17 articulation points of the letters and their permanent characteristics, such as Hams, Jahr and Shiddah. Existing pronunciation faults are identified and corrected before new rules are layered on top.' },
+      { title: 'Step 2: Noon Sakinah and Tanween', text: 'The four rules, Izhar, Idgham, Iqlab and Ikhfa, are taught with their letters, their conditions and extensive drills from the Mushaf, until the student applies the right rule without stopping to think.' },
+      { title: 'Step 3: Meem Sakinah and the Laam Rules', text: 'Students master Ikhfa Shafawi, Idgham Shafawi and Izhar Shafawi, together with the rules of the Laam in the name of Allah and the Laam of verbs and particles.' },
+      { title: 'Step 4: Madd, the Science of Elongation', text: 'Natural Madd, connected and separated Madd, Madd Lazim and the other branches are taught with their exact counts, so the student\u2019s elongations become measured and consistent instead of guessed.' },
+      { title: 'Step 5: Tafkheem, Tarqeeq and the Rules of Waqf', text: 'Heavy and light letters, the rules of the letter Ra, and the science of stopping and starting, where a pause changes or protects the meaning, complete the core theory of the course.' },
+      { title: 'Step 6: Applied Recitation and Error Elimination', text: 'The final stage is verse by verse application across longer Surahs. The teacher keeps a personal error log for the student, and earlier mistakes are retested until the recitation stays clean across whole pages.' }
+    ],
+    milestones: [
+      'Applies the four Noon Sakinah rules correctly without prompting',
+      'Gives every Madd its correct count, consistently',
+      'Distinguishes heavy and light letters reliably in new verses',
+      'Recites a full page with the rules observed throughout',
+      'Understands where to stop and start without breaking the meaning'
+    ],
+    classRuns: 'Each Tajweed lesson is split into two halves. In the first, one rule is explained properly, with its evidence and examples located in the Mushaf. In the second, the student recites while the teacher marks every violation of the rules live and corrects it on the spot. A running list of the student\u2019s personal mistakes is maintained from lesson to lesson, and monthly reports show parents or the student exactly which rules have been mastered and which are still in progress. Lessons last 30 to 45 minutes, and students are given a short passage to practise before the next class, chosen to contain the rule most recently learned so the theory is exercised daily.',
+    faqs: [
+      { q: 'Do I need to complete Nazra before Tajweed?', a: 'Yes. Tajweed assumes fluent reading of the Mushaf. If a student still struggles to read, the Nazra course builds that fluency first, and Tajweed follows naturally.' },
+      { q: 'Is the course only theory?', a: 'No. Every rule is taught with its theory and then applied immediately in recitation. Most of each lesson is spent reciting and being corrected, which is where Tajweed is actually learned.' },
+      { q: 'How long does the Tajweed course take?', a: 'Most students complete the core rules and applied stage in six to nine months of regular classes. Students preparing for advanced study may continue with further applied recitation.' },
+      { q: 'Will this course fix my pronunciation?', a: 'That is one of its main purposes. The opening stage is devoted to Makharij, and persistent pronunciation faults are logged and revisited until they are gone.' }
+    ]
+  },
+  '/quran-memorization-hifz': {
+    heading: 'Inside the Hifz Memorisation Course: Curriculum, Milestones and How Classes Run',
+    intro: [
+      'The Hifz course is a long term, structured programme for memorising the Holy Quran, in full or in part, with retention as its first priority. Memorising quickly is easy; memorising in a way that stays for life is the real work, and the whole course is built around that goal.',
+      'Every Hifz student at Noor E Quran Institute follows the classical three part system of Sabaq, Sabqi and Manzil, supervised one-to-one by the founder in every lesson. Targets are personal: some students aim for the complete Quran, others for selected Juz or Surahs.'
+    ],
+    curriculum: [
+      { title: 'Step 1: Assessment and a Personal Memorisation Plan', text: 'Before memorisation begins, the student\u2019s recitation and Tajweed are checked, because verses memorised with mistakes are hard to repair. A daily portion is then set according to age, ability and available time.' },
+      { title: 'Step 2: Sabaq, the New Daily Lesson', text: 'Each class begins with new verses. The student memorises them with correct Tajweed, then recites them from memory to the teacher until the portion is completely free of errors.' },
+      { title: 'Step 3: Sabqi, Revision of the Recent Pages', text: 'The most recent five to ten pages are revised every day. This short cycle catches forgetting at the stage where it is easiest to fix, and welds the new memorisation to what came before.' },
+      { title: 'Step 4: Manzil, the Long Revision Cycle', text: 'Alongside new memorisation, the student recites a portion of everything memorised so far, every day, in a continuous cycle. Manzil is the system that keeps the first Juz as fresh as the latest one.' },
+      { title: 'Step 5: Testing and Repairing Weak Spots', text: 'Monthly examinations test memorisation and retention together. Surahs or pages that slip are identified, given extra revision cycles, and retested, so weak spots are repaired instead of carried forward.' },
+      { title: 'Step 6: Khatm and the Final Revision Rounds', text: 'When the target is complete, the student performs full revision rounds of the entire memorisation before completion is certified. For full Hifz students, this Khatm is the finish of a journey of years.' }
+    ],
+    milestones: [
+      'First Juz memorised and retained through its revision cycles',
+      'Five Juz held with a stable daily Manzil routine',
+      'Half the Quran memorised, with monthly tests passed',
+      'Full memorisation completed and verified in final revision rounds'
+    ],
+    classRuns: 'A Hifz lesson is divided into three parts. First the student recites the new Sabaq from memory while the teacher follows in the Mushaf and logs every error. Then comes Sabqi, the revision of recent pages, and finally Manzil, the day\u2019s portion from the older memorisation. Nothing is left to memory alone: portions, errors and test results are recorded after every class, and parents receive a monthly report covering new memorisation, retention strength and the plan for the month ahead. Lessons last 30 to 45 minutes.',
+    faqs: [
+      { q: 'How much does a student memorise each day?', a: 'The portion is set individually. A young beginner may start with a few lines a day, while an older student with strong recitation memorises more. The portion grows only when retention stays perfect.' },
+      { q: 'How long does it take to memorise the whole Quran?', a: 'At a steady, sustainable pace, full Hifz usually takes between two and three and a half years. Rushing produces weak memorisation, so the course protects retention first and speed second.' },
+      { q: 'What if my child keeps forgetting earlier Surahs?', a: 'That is exactly what the Sabqi and Manzil cycles exist for. Forgetting is expected and planned for: every memorised page stays inside a permanent revision system instead of being left behind.' },
+      { q: 'Can adults memorise the Quran in this course?', a: 'Yes. Adult students follow the same system with a portion and schedule fitted to work and family life. Many adults choose a part time target, such as Juz Amma or selected Surahs, first.' }
+    ]
+  }
+};
+
+function renderCourseDeepDive(path: string): string {
+  const d = COURSE_DEEP_DIVE[path];
+  if (!d) return '';
+  return `
+      <!-- Section: Course Deep Dive (curriculum, milestones, class format, FAQ) -->
+      <section style="background:#ffffff;border:1px solid #E5E7EB;border-radius:16px;padding:40px 30px;margin-bottom:50px;">
+        <h2 style="font-size:28px;color:#064E3B;margin-top:0;margin-bottom:16px;">${d.heading}</h2>
+        ${d.intro.map(p => `<p style="color:#4B5563;font-size:16px;line-height:1.7;">${p}</p>`).join('')}
+        <h3 style="font-size:21px;color:#064E3B;margin-top:28px;margin-bottom:10px;">Curriculum, Step by Step</h3>
+        <ol style="padding-left:22px;color:#4B5563;font-size:15px;line-height:1.7;">
+          ${d.curriculum.map(s => `<li style="margin-bottom:12px;"><strong style="color:#064E3B;">${s.title}</strong><br/>${s.text}</li>`).join('')}
+        </ol>
+        <h3 style="font-size:21px;color:#064E3B;margin-top:28px;margin-bottom:10px;">Learning Milestones</h3>
+        <ul style="padding-left:22px;color:#4B5563;font-size:15px;line-height:1.7;">
+          ${d.milestones.map(m => `<li style="margin-bottom:6px;">${m}</li>`).join('')}
+        </ul>
+        <h3 style="font-size:21px;color:#064E3B;margin-top:28px;margin-bottom:10px;">How a Class Runs</h3>
+        <p style="color:#4B5563;font-size:16px;line-height:1.7;">${d.classRuns}</p>
+        <h3 style="font-size:21px;color:#064E3B;margin-top:28px;margin-bottom:10px;">Frequently Asked Questions</h3>
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          ${d.faqs.map(f => `<div><h4 style="font-size:16px;color:#064E3B;margin:0 0 5px;">${f.q}</h4><p style="color:#4B5563;font-size:15px;line-height:1.6;margin:0;">${f.a}</p></div>`).join('')}
+        </div>
+      </section>
+`;
+}
+
 export function generateRoutePrerenderHtml(routePath: string, meta: PageMeta): string {
   const normalizedPath = routePath.split('?')[0].replace(/\/$/, '') || '/';
   const courses = dataStore.getCourses();
@@ -1077,7 +1239,7 @@ export function generateRoutePrerenderHtml(routePath: string, meta: PageMeta): s
           </div>
         </div>
       </section>
-
+${renderCourseDeepDive(normalizedPath)}
       <!-- Section: Comprehensive Courses Hierarchy (H2 & H3) -->
       <section style="margin-bottom:50px;">
         <div style="text-align:center;max-width:700px;margin:0 auto 36px;">
